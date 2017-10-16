@@ -1,0 +1,404 @@
+.food-icon{
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    background-color: #404040;
+    border-radius: 6px;
+}
+
+.text{
+    display: inline;
+    font-size:22px;
+}
+
+body{
+    font-family: Arial;
+    background-color: #e8e8e8;
+    user-select: none;
+    cursor: context-menu;
+    overflow: hidden;
+}
+
+#foodappear{
+    color:green;
+}
+
+#goldappear{
+    color:#e06c00;
+}
+
+#scienceappear{
+    color:#0052e0;
+}
+
+#mineralappear{
+    color:#898989;
+}
+
+#cultureappear{
+    color:#750ad3;
+}
+
+.appearer{
+    z-index:3;
+    position:absolute;
+    text-align:center;
+    width:178px;
+    text-shadow:0px 0px 16px black;
+    user-select: none;
+}
+
+.header{
+    width:100%;
+    border-bottom: 5px solid #000000;
+    /*background-image: url("header_bg.png");*/
+    /*background-repeat: repeat;*/
+    text-align:center;
+    position:fixed;
+    top: 0;
+    left: 0;
+    padding:6px 0px 0px 6px;
+    background-color:grey;
+    height:4%;
+    font-size:25px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+#ledger{
+    position: fixed;
+    top: 17%;
+    border: 1px solid black;
+    left: 0;
+    width:270px;
+    text-align:left;
+    background-color: white;
+}
+
+.ledger td{
+    padding:1px;
+}
+
+.ledger{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.ledger-tab{
+    padding:5px;
+}
+
+.buffer{
+    height:10px;
+    width:178px;
+}
+
+#final{
+    height:1500px;
+   /* border-bottom:2px solid #a7ff8e;*/
+}
+
+#main{
+    margin-left: auto;
+    margin-right:auto;
+    margin-top: 2.4%;
+    border-collapse: collapse;
+    border: 3px solid #dbdbdb;
+    overflow: hidden;
+}
+
+#food-column{
+    background-color:#b7ffa3;
+}
+
+#gold-column{
+    background-color:#ebff9e;
+}
+
+#mineral-column{
+    background-color:#c4c4c4;
+}
+
+#science-column{
+    background-color:#9ea7ff;
+}
+
+#culture-column{
+    background-color:#d19eff;
+}
+
+.footer{
+    width:100%;
+    height: 24px;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    text-align: center;
+    border-top: 5px solid #000000;
+    /*background-image: url("header_bg.png");*/
+    background-repeat: repeat;
+    background-color:grey;
+}
+
+#contribs{
+    margin-right:0;
+}
+
+.tooltip {
+    position: relative;
+    display: inline;
+    cursor:help;
+}
+
+.clicker{
+    width:80px;
+    height:80px;
+}
+
+.convert-clicker{
+    width:35px;
+    height:30px;
+}
+
+.button{
+    cursor:pointer;
+    user-select: none;
+}
+
+.click{
+    width:80px;
+    height:80px;
+    border-radius:5px;
+    margin-left:5px;
+    margin-right:5px;
+    margin-bottom:15px;
+    z-index:-1;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 60px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+.tooltip .large{
+    width:120px;
+}
+
+.tooltip .science{
+    width:170px;
+    right:200px;
+    top:0;
+}
+
+.tooltip .convert{
+    width: 200px;
+    right:30px;
+    top:0px;
+}
+
+.detailer{
+    height:28px;
+    padding-top:4px;
+}
+
+.boxholder{
+    margin-left:5px;
+    margin-right:5px;
+    border: 1px solid black;
+    width:168px;
+    text-align: center;
+    background-color: white;
+    margin-top: 7px;
+}
+
+#tech_name{
+    font-weight:bold;
+}
+
+#superappear{
+    position:fixed;
+    bottom: 27px;
+    left: 8px;
+}
+
+#super{
+    position:fixed;
+    bottom: 27px;
+    left: 8px;
+    height:1px;
+    width:10px;
+    background-color:purple;
+    z-index:0;
+}
+
+#superback{
+    position:fixed;
+    bottom: 27px;
+    left: 5px;
+    background-color:darkgrey;
+    z-index:-1;
+    width:16px;
+    height:200px;
+}
+
+#superbox{
+    position: fixed;
+    bottom: 27px;
+    left: 25px;
+    width:200px;
+    height:20px;
+}
+
+.click:active {
+  transform: scale(.95,.95);
+}
+
+#food_click{
+    background-color:#4fff51;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#gold_click{
+    background-color:#ffc44f;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#science_click{
+    background-color: #4f6fff;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#culture_click{
+    background-color: #ac4fff;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#mineral_click{
+    background-color: #abb2a9;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#food_to_cash_click{
+    background-color: turquoise;
+    display: inline-block;
+    border-radius:5px;
+    padding:3px 3px 0px 3px;
+}
+
+.topalign{
+    vertical-align:top;
+}
+
+.buy_button{
+    width:40px;
+    height:40px;
+    text-align:center;
+    background-color:#ffe7d3;
+}
+
+.ledgerheader{
+    width:100%;
+    height:25px;
+    text-align:center;
+    background-color:#ffe7d3;
+    font-size:20px;
+}
+
+.workers-box{
+    border: 1px solid black;
+    right: 0;
+    bottom: 5%;
+    position: fixed;
+    width:200px;
+    height:9%;
+    text-align:center;
+    background-color: white;
+}
+
+.conversion-box{
+    border: 1px solid black;
+    right: 0;
+    top: 15%;
+    position: fixed;
+    width:200px;
+    text-align:center;
+    background-color: white;
+}
+
+.science-box{
+    position: fixed;
+    bottom: 17%;
+    border: 1px solid black;
+    right: 0;
+    width:200px;
+    text-align:center;
+    background-color: white;
+}
+
+#near_tech{
+    right: 220px;
+    bottom: 19%;
+}
+
+#near_worker{
+    right: 220px;
+    bottom: 7.5%;
+}
+
+.flashing{
+    color:white;
+    font-size:30px;
+    position: fixed;
+    border: 1px solid black;
+    width:55px;
+    height:55px;
+    vertical-align: middle;
+    text-align:center;
+    background-color: #30e000;
+    line-height:55px;
+    border-radius:100px;
+    box-shadow: 3px 3px .2px 0px black;
+}
+
+.always_flash{
+    width:20px;
+}
+
+#worker_holder{
+    width:100%;
+}
+
+#science_holder{
+    width:100%;
+}
+
+.row-even{
+    background-color:lightcyan;
+}
+
+.row-odd{
+    background-color:lightyellow;
+}
+
+.amt{
+    font-weight:bold;
+}
+
+.fpsamt{
+    font-weight:lighter;
+}
