@@ -1,0 +1,12 @@
+To do:
+
+
+introduce multi-prices (to use stone, gold)
+
+more conversions
+
+
+
+
+tickers for buildings (+1 etc)
+cultural policies
