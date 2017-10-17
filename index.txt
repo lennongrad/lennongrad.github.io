@@ -4,5 +4,6 @@
 </head>
 <body>
 <a href='/game'>Game</a>.
+<p>DINKUSDSNFMS<MFDSN</p>
 </body>
 </html>
