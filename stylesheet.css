@@ -388,11 +388,13 @@ body{
 }
 
 .row-even{
-    background-color:lightcyan;
+    background-color:#ededed;
+    height:42px;
 }
 
 .row-odd{
-    background-color:lightyellow;
+    background-color:#e8e8e8;
+    height:42px;
 }
 
 .amt{
