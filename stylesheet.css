@@ -312,11 +312,13 @@ body{
 }
 
 .ledgerheader{
-    width:100%;
+    width:98%;
     height:25px;
     text-align:center;
-    background-color:#ffe7d3;
+    background-color:white;
     font-size:20px;
+    border-bottom: 1px solid black;
+    padding:2px;
 }
 
 .workers-box{
@@ -330,7 +332,7 @@ body{
     background-color: white;
 }
 
-.conversion-box{
+#conversion-box{
     border: 1px solid black;
     right: 0;
     top: 15%;
@@ -338,6 +340,7 @@ body{
     width:200px;
     text-align:center;
     background-color: white;
+    border-collapse: collapse;
 }
 
 .science-box{
@@ -358,6 +361,7 @@ body{
 #near_worker{
     right: 220px;
     bottom: 7.5%;
+    border-collapse: collapse;
 }
 
 .flashing{
@@ -383,18 +387,23 @@ body{
     width:100%;
 }
 
+#convert_holder{
+    width:100%;
+    border-collapse: collapse;
+}
+
 #science_holder{
     width:100%;
 }
 
 .row-even{
-    background-color:#ededed;
-    height:42px;
+    background-color:#eff2f2;
+    height:40px;
 }
 
 .row-odd{
     background-color:#e8e8e8;
-    height:42px;
+    height:40px;
 }
 
 .amt{
