@@ -7,6 +7,7 @@ more conversions
 
 yummy
 
+sound effects for clicking or more incentivization for clicking instead letting the program go by itself
 
 tickers for buildings (+1 etc)
 cultural policies
