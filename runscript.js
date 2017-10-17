@@ -1,6 +1,8 @@
+//because im an idiot sometimes
+var yes = true;
+var no = false;
 
-
-var debug = false;
+var debug = true;
 
 var workers_cost_base = 20;
 var workers_cost_mult = 1.6;
@@ -17,6 +19,8 @@ function Resource(name, click, unlocked, color, base) {
     this.unlocked = unlocked;
     this.color = color;
 
+    this.onDebug = false;
+
     this.rates = new Array();
     this.auto = new Array();
 
@@ -28,13 +32,21 @@ function Resource(name, click, unlocked, color, base) {
     }
 }
 
-function Building(name, resource, cost_base, cost_mult, efficiency, unlocked) {
+function Building(name, resource, cost_base, cost_mult, efficiency, unlocked, costs) {
     this.resource = resource;
     this.cost_base = cost_base;
     this.cost_mult = cost_mult;
     this.efficiency = efficiency;
     this.unlocked = unlocked;
     this.name = name;
+
+    this.costers = new Array();
+
+    for(i = 0; i < costs.length; i++){
+        this.costers[i] = costs[i];
+    }
+
+    this.onDebug = false;
 
     this.fps = 0;
     this.cost = cost_base;
@@ -45,12 +57,22 @@ function Building(name, resource, cost_base, cost_mult, efficiency, unlocked) {
         this.cost = (this.cost_base * this.cost_mult * (Math.pow(1.10, (this.amt + 1)) - Math.pow(1.10, this.amt))) / 0.15;
     }
 
-     this.buy = function() {
-        if (!(res[5].amt >= this.cost)) {
-            return;
+    this.buy = function () {
+        var lesser = this.costers[0];
+        var least = 0;
+        for (i = 0; i < this.costers.length; i++) {
+            if (!(res[this.costers[i]].amt >= this.cost)) {
+                return;
+            }
+            if (res[this.costers[i]].amt < lesser) {
+                lesser = res[this.costers[i]].amt;
+                least = i;
+            }
         }
         do {
-            res[5].amt -= this.cost;
+            for (i = 0; i < this.costers.length; i++) {
+                res[this.costers[i]].amt -= this.cost;
+            }
             ++this.amt;
             this.costfind();
             if (av_workers > 0) {
@@ -58,7 +80,7 @@ function Building(name, resource, cost_base, cost_mult, efficiency, unlocked) {
                 ++this.working;
             }
             findPS();
-        } while (res[5].amt >= this.cost & all);
+        } while (res[least].amt >= this.cost & all);
         init();
     }
 
@@ -87,10 +109,10 @@ var reconback = new Map();
 var res = new Array();
 res[0] = new Resource("food", 1, true, "#b7ffa3", 0);
 res[1] = new Resource("gold", 1, true, "#ebff9e", 0);
-res[2] = new Resource("science", 1, true, "#9ea7ff", 1561);
+res[2] = new Resource("science", 1, true, "#9ea7ff", 3561);
 res[3] = new Resource("mineral", 1, false, "#c4c4c4", 0);
 res[4] = new Resource("culture", 1, false, "#d19eff", 0);
-res[5] = new Resource("cash", 1, true, "#d19eff", 0);
+res[5] = new Resource("cash", 1, true, "#d19eff", 1000);
 
 for (i = 0; i < res.length; i++) {
     recon.set(i, res[i].name);
@@ -104,21 +126,21 @@ for (i = 0; i < res.length; i++) {
 
 // name, resource, cost_base, cost_mult, efficiency, unlocked
 var bldg = new Array();
-bldg[0] = new Building("Farm", 0, 25, 1.6, .15, true); // farms
-bldg[1] = new Building("Silo", 0, 700, 1.8, 2.5, false); // silos
-bldg[2] = new Building("Plantation", 0, 3450, 2, 40, false); // plantations
-bldg[3] = new Building("Mine", 1, 25, 1.65, .25, false); // mines
-bldg[4] = new Building("Bank", 1, 750, 2.1, 8, false); // banks
-bldg[5] = new Building("Mint", 1, 3500, 2.7, 40, false); // mints
-bldg[6] = new Building("Lab", 2, 200, 2.5, 2, false); // labs
-bldg[7] = new Building("School", 2, 20000, 2.95, 45, false); // school
-bldg[8] = new Building("Collider", 2, 20000, 2.95, 45, false); // collider (n/a)
-bldg[9] = new Building("Quarry", 3, 20000, 2.95, 45, false); // collider (n/a)
-bldg[10] = new Building("Driller", 3, 20000, 2.95, 45, false); // collider (n/a)
-bldg[11] = new Building("Fracker", 3, 20000, 2.95, 45, false); // collider (n/a)
-bldg[12] = new Building("Theatre", 4, 20000, 2.95, 45, false); // collider (n/a)
-bldg[13] = new Building("Auditorium", 4, 20000, 2.95, 45, false); // collider (n/a)
-bldg[14] = new Building("Museum", 4, 20000, 2.95, 45, false); // collider (n/a)
+bldg[0] = new Building("Farm", 0, 25, 1.6, .15, true, [5]); // farms
+bldg[1] = new Building("Silo", 0, 700, 1.8, 2.5, false, [5]); // silos
+bldg[2] = new Building("Plantation", 0, 3450, 2, 40, false, [5]); // plantations
+bldg[3] = new Building("Mine", 1, 25, 1.65, .25, false, [5]); // mines
+bldg[4] = new Building("Bank", 1, 750, 2.1, 8, false, [5]); // banks
+bldg[5] = new Building("Mint", 1, 3500, 2.7, 40, false, [5]); // mints
+bldg[6] = new Building("Lab", 2, 200, 2.5, 2, false, [5]); // labs
+bldg[7] = new Building("School", 2, 20000, 2.95, 45, false, [5]); // school
+bldg[8] = new Building("Collider", 2, 20000, 2.95, 45, false, [5]); // collider (n/a)
+bldg[9] = new Building("Quarry", 3, 50, 1.95, .45, false, [5]); // collider (n/a)
+bldg[10] = new Building("Driller", 3, 20000, 2.95, 45, false, [5]); // collider (n/a)
+bldg[11] = new Building("Fracker", 3, 20000, 2.95, 45, false, [5]); // collider (n/a)
+bldg[12] = new Building("Theatre", 4, 20000, 2.95, 45, false, [5]); // collider (n/a)
+bldg[13] = new Building("Auditorium", 4, 20000, 2.95, 45, false, [5]); // collider (n/a)
+bldg[14] = new Building("Museum", 4, 20000, 2.95, 45, false, [5]); // collider (n/a)
 
 var bldgtxt = new Map();
 var builds = new Map();
@@ -276,9 +298,24 @@ function isUnlocked() {
 
     if (debug) {
         for (i = 0; i < bldg.length; i++) {
-            bldg[i].unlocked = true;
-            if(i < res.length){
-             //   res[i].unlocked = true;
+            if (!bldg[i].unlocked) {
+                bldg[i].unlocked = true;
+                bldg[i].onDebug = true;
+            }
+            if(i < res.length && !res[i].unlocked){
+                res[i].unlocked = true;
+                res[i].onDebug = true;
+            }
+        }
+    } else {
+        for (i = 0; i < bldg.length; i++) {
+            if (bldg[i].onDebug) {
+                bldg[i].unlocked = false;
+                bldg[i].onDebug = false;
+            }
+            if (i < res.length && res[i].onDebug) {
+                res[i].unlocked = false;
+                res[i].onDebug = false;
             }
         }
     }
@@ -286,6 +323,8 @@ function isUnlocked() {
    for (i = 0; i < bldg.length; i++) {
         if (!bldg[i].unlocked) {
             document.getElementById(bldgtxt.get(i) + '_holder').style.display = "none";
+            bldg[i].amt = 0;
+            bldg[i].working = 0;
         } else {
             document.getElementById(bldgtxt.get(i) + '_holder').style.display = "table";
         }
@@ -334,10 +373,11 @@ function init() {
 document.addEventListener('keydown', function (event) {
     if (event.keyCode == 65) {
         all = !all;
-    //    alert("[Buy All Buildings] toggled to " + all);
+       alert("[Buy All Buildings] toggled to " + all);
     }
     else if (event.keyCode == 39) {
-      //  alert('Right was pressed');
+        debug = !debug;
+       alert('Debug');
     }
 });
 
@@ -538,8 +578,7 @@ function repeat() {
    }
 
    init();
-   
-  setTimeout(repeat, framer);
+   setTimeout(repeat, framer);
 }
 
 auto(0, 5);
