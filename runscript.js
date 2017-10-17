@@ -1,6 +1,4 @@
-//because im an idiot sometimes
-var yes = true;
-var no = false;
+
 
 var debug = false;
 
