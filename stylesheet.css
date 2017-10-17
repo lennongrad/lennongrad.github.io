@@ -227,15 +227,15 @@ body{
 
 #superappear{
     position:fixed;
-    bottom: 27px;
+    bottom: 62px;
     left: 8px;
 }
 
 #super{
     position:fixed;
-    bottom: 27px;
+    bottom: 38px;
     left: 8px;
-    height:1px;
+    height:16px;
     width:10px;
     background-color:purple;
     z-index:0;
@@ -243,17 +243,17 @@ body{
 
 #superback{
     position:fixed;
-    bottom: 27px;
+    bottom: 35px;
     left: 5px;
     background-color:darkgrey;
     z-index:-1;
-    width:16px;
-    height:200px;
+    width:206px;
+    height:22px;
 }
 
 #superbox{
     position: fixed;
-    bottom: 27px;
+    bottom: 60px;
     left: 25px;
     width:200px;
     height:20px;

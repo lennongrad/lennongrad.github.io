@@ -7,7 +7,9 @@
 <body>
 
     <!-- Start of Header div -->
-    <div id="header" class="header">Agriculture</div>
+    <div id="header" class="header"></div>    
+    <!-- End of Header div -->
+
     <!-- Start of Ledger div -->
     <div id="ledger">
         <table class="ledger">
@@ -18,7 +20,7 @@
                     </div>
                 </td>
             </tr>
-            <tr>
+            <tr class="row-odd">
                 <td style="width:30px; ">
 
                     <div id="fooddetails" class="tooltip detailer">
@@ -102,7 +104,7 @@
             </tr>
         </table>
     </div>
-    <!-- End of Header div -->
+    <!-- End of Ledger div -->
 
     <table id="main">
         <colgroup>
@@ -604,7 +606,7 @@
             </tr>
         </table>
         <span class="tooltiptext science">
-            Required to use Buildings.
+            Required in order to use Buildings.
         </span>
     </div>
 
@@ -619,7 +621,7 @@
             </tr>
             <tr>
                 <td>
-                    Lvl. <span id="tech_level"></span>
+                    <span class="button" onclick="techleft()"> ◄ </span> Lvl. <span id="tech_level"></span> <span class="button" onclick="techright(1)"> ► </span>
                 </td>
             </tr>
             <tr class="button buy_button" onclick="buytech()">

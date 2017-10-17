@@ -132,6 +132,8 @@ for (i = 0; i < bldg.length; i++) {
 
 var tech_level = 0;
 var tech_unlocked = new Array();
+var tech_possible = new Array();
+var earliest_tech = 1;
 var tech_level_active;
 
 var techs_cost_base = 20;
@@ -142,6 +144,40 @@ var tech_descr = 0;
 
 for (i = 0; i < 12; i++) {
     tech_unlocked[i] = false;
+    tech_possible[i] = false;
+}
+
+function techleft() {
+    techpossible();
+    if (tech_possible[tech_level_active - 1]) {
+        --tech_level_active;
+    } else {
+        tech_level_active = earliest_tech;
+    }
+}
+
+function techright(go) {
+    techpossible();
+    if (tech_possible[tech_level_active + go]) {
+        tech_level_active += go;
+    } else {
+        techright(go + 1);
+    }
+}
+
+function techpossible() {
+    e = false;
+    for(i = 0; i < tech_possible.length; i++){
+        if (i > 0 && i < tech_level + 4 && !tech_unlocked[i]) {
+            tech_possible[i] = true;
+            if (!e) {
+                earliest_tech = i;
+                e = true;
+            }
+    } else {
+        tech_possible[i] = false;
+}
+}
 }
 
 var framer = 10;
@@ -151,8 +187,7 @@ var all = false;
 var repetir = 0;
 var rep_max = 100;
 var last_click;
-var supermod = 18;
-document.getElementById('superback').style.height = (rep_max * 2) + 2 + "px";
+var supermod = 10;
 
 var active_colour = "#1a1c1b";
 var inactive_colour = "#7e8c85";
@@ -291,7 +326,7 @@ function init() {
         }
     }
 
-    document.getElementById('tech_level').innerHTML = tech_level_active + 1;
+    document.getElementById('tech_level').innerHTML = tech_level_active;
     document.getElementById('tech_cost').innerHTML = small_int(Math.ceil(tech_cost));
 
     document.getElementById('tech_name').innerHTML = tech_name;
@@ -331,7 +366,10 @@ function buytech() {
         res[2].amt -= tech_cost;
         ++tech_level;
         techcost();
-        unlocktech(tech_level_active);
+        unlocktech();
+
+        techpossible();
+        tech_level_active = earliest_tech;
     }
     init();
 }
@@ -357,9 +395,9 @@ function findPS() {
            }
 }
 
-function unlocktech(lvl) {
+function unlocktech() {
 
-      switch (lvl){
+      switch (tech_level_active){
             case 1: bldg[0].efficiency += .1; break;
             case 2: bldg[6].unlocked = true; break;
             case 3: res[3].unlocked = true; bldg[3].unlocked = true; bldg[9].unlocked = true; break;
@@ -372,7 +410,7 @@ function unlocktech(lvl) {
           case 10: res[4].unlocked = true; break;
       }
 
-      tech_unlocked[lvl] = true;
+      tech_unlocked[tech_level_active] = true;
 
       isUnlocked();
       if(tech_level > tech_unlocked.length){
@@ -435,6 +473,8 @@ function buyWorker() {
 function workercost(){
     worker_cost = (workers_cost_base * workers_cost_mult * (Math.pow(1.10, (total_workers - 1)) - Math.pow(1.10, total_workers - 2))) / 0.15;
 }
+
+tech_level_active = tech_level + 1;
     
 function repeat() {
     for (i = 0; i < res.length - 1; i++) {
@@ -445,7 +485,7 @@ function repeat() {
 
    if (repetir > rep_max) {
         repetir = 0;
-        rep_max = Math.ceil(rep_max * 1.01);
+        rep_max = Math.ceil(rep_max * 1.1);
         if (last_click != 1) {
             document.getElementById("superappear").innerHTML = "+" + Math.ceil((res[last_click].amt * (rep_max / (res[last_click].click * supermod)) - res[last_click].amt));
             res[last_click].amt = res[last_click].amt * (rep_max / (res[last_click].click * supermod));
@@ -453,18 +493,15 @@ function repeat() {
             document.getElementById("superappear").innerHTML = "+" + Math.ceil((res[5].amt * (rep_max / (res[last_click].click * supermod))));
             res[5].amt *= rep_max / (res[last_click].click * supermod);
         }
-        document.getElementById('superback').style.height = (rep_max * 2) + 2 + "px";
         clicker[5] = 0;
    }
-    document.getElementById('super').style.transform = "scaleY(" + (repetir * 4) + ")";
+    document.getElementById('super').style.width = ((repetir / rep_max)* 200) + "px";
     document.getElementById('superbox').innerHTML = repetir + " / " + rep_max;
     findPS();
     workercost();
    isUnlocked();
     
    moveClick();
-    
-   tech_level_active = tech_level + 1;
 
     for (y = 0; y < res.length; y++) {
         for (e = 0; e < res.length; e++) {
