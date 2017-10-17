@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-        <meta http-equiv="refresh" content="1; url=http://lennongrad.com/game">
 </head>
 <body>
-<a href='/game'>If you are not redirected automatically, follow this </a>.
+<a href='/game'>Game</a>.
 </body>
 </html>
