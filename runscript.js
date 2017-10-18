@@ -2,7 +2,7 @@
 var yes = true;
 var no = false;
 
-var debug = true;
+var debug = false;
 
 var workers_cost_base = 20;
 var workers_cost_mult = 1.6;
@@ -109,7 +109,7 @@ var reconback = new Map();
 var res = new Array();
 res[0] = new Resource("food", 1, true, "#b7ffa3", 0);
 res[1] = new Resource("gold", 1, true, "#ebff9e", 0);
-res[2] = new Resource("science", 1, true, "#9ea7ff", 3561);
+res[2] = new Resource("science", 1, true, "#9ea7ff", 13561);
 res[3] = new Resource("mineral", 1, false, "#c4c4c4", 0);
 res[4] = new Resource("culture", 1, false, "#d19eff", 0);
 res[5] = new Resource("cash", 1, true, "#d19eff", 1000);
@@ -187,7 +187,8 @@ function techright(go) {
 
 function techpossible() {
     e = false;
-    for(i = 0; i < tech_possible.length; i++){
+    holt = tech_possible.length + 1;
+    for(i = 0; i < holt; i++){
         if (i > 0 && i < tech_level + 4 && !tech_unlocked[i]) {
             tech_possible[i] = true;
             if (!e) {
@@ -284,14 +285,27 @@ function doFlasher() {
 
 function isUnlocked() {
    for (i = 0; i < res.length; i++) {
-        if (!res[i].unlocked) {
-            document.getElementById(res[i].name + 'details').style.display = "none";
+       if (!res[i].unlocked) {
+           document.getElementById(res[i].name).style.display = "none";
+           document.getElementById(res[i].name.substring(0,1) + "ps").style.display = "none";
             document.getElementById(res[i].name + '_click').style.display = "none";
             document.getElementById(res[i].name + '-column').style.backgroundColor = "#dbdbdb";
-        } else {
-            document.getElementById(res[i].name + 'details').style.display = "inline";
+
+            var lister = document.getElementsByClassName(res[i].name + "icon");
+            for (r = 0; r < lister.length; r++) {
+                lister[r].src = "empty.png";
+            }
+
+       } else if(i != 5){
+           document.getElementById(res[i].name).style.display = "inline";
+           document.getElementById(res[i].name.substring(0, 1) + "ps").style.display = "inline";
             document.getElementById(res[i].name + '_click').style.display = "block";
             document.getElementById(res[i].name + '-column').style.backgroundColor = res[i].color;
+
+            var lister = document.getElementsByClassName(res[i].name + "icon");
+            for (r = 0; r < lister.length; r++) {
+                lister[r].src = res[i].name + ".png";
+            }
         }
    }
 
@@ -448,13 +462,15 @@ function unlocktech() {
           case 10: res[4].unlocked = true; break;
       }
 
+      if (tech_level + 1> tech_unlocked.length) {
+          res[0].mult += .1;
+          res[1].mult += .1;
+      }
+
       tech_unlocked[tech_level_active] = true;
 
       isUnlocked();
-      if(tech_level > tech_unlocked.length){
-            res[0].mult += .1;
-            res[1].mult += .1;
-      }
+
 }
 
 function displaytech(){
