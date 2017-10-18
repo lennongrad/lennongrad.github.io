@@ -1,14 +1,5 @@
 To do:
-
-
-introduce multi-prices (to use stone, gold)
-
-Make silo increase max holding of food
-
-Decrease worker cost curve to make game more playable
-
-Make better interface to choose between options in tech tree
-
-
-tickers for buildings (+1 etc)
-cultural policies
+- Make silo increase max holding of food
+- Make better interface to choose between options in tech tree
+- tickers for buildings (+1 etc)
+- cultural policies

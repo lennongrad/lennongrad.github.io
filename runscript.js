@@ -108,8 +108,8 @@ var recon = new Map();
 var reconback = new Map();
 
 var res = new Array();
-res[0] = new Resource("food", true, "#b7ffa3", 0);
-res[1] = new Resource("gold", true, "#ebff9e", 0);
+res[0] = new Resource("food", true, "#b6ff9e", 0);
+res[1] = new Resource("gold", true, "#fff69e", 0);
 res[2] = new Resource("science", true, "#9ea7ff", 13561);
 res[3] = new Resource("mineral", false, "#c4c4c4", 0);
 res[4] = new Resource("culture", false, "#d19eff", 0);
@@ -295,6 +295,7 @@ function isUnlocked() {
            document.getElementById(res[i].name.substring(0,1) + "ps").style.display = "none";
             document.getElementById(res[i].name + '_click').style.display = "none";
             document.getElementById(res[i].name + '-column').style.backgroundColor = "#dbdbdb";
+            document.getElementsByClassName('row' + res[i].name)[0].style.backgroundColor = "#e59999";
 
             var lister = document.getElementsByClassName(res[i].name + "icon");
             for (r = 0; r < lister.length; r++) {
@@ -304,8 +305,9 @@ function isUnlocked() {
        } else if(i != 5){
            document.getElementById(res[i].name).style.display = "inline";
            document.getElementById(res[i].name.substring(0, 1) + "ps").style.display = "inline";
-            document.getElementById(res[i].name + '_click').style.display = "block";
-            document.getElementById(res[i].name + '-column').style.backgroundColor = res[i].color;
+           document.getElementById(res[i].name + '_click').style.display = "block";
+           document.getElementById(res[i].name + '-column').style.backgroundColor = res[i].color;
+           document.getElementsByClassName('row' + res[i].name)[0].style.backgroundColor = res[i].color;
 
             var lister = document.getElementsByClassName(res[i].name + "icon");
             for (r = 0; r < lister.length; r++) {
@@ -398,7 +400,7 @@ document.addEventListener('keydown', function (event) {
     }
     else if (event.keyCode == 39) {
         debug = !debug;
-       alert('Debug');
+       alert(decimalToHexString(contour) + " , " + contour);
     }
     else if (event.keyCode > 48 && event.keyCode <= 49 + res.length ){
         res[event.keyCode - 49].amt *= 100;
@@ -425,6 +427,7 @@ function auto(first, second){
 
 function buytech() {
     if (res[2].amt >= tech_cost) {
+        contour = Math.floor(Math.random() * Math.pow(16, 5)) - 1;
         res[2].amt -= tech_cost;
         ++tech_level;
         techcost();
@@ -454,6 +457,19 @@ function findPS() {
                    }
                }
            }
+}
+
+function decimalToHexString(number) {
+    if (number < 0) {
+        number = 0xFFFFFFFF + number + 1;
+    }
+
+    number = number.toString(16).toUpperCase();
+   for (y = 0; y < 7 - number.toString().length; y++) {
+        number = "0" + number;
+   }
+
+    return number;
 }
 
 function unlocktech() {
@@ -538,8 +554,15 @@ function workercost(){
 }
 
 tech_level_active = tech_level + 1;
+var contour = Math.floor(Math.random() * Math.pow(16, 5)) - 1;
     
 function repeat() {
+    if (contour > Math.pow(16, 6) - 3) {
+        alert(contour);
+        contour = 0;
+    }
+    contour += 2;
+
     for (i = 0; i < res.length - 1; i++) {
         res[i].amt += res[i].ps / (1000 / framer);
         res[i].click = 1 + tech_level / 4;
@@ -557,7 +580,8 @@ function repeat() {
 
         clicker[5] = 0;
    }
-    document.getElementById('super').style.width = ((repetir / rep_max)* 200) + "px";
+   document.getElementById('super').style.width = ((repetir / rep_max) * 200) + "px";
+   document.getElementById('super').style.background = "linear-gradient(to right, #" + decimalToHexString(contour)  + ", #" + decimalToHexString(contour + 1000) + ")";
     document.getElementById('superbox').innerHTML = repetir + " / " + rep_max;
     findPS();
     workercost();
@@ -576,6 +600,8 @@ function repeat() {
     for (u = 0; u < bldg.length; u++) {
         bldg[u].costfind();
     }
+
+    
 
     for (i = 0; i < bldg.length; i++) {
         for (e = 0; e < bldg[i].costers.length; e++) {

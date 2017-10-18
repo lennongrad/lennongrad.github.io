@@ -1,6 +1,7 @@
 .food-icon{
     width: 30px;
     height: 30px;
+    margin-top:4px;
     display: inline-block;
     background-color: #404040;
     border-radius: 6px;
@@ -9,6 +10,7 @@
 .text{
     display: inline;
     font-size:22px;
+    vertical-align: super;
 }
 
 body{
@@ -65,13 +67,15 @@ body{
 }
 
 #ledger{
+    border: 2px solid #bcbcbc ;
+    border-radius:3px;
     position: fixed;
     top: 17%;
-    border: 1px solid black;
     left: 0;
     width:270px;
     text-align:left;
     background-color: white;
+    
 }
 
 .ledger td{
@@ -85,6 +89,15 @@ body{
 
 .ledger-tab{
     padding:5px;
+}
+.ledgerheader{
+    width:98%;
+    height:25px;
+    text-align:center;
+    background-color:white;
+    font-size:20px;
+    border-bottom: 3px solid #bcbcbc;
+    padding:2px;
 }
 
 .buffer{
@@ -108,31 +121,17 @@ body{
 .break{
     border-top: 3px solid #dbdbdb;
     border-bottom: 3px solid #dbdbdb;
-    background-color: #e8e8e8;
+    background-color: #edeaea;
     text-align:center;
     font-weight:bold;
-    padding-top:4px;
+    padding:5px;
 }
 
 #food-column{
-    background-color:#b7ffa3;
     border-left: 3px solid #dbdbdb;
 }
 
-#gold-column{
-    background-color:#ebff9e;
-}
-
-#mineral-column{
-    background-color:#c4c4c4;
-}
-
-#science-column{
-    background-color:#9ea7ff;
-}
-
 #culture-column{
-    background-color:#d19eff;
     border-right: 3px solid #dbdbdb;
 }
 
@@ -147,10 +146,6 @@ body{
     /*background-image: url("header_bg.png");*/
     background-repeat: repeat;
     background-color:grey;
-}
-
-#contribs{
-    margin-right:0;
 }
 
 .tooltip {
@@ -224,11 +219,13 @@ body{
 .boxholder{
     margin-left:5px;
     margin-right:5px;
-    border: 1px solid black;
+    border: 3px solid #efefef ;
+    border-radius:3px;
     width:168px;
     text-align: center;
     background-color: white;
     margin-top: 7px;
+    margin-bottom: 7px;
 }
 
 #tech_name{
@@ -303,11 +300,12 @@ body{
     margin-right:auto;
 }
 
-#food_to_cash_click{
+#convertbutton{
     background-color: turquoise;
     display: inline-block;
     border-radius:5px;
-    padding:3px 3px 0px 3px;
+    padding:0px 3px 0px 3px;
+    margin: 2px;
 }
 
 .topalign{
@@ -318,18 +316,10 @@ body{
     width:40px;
     height:40px;
     text-align:center;
-    background-color:#ffe7d3;
+    background-color: #efefef;
+    border-radius:30px;
 }
 
-.ledgerheader{
-    width:98%;
-    height:25px;
-    text-align:center;
-    background-color:white;
-    font-size:20px;
-    border-bottom: 1px solid black;
-    padding:2px;
-}
 
 .workers-box{
     border: 1px solid black;
@@ -431,4 +421,8 @@ body{
 
 .fpsamt{
     font-weight:lighter;
+}
+
+.footer td{
+    width:33%;
 }
