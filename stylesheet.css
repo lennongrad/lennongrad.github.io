@@ -18,7 +18,6 @@ body{
     background-color: #e8e8e8;
     user-select: none;
     cursor: context-menu;
-    overflow: hidden;
 }
 
 #foodappear{
@@ -70,11 +69,13 @@ body{
     border: 2px solid #bcbcbc ;
     border-radius:3px;
     position: fixed;
-    top: 17%;
+    top:5%;
     left: 0;
-    width:270px;
+    height:98%;
+    width:15%;
     text-align:left;
     background-color: white;
+    z-index:-1;
     
 }
 
@@ -87,9 +88,20 @@ body{
     border-collapse:collapse;
 }
 
+#page1{
+    overflow: auto;
+    position:fixed;
+    left:15%;
+    top:5%;
+    width:70%;
+    height:100%;
+    z-index:-2;
+}
+
 .ledger-tab{
     padding:5px;
 }
+
 .ledgerheader{
     width:98%;
     height:25px;
@@ -105,17 +117,16 @@ body{
     width:178px;
 }
 
-#final{
-    height:1500px;
-   /* border-bottom:2px solid #a7ff8e;*/
+.final{
+    min-height:100%;
+    height: auto !important;
+    height: 600px;
 }
 
 #main{
     margin-left: auto;
     margin-right:auto;
-    margin-top: 2.4%;
     border-collapse: collapse;
-    overflow: hidden;
 }
 
 .break{
@@ -232,27 +243,18 @@ body{
     font-weight:bold;
 }
 
-#superappear{
-    position:fixed;
-    bottom: 62px;
-    left: 8px;
-}
-
 #super{
-    position:fixed;
-    bottom: 38px;
-    left: 8px;
+    position: relative;
     height:16px;
     width:10px;
+    left:3px;
+    top:3px;
     background-color:purple;
     z-index:0;
     border-radius:2px;
 }
 
 #superback{
-    position:fixed;
-    bottom: 35px;
-    left: 5px;
     background-color:darkgrey;
     z-index:-1;
     width:206px;
@@ -261,9 +263,6 @@ body{
 }
 
 #superbox{
-    position: fixed;
-    bottom: 60px;
-    left: 25px;
     width:200px;
     height:20px;
 }
@@ -333,21 +332,26 @@ body{
 
 
 .workers-box{
-    border: 1px solid black;
-    right: 0;
-    bottom: 5%;
+}
+
+#rightside{
+    border: 2px solid #bcbcbc ;
+    border-radius:3px;
     position: fixed;
-    width:200px;
-    height:9%;
-    text-align:center;
+    top:5%;
+    right: 0;
+    height:98%;
+    width:15%;
+    text-align:left;
     background-color: white;
+    z-index:-1;
+    border-collapse:collapse
 }
 
 #conversion-box{
     border: 1px solid black;
     right: 0;
     top: 15%;
-    position: fixed;
     width:200px;
     text-align:center;
     background-color: white;
@@ -355,10 +359,8 @@ body{
 }
 
 .science-box{
-    position: fixed;
     bottom: 17%;
     border: 1px solid black;
-    right: 0;
     width:200px;
     text-align:center;
     background-color: white;
@@ -378,16 +380,15 @@ body{
 .flashing{
     color:white;
     font-size:30px;
-    position: fixed;
     border: 1px solid black;
-    width:55px;
-    height:55px;
+    width:45px;
+    height:45px;
     vertical-align: middle;
     text-align:center;
+    line-height:45px;
     background-color: #30e000;
-    line-height:55px;
     border-radius:100px;
-    box-shadow: 3px 3px .2px 0px black;
+    box-shadow: 3px 3px 2px 0px black;
 }
 
 .always_flash{
@@ -396,6 +397,11 @@ body{
 
 #worker_holder{
     width:100%;
+    border: 1px solid black;
+    width:200px;
+    height:9%;
+    text-align:center;
+    background-color: white;
 }
 
 #convert_holder{
@@ -405,6 +411,11 @@ body{
 
 #science_holder{
     width:100%;
+    border: 1px solid black;
+    width:200px;
+    height:9%;
+    text-align:center;
+    background-color: white;
 }
 
 .sidebar{

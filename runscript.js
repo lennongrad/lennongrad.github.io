@@ -267,7 +267,7 @@ function moveClick() {
 }
 
 function doFlasher() {
-    flasher++;
+    flasher += .8;
     var flasho = document.getElementsByClassName("flashing");
     if (flasher > (flasher_interval / 2)) {
         for (i = 0; i < flasho.length; i++) {
@@ -277,7 +277,7 @@ function doFlasher() {
     if (flasher > flasher_interval) {
         flasher = 0;
         for (i = 0; i < flasho.length; i++) {
-            flasho[i].style.display = "inline";
+            flasho[i].style.display = "block";
         }
     }
     if (!flash_tech) {
@@ -597,7 +597,7 @@ function repeat() {
         clicker[5] = 0;
    }
    document.getElementById('super').style.width = ((repetir / rep_max) * 200) + "px";
-   document.getElementById('super').style.background = "linear-gradient(to right, rgb(" + Math.ceil(contour[0]) + "," + Math.ceil(contour[1]) + "," + Math.ceil(contour[2])  + "), rgb(" + Math.ceil(contour[3]) + "," + Math.ceil(contour[4]) + "," + Math.ceil(contour[5])  + ")";
+   document.getElementById('super').style.background = "linear-gradient(to right, rgb(" + Math.ceil(contour[0]) + "," + Math.ceil(contour[1]) + "," + Math.ceil(contour[2]) + "), rgb(" + Math.ceil(contour[3]) + "," + Math.ceil(contour[4]) + "," + Math.ceil(contour[5]) + ")";
     document.getElementById('superbox').innerHTML = repetir + " / " + rep_max;
     findPS();
     workercost();
