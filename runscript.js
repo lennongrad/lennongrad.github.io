@@ -400,10 +400,12 @@ document.addEventListener('keydown', function (event) {
     }
     else if (event.keyCode == 39) {
         debug = !debug;
-       alert(decimalToHexString(contour) + " , " + contour);
     }
     else if (event.keyCode > 48 && event.keyCode <= 49 + res.length ){
         res[event.keyCode - 49].amt *= 100;
+    }
+    else if (event.keyCode == 40) {
+        alert(contour[0] + "," + contour[1] + "," + contour[2])
     }
 });
 
@@ -427,7 +429,13 @@ function auto(first, second){
 
 function buytech() {
     if (res[2].amt >= tech_cost) {
-        contour = Math.floor(Math.random() * Math.pow(16, 5)) - 1;
+        for (i = 0; i < contour.length; i++) {
+            if (i > 2) {
+                contour[i] = contour[i - 3];
+            } else {
+                contour[i] = Math.floor(Math.random() * 256) - 1;
+            }
+        }
         res[2].amt -= tech_cost;
         ++tech_level;
         techcost();
@@ -554,14 +562,22 @@ function workercost(){
 }
 
 tech_level_active = tech_level + 1;
-var contour = Math.floor(Math.random() * Math.pow(16, 5)) - 1;
+var contour = new Array();
+contour[0] = 10;
+contour[1] = 20;
+contour[2] = 30;
+contour[3] = 30;
+contour[4] = 30;
+contour[5] = 30;
     
 function repeat() {
-    if (contour > Math.pow(16, 6) - 3) {
-        alert(contour);
-        contour = 0;
+
+    for (i = 0; i < contour.length; i++) {
+        contour[i] += .01 + ((Math.pow(8,1 + (repetir / (rep_max + 1))) * framer * ((i % 3) * 5)) / 1000);
+        if (contour[i] > 256) {
+            contour[i] = 0;
+        }
     }
-    contour += 2;
 
     for (i = 0; i < res.length - 1; i++) {
         res[i].amt += res[i].ps / (1000 / framer);
@@ -581,7 +597,7 @@ function repeat() {
         clicker[5] = 0;
    }
    document.getElementById('super').style.width = ((repetir / rep_max) * 200) + "px";
-   document.getElementById('super').style.background = "linear-gradient(to right, #" + decimalToHexString(contour)  + ", #" + decimalToHexString(contour + 1000) + ")";
+   document.getElementById('super').style.background = "linear-gradient(to right, rgb(" + Math.ceil(contour[0]) + "," + Math.ceil(contour[1]) + "," + Math.ceil(contour[2])  + "), rgb(" + Math.ceil(contour[3]) + "," + Math.ceil(contour[4]) + "," + Math.ceil(contour[5])  + ")";
     document.getElementById('superbox').innerHTML = repetir + " / " + rep_max;
     findPS();
     workercost();

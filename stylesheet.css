@@ -246,6 +246,7 @@ body{
     width:10px;
     background-color:purple;
     z-index:0;
+    border-radius:2px;
 }
 
 #superback{
@@ -256,6 +257,7 @@ body{
     z-index:-1;
     width:206px;
     height:22px;
+    border-radius:2px;
 }
 
 #superbox{
@@ -318,6 +320,15 @@ body{
     text-align:center;
     background-color: #efefef;
     border-radius:30px;
+}
+
+.buy_button:hover{
+    background-color: #e5e5e5;
+}
+
+.buy_button:active{
+    background-color: #e5e5e5;
+  transform: scale(.975,.975);
 }
 
 
