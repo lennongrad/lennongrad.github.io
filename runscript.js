@@ -10,11 +10,11 @@ var worker_cost = workers_cost_base;
 var total_workers = 3;
 var av_workers = 3;
 
-function Resource(name, click, unlocked, color, base) {
+function Resource(name, unlocked, color, base) {
     this.name = name;
     this.ps = 0;
     this.amt = base;
-    this.click = click;
+    this.click = 1;
     this.mult = 1;
     this.unlocked = unlocked;
     this.color = color;
@@ -32,13 +32,14 @@ function Resource(name, click, unlocked, color, base) {
     }
 }
 
-function Building(name, resource, cost_base, cost_mult, efficiency, unlocked, costs) {
+function Building(name, resource, cost_base, cost_mult, efficiency, unlocked, costs, purpose) {
     this.resource = resource;
     this.cost_base = cost_base;
     this.cost_mult = cost_mult;
     this.efficiency = efficiency;
     this.unlocked = unlocked;
     this.name = name;
+    this.purpose = purpose;
 
     this.costers = new Array();
 
@@ -107,12 +108,12 @@ var recon = new Map();
 var reconback = new Map();
 
 var res = new Array();
-res[0] = new Resource("food", 1, true, "#b7ffa3", 0);
-res[1] = new Resource("gold", 1, true, "#ebff9e", 0);
-res[2] = new Resource("science", 1, true, "#9ea7ff", 13561);
-res[3] = new Resource("mineral", 1, false, "#c4c4c4", 0);
-res[4] = new Resource("culture", 1, false, "#d19eff", 0);
-res[5] = new Resource("cash", 1, true, "#d19eff", 1000);
+res[0] = new Resource("food", true, "#b7ffa3", 0);
+res[1] = new Resource("gold", true, "#ebff9e", 0);
+res[2] = new Resource("science", true, "#9ea7ff", 13561);
+res[3] = new Resource("mineral", false, "#c4c4c4", 0);
+res[4] = new Resource("culture", false, "#d19eff", 0);
+res[5] = new Resource("cash", true, "#d19eff", 1000);
 
 for (i = 0; i < res.length; i++) {
     recon.set(i, res[i].name);
@@ -123,24 +124,28 @@ for (i = 0; i < res.length; i++) {
     }
 }
 
+res[0].rates[5] = .5;
+res[1].rates[5] = 1.3;
+res[2].rates[5] = .9;
+res[3].rates[5] = 1.1;
 
 // name, resource, cost_base, cost_mult, efficiency, unlocked
 var bldg = new Array();
-bldg[0] = new Building("Farm", 0, 25, 1.6, .15, true, [5]); // farms
-bldg[1] = new Building("Silo", 0, 700, 1.8, 2.5, false, [5]); // silos
-bldg[2] = new Building("Plantation", 0, 3450, 2, 40, false, [5]); // plantations
-bldg[3] = new Building("Mine", 1, 25, 1.65, .25, false, [5]); // mines
-bldg[4] = new Building("Bank", 1, 750, 2.1, 8, false, [5]); // banks
-bldg[5] = new Building("Mint", 1, 3500, 2.7, 40, false, [5]); // mints
-bldg[6] = new Building("Lab", 2, 200, 2.5, 2, false, [5]); // labs
-bldg[7] = new Building("School", 2, 20000, 2.95, 45, false, [5]); // school
-bldg[8] = new Building("Collider", 2, 20000, 2.95, 45, false, [5]); // collider (n/a)
-bldg[9] = new Building("Quarry", 3, 50, 1.95, .45, false, [5]); // collider (n/a)
-bldg[10] = new Building("Driller", 3, 20000, 2.95, 45, false, [5]); // collider (n/a)
-bldg[11] = new Building("Fracker", 3, 20000, 2.95, 45, false, [5]); // collider (n/a)
-bldg[12] = new Building("Theatre", 4, 20000, 2.95, 45, false, [5]); // collider (n/a)
-bldg[13] = new Building("Auditorium", 4, 20000, 2.95, 45, false, [5]); // collider (n/a)
-bldg[14] = new Building("Museum", 4, 20000, 2.95, 45, false, [5]); // collider (n/a)
+bldg[0] = new Building("Farm",           0, 25,         1.6,     .15, true, [5], 0); // farms
+bldg[1] = new Building("Silo",             0, 200,       1.8,      2.5, false, [5,3], 1); // silos
+bldg[2] = new Building("Plantation",    0, 3450,    2,         40, false, [5], 0); // plantations
+bldg[3] = new Building("Mine",            1, 25,        1.65,    .25, false, [5], 0); // mines
+bldg[4] = new Building("Bank",            1, 200,      2.1,      8, false, [5,3], 1); // banks
+bldg[5] = new Building("Mint",              1, 3500,   2.7,       40, false, [5], 0); // mints
+bldg[6] = new Building("Lab",               2, 200,     2.5,      2, false, [5], 0); // labs
+bldg[7] = new Building("School",          2, 200, 2.95,    45, false, [5,3], 1); // school
+bldg[8] = new Building("Collider",        2, 20000,  2.95,    45, false, [5], 0); // collider (n/a)
+bldg[9] = new Building("Quarry",          3, 50,       1.95,    45, false, [5], 0); // collider (n/a)
+bldg[10] = new Building("Storehouse", 3, 200, 2.95,    45, false, [5,3], 1); // collider (n/a)
+bldg[11] = new Building("Fracker",       3, 20000, 2.95,    45, false, [5], 0); // collider (n/a)
+bldg[12] = new Building("Theatre",       4, 2000, 2.95,    45, false, [5], 0); // collider (n/a)
+bldg[13] = new Building("Museum",      4, 200, 2.95,    45, false, [5,3], 1); // collider (n/a)
+bldg[14] = new Building("Auditorium",   4, 200000, 2.95,    45, false, [5], 0); // collider (n/a)
 
 var bldgtxt = new Map();
 var builds = new Map();
@@ -201,11 +206,11 @@ function techpossible() {
 }
 }
 
-var framer = 10;
+var framer = 1;
 
 var all = false;
 
-var repetir = 0;
+var repetir = 99;
 var rep_max = 100;
 var last_click;
 var supermod = 10;
@@ -321,6 +326,7 @@ function isUnlocked() {
                 res[i].onDebug = true;
             }
         }
+        
     } else {
         for (i = 0; i < bldg.length; i++) {
             if (bldg[i].onDebug) {
@@ -364,6 +370,7 @@ function init() {
     document.getElementById('food_to_cash_rate').innerHTML = res[0].rates[5];
     document.getElementById('gold_to_cash_rate').innerHTML = res[1].rates[5];
     document.getElementById('science_to_cash_rate').innerHTML = res[2].rates[5];
+    document.getElementById('mineral_to_cash_rate').innerHTML = res[3].rates[5];
     
     document.getElementById('workers_number').innerHTML = av_workers + " / " + total_workers;
     document.getElementById('worker_cost').innerHTML = small_int(Math.ceil(worker_cost));
@@ -393,6 +400,9 @@ document.addEventListener('keydown', function (event) {
         debug = !debug;
        alert('Debug');
     }
+    else if (event.keyCode > 48 && event.keyCode <= 49 + res.length ){
+        res[event.keyCode - 49].amt *= 100;
+    }
 });
 
 function converter(first, second) {
@@ -407,9 +417,9 @@ function converter(first, second) {
 function auto(first, second){
     res[first].auto[second] = !res[first].auto[second];
       if(res[first].auto[second]){
-          document.getElementById(res[first].name + res[second].name + 'convo').innerHTML = '🔳';
+          document.getElementById(res[first].name + res[second].name + 'convo').innerHTML = '☑';
       } else {
-          document.getElementById(res[first].name + res[second].name + 'convo').innerHTML = '🔲';
+          document.getElementById(res[first].name + res[second].name + 'convo').innerHTML = ' ☐';
       }
 }
 
@@ -433,7 +443,7 @@ function techcost() {
 
 function findPS() {
            for (i = 0; i < bldg.length; i++) {
-               bldg[i].fps = bldg[i].working * bldg[i].efficiency
+               bldg[i].fps = bldg[i].working * bldg[i].efficiency * res[bldg[i].resource].mult;
            }
 
            for (u = 0; u < res.length; u++) {
@@ -443,7 +453,6 @@ function findPS() {
                        res[u].ps += bldg[e].fps;
                    }
                }
-               res[u].ps *= res[u].mult;
            }
 }
 
@@ -525,7 +534,7 @@ function buyWorker() {
 }
 
 function workercost(){
-    worker_cost = (workers_cost_base * workers_cost_mult * (Math.pow(1.10, (total_workers - 1)) - Math.pow(1.10, total_workers - 2))) / 0.15;
+    worker_cost = (workers_cost_base * workers_cost_mult * (Math.pow(1.073, (total_workers - 1)) - Math.pow(1.073, total_workers - 2))) / 0.15;
 }
 
 tech_level_active = tech_level + 1;
@@ -533,20 +542,19 @@ tech_level_active = tech_level + 1;
 function repeat() {
     for (i = 0; i < res.length - 1; i++) {
         res[i].amt += res[i].ps / (1000 / framer);
-        res[i].click =1 + tech_level / 4;
+        res[i].click = 1 + tech_level / 4;
         document.getElementById(res[i].name + "appear").innerHTML = "+" + res[i].click;
     }
 
    if (repetir > rep_max) {
         repetir = 0;
         rep_max = Math.ceil(rep_max * 1.1);
-        if (last_click != 1) {
-            document.getElementById("superappear").innerHTML = "+" + Math.ceil((res[last_click].amt * (rep_max / (res[last_click].click * supermod)) - res[last_click].amt));
-            res[last_click].amt = res[last_click].amt * (rep_max / (res[last_click].click * supermod));
-        } else {
-            document.getElementById("superappear").innerHTML = "+" + Math.ceil((res[5].amt * (rep_max / (res[last_click].click * supermod))));
-            res[5].amt *= rep_max / (res[last_click].click * supermod);
-        }
+        if (last_click == 1) { last_click = 5 };
+
+        var rec = (res[last_click].amt * ((res[last_click].click* 20 / rep_max) + 1) - res[last_click].amt);
+         document.getElementById("superappear").innerHTML = "+" + Math.ceil(rec);
+         res[last_click].amt += rec;
+
         clicker[5] = 0;
    }
     document.getElementById('super').style.width = ((repetir / rep_max)* 200) + "px";
@@ -570,10 +578,13 @@ function repeat() {
     }
 
     for (i = 0; i < bldg.length; i++) {
-        if (res[5].amt >= bldg[i].cost) {
-            document.getElementById(bldgtxt.get(i) + "_cost").style.color = active_colour;
-        } else {
-            document.getElementById(bldgtxt.get(i) + "_cost").style.color = inactive_colour;
+        for (e = 0; e < bldg[i].costers.length; e++) {
+            if (res[bldg[i].costers[e]].amt >= bldg[i].cost) {
+                document.getElementById(bldgtxt.get(i) + "_cost").style.color = active_colour;
+            } else {
+                document.getElementById(bldgtxt.get(i) + "_cost").style.color = inactive_colour;
+                break;
+            }
         }
     }
 
@@ -602,5 +613,7 @@ auto(0, 5);
 auto(1, 5);
 auto(2, 5);
 auto(2, 5);
+auto(3, 5);
+auto(3, 5);
 init();
 repeat();

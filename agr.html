@@ -46,7 +46,7 @@
                 <td>
 
                     <div id="golddetails" class="tooltip detailer">
-                        <img draggable="false" src="gold-stack.png" class="food-icon">
+                        <img draggable="false" src="gold.png" class="food-icon">
                         <span class="tooltiptext">Gold</span>
                     </div>
                 </td>
@@ -108,14 +108,16 @@
 
     <table id="main">
         <colgroup>
+            <col />
             <col id="food-column" />
             <col id="gold-column" />
             <col id="mineral-column" />
             <col id="science-column" />
             <col id="culture-column" />
         </colgroup>
-        <tr><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td></tr>
+        <tr><td></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td></tr>
         <tr>
+            <td></td>
             <td>
                 <span id="foodappear" class="appearer">+1</span>
                 <div onclick="res[0].toClick()" id="food_click" class="button click">
@@ -146,7 +148,15 @@
                     <img draggable="false" src="cultureclick.png" class="clicker">
                 </div>
             </td>
+        </tr>
         <tr>
+            <td></td>
+            <td colspan="5" class="break">
+                Production
+            </td>
+        </tr>
+        <tr>
+            <td><div class="sidebar"></div></td>
             <td class="topalign">
 
                 <table id="farm_holder" class="boxholder">
@@ -163,30 +173,6 @@
                     <tr class="button buy_button" onclick="bldg[0].buy()">
                         <td colspan=2>
                             <p id="farm_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-
-                <table id="silo_holder" class="boxholder">
-                    <tr>
-                        <td id="silo_header" colspan=2>
-                            <span id="silos_number" class="amt"></span> Silos <br /><span id="silos_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td id="silo_number" class="amt">
-                            <span class="button" onclick="bldg[1].left()"> ◄ </span>
-                            <span id="silo_working"></span>
-                            <span class="button" onclick="bldg[1].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[1].buy()">
-                        <td colspan=2>
-                            <p id="silo_cost" class="text"></p>
                             <div class="tooltip">
                                 <img draggable="false" src="cash.png" class="cashicon food-icon">
                                 <span class="tooltiptext">Cash</span>
@@ -244,29 +230,6 @@
                         </td>
                     </tr>
                 </table>
-                <table id="bank_holder" class="boxholder">
-                    <tr>
-                        <td id="bank_header">
-                            <span id="banks_number" class="amt"></span> Trading Posts <br /><span id="banks_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[4].left()"> ◄ </span>
-                            <span id="bank_working"></span>
-                            <span class="button" onclick="bldg[4].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[4].buy()">
-                        <td>
-                            <p id="bank_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
                 <table id="mint_holder" class="boxholder">
                     <tr>
                         <td id="mint_header">
@@ -308,29 +271,6 @@
                     <tr class="button buy_button" onclick="bldg[9].buy()">
                         <td>
                             <p id="quarry_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                <table id="driller_holder" class="boxholder">
-                    <tr>
-                        <td id="driller_header">
-                            <span id="drillers_number" class="amt"></span> Drillers<br /> <span id="drillers_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[10].left()"> ◄ </span>
-                            <span id="driller_working"></span>
-                            <span class="button" onclick="bldg[10].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[10].buy()">
-                        <td>
-                            <p id="driller_cost" class="text"></p>
                             <div class="tooltip">
                                 <img draggable="false" src="cash.png" class="cashicon food-icon">
                                 <span class="tooltiptext">Cash</span>
@@ -381,29 +321,6 @@
                     <tr class="button buy_button" onclick="bldg[6].buy()">
                         <td>
                             <p id="lab_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                <table id="school_holder" class="boxholder">
-                    <tr>
-                        <td id="school_header">
-                            <span id="schools_number" class="amt"></span> School <br /><span id="schools_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[7].left()"> ◄ </span>
-                            <span id="school_working"></span>
-                            <span class="button" onclick="bldg[7].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[7].buy()">
-                        <td>
-                            <p id="school_cost" class="text"></p>
                             <div class="tooltip">
                                 <img draggable="false" src="cash.png" class="cashicon food-icon">
                                 <span class="tooltiptext">Cash</span>
@@ -468,12 +385,12 @@
                     </tr>
                     <tr>
                         <td>
-                            <span class="button" onclick="bldg[13].left()"> ◄ </span>
+                            <span class="button" onclick="bldg[14].left()"> ◄ </span>
                             <span id="auditorium_working"></span>
-                            <span class="button" onclick="bldg[13].right()"> ► </span>
+                            <span class="button" onclick="bldg[14].right()"> ► </span>
                         </td>
                     </tr>
-                    <tr class="button buy_button" onclick="bldg[13].buy()">
+                    <tr class="button buy_button" onclick="bldg[14].buy()">
                         <td>
                             <p id="auditorium_cost" class="text"></p>
                             <div class="tooltip">
@@ -483,32 +400,157 @@
                         </td>
                     </tr>
                 </table>
-                <table id="museum_holder" class="boxholder">
+            </td>
+        </tr><tr><td></td>
+        <td colspan="5" class="break">
+            Storage
+        </td>
+        </tr><tr>
+        <td><div class="sidebar"></div></td>
+        <td>
+
+
+                <table id="silo_holder" class="boxholder">
                     <tr>
-                        <td id="museum_header">
-                            <span id="museums_number" class="amt"></span> Museum <br /><span id="museums_fps" class="fpsamt"></span>
+                        <td id="silo_header" colspan=2>
+                            <span id="silos_number" class="amt"></span> Silos <br /><span id="silos_fps" class="fpsamt"></span>
                         </td>
                     </tr>
                     <tr>
-                        <td>
-                            <span class="button" onclick="bldg[14].left()"> ◄ </span>
-                            <span id="museum_working"></span>
-                            <span class="button" onclick="bldg[14].right()"> ► </span>
+                        <td id="silo_number" class="amt">
+                            <span class="button" onclick="bldg[1].left()"> ◄ </span>
+                            <span id="silo_working"></span>
+                            <span class="button" onclick="bldg[1].right()"> ► </span>
                         </td>
                     </tr>
-                    <tr class="button buy_button" onclick="bldg[14].buy()">
-                        <td>
-                            <p id="museum_cost" class="text"></p>
+                    <tr class="button buy_button" onclick="bldg[1].buy()">
+                        <td colspan=2>
+                            <p id="silo_cost" class="text"></p>
                             <div class="tooltip">
                                 <img draggable="false" src="cash.png" class="cashicon food-icon">
                                 <span class="tooltiptext">Cash</span>
                             </div>
+                            <div class="tooltip">
+                                <img draggable="false" src="mineral.png" class="mineralicon food-icon">
+                                <span class="tooltiptext">Mineral</span>
+                            </div>
                         </td>
                     </tr>
                 </table>
-            </td>
-        </tr>
-        <tr><td><div id="final"></div></td><td><div id="final"></div></td><td><div id="final"></div></td><td><div id="final"></div></td><td><div id="final"></div></td></tr>
+            </td> <td>
+                      <table id="bank_holder" class="boxholder">
+                          <tr>
+                              <td id="bank_header">
+                                  <span id="banks_number" class="amt"></span> Banks <br /><span id="banks_fps" class="fpsamt"></span>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <span class="button" onclick="bldg[4].left()"> ◄ </span>
+                                  <span id="bank_working"></span>
+                                  <span class="button" onclick="bldg[4].right()"> ► </span>
+                              </td>
+                          </tr>
+                          <tr class="button buy_button" onclick="bldg[4].buy()">
+                              <td>
+                                  <p id="bank_cost" class="text"></p>
+                                  <div class="tooltip">
+                                      <img draggable="false" src="cash.png" class="cashicon food-icon">
+                                      <span class="tooltiptext">Cash</span>
+                                  </div>
+                                  <div class="tooltip">
+                                      <img draggable="false" src="mineral.png" class="mineralicon food-icon">
+                                      <span class="tooltiptext">Mineral</span>
+                                  </div>
+                              </td>
+                          </tr>
+                      </table>
+            </td><td>
+                     <table id="storehouse_holder" class="boxholder">
+                         <tr>
+                             <td id="storehouse_header">
+                                 <span id="storehouses_number" class="amt"></span> Storehouses<br /> <span id="storehouses_fps" class="fpsamt"></span>
+                             </td>
+                         </tr>
+                         <tr>
+                             <td>
+                                 <span class="button" onclick="bldg[10].left()"> ◄ </span>
+                                 <span id="storehouse_working"></span>
+                                 <span class="button" onclick="bldg[10].right()"> ► </span>
+                             </td>
+                         </tr>
+                         <tr class="button buy_button" onclick="bldg[10].buy()">
+                             <td>
+                                 <p id="storehouse_cost" class="text"></p>
+                                 <div class="tooltip">
+                                     <img draggable="false" src="cash.png" class="cashicon food-icon">
+                                     <span class="tooltiptext">Cash</span>
+                                 </div>
+                                 <div class="tooltip">
+                                     <img draggable="false" src="mineral.png" class="mineralicon food-icon">
+                                     <span class="tooltiptext">Mineral</span>
+                                 </div>
+                             </td>
+                         </tr>
+                     </table>
+            </td> <td>
+
+                      <table id="school_holder" class="boxholder">
+                          <tr>
+                              <td id="school_header">
+                                  <span id="schools_number" class="amt"></span> School <br /><span id="schools_fps" class="fpsamt"></span>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <span class="button" onclick="bldg[7].left()"> ◄ </span>
+                                  <span id="school_working"></span>
+                                  <span class="button" onclick="bldg[7].right()"> ► </span>
+                              </td>
+                          </tr>
+                          <tr class="button buy_button" onclick="bldg[7].buy()">
+                              <td>
+                                  <p id="school_cost" class="text"></p>
+                                  <div class="tooltip">
+                                      <img draggable="false" src="cash.png" class="cashicon food-icon">
+                                      <span class="tooltiptext">Cash</span>
+                                  </div>
+                                  <div class="tooltip">
+                                      <img draggable="false" src="mineral.png" class="mineralicon food-icon">
+                                      <span class="tooltiptext">Mineral</span>
+                                  </div>
+                              </td>
+                          </tr>
+                      </table>
+            </td><td>
+                     <table id="museum_holder" class="boxholder">
+                         <tr>
+                             <td id="museum_header">
+                                 <span id="museums_number" class="amt"></span> Museum <br /><span id="museums_fps" class="fpsamt"></span>
+                             </td>
+                         </tr>
+                         <tr>
+                             <td>
+                                 <span class="button" onclick="bldg[13].left()"> ◄ </span>
+                                 <span id="museum_working"></span>
+                                 <span class="button" onclick="bldg[13].right()"> ► </span>
+                             </td>
+                         </tr>
+                         <tr class="button buy_button" onclick="bldg[13].buy()">
+                             <td>
+                                 <p id="museum_cost" class="text"></p>
+                                 <div class="tooltip">
+                                     <img draggable="false" src="cash.png" class="cashicon food-icon">
+                                     <span class="tooltiptext">Cash</span>
+                                 </div>
+                                 <div class="tooltip">
+                                     <img draggable="false" src="mineral.png" class="mineralicon food-icon">
+                                     <span class="tooltiptext">Mineral</span>
+                                 </div>
+                             </td>
+                         </tr>
+                     </table>
+            </td></tr><tr><td></td><td><div id="final"></div></td><td><div id="final"></div></td><td><div id="final"></div></td><td><div id="final"></div></td><td><div id="final"></div></td></tr>
     </table>
 
     <div id="conversion-box">
@@ -520,7 +562,7 @@
             </tr>
             <tr class="row-odd">
                 <td>
-                    <div class="tooltip button" onclick="auto(0,5)"><span id="foodcashconvo">🔳</span><span class="tooltiptext convert">Auto-convert Food to Cash?</span></div>
+                    <div class="tooltip button" onclick="auto(0,5)"><span id="foodcashconvo">☐</span><span class="tooltiptext convert">Auto-convert Food to Cash?</span></div>
                 </td>
                 <td>
                     <div onclick="converter(0,5)" id="food_to_cash_click" class="button">
@@ -541,12 +583,12 @@
             </tr>
             <tr class="row-even">
                 <td>
-                    <div class="tooltip button" onclick="auto(1,5)"><span id="goldcashconvo">🔳</span><span class="tooltiptext convert">Auto-convert Gold to Cash?</span></div>
+                    <div class="tooltip button" onclick="auto(1,5)"><span id="goldcashconvo">☑</span><span class="tooltiptext convert">Auto-convert Gold to Cash?</span></div>
                 </td>
                 <td>
                     <div onclick="converter(1,5)" id="food_to_cash_click" class="button">
                         <div class="tooltip">
-                            <img draggable="false" src="gold-stack.png" class="food-icon">
+                            <img draggable="false" src="gold.png" class="food-icon">
                             <span class="tooltiptext">Gold</span>
                         </div>
                         <img draggable="false" src="sideswipe.png" class="convert-clicker">
@@ -562,7 +604,7 @@
             </tr>
             <tr class="row-odd">
                 <td>
-                    <div class="tooltip button" onclick="auto(2,5)"><span id="sciencecashconvo">🔳</span><span class="tooltiptext convert">Auto-convert Science to Cash?</span></div>
+                    <div class="tooltip button" onclick="auto(2,5)"><span id="sciencecashconvo">☐</span><span class="tooltiptext convert">Auto-convert Science to Cash?</span></div>
                 </td>
                 <td>
                     <div onclick="converter(2,5)" id="food_to_cash_click" class="button">
@@ -579,6 +621,27 @@
                 </td>
                 <td>
                     <span id="science_to_cash_rate"></span>
+                </td>
+            </tr>
+            <tr class="row-odd">
+                <td>
+                    <div class="tooltip button" onclick="auto(3,5)"><span id="mineralcashconvo">☐</span><span class="tooltiptext convert">Auto-convert Minerals to Cash?</span></div>
+                </td>
+                <td>
+                    <div onclick="converter(3,5)" id="food_to_cash_click" class="button">
+                        <div class="tooltip">
+                            <img draggable="false" src="mineral.png" class="food-icon">
+                            <span class="tooltiptext">Mineral</span>
+                        </div>
+                        <img draggable="false" src="sideswipe.png" class="convert-clicker">
+                        <div class="tooltip">
+                            <img draggable="false" src="cash.png" class="cashicon food-icon">
+                            <span class="tooltiptext">Cash</span>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span id="mineral_to_cash_rate"></span>
                 </td>
             </tr>
         </table>
@@ -645,7 +708,7 @@
     <span id="cashdetails"><span id="cash_click"><span id="cash-column"></span></span></span>
     <!-- Start of Footer div -->
     <span class="footer">
-        v0.5.    Game by <a href="http://lennongrad.com">Brock Dilley</a>.
+        v1.01    Game by <a href="http://lennongrad.com">Brock Dilley</a>.
         <span id="contribs">
             Icons by <a href="http://lorcblog.blogspot.com/">Lorc</a>, <a href="http://delapouite.com/">Delapouite</a>, and <a href="http://blackdogofdoom.blogspot.co.uk/">Felbrigg</a>. Retrieved from <a href="http://game-icons.net">http://game-icons.net</a>.
         </span>

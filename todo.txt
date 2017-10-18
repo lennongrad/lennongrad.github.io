@@ -3,10 +3,6 @@ To do:
 
 introduce multi-prices (to use stone, gold)
 
-more conversions
-
-yummy
-
 Make silo increase max holding of food
 
 Decrease worker cost curve to make game more playable

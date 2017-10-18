@@ -102,12 +102,21 @@ body{
     margin-right:auto;
     margin-top: 2.4%;
     border-collapse: collapse;
-    border: 3px solid #dbdbdb;
     overflow: hidden;
+}
+
+.break{
+    border-top: 3px solid #dbdbdb;
+    border-bottom: 3px solid #dbdbdb;
+    background-color: #e8e8e8;
+    text-align:center;
+    font-weight:bold;
+    padding-top:4px;
 }
 
 #food-column{
     background-color:#b7ffa3;
+    border-left: 3px solid #dbdbdb;
 }
 
 #gold-column{
@@ -124,6 +133,7 @@ body{
 
 #culture-column{
     background-color:#d19eff;
+    border-right: 3px solid #dbdbdb;
 }
 
 .footer{
@@ -394,6 +404,15 @@ body{
 
 #science_holder{
     width:100%;
+}
+
+.sidebar{
+    width: 10px;
+    font-size: 10px;
+    letter-spacing: 10px;
+    float:right;
+    overflow-wrap:break-word;
+    vertical-align:middle;
 }
 
 .row-even{
