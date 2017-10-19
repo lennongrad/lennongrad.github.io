@@ -7,6 +7,12 @@
     border-radius: 6px;
 }
 
+.page-icon{
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+}
+
 .text{
     display: inline;
     font-size:18px;
@@ -169,6 +175,21 @@ body{
 .noinline{
     display: inline-block;
 }
+
+.pager{
+    color: #626262;
+    border-radius:8px;
+    height:34px;
+    padding:2px;
+    background-color:white;
+    border:1px ridge black;
+    margin-bottom:5px;
+    display:inline-block;
+}
+
+.depress:active{
+  transform: scale(.95,.95);
+  }
 
 .clicker{
     width:80px;

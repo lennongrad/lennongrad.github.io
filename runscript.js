@@ -250,14 +250,19 @@ function switchPage(inter) {
         active_page = inter;
     }
     activatePage();
+
 }
 
 function activatePage() {
     for (r = 1; r < pages + 1; r++) {
         if (active_page == r) {
             document.getElementById('page' + r).style.display = "block";
+            document.getElementById(r + 'pageclick').style.background = "#d8d6d6";
+            document.getElementById(r + 'pageclick').style.transform = "scale(1.1,1.1)";
         } else {
             document.getElementById('page' + r).style.display = "none";
+            document.getElementById(r + 'pageclick').style.background = "white";
+            document.getElementById(r + 'pageclick').style.transform = "scale(.965,.965)";
         }
     }
 }
