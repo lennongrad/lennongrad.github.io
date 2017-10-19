@@ -32,6 +32,7 @@ function Resource(name, unlocked, color, base, limit) {
         }
         this.amt = this.amt + this.click;
         clicker[reconback.get(this.name)] = 0;
+        rowclicker[reconback.get(this.name)] = 0;
         repetir += this.click;
         last_click = reconback.get(this.name);
     }
@@ -39,6 +40,7 @@ function Resource(name, unlocked, color, base, limit) {
     this.unlocker = function () {
         this.unlocked = true;
         this.onDebug = false;
+        rowclicker[reconback.get(this.name)] = 0;
     }
 }
 
@@ -125,7 +127,7 @@ var reconback = new Map();
 var res = new Array();
 res[0] = new Resource("food", true, "#b6ff9e", 0, 10000);
 res[1] = new Resource("gold", true, "#fff69e", 0, 10000);
-res[2] = new Resource("science", true, "#9ea7ff", 0, 10000);
+res[2] = new Resource("science", true, "#9ea7ff", 10000, 10000);
 res[3] = new Resource("mineral", false, "#baab9c", 0, 10000);
 res[4] = new Resource("culture", false, "#d19eff", 0, 10000);
 res[5] = new Resource("energy", false, "#9effd9", 0, 100000);
@@ -140,9 +142,9 @@ for (i = 0; i < res.length; i++) {
     }
 }
 
-res[0].rates[5] = .5;
+res[0].rates[5] =   .5;
 res[1].rates[5] = 1.3;
-res[2].rates[5] = .9;
+res[2].rates[5] =   .9;
 res[3].rates[5] = 1.1;
 
 
@@ -248,7 +250,7 @@ var flash_tech = false;
 var flash_worker = false;
 
 var active_page = 2;
-var pages = 2;
+var pages = 3;
 
 function switchPage(inter) {
     if (inter < pages + 1) {
@@ -303,12 +305,21 @@ function small_int(e){
 }
 
 var clicker = [0, 0, 0, 0, 0, 0, 0];
+var rowclicker = [296, 296, 296, 0, 0, 0, 0];
 
 function moveClick() {
     for (i = 0; i < clicker.length - 1; i++) {
         clicker[i] += 5;
         document.getElementById(recon.get(i) + 'appear').style.transform = "translateY(" + (clicker[i] / 3) * -1 + "px)";
         document.getElementById(recon.get(i) + 'appear').style.opacity = 1 - (clicker[i] / 100);
+    }
+
+    for (i = 0; i < rowclicker.length - 1; i++) {
+        if (rowclicker[i] > 296) {
+            rowclicker[i] = 296;
+        }
+        rowclicker[i] += 3;
+        document.getElementsByClassName("row" + res[i].name)[0].style.transform = "scaleY(" + (0 - ((((rowclicker[i] / 3) * -1) % 100) / 100)) + ")";
     }
 
     clicker[clicker.length - 1] += .5;
@@ -344,7 +355,7 @@ function isUnlocked() {
            document.getElementById(res[i].name).style.display = "none";
            document.getElementById(res[i].name.substring(0, 1) + "ps").style.display = "none";
            document.getElementById(res[i].name + '_click').style.display = "none";
-            document.getElementById(res[i].name + '-column').style.backgroundColor = "#dbdbdb";
+           document.getElementById(res[i].name + '-column').style.backgroundColor = "#dbdbdb";
             document.getElementsByClassName('row' + res[i].name)[0].style.display = "none";
 
             var lister = document.getElementsByClassName(res[i].name + "icon");
@@ -453,6 +464,7 @@ document.addEventListener('keydown', function (event) {
     }
     else if (event.keyCode == 38) {
         debug = !debug;
+        exporto();
     }
 
     if (event.keyCode == 83) {
@@ -727,6 +739,31 @@ function repeat() {
 for (r = 1; r < pages + 1; r++) {
     document.getElementById("page" + r).style.width = screen.width - (310 * 2) + "px";
 }
+
+//var setter = prompt("hi", "hi");
+//alert(res[2].amt.toString(36) + "ȧ");
+//alert(parseInt(setter, 36));
+//alert(setter);
+
+function exporto(){
+    var exporter = "";
+    for(i = 0; i < bldg.length; i++){
+        exporter += bldg[i].amt.toString(36) + "ȧ";
+        exporter += bldg[i].working.toString(36) + "ȧ";
+        exporter += (bldg[i].efficiency * 1000).toString(36) + "ȧ";
+        exporter += bldg[i].unlocked.toString() + "ȧ";
+        exporter += bldg[i].onDebug.toString() + "ȧ";
+    }
+    var owo = exporter.split("ȧ");
+    for (i = 0; i < owo.length; i++) {
+        if (owo[i] != true && owo[i] != false) {
+            alert(parseInt(owo[i], 36));
+        } else {
+            alert(owo[i]);
+        }
+    }
+}
+
 
 switchPage(1);
 auto(0, 6);
