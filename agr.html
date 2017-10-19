@@ -13,7 +13,7 @@
     <div id="ledger">
         <table class="ledger">
             <tr>
-                <td colspan="3">
+                <td colspan="4">
                     <div class="ledgerheader">
                         Ledger
                     </div>
@@ -27,10 +27,12 @@
                         <span class="tooltiptext">Cash</span>
                     </div>
                 </td>
-                <td style="width:100px">
+                <td style="width:55px">
                     <span id="cash" class="text"></span>
+                </td><td style="width:110px"></td>
+                <td style="width:35px">
+                    <span id="cashlimit" class="text"></span>
                 </td>
-                <td style="width:100px"><span class="text"></span></td>
             </tr>
             <tr class="row-even rowfood">
                 <td>
@@ -41,6 +43,8 @@
                 </td>
                 <td> <span id="food" class="text"></span></td>
                 <td> <span id="fps" class="text"></span></td>
+                <td>
+                    <span id="foodlimit" class="text"></span></td>
             <tr class="row-odd rowgold">
                 <td>
 
@@ -54,7 +58,8 @@
                 </td>
                 <td>
                     <span id="gps" class="text"></span>
-                </td>
+                </td><td>
+                         <span id="goldlimit" class="text"></span></td>
             </tr>
             <tr class="row-even rowmineral">
                 <td>
@@ -70,6 +75,8 @@
                 <td>
                     <span id="mps" class="text"></span>
                 </td>
+                <td>
+                    <span id="minerallimit" class="text"></span></td>
             </tr>
             <tr class="row-odd rowscience">
                 <td>
@@ -85,6 +92,8 @@
                 <td>
                     <span id="sps" class="text"></span>
                 </td>
+                <td>
+                    <span id="sciencelimit" class="text"></span></td>
             </tr>
             <tr class="row-even rowculture">
                 <td>
@@ -100,8 +109,11 @@
                 <td>
                     <span id="cps" class="text"></span>
                 </td>
+                <td>
+                    <span id="culturelimit" class="text"></span></td>
             </tr>
             <tr class="row-odd">
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -110,8 +122,10 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
             <tr class="row-odd">
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -120,8 +134,10 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
             <tr class="row-odd">
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -130,8 +146,10 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
             <tr class="row-odd">
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -140,8 +158,10 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
             <tr class="row-odd">
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -150,8 +170,10 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
             <tr class="row-odd">
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -160,8 +182,10 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
             <tr class="row-odd">
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -170,8 +194,10 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
             <tr class="row-odd">
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -180,8 +206,10 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
             <tr class="row-odd">
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -190,8 +218,10 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
             <tr class="row-odd">
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -200,8 +230,10 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
             <tr class="row-odd">
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -209,7 +241,7 @@
         </table>
     </div>
     <!-- End of Ledger div -->
-    <div id="page1">
+    <div id="page1" class="page">
     <table id="main">
         <colgroup>
             <col />
@@ -220,7 +252,7 @@
             <col id="culture-column" />
         </colgroup>
         <tr><td></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td></tr>
-        <tr>
+        <tr class="row">
             <td></td>
             <td>
                 <span id="foodappear" class="appearer">+1</span>
@@ -253,13 +285,13 @@
                 </div>
             </td>
         </tr>
-        <tr>
+        <tr class="row">
             <td></td>
             <td colspan="5" class="break">
                 Production
             </td>
         </tr>
-        <tr>
+        <tr class="row">
             <td><div class="sidebar"></div></td>
             <td class="topalign">
 
@@ -500,13 +532,13 @@
                 </table>
             </td>
         </tr>
-        <tr>
+        <tr class="row">
             <td></td>
             <td colspan="5" class="break">
                 Storage
             </td>
         </tr>
-        <tr>
+        <tr class="row">
             <td><div class="sidebar"></div></td>
             <td>
 
@@ -657,33 +689,34 @@
                 </table>
             </td>
         </tr>
-        <tr><td></td><td class="final"><div class="final"></div></td><td class="final"><div class="final"></div></td><td><div class="final"></div></td><td><div class="final"></div></td><td><div class="final"></div></td><td><div class="final"></div></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
     </table>
         </div>
 
+    <div class="page" id="page2">
+
+
+    </div>
+
     <table id="rightside">
         <tr class="row-odd">
-            <td style="width: 55px;"></td>
-            <td >
+            <td colspan="2">
                 <div id="superappear" class="appearer">+1</div>
                 <div id="superbox">rrrr</div>
                 <div id="superback"><div id="super"></div></div>
 
             </td>
         </tr>
-        <tr class="row-even">
-            <td></td>
-            <td>
-                <div id="conversion-box">
-                    <table id="convert_holder">
-                        <tr>
-                            <td colspan=3>
+                        <tr class="row-even">
+                            <td></td>
+                            <td  id="conversionheader">
                                 Conversions
                             </td>
                         </tr>
-                        <tr class="row-odd">
+                        <tr class="row-odd" style="text-align:center">
                             <td>
                                 <div class="tooltip button" onclick="auto(0,5)"><span id="foodcashconvo">☐</span><span class="tooltiptext convert">Auto-convert Food to Cash?</span></div>
+                                (<span id="food_to_cash_rate" class="rate"></span>)
                             </td>
                             <td>
                                 <div onclick="converter(0,5)" id="convertbutton" class="button">
@@ -698,13 +731,11 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                <span id="food_to_cash_rate"></span>
-                            </td>
                         </tr>
-                        <tr class="row-even">
+                        <tr class="row-even" style="text-align:center">
                             <td>
                                 <div class="tooltip button" onclick="auto(1,5)"><span id="goldcashconvo">☑</span><span class="tooltiptext convert">Auto-convert Gold to Cash?</span></div>
+                                (<span id="gold_to_cash_rate" class="rate"></span>)
                             </td>
                             <td>
                                 <div onclick="converter(1,5)" id="convertbutton" class="button">
@@ -719,13 +750,11 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                <span id="gold_to_cash_rate"></span>
-                            </td>
                         </tr>
-                        <tr class="row-odd">
+                        <tr class="row-odd" style="text-align:center">
                             <td>
                                 <div class="tooltip button" onclick="auto(2,5)"><span id="sciencecashconvo">☐</span><span class="tooltiptext convert">Auto-convert Science to Cash?</span></div>
+                                (<span id="science_to_cash_rate" class="rate"></span>)
                             </td>
                             <td>
                                 <div onclick="converter(2,5)" id="convertbutton" class="button">
@@ -740,13 +769,11 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                <span id="science_to_cash_rate"></span>
-                            </td>
                         </tr>
-                        <tr class="row-even">
+                        <tr class="row-even" style="text-align:center">
                             <td>
                                 <div class="tooltip button" onclick="auto(3,5)"><span id="mineralcashconvo">☐</span><span class="tooltiptext convert">Auto-convert Minerals to Cash?</span></div>
+                                (<span id="mineral_to_cash_rate" class="rate"></span>)
                             </td>
                             <td>
                                 <div onclick="converter(3,5)" id="convertbutton" class="button">
@@ -761,75 +788,45 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                <span id="mineral_to_cash_rate"></span>
-                            </td>
                         </tr>
-                    </table>
-                </div>
-            </td>
-        </tr>
         <tr class="row-odd">
             <td>
                 <div class="flashing" id="near_worker">!</div>
             </td>
-            <td>
-                <div class="tooltip">
-                    <table id="worker_holder">
-                        <tr>
-                            <td id="worker_header">
-                                Workers
-                            </td>
-                        </tr>
-                        <tr>
+            <td id="worker_header">
+                Workers
+            </td></tr>
+                        <tr class="row-even">
                             <td id="worker_number" class="amt">
                                 <span id="workers_number" class="amt"></span>
                             </td>
-                        </tr>
-                        <tr class="button buy_button" onclick="buyWorker()">
-                            <td>
+                            <td class="button" id="convertbutton" onclick="buyWorker()">
                                 <p id="worker_cost" class="text"></p>
                                 <img draggable="false" src="food.png" class="foodicon food-icon">
                             </td>
                         </tr>
-                    </table>
-                    <span class="tooltiptext science">
-                        Required in order to use Buildings.
-                    </span>
-                </div>
-            </td>
-        </tr>
-        <tr class="row-even">
+        <tr class="row-odd">
             <td>
                 <div class="flashing" id="near_tech">!</div>
             </td>
-            <td>
-                <div class="tooltip">
-                    <table id="science_holder">
-                        <tr>
                             <td id="science_header">
                                 Technology
                             </td>
                         </tr>
-                        <tr>
-                            <td>
+                        <tr class="row-even">
+                            <td style="width:110px">
                                 <span class="button depress" onclick="techleft()"> ◄ </span> Lvl. <span id="tech_level"></span> <span class="button depress" onclick="techright(1)"> ► </span>
                             </td>
-                        </tr>
-                        <tr class="button buy_button" onclick="buytech()">
-                            <td colspan=2>
-                                <span id="tech_cost" class="text"></span>
-                                <img draggable="false" src="science.png" class="scienceicon food-icon">
+                            <td  id="convertbutton" >
+                                <div class="button"onclick="buytech()">
+                                    <span id="tech_cost" class="text"></span>
+                                    <img draggable="false" src="science.png" class="scienceicon food-icon">
+                                        
+                                </div>
                             </td>
-                        </tr>
-                    </table>
-                    <span class="tooltiptext science">
-                        <span id="tech_name"></span><br>
-                        <span id="tech_descr"></span>
-                    </span>
-                </div>
-            </td>
-        </tr><tr><td class="final"></td></tr>
+                        </tr><tr class="row-even"><td><span id="tech_name"></span>:</td><td>
+<span id="tech_descr"></span></td></tr>
+        <tr><td></td></tr>
     </table>
 
     <span id="cashdetails"><span id="cash_click"><span id="cash-column"></span></span></span>
@@ -840,7 +837,7 @@
                 Game by <a href="http://lennongrad.com">Brock Dilley</a>.
             </td>
             <td>
-                v1.01
+                v1.02
             </td>
             <td>
                 Icons by <a href="http://lorcblog.blogspot.com/">Lorc</a>, <a href="http://delapouite.com/">Delapouite</a>, and <a href="http://blackdogofdoom.blogspot.co.uk/">Felbrigg</a>. Retrieved from <a href="http://game-icons.net">http://game-icons.net</a>.

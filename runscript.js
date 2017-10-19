@@ -10,7 +10,7 @@ var worker_cost = workers_cost_base;
 var total_workers = 3;
 var av_workers = 3;
 
-function Resource(name, unlocked, color, base) {
+function Resource(name, unlocked, color, base, limit) {
     this.name = name;
     this.ps = 0;
     this.amt = base;
@@ -18,6 +18,8 @@ function Resource(name, unlocked, color, base) {
     this.mult = 1;
     this.unlocked = unlocked;
     this.color = color;
+    this.baselimit = limit;
+    this.limit = limit;
 
     this.onDebug = false;
 
@@ -25,10 +27,18 @@ function Resource(name, unlocked, color, base) {
     this.auto = new Array();
 
     this.toClick = function () {
+        if (this.amt + this.click > this.limit) {
+            return;
+        }
         this.amt = this.amt + this.click;
         clicker[reconback.get(this.name)] = 0;
         repetir += this.click;
         last_click = reconback.get(this.name);
+    }
+
+    this.unlocker = function () {
+        this.unlocked = true;
+        this.onDebug = false;
     }
 }
 
@@ -102,18 +112,23 @@ function Building(name, resource, cost_base, cost_mult, efficiency, unlocked, co
         findPS();
         init();
     }
+
+    this.unlocker = function () {
+        this.unlocked = true;
+        this.onDebug = false;
+    }
 }
 
 var recon = new Map();
 var reconback = new Map();
 
 var res = new Array();
-res[0] = new Resource("food", true, "#b6ff9e", 0);
-res[1] = new Resource("gold", true, "#fff69e", 0);
-res[2] = new Resource("science", true, "#9ea7ff", 13561);
-res[3] = new Resource("mineral", false, "#c4c4c4", 0);
-res[4] = new Resource("culture", false, "#d19eff", 0);
-res[5] = new Resource("cash", true, "#d19eff", 1000);
+res[0] = new Resource("food", true, "#b6ff9e", 0, 10000);
+res[1] = new Resource("gold", true, "#fff69e", 0, 10000);
+res[2] = new Resource("science", true, "#9ea7ff", 13561, 10000);
+res[3] = new Resource("mineral", false, "#c4c4c4", 0, 10000);
+res[4] = new Resource("culture", false, "#d19eff", 0, 10000);
+res[5] = new Resource("cash", true, "#d19eff", 100000, 100000);
 
 for (i = 0; i < res.length; i++) {
     recon.set(i, res[i].name);
@@ -183,6 +198,9 @@ function techleft() {
 
 function techright(go) {
     techpossible();
+    if (go > tech_level_active * 2) {
+        tech_level_active = earliest;
+    }
     if (tech_possible[tech_level_active + go]) {
         tech_level_active += go;
     } else {
@@ -206,7 +224,7 @@ function techpossible() {
 }
 }
 
-var framer = 1;
+var framer = 10;
 
 var all = false;
 
@@ -223,6 +241,28 @@ var flasher_interval = 70;
 
 var flash_tech = false;
 var flash_worker = false;
+
+var active_page = 2;
+var pages = 2;
+
+function switchPage(inter) {
+    if (inter < pages + 1) {
+        active_page = inter;
+    }
+    activatePage();
+}
+
+function activatePage() {
+    for (r = 1; r < pages + 1; r++) {
+        if (active_page == r) {
+            document.getElementById('page' + r).style.display = "block";
+        } else {
+            document.getElementById('page' + r).style.display = "none";
+        }
+    }
+}
+
+activatePage();
 
 // Audio
 var snd = new Audio("click.wav");
@@ -292,8 +332,8 @@ function isUnlocked() {
    for (i = 0; i < res.length; i++) {
        if (!res[i].unlocked) {
            document.getElementById(res[i].name).style.display = "none";
-           document.getElementById(res[i].name.substring(0,1) + "ps").style.display = "none";
-            document.getElementById(res[i].name + '_click').style.display = "none";
+           document.getElementById(res[i].name.substring(0, 1) + "ps").style.display = "none";
+           document.getElementById(res[i].name + '_click').style.display = "none";
             document.getElementById(res[i].name + '-column').style.backgroundColor = "#dbdbdb";
             document.getElementsByClassName('row' + res[i].name)[0].style.backgroundColor = "#e59999";
 
@@ -362,8 +402,10 @@ function init() {
         if (res[i].unlocked && res[i].name != "cash") {
             document.getElementById(res[i].name.substring(0, 1) + 'ps').innerHTML = "(" + small_int((res[i].ps)) + ' /s)';
             document.getElementById(res[i].name).innerHTML = small_int(Math.floor(res[i].amt));
+            document.getElementById(res[i].name + "limit").innerHTML = res[i].limit;
         } else if (res[i].unlocked) {
             document.getElementById(res[i].name).innerHTML = small_int(Math.floor(res[i].amt));
+            document.getElementById(res[i].name + "limit").innerHTML = res[i].limit
 	}
     }
     
@@ -398,8 +440,14 @@ document.addEventListener('keydown', function (event) {
         all = !all;
        alert("[Buy All Buildings] toggled to " + all);
     }
-    else if (event.keyCode == 39) {
+    else if (event.keyCode == 38) {
         debug = !debug;
+    }
+
+    if (event.keyCode == 83) {
+        techleft();
+    } else if (event.keyCode == 68) {
+        techright(1);
     }
     else if (event.keyCode > 48 && event.keyCode <= 49 + res.length ){
         res[event.keyCode - 49].amt *= 100;
@@ -409,15 +457,6 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
-function converter(first, second) {
-    i = (res[first].amt * res[first].rates[second]);
-      if(i > (res[second].amt * .1)){
-            i /= 100;
-      }
-      res[second].amt += i;
-      res[first].amt -= i / res[first].rates[second];
-}
-
 function auto(first, second){
     res[first].auto[second] = !res[first].auto[second];
       if(res[first].auto[second]){
@@ -425,6 +464,19 @@ function auto(first, second){
       } else {
           document.getElementById(res[first].name + res[second].name + 'convo').innerHTML = ' ☐';
       }
+}
+
+function converter(first, second) {
+    i = (res[first].amt * res[first].rates[second]);
+    if (res[second].amt >= res[second].limit) {
+        auto(first, second);
+        return;
+    }
+    if (i > (res[second].amt * .1)) {
+        i /= 100;
+    }
+    res[second].amt += i;
+    res[first].amt -= i / res[first].rates[second];
 }
 
 function buytech() {
@@ -459,9 +511,12 @@ function findPS() {
 
            for (u = 0; u < res.length; u++) {
                res[u].ps = 0;
+               res[u].limit = res[u].baselimit;
                for (e = 0; e < bldg.length; e++) {
-                   if (bldg[e].resource ===u) {
+                   if (bldg[e].resource == u && bldg[e].purpose == 0) {
                        res[u].ps += bldg[e].fps;
+                   } else if (bldg[e].resource == u && bldg[e].purpose == 1) {
+                       res[u].limit += bldg[e].fps;
                    }
                }
            }
@@ -484,15 +539,15 @@ function unlocktech() {
 
       switch (tech_level_active){
             case 1: bldg[0].efficiency += .1; break;
-            case 2: bldg[6].unlocked = true; break;
-            case 3: res[3].unlocked = true; bldg[3].unlocked = true; bldg[9].unlocked = true; break;
-            case 4: bldg[4].unlocked = true; break;
-            case 5: bldg[1].unlocked = true; bldg[0].efficiency *= 1.5; break;
-            case 6: bldg[2].unlocked = true; res[0].rates[5] += .3; break;
-            case 7: bldg[5].unlocked = true; bldg[6].efficiency *= 1.25; break;
-          case 8: bldg[7].unlocked = true; break;
+            case 2: bldg[6].unlocker(); break;
+            case 3: res[3].unlocker(); bldg[3].unlocker(); bldg[9].unlocker(); break;
+            case 4: bldg[4].unlocker(); break;
+            case 5: bldg[1].unlocker(); bldg[0].efficiency *= 1.5; break;
+            case 6: bldg[2].unlocker(); res[0].rates[5] += .3; break;
+            case 7: bldg[5].unlocker(); bldg[6].efficiency *= 1.25; break;
+          case 8: bldg[7].unlocker(); break;
           case 9: workers_cost_mult *= .8; workercost(); break;
-          case 10: res[4].unlocked = true; break;
+          case 10: res[4].unlocker(); break;
       }
 
       if (tech_level + 1> tech_unlocked.length) {
@@ -580,9 +635,17 @@ function repeat() {
     }
 
     for (i = 0; i < res.length - 1; i++) {
-        res[i].amt += res[i].ps / (1000 / framer);
+        if (res[i].amt + res[i].ps / (1000 / framer) < res[i].limit) {
+            res[i].amt += res[i].ps / (1000 / framer);
+        } else {
+            res[i].amt = res[i].limit;
+        }
         res[i].click = 1 + tech_level / 4;
         document.getElementById(res[i].name + "appear").innerHTML = "+" + res[i].click;
+    }
+
+    if (res[5].amt > res[5].limit) {
+        res[5].amt = res[5].limit;
     }
 
    if (repetir > rep_max) {
@@ -601,7 +664,7 @@ function repeat() {
     document.getElementById('superbox').innerHTML = repetir + " / " + rep_max;
     findPS();
     workercost();
-   isUnlocked();
+    isUnlocked();
     
    moveClick();
 
@@ -650,6 +713,11 @@ function repeat() {
    setTimeout(repeat, framer);
 }
 
+for (r = 1; r < pages + 1; r++) {
+    document.getElementById("page" + r).style.width = screen.width - (310 * 2) + "px";
+}
+
+switchPage(1);
 auto(0, 5);
 auto(0, 5);
 auto(1, 5);
