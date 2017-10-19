@@ -125,10 +125,11 @@ var reconback = new Map();
 var res = new Array();
 res[0] = new Resource("food", true, "#b6ff9e", 0, 10000);
 res[1] = new Resource("gold", true, "#fff69e", 0, 10000);
-res[2] = new Resource("science", true, "#9ea7ff", 13561, 10000);
-res[3] = new Resource("mineral", false, "#c4c4c4", 0, 10000);
+res[2] = new Resource("science", true, "#9ea7ff", 0, 10000);
+res[3] = new Resource("mineral", false, "#baab9c", 0, 10000);
 res[4] = new Resource("culture", false, "#d19eff", 0, 10000);
-res[5] = new Resource("cash", true, "#d19eff", 100000, 100000);
+res[5] = new Resource("energy", false, "#9effd9", 0, 100000);
+res[6] = new Resource("cash", true, "#d19eff", 0, 100000);
 
 for (i = 0; i < res.length; i++) {
     recon.set(i, res[i].name);
@@ -144,23 +145,27 @@ res[1].rates[5] = 1.3;
 res[2].rates[5] = .9;
 res[3].rates[5] = 1.1;
 
+
 // name, resource, cost_base, cost_mult, efficiency, unlocked
 var bldg = new Array();
-bldg[0] = new Building("Farm",           0, 25,         1.6,     .15, true, [5], 0); // farms
-bldg[1] = new Building("Silo",             0, 200,       1.8,      2.5, false, [5,3], 1); // silos
-bldg[2] = new Building("Plantation",    0, 3450,    2,         40, false, [5], 0); // plantations
-bldg[3] = new Building("Mine",            1, 25,        1.65,    .25, false, [5], 0); // mines
-bldg[4] = new Building("Bank",            1, 200,      2.1,      8, false, [5,3], 1); // banks
-bldg[5] = new Building("Mint",              1, 3500,   2.7,       40, false, [5], 0); // mints
-bldg[6] = new Building("Lab",               2, 200,     2.5,      2, false, [5], 0); // labs
-bldg[7] = new Building("School",          2, 200, 2.95,    45, false, [5,3], 1); // school
-bldg[8] = new Building("Collider",        2, 20000,  2.95,    45, false, [5], 0); // collider (n/a)
-bldg[9] = new Building("Quarry",          3, 50,       1.95,    45, false, [5], 0); // collider (n/a)
-bldg[10] = new Building("Storehouse", 3, 200, 2.95,    45, false, [5,3], 1); // collider (n/a)
-bldg[11] = new Building("Fracker",       3, 20000, 2.95,    45, false, [5], 0); // collider (n/a)
-bldg[12] = new Building("Theatre",       4, 2000, 2.95,    45, false, [5], 0); // collider (n/a)
-bldg[13] = new Building("Museum",      4, 200, 2.95,    45, false, [5,3], 1); // collider (n/a)
-bldg[14] = new Building("Auditorium",   4, 200000, 2.95,    45, false, [5], 0); // collider (n/a)
+bldg[0] = new Building("Farm",           0, 25,         1.6,     .15, true, [6], 0); // farms
+bldg[1] = new Building("Silo",             0, 200,       1.8,      2.5, false, [6,3], 1); // silos
+bldg[2] = new Building("Plantation",    0, 3450,    2,         3.5, false, [6], 0); // plantations
+bldg[3] = new Building("Mine",            1, 25,        1.65,    .25, false, [6], 0); // mines
+bldg[4] = new Building("Bank",            1, 200,      2.1,      8, false, [6,3], 1); // banks
+bldg[5] = new Building("Mint",              1, 3500,   2.7,       3.5, false, [6], 0); // mints
+bldg[6] = new Building("Lab",               2, 200,     2.5,      2, false, [6], 0); // labs
+bldg[7] = new Building("School",          2, 200, 2.95,    45, false, [6,3], 1); // school
+bldg[8] = new Building("Collider",        2, 2000,  2.95,    3.5, false, [6], 0); // collider (n/a)
+bldg[9] = new Building("Quarry",          3, 50,       1.95,    .24, false, [6], 0); // collider (n/a)
+bldg[10] = new Building("Storehouse", 3, 200, 2.95,    45, false, [6,3], 1); // collider (n/a)
+bldg[11] = new Building("Fracker",       3, 2000, 2.95,    45, false, [6], 0); // collider (n/a)
+bldg[12] = new Building("Theatre",       4, 1500, 2.95,    .25, false, [6], 0); // collider (n/a)
+bldg[13] = new Building("Museum", 4, 200, 2.95, 45, false, [6, 3], 1); // collider (n/a)
+bldg[14] = new Building("Auditorium", 4, 2000, 2.95, 45, false, [6], 0); // collider (n/a)
+bldg[15] = new Building("Generator", 5, 300, 2.95, .25, false, [6], 0); // collider (n/a)
+bldg[16] = new Building("Accumulator", 5, 200, 2.95, 45, false, [6, 3], 1); // collider (n/a)
+bldg[17] = new Building("Powerplant", 5, 2000, 2.95, 45, false, [6], 0); // collider (n/a)
 
 var bldgtxt = new Map();
 var builds = new Map();
@@ -297,7 +302,7 @@ function small_int(e){
       return e + suffix;
 }
 
-var clicker = [0, 0, 0, 0, 0, 0];
+var clicker = [0, 0, 0, 0, 0, 0, 0];
 
 function moveClick() {
     for (i = 0; i < clicker.length - 1; i++) {
@@ -340,19 +345,20 @@ function isUnlocked() {
            document.getElementById(res[i].name.substring(0, 1) + "ps").style.display = "none";
            document.getElementById(res[i].name + '_click').style.display = "none";
             document.getElementById(res[i].name + '-column').style.backgroundColor = "#dbdbdb";
-            document.getElementsByClassName('row' + res[i].name)[0].style.backgroundColor = "#e59999";
+            document.getElementsByClassName('row' + res[i].name)[0].style.display = "none";
 
             var lister = document.getElementsByClassName(res[i].name + "icon");
             for (r = 0; r < lister.length; r++) {
                 lister[r].src = "empty.png";
             }
 
-       } else if(i != 5){
+       } else if(i != res.length - 1){
            document.getElementById(res[i].name).style.display = "inline";
            document.getElementById(res[i].name.substring(0, 1) + "ps").style.display = "inline";
            document.getElementById(res[i].name + '_click').style.display = "block";
            document.getElementById(res[i].name + '-column').style.backgroundColor = res[i].color;
            document.getElementsByClassName('row' + res[i].name)[0].style.backgroundColor = res[i].color;
+           document.getElementsByClassName('row' + res[i].name)[0].style.display = "table-row";
 
             var lister = document.getElementsByClassName(res[i].name + "icon");
             for (r = 0; r < lister.length; r++) {
@@ -414,7 +420,7 @@ function init() {
 	}
     }
     
-    document.getElementById('cash').innerHTML = small_int(Math.floor(res[5].amt));  
+    document.getElementById('cash').innerHTML = small_int(Math.floor(res[res.length - 1].amt));  
     
     document.getElementById('food_to_cash_rate').innerHTML = res[0].rates[5];
     document.getElementById('gold_to_cash_rate').innerHTML = res[1].rates[5];
@@ -649,8 +655,8 @@ function repeat() {
         document.getElementById(res[i].name + "appear").innerHTML = "+" + res[i].click;
     }
 
-    if (res[5].amt > res[5].limit) {
-        res[5].amt = res[5].limit;
+    if (res[res.length - 1].amt > res[res.length - 1].limit) {
+        res[res.length - 1].amt = res[res.length - 1].limit;
     }
 
    if (repetir > rep_max) {
@@ -723,12 +729,12 @@ for (r = 1; r < pages + 1; r++) {
 }
 
 switchPage(1);
-auto(0, 5);
-auto(0, 5);
-auto(1, 5);
-auto(2, 5);
-auto(2, 5);
-auto(3, 5);
-auto(3, 5);
+auto(0, 6);
+auto(0, 6);
+auto(1, 6);
+auto(2, 6);
+auto(2, 6);
+auto(3, 6);
+auto(3, 6);
 init();
 repeat();

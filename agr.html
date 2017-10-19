@@ -81,7 +81,26 @@
                     <span id="mps" class="text"></span>
                 </td>
                 <td>
-                    <span id="minerallimit" class="text"></span></td>
+                    <span id="minerallimit" class="text"></span>
+                </td>
+            </tr>
+            <tr class="row-even rowenergy">
+                <td>
+
+                    <div id="energydetails" class="tooltip detailer">
+                        <img draggable="false" src="energy.png" class="energyicon food-icon">
+                        <span class="tooltiptext">Energy</span>
+                    </div>
+                </td>
+                <td>
+                    <span id="energy" class="text"></span>
+                </td>
+                <td>
+                    <span id="eps" class="text"></span>
+                </td>
+                <td>
+                    <span id="energylimit" class="text"></span>
+                </td>
             </tr>
             <tr class="row-odd rowscience">
                 <td>
@@ -253,10 +272,11 @@
             <col id="food-column" />
             <col id="gold-column" />
             <col id="mineral-column" />
+            <col id="energy-column" />
             <col id="science-column" />
             <col id="culture-column" />
         </colgroup>
-        <tr><td></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td></tr>
+        <tr><td></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td></tr>
         <tr class="row">
             <td></td>
             <td>
@@ -278,6 +298,12 @@
                 </div>
             </td>
             <td>
+                <span id="energyappear" class="appearer">+1</span>
+                <div onclick="res[5].toClick()" id="energy_click" class="button click">
+                    <img draggable="false" src="energyclick.png" class="clicker">
+                </div>
+            </td>
+            <td>
                 <span id="scienceappear" class="appearer">+1</span>
                 <div onclick="res[2].toClick()" id="science_click" class="button click">
                     <img draggable="false" src="scienceclick.png" class="clicker">
@@ -292,7 +318,7 @@
         </tr>
         <tr class="row">
             <td></td>
-            <td colspan="5" class="break">
+            <td colspan="6" class="break">
                 Production
             </td>
         </tr>
@@ -440,6 +466,54 @@
 
             </td>
             <td class="topalign">
+                <table id="generator_holder" class="boxholder">
+                    <tr>
+                        <td id="generator_header">
+                            <span id="generators_number" class="amt"></span> Generators <br /><span id="generators_fps" class="fpsamt"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="button" onclick="bldg[15].left()"> ◄ </span>
+                            <span id="generator_working"></span>
+                            <span class="button" onclick="bldg[15].right()"> ► </span>
+                        </td>
+                    </tr>
+                    <tr class="button buy_button" onclick="bldg[15].buy()">
+                        <td>
+                            <p id="generator_cost" class="text"></p>
+                            <div class="tooltip">
+                                <img draggable="false" src="cash.png" class="cashicon food-icon">
+                                <span class="tooltiptext">Cash</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <table id="powerplant_holder" class="boxholder">
+                    <tr>
+                        <td id="powerplant_header">
+                            <span id="powerplants_number" class="amt"></span> Power Plants <br /><span id="powerplants_fps" class="fpsamt"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="button" onclick="bldg[17].left()"> ◄ </span>
+                            <span id="powerplant_working"></span>
+                            <span class="button" onclick="bldg[17].right()"> ► </span>
+                        </td>
+                    </tr>
+                    <tr class="button buy_button" onclick="bldg[17].buy()">
+                        <td>
+                            <p id="powerplant_cost" class="text"></p>
+                            <div class="tooltip">
+                                <img draggable="false" src="cash.png" class="cashicon food-icon">
+                                <span class="tooltiptext">Cash</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td class="topalign">
                 <table id="lab_holder" class="boxholder">
                     <tr>
                         <td id="lab_header">
@@ -539,7 +613,7 @@
         </tr>
         <tr class="row">
             <td></td>
-            <td colspan="5" class="break">
+            <td colspan="6" class="break">
                 Storage
             </td>
         </tr>
@@ -635,6 +709,35 @@
                 </table>
             </td>
             <td>
+                <table id="accumulator_holder" class="boxholder">
+                    <tr>
+                        <td id="accumulator_header">
+                            <span id="accumulators_number" class="amt"></span> Accumulators<br /> <span id="accumulators_fps" class="fpsamt"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="button" onclick="bldg[16].left()"> ◄ </span>
+                            <span id="accumulator_working"></span>
+                            <span class="button" onclick="bldg[16].right()"> ► </span>
+                        </td>
+                    </tr>
+                    <tr class="button buy_button" onclick="bldg[16].buy()">
+                        <td>
+                            <p id="accumulator_cost" class="text"></p>
+                            <div class="tooltip">
+                                <img draggable="false" src="cash.png" class="cashicon food-icon">
+                                <span class="tooltiptext">Cash</span>
+                            </div>
+                            <div class="tooltip">
+                                <img draggable="false" src="mineral.png" class="mineralicon food-icon">
+                                <span class="tooltiptext">Mineral</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td>
 
                 <table id="school_holder" class="boxholder">
                     <tr>
@@ -694,7 +797,7 @@
                 </table>
             </td>
         </tr>
-        <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
     </table>
         </div>
 

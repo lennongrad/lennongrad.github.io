@@ -101,10 +101,12 @@ body{
 
 .page{
     overflow: scroll;
+    overflow-x: scroll;
     position:fixed;
     left:310px;
     top:5%;
     height:100%;
+    width:90%;
     z-index:-2;
 }
 
@@ -342,6 +344,12 @@ body{
     margin-right:auto;
 }
 
+#energy_click{
+    background-color: #4fffa1;
+    margin-left:auto;
+    margin-right:auto;
+}
+
 #culture_click{
     background-color: #ac4fff;
     margin-left:auto;
@@ -349,7 +357,7 @@ body{
 }
 
 #mineral_click{
-    background-color: #abb2a9;
+    background-color: #847b70;
     margin-left:auto;
     margin-right:auto;
 }
