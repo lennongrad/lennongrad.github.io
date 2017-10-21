@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="spacers.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $(function () {
+
+            $("#headerbar").hover(function () {
+                $("#headerbar-under").slideToggle(100);
+            });
+
+            $("#detailedinfo").hover(function () {
+                if ($("#detailedinfo").hasClass('visible')) {
+                    $("#detailedinfo").animate({ "left": "-42%" }, "fast");
+                }
+            });
+
+            $("#detailedinfo").click(function () {
+                if ($("#detailedinfo").hasClass('visible')) {
+                    $("#detailedinfo").animate({ "left": "2%" }, "fast").removeClass('visible');
+                } else {
+                    $("#detailedinfo").animate({ "left": "-43%" }, "fast").queue(function () {
+                        $("#detailedinfo").addClass('visible');
+                        $("#detailedinfo").stop(true);
+                    });
+                }
+            });
+    });
+    </script>
+    <title></title>
+</head>
+<body>
+    
+        <div id="headerbar"></div>
+    <div id="headerbox"></div>
+    <div id="headerbar-under"></div>
+
+    <div id="detailedinfo" class="visible"></div>
+        
+
+    <svg id="liners" style="display: block; width:100%; height:100%">
+        <polyline points="0,0" id="polypoints" style="stroke:purple;fill:transparent;stroke-width:1;" />
+    </svg>
+
+    hi
+
+    <script src="spacers.js"></script><script src="js-svg-path/library.js"></script>
+</body>
+</html>
