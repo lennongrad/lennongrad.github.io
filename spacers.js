@@ -1,5 +1,6 @@
 
 var curYPos, curXPos, curDown;
+var returner = 10;
 
 window.addEventListener('mousemove', function (e) {
     if (curDown) {
@@ -16,11 +17,18 @@ window.addEventListener('mousedown', function (e) {
 window.addEventListener('mouseup', function (e) {
     curDown = false;
 });
+
+var setnone = function () {
+    if (returner == 0) {
+        active = 0;
+    }
+}
+
 var planetnumb = 50;
 
 function planet(type, id) {
-    this.rx = Math.random() * .95;
-    this.ry = Math.random() * .95;
+    this.rx = Math.random() * .90;
+    this.ry = Math.random() * .90;
     this.type = type;
     this.id = id;
 
@@ -71,6 +79,19 @@ function planet(type, id) {
     
     this.clicker = function () {
         active = id;
+        returner = 10;
+    }
+
+    this.goto = function () {
+        var x = 800 + ((this.rx * width) - (window.innerWidth / 2));
+        var y = 1300 + ((this.ry * height) - (window.innerHeight / 2));
+        if(x > width){
+            x = width;
+        }
+        if (y > height) {
+            y = height;
+        }
+        window.scrollTo(x, y);
     }
 }
 
@@ -84,6 +105,7 @@ var width = Math.max(body.scrollWidth, body.offsetWidth,
 
 var planets = new Array();
 
+planets[0] = new planet(0, 0);
 planets[1] = new planet(1, 1);
 planets[2] = new planet(1, 2);
 planets[3] = new planet(1, 3);
@@ -144,14 +166,15 @@ for (i = 1; i < planets.length; i++) {
     image.setAttribute('data-param', i);
     image.onclick = function () {
         planets[this.id.substring(6)].clicker();
+   //     planets[this.id.substring(6)].goto();
     }
 
     image.id = "planet" + i;
 
     document.body.appendChild(image);
 
-    document.getElementById("planet" + i).style.left = (width * ((planets[i].rx))) + "px";
-    document.getElementById("planet" + i).style.top = (height * ((planets[i].ry))) + "px";
+    document.getElementById("planet" + i).style.left = 1200 + (width * ((planets[i].rx))) + "px";
+    document.getElementById("planet" + i).style.top = 1200 + (height * ((planets[i].ry))) + "px";
 
     planets[i].rational();
 }
@@ -162,19 +185,26 @@ linesstring[0] = "";
 var active = 1;
 var smallactive = 1;
 
-document.getElementById("lactive").style.height = height;
-document.getElementById("liners").style.height = height;
-document.getElementById("lactive").style.width = width;
-document.getElementById("liners").style.width = width
+document.getElementById("lactive").style.height = 2400 + height;
+document.getElementById("liners").style.height = 2400 + height;
+document.getElementById("lactive").style.width = 2400 + width;
+document.getElementById("liners").style.width = 2400 + width
 
 function repeat() {
     
+    returner--;
+    if (returner < 0) {
+        returner = 0;
+    }
+
+    document.getElementById("planetname").innerHTML = "Planet SR" + active;
+
     var finalstring = "";
     var activestring = "";
 
     for (e = 1; e < planets.length; e++) {
         if (planets[e].type == planets[active].type) {
-            finalstring += "" + (9 + Math.ceil((width * ((planets[active].rx))))) + "," + (9 + Math.ceil(height * ((planets[active].ry)))) + " " + Math.ceil(9 + (width * ((planets[e].rx)))) + "," + (9 + Math.ceil(height * ((planets[e].ry)))) + " ";
+            finalstring += "" + (1209 + Math.ceil((width * ((planets[active].rx))))) + "," + (1209 + Math.ceil(height * ((planets[active].ry)))) + " " + Math.ceil(1209 + (width * ((planets[e].rx)))) + "," + (1209 + Math.ceil(height * ((planets[e].ry)))) + " ";
         }
 
 
@@ -182,10 +212,12 @@ function repeat() {
         document.getElementById("planet" + e).style.background = "radial-gradient(yellow 60%, red 15%, transparent 25%)";
         for (i = 0; i < planets[e].connections.length; i++) {
             if (planets[e].type == planets[planets[e].connections[i]].type) {
-                activestring += "" + (9 + Math.ceil((width * ((planets[planets[e].connections[i]].rx))))) + "," + (9 + Math.ceil(height * ((planets[planets[e].connections[i]].ry)))) + " " + Math.ceil(9 + (width * ((planets[e].rx)))) + "," + (9 + Math.ceil(height * ((planets[e].ry)))) + " ";
+                activestring += "" + (1209 + Math.ceil((width * ((planets[planets[e].connections[i]].rx))))) + "," + (1209 + Math.ceil(height * ((planets[planets[e].connections[i]].ry)))) + " " + Math.ceil(1209 + (width * ((planets[e].rx)))) + "," + (1209 + Math.ceil(height * ((planets[e].ry)))) + " ";
             }
         }
-    } else {
+    } else if (planets[e].type == planets[active].type) {
+        document.getElementById("planet" + e).style.background = "radial-gradient(purple 60%, red 15%, transparent 25%)";
+    }else {
         document.getElementById("planet" + e).style.background = "none";
     }
 }

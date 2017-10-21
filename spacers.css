@@ -1,8 +1,9 @@
 ﻿body{
     background-color:black;
     background-image: url("space.gif");
-    width: 6900px;
-    height:6900px;
+    width: 9000px;
+    height:9000px;
+    user-select:none;
 }
 
 ::-webkit-scrollbar { 
@@ -56,10 +57,18 @@
     border-radius:2px 2px 3px 3px;
     position:fixed;
     top:23%;
-    left:-43%;
+    left:-55%;
     width:45%;
     height:75%;
     z-index:2;
+}
+
+#planetname{
+    margin-left:auto;
+    margin-right:auto;
+    text-align:center;
+    width:100%;
+    font-size:30px;
 }
 
 .planet{

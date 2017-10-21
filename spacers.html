@@ -9,23 +9,22 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script>
         $(function () {
+            
+            $("#headerbox").click(function () {
+                if (active != 0) {
+                    planets[active].goto();
+                }
+            })
 
             $("#headerbar").hover(function () {
                 $("#headerbar-under").slideToggle(100);
-            });
-
-
-            $("#detailedinfo").hover(function () {
-                if ($("#detailedinfo").hasClass('visible')) {
-                    $("#detailedinfo").animate({ "left": "-42%" }, "fast");
-                }
             });
 
             $("#detailedinfo").click(function () {
                 if ($("#detailedinfo").hasClass('visible')) {
                     $("#detailedinfo").animate({ "left": "2%" }, "fast").removeClass('visible');
                 } else {
-                    $("#detailedinfo").animate({ "left": "-43%" }, "fast").queue(function () {
+                    $("#detailedinfo").animate({ "left": "-57%" }, "fast").queue(function () {
                         $("#detailedinfo").addClass('visible');
                         $("#detailedinfo").stop(true);
                     });
@@ -33,8 +32,13 @@
             });
 
             $('.planet').mousedown(function (event) {
-                if(event.which == 3){
-                    alert(this.id + "  " + planets[this.id.substring(6)].connect());
+                if (event.which == 3) {
+                   // alert(this.id + "  " + planets[this.id.substring(6)].connect());
+                    if ($("#detailedinfo").hasClass('visible')) {
+                        $("#detailedinfo").animate({ "left": "2%" }, "fast").removeClass('visible');
+                    }
+                    planets[this.id.substring(6)].goto();
+                    planets[this.id.substring(6)].clicker();
                 }
             });
 
@@ -43,10 +47,10 @@
     </script>
     <title></title>
 </head>
-<body>
-    
-        <div id="headerbar">
-        </div>
+<body oncontextmenu="setnone();return false;">
+
+    <div id="headerbar">
+    </div>
 
     <div id="headerbox">
     </div>
@@ -56,19 +60,19 @@
     </div>
 
     <div id="detailedinfo" class="visible">
-        a
+        <div id="planetname"></div>
 
     </div>
-        
+
     <svg id="liners" clickable="false" style="display: block; width:100%; height:100%;">
         <polyline points="0,0" id="polypoints" style="stroke:purple;fill:transparent;stroke-width:1;" />
-    </svg> 
-    
+    </svg>
+
     <svg id="lactive" clickable="false" style="display: block; width:100%; height:100%;">
         <polyline points="0,0" id="pactive" style="stroke:yellow;fill:transparent;stroke-width:1;" />
     </svg>
 
-    
+
     <script src="spacers.js"></script>
     <script src="js-svg-path/library.js"></script>
     <script src="overscroll/dist/jquery.overscroll.js"></script>
