@@ -14,6 +14,7 @@
                 $("#headerbar-under").slideToggle(100);
             });
 
+
             $("#detailedinfo").hover(function () {
                 if ($("#detailedinfo").hasClass('visible')) {
                     $("#detailedinfo").animate({ "left": "-42%" }, "fast");
@@ -30,25 +31,48 @@
                     });
                 }
             });
+
+            $('.planet').mousedown(function (event) {
+                if(event.which == 3){
+                    alert(this.id + "  " + planets[this.id.substring(6)].connect());
+                }
+            });
+
+        
     });
     </script>
     <title></title>
 </head>
 <body>
     
-        <div id="headerbar"></div>
-    <div id="headerbox"></div>
-    <div id="headerbar-under"></div>
+        <div id="headerbar">
+        </div>
 
-    <div id="detailedinfo" class="visible"></div>
+    <div id="headerbox">
+    </div>
+    <div id="headerbar-under">
+        a
+
+    </div>
+
+    <div id="detailedinfo" class="visible">
+        a
+
+    </div>
         
-
-    <svg id="liners" style="display: block; width:100%; height:100%">
+    <svg id="liners" clickable="false" style="display: block; width:100%; height:100%;">
         <polyline points="0,0" id="polypoints" style="stroke:purple;fill:transparent;stroke-width:1;" />
+    </svg> 
+    
+    <svg id="lactive" clickable="false" style="display: block; width:100%; height:100%;">
+        <polyline points="0,0" id="pactive" style="stroke:yellow;fill:transparent;stroke-width:1;" />
     </svg>
 
-    hi
-
-    <script src="spacers.js"></script><script src="js-svg-path/library.js"></script>
+    
+    <script src="spacers.js"></script>
+    <script src="js-svg-path/library.js"></script>
+    <script src="overscroll/dist/jquery.overscroll.js"></script>
+    <script src="overscroll/dist/jquery.overscroll.map"></script>
+    <script src="overscroll/dist/jquery.overscroll.min.js"></script>
 </body>
 </html>
