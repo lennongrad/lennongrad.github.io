@@ -1,8 +1,8 @@
 ﻿body{
     background-color:black;
     background-image: url("space.gif");
-    width: 1200px;
-    height:1200px;
+    width: 12000px;
+    height:12000px;
     user-select:none;
     font-family:Arial;
 }
@@ -23,6 +23,16 @@
 #planetscore{
     width:100%;
     text-align:center;
+}
+
+#liners > polyline{
+    stroke:purple;
+    fill:transparent;
+    stroke-width:1;
+}
+
+.ui{
+    display:none;
 }
 
 #headerbar{

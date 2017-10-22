@@ -31,8 +31,8 @@ var setnone = function () {
 var planetnumb = 100;
 
 function planet(type, id) {
-    this.rx = Math.random() * .90;
-    this.ry = Math.random() * .90;
+    this.rx = (1200 + (Math.random() * .90 * height));
+    this.ry = (1200 + (Math.random() * .90 * width));
     this.type = type;
     this.id = id;
     this.addedC = 0;
@@ -51,20 +51,20 @@ function planet(type, id) {
         }
     }
 
-    this.getLX = function (extension) {
-        if (extension) {
-            return (1200 + (this.rx * width)) + "px";
-        } else {
-            return 1200 + (this.rx * width);
-        }
+    this.getLX = function () {
+            return this.rx + "px";
     }
 
-    this.getLY = function (extension) {
-        if (extension) {
-            return (1200 + (this.ry * height)) + "px";
-        } else {
-            return 1200 + (this.ry * height);
-        }
+    this.getLY = function () {
+            return this.ry + "px";
+    }
+
+    this.randX = function () {
+        this.rx = (1200 + (Math.random() * .90 * width));
+    }
+
+    this.randY = function () {
+        this.ry = (1200 + (Math.random() * .90 * height));
     }
 
 
@@ -82,8 +82,8 @@ function planet(type, id) {
     }
 
     this.goto = function () {
-        var x = 800 + ((this.rx * width) - (window.innerWidth / 2));
-        var y = 1300 + ((this.ry * height) - (window.innerHeight / 2));
+        var x = this.rx - (window.innerWidth / 2);
+        var y = this.ry - (window.innerHeight / 2);
         if(x > width){
             x = width;
         }
@@ -92,13 +92,29 @@ function planet(type, id) {
         }
         window.scrollTo(x, y);
     }
+
+    this.isC = function (id) {
+        for (gt = 0; gt < this.connections.length; gt++) {
+            if (this.connections[gt] == id) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 function traveller(id) {
     this.home = 1 + Math.ceil(Math.random() * (planets.length - 2));
-    do{
-        this.destination = 1 + Math.ceil(Math.random() * (planets.length - 2));
-    } while (planets[this.home].type != planets[this.destination].type)
+    this.destination = 1 + Math.ceil(Math.random() * (planets.length - 2));
+
+    this.refresher = function () {
+        this.home = this.destination;
+        do {
+            this.destination = 1 + Math.ceil(Math.random() * (planets.length - 2));
+        } while (!planets[this.destination].isC(this.home));
+    }
+
+    this.refresher();
 
     this.id = id;
     this.moving = false;
@@ -115,15 +131,15 @@ function traveller(id) {
     }
     document.body.appendChild(image);
 
+    lines = document.createElementNS('http://www.w3.org/2000/svg', "polyline");
+    lines.id = "polypoints" + id;
+    lines.setAttributeNS(null, "points", "200,200 300,300");
+    lines.className = "polypoints";
+    document.getElementById('liners').appendChild(lines);
+
     document.getElementById("traveller" + id).style.left = planets[this.home].getLX(true);
     document.getElementById("traveller" + id).style.top = planets[this.home].getLY(true);
-
-    this.refresher = function () {
-        this.home = this.destination;
-        do {
-            this.destination = 1 + Math.ceil(Math.random() * (planets.length - 2));
-        } while (planets[this.home].type != planets[this.destination].type)
-    }
+    $("#traveller" + this.id).animate({ "left": (9 + Math.ceil(((planets[this.destination].rx)))), "top": (9 + Math.ceil(((planets[this.destination].ry)))) }, 9);
 
     this.fly = function () {
         this.moving = $("#traveller" + this.id).is(':animated');
@@ -139,7 +155,7 @@ function traveller(id) {
         planets[this.destination].score += 1.25;
 
         this.moving = true;
-        $("#traveller" + this.id).animate({ "left": (1209 + Math.ceil(width * ((planets[this.destination].rx)))), "top": (1209 + Math.ceil(height * ((planets[this.destination].ry)))) }, 9000);
+        $("#traveller" + this.id).animate({ "left": (9 + Math.ceil(((planets[this.destination].rx)))), "top": (9 + Math.ceil(((planets[this.destination].ry)))) }, ((.3 + Math.random()) * (9000)));
     }
 }
 
@@ -152,7 +168,7 @@ var height = Math.max(body.scrollHeight, body.offsetHeight,
 var width = Math.max(body.scrollWidth, body.offsetWidth,
                        html.clientWidth, html.scrollWidth, html.offsetWidth);
 
-var planets = new Array(100);
+var planets = new Array(400);
 
 
 var rotation = 1;
@@ -161,12 +177,23 @@ var day = 0;
 
 for (i = 1; i < planets.length; i++) {
     planets[i] = new planet(rotation, i);
-    if (i % 20 == 0) {
+    if (i % 80 == 0) {
         rotation++;
     }
 }
 
 planets[0] = new planet(0, 0);
+
+for (to = 0; to < 40; to++) {
+    for (i = 1; i < planets.length; i++) {
+        for (e = 1; e < planets.length; e++) {
+            while (i != e && ((Math.abs(planets[i].rx - planets[e].rx) < 10 * (width / planets.length)) || Math.abs(planets[i].ry - planets[e].ry) < 10 * (height / planets.length))) {
+                planets[i].randX();
+                planets[i].randY();
+            }
+        }
+    }
+}
 
 
 
@@ -185,8 +212,8 @@ for (i = 1; i < planets.length; i++) {
 
     document.body.appendChild(image);
 
-    document.getElementById("planet" + i).style.left = 1200 + (width * ((planets[i].rx))) + "px";
-    document.getElementById("planet" + i).style.top = 1200 + (height * ((planets[i].ry))) + "px";
+    document.getElementById("planet" + i).style.left = (((planets[i].rx))) + "px";
+    document.getElementById("planet" + i).style.top = (((planets[i].ry))) + "px";
 }
 
 for (i = 1; i < planets.length; i++) {
@@ -195,7 +222,7 @@ for (i = 1; i < planets.length; i++) {
         var current = 0;
         do {
             current = 1 + Math.ceil(Math.random() * (planets.length - 2));
-        } while (added[current] || planets[current].type != planets[i].type || planets[current].addedC >= 4 || i == current);
+        } while (added[current] || planets[current].addedC >= 4 || i == current);
 
 
         planets[i].connections[planets[i].addedC] = current;
@@ -206,20 +233,10 @@ for (i = 1; i < planets.length; i++) {
     }
     }
 
-var travellers = new Array(1);
-travellers[0] = new traveller(0);
-travellers[1] = new traveller(1);
-travellers[2] = new traveller(2);
-travellers[3] = new traveller(3);
-travellers[4] = new traveller(4);
-travellers[5] = new traveller(5);
-travellers[6] = new traveller(6);
-travellers[7] = new traveller(7);
-travellers[8] = new traveller(8);
-travellers[9] = new traveller(9);
-travellers[10] = new traveller(10);
-travellers[11]= new traveller(11);
-travellers[12] = new traveller(12);
+var travellers = new Array(planets.length / 10);
+for (i = 0; i < travellers.length; i++) {
+    travellers[i] = new traveller(i);
+}
 
 var linesstring = new Array(planets.length);
 linesstring[0] = "";
@@ -249,19 +266,17 @@ function repeat() {
         for (i = 1; i < planets.length; i++) {
             for (e = 1; e < planets.length; e++) {
                 if (travellers[y].destination == e && travellers[y].home == i && travellers[y].destination != i && travellers[y].home != e) {
-                    finalstring += "" + (1209 + Math.ceil((width * ((planets[i].rx))))) + "," + (1209 + Math.ceil(height * ((planets[i].ry)))) + " " + Math.ceil(1209 + (width * ((planets[e].rx)))) + "," + (1209 + Math.ceil(height * ((planets[e].ry)))) + " ";
+                    document.getElementById('polypoints' + y).setAttribute("points", (9 + Math.ceil((((planets[i].rx))))) + "," + (9 + Math.ceil(((planets[i].ry)))) + " " + Math.ceil(9 + (((planets[e].rx)))) + "," + (9 + Math.ceil(((planets[e].ry)))) + "   ");
                 }
             }
         }
-    }
+    };
         
         for (e = 1; e < planets.length; e++) {
             if (e == active) {
                 document.getElementById("planet" + e).style.background = "radial-gradient(yellow 60%, red 15%, transparent 25%)";
                 for (i = 0; i < planets[e].connections.length; i++) {
-                    if (planets[e].type == planets[planets[e].connections[i]].type) {
-                        activestring += "" + (1209 + Math.ceil((width * ((planets[planets[e].connections[i]].rx))))) + "," + (1209 + Math.ceil(height * ((planets[planets[e].connections[i]].ry)))) + " " + Math.ceil(1209 + (width * ((planets[e].rx)))) + "," + (1209 + Math.ceil(height * ((planets[e].ry)))) + " ";
-                    }
+                        activestring += "" + (9 + Math.ceil((((planets[planets[e].connections[i]].rx))))) + "," + (9 + Math.ceil(((planets[planets[e].connections[i]].ry)))) + " " + Math.ceil(9 + (((planets[e].rx)))) + "," + (9+ Math.ceil(((planets[e].ry)))) + " ";
                 }
             } else if (planets[e].type == planets[active].type) {
                 document.getElementById("planet" + e).style.background = "radial-gradient(purple 60%, red 15%, transparent 25%)";
@@ -274,7 +289,7 @@ function repeat() {
         travellers[y].fly();
     }
 
-   document.getElementById("polypoints").setAttribute("points", finalstring);
+  //  document.getElementById("polypoints").setAttribute("points", finalstring);
 
    document.getElementById("pactive").setAttribute("points", activestring);
 
@@ -284,7 +299,13 @@ function repeat() {
     setTimeout(repeat, 10);
 }
 
+document.addEventListener('keydown', function (event) {
+    if (event.keyCode == 65) {
+        $(".ui").toggle();
+    }
+})
 
+$(".ui").toggle();
 
 repeat();
 
