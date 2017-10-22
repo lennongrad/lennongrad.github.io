@@ -1,13 +1,28 @@
 ﻿body{
     background-color:black;
     background-image: url("space.gif");
-    width: 9000px;
-    height:9000px;
+    width: 1200px;
+    height:1200px;
     user-select:none;
+    font-family:Arial;
 }
 
 ::-webkit-scrollbar { 
     display: none; 
+}
+
+.traveller{
+    position:absolute;
+    border-radius:50px;
+    background-color:purple;
+    width:20px;
+    height:20px;
+    z-index:0;
+}
+
+#planetscore{
+    width:100%;
+    text-align:center;
 }
 
 #headerbar{

@@ -14,6 +14,7 @@
                 if (active != 0) {
                     planets[active].goto();
                 }
+                alert(travellers[0].moving);
             })
 
             $("#headerbar").hover(function () {
@@ -50,12 +51,12 @@
 <body oncontextmenu="setnone();return false;">
 
     <div id="headerbar">
+        <div id="planetscore"></div>
     </div>
 
     <div id="headerbox">
     </div>
     <div id="headerbar-under">
-        a
 
     </div>
 
@@ -71,6 +72,7 @@
     <svg id="lactive" clickable="false" style="display: block; width:100%; height:100%;">
         <polyline points="0,0" id="pactive" style="stroke:yellow;fill:transparent;stroke-width:1;" />
     </svg>
+
 
 
     <script src="spacers.js"></script>

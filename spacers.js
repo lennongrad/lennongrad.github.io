@@ -21,27 +21,24 @@ window.addEventListener('mouseup', function (e) {
 var setnone = function () {
     if (returner == 0) {
         active = 0;
+        $("#detailedinfo").animate({ "left": "-57%" }, "fast").queue(function () {
+            $("#detailedinfo").addClass('visible');
+            $("#detailedinfo").stop(true);
+        });
     }
 }
 
-var planetnumb = 50;
+var planetnumb = 100;
 
 function planet(type, id) {
     this.rx = Math.random() * .90;
     this.ry = Math.random() * .90;
     this.type = type;
     this.id = id;
+    this.addedC = 0;
+    this.score = 0;
 
-    this.connections = new Array();
-    this.connections[0] = Math.ceil(Math.random() * planetnumb);
-    this.connections[1] = Math.ceil(Math.random() * planetnumb);
-    this.connections[2] = Math.ceil(Math.random() * planetnumb);
-    this.connections[3] = Math.ceil(Math.random() * planetnumb);
-    this.connections[4] = Math.ceil(Math.random() * planetnumb);
-    this.connections[5] = Math.ceil(Math.random() * planetnumb);
-    this.connections[6] = Math.ceil(Math.random() * planetnumb);
-    this.connections[7] = Math.ceil(Math.random() * planetnumb);
-    this.connections[8] = Math.ceil(Math.random() * planetnumb);
+    this.connections = new Array(3).fill(0);
 
     var cont = true;
     while (cont) {
@@ -54,20 +51,22 @@ function planet(type, id) {
         }
     }
 
-
-
-    this.rational = function () {
-        var times = 3;
-        for (y = 1; y < planets.length; y++) {
-            for (o = 0; o < planets[y].connections.length; o++) {
-                while (planets[y].connections[o] == this.id && y != this.id) {
-                    this.connections[times - 1] = y;
-                    times--;
-                    break;
-                }
-            }
+    this.getLX = function (extension) {
+        if (extension) {
+            return (1200 + (this.rx * width)) + "px";
+        } else {
+            return 1200 + (this.rx * width);
         }
     }
+
+    this.getLY = function (extension) {
+        if (extension) {
+            return (1200 + (this.ry * height)) + "px";
+        } else {
+            return 1200 + (this.ry * height);
+        }
+    }
+
 
     this.connect = function () {
         var strang = this.type + " ";
@@ -95,6 +94,56 @@ function planet(type, id) {
     }
 }
 
+function traveller(id) {
+    this.home = 1 + Math.ceil(Math.random() * (planets.length - 2));
+    do{
+        this.destination = 1 + Math.ceil(Math.random() * (planets.length - 2));
+    } while (planets[this.home].type != planets[this.destination].type)
+
+    this.id = id;
+    this.moving = false;
+
+    image = document.createElement("img");
+    image.src = "none.png";
+    image.className = "traveller";
+
+    image.id = "traveller" + id;
+
+    image.setAttribute('data-param', i);
+    image.onclick = function () {
+        travellers[this.id.substring(9)].fly();
+    }
+    document.body.appendChild(image);
+
+    document.getElementById("traveller" + id).style.left = planets[this.home].getLX(true);
+    document.getElementById("traveller" + id).style.top = planets[this.home].getLY(true);
+
+    this.refresher = function () {
+        this.home = this.destination;
+        do {
+            this.destination = 1 + Math.ceil(Math.random() * (planets.length - 2));
+        } while (planets[this.home].type != planets[this.destination].type)
+    }
+
+    this.fly = function () {
+        this.moving = $("#traveller" + this.id).is(':animated');
+        if (this.moving) {
+            return;
+        } else {
+
+            this.refresher();
+        }
+
+        day +=(1 / travellers.length);
+        planets[this.home].score--;
+        planets[this.destination].score += 1.25;
+
+        this.moving = true;
+        $("#traveller" + this.id).animate({ "left": (1209 + Math.ceil(width * ((planets[this.destination].rx)))), "top": (1209 + Math.ceil(height * ((planets[this.destination].ry)))) }, 9000);
+    }
+}
+
+
 var body = document.body,
     html = document.documentElement;
 
@@ -103,59 +152,22 @@ var height = Math.max(body.scrollHeight, body.offsetHeight,
 var width = Math.max(body.scrollWidth, body.offsetWidth,
                        html.clientWidth, html.scrollWidth, html.offsetWidth);
 
-var planets = new Array();
+var planets = new Array(100);
+
+
+var rotation = 1;
+
+var day = 0;
+
+for (i = 1; i < planets.length; i++) {
+    planets[i] = new planet(rotation, i);
+    if (i % 20 == 0) {
+        rotation++;
+    }
+}
 
 planets[0] = new planet(0, 0);
-planets[1] = new planet(1, 1);
-planets[2] = new planet(1, 2);
-planets[3] = new planet(1, 3);
-planets[4] = new planet(1, 4);
-planets[5] = new planet(1, 5);
- planets[6] = new planet(1, 6);
-planets[7] = new planet(1, 7);
-planets[8] = new planet(1, 8);
-planets[9] = new planet(1, 9);
-planets[10] = new planet(1, 10);
-planets[11] = new planet(2, 11);
-planets[12] = new planet(2, 12);
-planets[13] = new planet(2, 13);
-planets[14] = new planet(2, 14);
-planets[15] = new planet(2, 15);
-planets[16] = new planet(2, 16);
-planets[17] = new planet(2, 17);
-planets[18] = new planet(2, 18);
-planets[19] = new planet(2, 19);
-planets[20] = new planet(2, 20);
-planets[21] = new planet(3, 21);
-planets[22] = new planet(3, 22);
-planets[23] = new planet(3, 23);
-planets[24] = new planet(3, 24);
-planets[25] = new planet(3, 25);
-planets[26] = new planet(3, 26);
-planets[27] = new planet(3, 27);
-planets[28] = new planet(3, 28);
-planets[29] = new planet(3, 29);
-planets[30] = new planet(3, 30);
-planets[31] = new planet(4, 31);
-planets[32] = new planet(4, 32);
-planets[33] = new planet(4, 33);
-planets[34] = new planet(4, 34);
-planets[35] = new planet(4, 35);
-planets[36] = new planet(4, 36);
-planets[37] = new planet(4, 37);
-planets[38] = new planet(4, 38);
-planets[39] = new planet(4, 39);
-planets[40] = new planet(4, 40);
-planets[41] = new planet(5, 41);
-planets[42] = new planet(5, 42);
-planets[43] = new planet(5, 43);
-planets[44] = new planet(5, 44);
-planets[45] = new planet(5, 45);
-planets[46] = new planet(5, 46);
-planets[47] = new planet(5, 47);
-planets[48] = new planet(5, 48);
-planets[49] = new planet(5, 49);
-planets[50] = new planet(5, 50);
+
 
 
 for (i = 1; i < planets.length; i++) {
@@ -175,10 +187,39 @@ for (i = 1; i < planets.length; i++) {
 
     document.getElementById("planet" + i).style.left = 1200 + (width * ((planets[i].rx))) + "px";
     document.getElementById("planet" + i).style.top = 1200 + (height * ((planets[i].ry))) + "px";
-
-    planets[i].rational();
 }
 
+for (i = 1; i < planets.length; i++) {
+    var added = new Array(planets.length).fill(false)
+    while (planets[i].addedC < planets[i].connections.length) {
+        var current = 0;
+        do {
+            current = 1 + Math.ceil(Math.random() * (planets.length - 2));
+        } while (added[current] || planets[current].type != planets[i].type || planets[current].addedC >= 4 || i == current);
+
+
+        planets[i].connections[planets[i].addedC] = current;
+        added[current] = true;
+        planets[current].connections[planets[current].addedC] = i;
+        planets[current].addedC++;
+            planets[i].addedC++;
+    }
+    }
+
+var travellers = new Array(1);
+travellers[0] = new traveller(0);
+travellers[1] = new traveller(1);
+travellers[2] = new traveller(2);
+travellers[3] = new traveller(3);
+travellers[4] = new traveller(4);
+travellers[5] = new traveller(5);
+travellers[6] = new traveller(6);
+travellers[7] = new traveller(7);
+travellers[8] = new traveller(8);
+travellers[9] = new traveller(9);
+travellers[10] = new traveller(10);
+travellers[11]= new traveller(11);
+travellers[12] = new traveller(12);
 
 var linesstring = new Array(planets.length);
 linesstring[0] = "";
@@ -198,40 +239,50 @@ function repeat() {
     }
 
     document.getElementById("planetname").innerHTML = "Planet SR" + active;
+    document.getElementById("planetscore").innerHTML = planets[active].score + " points";
 
     var finalstring = "";
     var activestring = "";
+    var roter = false;
 
-    for (e = 1; e < planets.length; e++) {
-        if (planets[e].type == planets[active].type) {
-            finalstring += "" + (1209 + Math.ceil((width * ((planets[active].rx))))) + "," + (1209 + Math.ceil(height * ((planets[active].ry)))) + " " + Math.ceil(1209 + (width * ((planets[e].rx)))) + "," + (1209 + Math.ceil(height * ((planets[e].ry)))) + " ";
-        }
-
-
-    if (e == active) {
-        document.getElementById("planet" + e).style.background = "radial-gradient(yellow 60%, red 15%, transparent 25%)";
-        for (i = 0; i < planets[e].connections.length; i++) {
-            if (planets[e].type == planets[planets[e].connections[i]].type) {
-                activestring += "" + (1209 + Math.ceil((width * ((planets[planets[e].connections[i]].rx))))) + "," + (1209 + Math.ceil(height * ((planets[planets[e].connections[i]].ry)))) + " " + Math.ceil(1209 + (width * ((planets[e].rx)))) + "," + (1209 + Math.ceil(height * ((planets[e].ry)))) + " ";
+    for (y = 0; y < travellers.length; y++) {
+        for (i = 1; i < planets.length; i++) {
+            for (e = 1; e < planets.length; e++) {
+                if (travellers[y].destination == e && travellers[y].home == i && travellers[y].destination != i && travellers[y].home != e) {
+                    finalstring += "" + (1209 + Math.ceil((width * ((planets[i].rx))))) + "," + (1209 + Math.ceil(height * ((planets[i].ry)))) + " " + Math.ceil(1209 + (width * ((planets[e].rx)))) + "," + (1209 + Math.ceil(height * ((planets[e].ry)))) + " ";
+                }
             }
         }
-    } else if (planets[e].type == planets[active].type) {
-        document.getElementById("planet" + e).style.background = "radial-gradient(purple 60%, red 15%, transparent 25%)";
-    }else {
-        document.getElementById("planet" + e).style.background = "none";
     }
-}
+        
+        for (e = 1; e < planets.length; e++) {
+            if (e == active) {
+                document.getElementById("planet" + e).style.background = "radial-gradient(yellow 60%, red 15%, transparent 25%)";
+                for (i = 0; i < planets[e].connections.length; i++) {
+                    if (planets[e].type == planets[planets[e].connections[i]].type) {
+                        activestring += "" + (1209 + Math.ceil((width * ((planets[planets[e].connections[i]].rx))))) + "," + (1209 + Math.ceil(height * ((planets[planets[e].connections[i]].ry)))) + " " + Math.ceil(1209 + (width * ((planets[e].rx)))) + "," + (1209 + Math.ceil(height * ((planets[e].ry)))) + " ";
+                    }
+                }
+            } else if (planets[e].type == planets[active].type) {
+                document.getElementById("planet" + e).style.background = "radial-gradient(purple 60%, red 15%, transparent 25%)";
+            }else {
+                document.getElementById("planet" + e).style.background = "none";
+            }
+        }
 
-
+    for (y = 0; y < travellers.length; y++) {
+        travellers[y].fly();
+    }
 
    document.getElementById("polypoints").setAttribute("points", finalstring);
 
-    document.getElementById("pactive").setAttribute("points", activestring);
+   document.getElementById("pactive").setAttribute("points", activestring);
+
+   document.getElementById("headerbox").innerHTML = Math.ceil(day);
 
 
     setTimeout(repeat, 10);
 }
-
 
 
 
