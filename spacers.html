@@ -3,66 +3,29 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
+    <title id="title">Spacers</title>
     <link rel="stylesheet" type="text/css" href="spacers.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script>
-        $(function () {
-            
-            $("#headerbox").click(function () {
-                if (active != 0) {
-                    planets[active].goto();
-                }
-                alert(travellers[0].moving);
-            })
-
-            $("#headerbar").hover(function () {
-                $("#headerbar-under").slideToggle(100);
-            });
-
-            $("#detailedinfo").click(function () {
-                if ($("#detailedinfo").hasClass('visible')) {
-                    $("#detailedinfo").animate({ "left": "2%" }, "fast").removeClass('visible');
-                } else {
-                    $("#detailedinfo").animate({ "left": "-57%" }, "fast").queue(function () {
-                        $("#detailedinfo").addClass('visible');
-                        $("#detailedinfo").stop(true);
-                    });
-                }
-            });
-
-            $('.planet').mousedown(function (event) {
-                if (event.which == 3) {
-                   // alert(this.id + "  " + planets[this.id.substring(6)].connect());
-                    if ($("#detailedinfo").hasClass('visible')) {
-                        $("#detailedinfo").animate({ "left": "2%" }, "fast").removeClass('visible');
-                    }
-                    planets[this.id.substring(6)].goto();
-                    planets[this.id.substring(6)].clicker();
-                }
-            });
-
-            
-        
-    });
-    </script>
-    <title></title>
+    <link rel="icon" href="faviconspacers.ico" type="image/x-icon">
 </head>
 <body oncontextmenu="setnone();return false;">
 
-    <div id="headerbar" class="ui">
-        <div id="planetscore"></div>
-    </div>
 
     <div id="headerbox" class="ui" >
+        > Initializing...         
     </div>
-    <div id="headerbar-under" class="ui">
 
-    </div>
 
     <div id="detailedinfo" class="visible ui">
         <div id="planetname"></div>
+        <span id="planetscore"></span><br />
+
+    </div>
+
+    <div id="empireinfo">
+        <span id="daytime"></span><br />
 
     </div>
 

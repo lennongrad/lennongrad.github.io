@@ -1,14 +1,14 @@
-﻿body{
+﻿@font-face { font-family: Whiterabt; src: url('whitrabt.ttf'); } 
+@font-face { font-family: Vt; src: url('VT323-Regular.ttf'); }
+
+
+body{
     background-color:black;
     background-image: url("space.gif");
     width: 12000px;
     height:12000px;
     user-select:none;
     font-family:Arial;
-}
-
-::-webkit-scrollbar { 
-    display: none; 
 }
 
 .traveller{
@@ -20,9 +20,14 @@
     z-index:0;
 }
 
-#planetscore{
-    width:100%;
-    text-align:center;
+::-webkit-scrollbar {
+    width: 2px;  /* remove scrollbar space */
+    height: 2px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #33ff66;
 }
 
 #liners > polyline{
@@ -31,53 +36,54 @@
     stroke-width:1;
 }
 
+#empireinfo{
+    background-color:black;
+    background-image: url("computerscreen.jpeg");
+    background-position:center;
+    background-size:cover;
+    border:3px solid #0c0c0c;
+    position:fixed;
+    top:10px;
+    right:10px;
+    width:25%;
+    height:20%;
+    overflow:auto;
+    z-index:7;
+    text-align:left;
+    color:#33ff66;
+    font-family:Vt;
+    opacity: .72;
+}
+
 .ui{
     display:none;
 }
 
-#headerbar{
-    background-color:red;
-    position:fixed;
-    top:0px;
-    left:0px;
-    width:48%;
-    z-index:6;
-    height:5%;
-    border-radius:0px 0px 4px 0px;
-}
-
-#test{
-    width:1300px;
-    text-align:right;
-    background-color:grey;
-}
-
-#headerbar-under{
-    display:none;
-    background-color:blue;
-    position:fixed;
-    top:5%;
-    left:0px;
-    width:45%;
-    height:5%;
-    z-index:-1;
-    border-radius:0px 0px 4px 0px;
-}
-
 #headerbox{
-    background-color:red;
-    border-radius:0px 0px 4px 0px;
+    background-color:black;
+    background-image: url("computerscreen.jpeg");
+    background-position:center;
+    background-size:cover;
+    border:3px solid #0c0c0c;
     position:fixed;
-    top:0%;
-    left:0px;
-    width:10%;
+    top:10px;
+    left:10px;
+    width:25%;
     height:20%;
     overflow:auto;
     z-index:7;
+    text-align:left;
+    color:#33ff66;
+    font-family:Vt;
+    opacity: .72;
 }
 
+#headerbox span{
+    opacity:1;
+}
 
 #detailedinfo{
+    background-image: url("detailback.jpg");
     background-color:grey;
     border-radius:2px 2px 3px 3px;
     position:fixed;
@@ -86,6 +92,8 @@
     width:45%;
     height:75%;
     z-index:2;
+    opacity: .32;
+    border:3px solid blue;
 }
 
 #planetname{

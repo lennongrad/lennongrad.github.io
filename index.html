@@ -1,9 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Education for learning porpoises of the peoples and "kids"</title>
+    <meta name="description" content="Personal Site for Brock Dilley">
+    <meta name="keywords" content="Brock,Dilley,Personal,Development">
+    <meta name="author" content="Brock Dilley">
+    <title id="title">ennongrad</title>
+    <link rel="icon" href="faviconmain.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="index.css">
+  <title>Brock Dilley</title>
 </head>
 <body>
-<a href='/agr'>would</a>.
+
+    <div id="top">
+    <div id="follower">
+        <p id="name">Brock Dilley</p>
+        <a href='/agr'>Agriculture</a>
+        <a href='/spacers'>Spacers</a>
+    </div>
+        </div>
+
+    <script>
+        var follower = document.getElementById("follower");
+        var sticky = follower.offsetTop;
+
+        function repeat() {
+            if (window.pageYOffset >= sticky) {
+                follower.classList.add("sticky")
+            } else {
+                follower.classList.remove("sticky");
+            }
+
+            setTimeout(repeat, 1);
+        }
+
+        repeat();
+
+        document.getElementById("title").innerHTML = "Lennongrad";
+    </script>
 </body>
 </html>

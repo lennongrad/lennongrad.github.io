@@ -1,6 +1,10 @@
 
 var curYPos, curXPos, curDown;
 var returner = 10;
+var daycount = 10;
+var currentmessage = 1;
+var onTraveller = false;
+var activeTraveller = 0;
 
 window.addEventListener('mousemove', function (e) {
     if (curDown) {
@@ -21,6 +25,7 @@ window.addEventListener('mouseup', function (e) {
 var setnone = function () {
     if (returner == 0) {
         active = 0;
+        onTraveller = false;
         $("#detailedinfo").animate({ "left": "-57%" }, "fast").queue(function () {
             $("#detailedinfo").addClass('visible');
             $("#detailedinfo").stop(true);
@@ -30,13 +35,19 @@ var setnone = function () {
 
 var planetnumb = 100;
 
-function planet(type, id) {
+function affiliation(color) {
+    this.color = color;
+}
+
+function planet(type, id, affiliation) {
     this.rx = (1200 + (Math.random() * .90 * height));
     this.ry = (1200 + (Math.random() * .90 * width));
     this.type = type;
     this.id = id;
     this.addedC = 0;
     this.score = 0;
+    this.done = false;
+    this.aff = affiliation;
 
     this.connections = new Array(3).fill(0);
 
@@ -78,12 +89,13 @@ function planet(type, id) {
     
     this.clicker = function () {
         active = id;
+        onTraveller = false;
         returner = 10;
     }
 
     this.goto = function () {
-        var x = this.rx - (window.innerWidth / 2);
-        var y = this.ry - (window.innerHeight / 2);
+        var x = this.rx - (window.innerWidth / 2) ;
+        var y = this.ry - (window.innerHeight / 2) ;
         if(x > width){
             x = width;
         }
@@ -127,7 +139,13 @@ function traveller(id) {
 
     image.setAttribute('data-param', i);
     image.onclick = function () {
-        travellers[this.id.substring(9)].fly();
+        onTraveller = true;
+        active = 0;
+        activeTraveller = this.id.substring(9);
+        $("#detailedinfo").animate({ "left": "-57%" }, "fast").queue(function () {
+            $("#detailedinfo").addClass('visible');
+            $("#detailedinfo").stop(true);
+        });
     }
     document.body.appendChild(image);
 
@@ -145,17 +163,17 @@ function traveller(id) {
         this.moving = $("#traveller" + this.id).is(':animated');
         if (this.moving) {
             return;
-        } else {
+        } 
 
+        newMsg("Trader #" + this.id + " has arrived at Planet SR" + this.destination)
             this.refresher();
-        }
 
-        day +=(1 / travellers.length);
         planets[this.home].score--;
         planets[this.destination].score += 1.25;
+        newMsg("Trader #" + this.id + " has departed from Planet SR" + this.home)
 
         this.moving = true;
-        $("#traveller" + this.id).animate({ "left": (9 + Math.ceil(((planets[this.destination].rx)))), "top": (9 + Math.ceil(((planets[this.destination].ry)))) }, ((.3 + Math.random()) * (9000)));
+        $("#traveller" + this.id).animate({ "left": (9 + Math.ceil(((planets[this.destination].rx)))), "top": (9 + Math.ceil(((planets[this.destination].ry)))) }, 60000);
     }
 }
 
@@ -168,6 +186,9 @@ var height = Math.max(body.scrollHeight, body.offsetHeight,
 var width = Math.max(body.scrollWidth, body.offsetWidth,
                        html.clientWidth, html.scrollWidth, html.offsetWidth);
 
+var conf = new Array(5);
+conf[0] = new affiliation("#ffffff");
+
 var planets = new Array(400);
 
 
@@ -176,7 +197,7 @@ var rotation = 1;
 var day = 0;
 
 for (i = 1; i < planets.length; i++) {
-    planets[i] = new planet(rotation, i);
+    planets[i] = new planet(rotation, i, i % 5);
     if (i % 80 == 0) {
         rotation++;
     }
@@ -184,18 +205,11 @@ for (i = 1; i < planets.length; i++) {
 
 planets[0] = new planet(0, 0);
 
-for (to = 0; to < 40; to++) {
-    for (i = 1; i < planets.length; i++) {
-        for (e = 1; e < planets.length; e++) {
-            while (i != e && ((Math.abs(planets[i].rx - planets[e].rx) < 10 * (width / planets.length)) || Math.abs(planets[i].ry - planets[e].ry) < 10 * (height / planets.length))) {
-                planets[i].randX();
-                planets[i].randY();
-            }
-        }
-    }
-}
 
-
+ /*  while (i != e && ((Math.abs(planets[i].rx - planets[e].rx) < 90 * (width / planets.length)) || Math.abs(planets[i].ry - planets[e].ry) < 90 * (height / planets.length))) {
+        planets[i].rx += (Math.random() * 20) - 20;
+        planets[i].ry += (Math.random() * 20) - 20;
+    }*/
 
 for (i = 1; i < planets.length; i++) {
     image = document.createElement("img");
@@ -205,7 +219,7 @@ for (i = 1; i < planets.length; i++) {
     image.setAttribute('data-param', i);
     image.onclick = function () {
         planets[this.id.substring(6)].clicker();
-   //     planets[this.id.substring(6)].goto();
+   //   planets[this.id.substring(6)].goto();
     }
 
     image.id = "planet" + i;
@@ -243,10 +257,30 @@ linesstring[0] = "";
 var active = 1;
 var smallactive = 1;
 
+var toDate = function (time) {
+    var stringer = "";
+    stringer = time % 1000;
+    stringer = Math.floor((time / 1000) % 100) + '.' + stringer;
+    stringer = Math.floor((time / 100000)) + '.' + stringer;
+    return stringer;
+}
+
 document.getElementById("lactive").style.height = 2400 + height;
 document.getElementById("liners").style.height = 2400 + height;
 document.getElementById("lactive").style.width = 2400 + width;
 document.getElementById("liners").style.width = 2400 + width
+
+var msg;
+function newMsg(message){
+    msg = document.createElement("span");
+    msg.className = "msg";
+    msg.id = "msg" + currentmessage;
+    msg.innerHTML = "<br>> " + message;
+
+    document.getElementById('headerbox').appendChild(msg);
+
+    currentmessage++;
+}
 
 function repeat() {
     
@@ -255,12 +289,29 @@ function repeat() {
         returner = 0;
     }
 
+    document.getElementById("daytime").innerHTML = "> " + toDate(day);
+
+    daycount+= 10;
+    if (daycount > 10000) {
+        day++;
+        daycount = 0;
+    }
+
     document.getElementById("planetname").innerHTML = "Planet SR" + active;
-    document.getElementById("planetscore").innerHTML = planets[active].score + " points";
+    document.getElementById("planetscore").innerHTML = "> " + planets[active].score + " points";
 
     var finalstring = "";
     var activestring = "";
     var roter = false;
+
+    for (y = 0; y < travellers.length; y++) {
+        if (travellers[y].id == activeTraveller && onTraveller) {
+           document.getElementById('traveller' + y).style.backgroundColor = "yellow";
+            window.scrollTo(document.getElementById('traveller' + y).x , document.getElementById('traveller' + y).y);
+        } else {
+            document.getElementById('traveller' + y).style.backgroundColor = "purple";
+        }
+    }
 
     for (y = 0; y < travellers.length; y++) {
         for (i = 1; i < planets.length; i++) {
@@ -293,19 +344,62 @@ function repeat() {
 
    document.getElementById("pactive").setAttribute("points", activestring);
 
-   document.getElementById("headerbox").innerHTML = Math.ceil(day);
+   document.getElementById("title").innerHTML = "Spacers (" + Math.ceil(day) + ")";
 
-
-    setTimeout(repeat, 10);
+    setTimeout(repeat, 1);
 }
 
 document.addEventListener('keydown', function (event) {
     if (event.keyCode == 65) {
         $(".ui").toggle();
+    } else if (event.keyCode == 13) {
+        active = prompt();
+        onTraveller = false;
+        planets[active].goto();
     }
 })
 
 $(".ui").toggle();
+
+$("#headerbox").click(function () {
+    if (active != 0) {
+        planets[active].goto();
+    }
+})
+
+$("#headerbar").hover(function () {
+    $("#headerbar-under").slideToggle(100);
+});
+
+$("#detailedinfo").click(function () {
+    if ($("#detailedinfo").hasClass('visible')) {
+        $("#detailedinfo").animate({ "left": "2%" }, "fast").removeClass('visible');
+    } else {
+        $("#detailedinfo").animate({ "left": "-57%" }, "fast").queue(function () {
+            $("#detailedinfo").addClass('visible');
+            $("#detailedinfo").stop(true);
+        });
+    }
+});
+
+$('.planet').mousedown(function (event) {
+    if (event.which == 3) {
+        // alert(this.id + "  " + planets[this.id.substring(6)].connect());
+        if ($("#detailedinfo").hasClass('visible')) {
+            $("#detailedinfo").animate({ "left": "2%" }, "fast").removeClass('visible');
+        }
+        planets[this.id.substring(6)].goto();
+        planets[this.id.substring(6)].clicker();
+    }
+});
+
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
+
+$(document).ready(function () {
+    planets[active].goto();
+});
 
 repeat();
 

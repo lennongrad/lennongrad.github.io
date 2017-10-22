@@ -1,0 +1,44 @@
+﻿body{
+    height:2400px;
+    font-family:calibri
+}
+
+#follower {
+  overflow: hidden;
+  background-color: #333;
+  left:0;
+}
+
+#name{
+    font-size:30px;
+    padding:2px;
+    line-height:1px;
+    text-align:center;
+    color:white;
+}
+
+#top{
+  background-color: #333;
+  position:absolute;
+  left:0;
+  top:0;
+  height:500px;
+}
+
+#follower a {
+  float: left;
+  display: block;
+  margin-right:4px;
+  color: #f2f2f2;
+  background-color:#f33444;
+  text-align: center;
+  padding: 9px;
+  text-decoration: none;
+  border-radius:3px 3px 0px 0px;
+}
+
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%
+}
