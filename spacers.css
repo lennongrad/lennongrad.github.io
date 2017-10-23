@@ -11,6 +11,10 @@ body{
     font-family:Arial;
 }
 
+#borders polyline{
+    opacity:.35;
+}
+
 .traveller{
     position:absolute;
     border-radius:50px;
