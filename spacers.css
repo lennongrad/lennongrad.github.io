@@ -5,8 +5,8 @@
 body{
     background-color:black;
     background-image: url("space.gif");
-    width: 12000px;
-    height:12000px;
+    width: 1200px;
+    height:1200px;
     user-select:none;
     font-family:Arial;
 }
@@ -22,6 +22,40 @@ body{
     width:20px;
     height:20px;
     z-index:0;
+}
+
+.name{
+    background-color:red;
+    width:50px;
+    height:15px;
+   line-height:15px;
+   text-align:center;
+  position:relative;
+  padding:5px;
+  margin:1em 0 3em;
+  border-radius:1px;
+    font-family:Vt;
+    background-image: url("computerscreen.jpeg");
+    color:#33ff66;
+    border:2px solid #33ff66;
+    opacity:.45;
+    z-index:3;
+    display:none;
+
+}
+
+
+.name:after {
+  content:"";
+  position:absolute;
+  bottom:-11px; /* value = - border-top-width - border-bottom-width */
+  left:20px; /* controls horizontal position */
+  border-width:10px 10px 0px 10px; /* vary these values to change the angle of the vertex */
+  border-style:solid;
+  border-color: #33ff66 transparent;
+  /* reduce the damage in FF3.0 */
+  display:block;
+  width:0;
 }
 
 ::-webkit-scrollbar {
@@ -98,6 +132,7 @@ body{
     z-index:2;
     opacity: .32;
     border:3px solid blue;
+    color:white;
 }
 
 #planetname{

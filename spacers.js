@@ -171,7 +171,7 @@ function traveller(id) {
     lines = document.createElementNS('http://www.w3.org/2000/svg', "polyline");
     lines.id = "polypoints" + id;
     lines.setAttributeNS(null, "points", "200,200 300,300");
-    lines.className = "polypoints";
+    lines.setAttribute("class",  "polypoints");
     document.getElementById('liners').appendChild(lines);
 
     document.getElementById("traveller" + id).style.left = planets[this.home].getLX(true);
@@ -348,88 +348,18 @@ function newMsg(message, indent){
     currentmessage++;
 }
 
-function repeat() {
-    
-    returner--;
-    if (returner < 0) {
-        returner = 0;
-    }
-
-    document.getElementById("daytime").innerHTML = "> " + toDate(day);
-
-    daycount+= 10;
-    if (daycount > 10000) {
-        day++;
-        daycount = 0;
-    }
-
-    document.getElementById("planetname").innerHTML = "Planet SR" + active;
-    document.getElementById("planetscore").innerHTML = "> " + planets[active].score + " points";
-
-    var finalstring = "";
-    var activestring = "";
-    var roter = false;
-
-    for (y = 0; y < travellers.length; y++) {
-        if (travellers[y].id == activeTraveller && onTraveller) {
-           document.getElementById('traveller' + y).style.backgroundColor = "yellow";
-            window.scrollTo(document.getElementById('traveller' + y).x , document.getElementById('traveller' + y).y);
-        } else {
-            document.getElementById('traveller' + y).style.backgroundColor = "purple";
-        }
-    }
-
-    for (y = 0; y < travellers.length; y++) {
-        for (i = 1; i < planets.length; i++) {
-            for (e = 1; e < planets.length; e++) {
-                if (travellers[y].destination == e && travellers[y].home == i && travellers[y].destination != i && travellers[y].home != e) {
-                    document.getElementById('polypoints' + y).setAttribute("points", (9 + Math.ceil((((planets[i].rx))))) + "," + (9 + Math.ceil(((planets[i].ry)))) + " " + Math.ceil(9 + (((planets[e].rx)))) + "," + (9 + Math.ceil(((planets[e].ry)))) + "   ");
-                }
-            }
-        }
-    };
-        
-        for (e = 1; e < planets.length; e++) {
-            if (e == active) {
-                document.getElementById("planet" + e).style.background = "radial-gradient(yellow 60%, red 15%, transparent 25%)";
-                for (i = 0; i < planets[e].connections.length; i++) {
-                    activestring += "" + (9 + Math.ceil((((planets[planets[e].connections[i]].rx))))) + "," + (9 + Math.ceil(((planets[planets[e].connections[i]].ry)))) + " " + Math.ceil(9 + (((planets[e].rx)))) + "," + (9 + Math.ceil(((planets[e].ry)))) + " ";
-                }
-            } else {
-                document.getElementById("planet" + e).style.background = "radial-gradient(" + conf[planets[e].aff].color + " 60%, red 15%, transparent 25%)";
-            }
-        }
-
-    for (y = 0; y < travellers.length; y++) {
-        travellers[y].fly();
-    }
-
-  //  document.getElementById("polypoints").setAttribute("points", finalstring);
-
-   document.getElementById("pactive").setAttribute("points", activestring);
-
-   document.getElementById("title").innerHTML = "Spacers (" + Math.ceil(day) + ")";
-
-
-  /* for (e = 1; e < conf.length; e++) {
-       var poly = "";
-       for (i = 1; i < planets.length; i++) {
-           if (planets[i].aff == e) {
-               poly += Math.ceil(planets[i].rx) + "," + Math.ceil(planets[i].ry) + " ";
-           }
-       }
-
-      document.getElementById('borders' + e).setAttribute("points", poly)
-   }*/
-
-    setTimeout(repeat, 1);
-}
 
 document.addEventListener('keydown', function (event) {
     if (event.keyCode == 65) {
         $(".ui").toggle();
+        $("#lactive").toggle();
     } else if (event.keyCode == 66) {
         $("#borders").toggle();
+    } else if (event.keyCode == 78) {
+        $(".name").toggle();
+    } else if (event.keyCode == 76) {
+        $(".traveller").toggle();
+        $(".polypoints").toggle();
     } else if (event.keyCode == 13) {
         active = prompt();
         onTraveller = false;
@@ -460,6 +390,8 @@ $("#detailedinfo").click(function () {
         });
     }
 });
+
+var visible = new Array(planets.length).fill(true);
 
 $('.planet').mousedown(function (event) {
     if (event.which == 3) {
@@ -502,6 +434,111 @@ for (e = 1; e < conf.length; e++) {
     line.className = "borders";
     line.style.fill = conf[e].color;
     document.getElementById('borders').appendChild(line);
+}
+
+
+for (i = 1; i < planets.length; i++) {
+
+    var test = document.createElement("div");
+    test.id = "name" + i;
+    test.innerHTML = "SR" + i;
+    test.className += " name";
+    test.style.position = "absolute";
+    body.appendChild(test);
+
+    document.getElementById('name' + i).style.top = (planets[i].ry - 60) + "px";
+    document.getElementById('name' + i).style.left = (planets[i].rx - 10) + "px";
+}
+
+var concluir = 0;
+
+function repeat() {
+
+    returner--;
+    if (returner < 0) {
+        returner = 0;
+    }
+
+    document.getElementById("daytime").innerHTML = "> " + toDate(day);
+
+    daycount += 10;
+    if (daycount > 10000) {
+        day++;
+        daycount = 0;
+    }
+
+    document.getElementById("planetname").innerHTML = "Planet SR" + active;
+    document.getElementById("planetscore").innerHTML = "> " + planets[active].score + " points";
+
+    var finalstring = "";
+    var activestring = "";
+    var roter = false;
+
+    for (y = 0; y < travellers.length; y++) {
+        if (travellers[y].id == activeTraveller && onTraveller) {
+            document.getElementById('traveller' + y).style.backgroundColor = "#33ff66";
+            window.scrollTo(document.getElementById('traveller' + y).x, document.getElementById('traveller' + y).y);
+        } else {
+            document.getElementById('traveller' + y).style.backgroundColor = "purple";
+        }
+    }
+
+    for (y = 0; y < travellers.length; y++) {
+        for (i = 1; i < planets.length; i++) {
+            for (e = 1; e < planets.length; e++) {
+                if (travellers[y].destination == e && travellers[y].home == i && travellers[y].destination != i && travellers[y].home != e) {
+                    document.getElementById('polypoints' + y).setAttribute("points", (9 + Math.ceil((((planets[i].rx))))) + "," + (9 + Math.ceil(((planets[i].ry)))) + " " + Math.ceil(9 + (((planets[e].rx)))) + "," + (9 + Math.ceil(((planets[e].ry)))) + "   ");
+                }
+            }
+        }
+    };
+
+    for (e = 1; e < planets.length; e++) {
+        if (e == active) {
+            document.getElementById("planet" + e).style.background = "radial-gradient(#33ff66 60%, red 15%, transparent 25%)";
+            for (i = 0; i < planets[e].connections.length; i++) {
+                activestring += "" + (9 + Math.ceil((((planets[planets[e].connections[i]].rx))))) + "," + (9 + Math.ceil(((planets[planets[e].connections[i]].ry)))) + " " + Math.ceil(9 + (((planets[e].rx)))) + "," + (9 + Math.ceil(((planets[e].ry)))) + " ";
+            }
+        } else {
+            document.getElementById("planet" + e).style.background = "radial-gradient(" + conf[planets[e].aff].color + " 60%, red 15%, transparent 25%)";
+        }
+    }
+
+    for (y = 0; y < travellers.length; y++) {
+        travellers[y].fly();
+    }
+
+    //  document.getElementById("polypoints").setAttribute("points", finalstring);
+
+    document.getElementById("pactive").setAttribute("points", activestring);
+
+    document.getElementById("title").innerHTML = "Spacers (" + Math.ceil(day) + ")";
+
+
+    /* for (e = 1; e < conf.length; e++) {
+         var poly = "";
+         for (i = 1; i < planets.length; i++) {
+             if (planets[i].aff == e) {
+                 poly += Math.ceil(planets[i].rx) + "," + Math.ceil(planets[i].ry) + " ";
+             }
+         }
+  
+        document.getElementById('borders' + e).setAttribute("points", poly)
+     }*/
+    
+    concluir++;
+    if (concluir >= 5) {
+        for (i = 1; i < planets.length; i++) {
+            if (i != active) {
+                $('#name' + i).animate({ 'opacity': '.2' }, 150)
+            } else {
+                $('#name' + i).animate({ 'opacity': '1' }, 150)
+            }
+        }
+        concluir = 0;
+    }
+
+    setTimeout(repeat, 1);
 }
 
 repeat();
