@@ -106,7 +106,7 @@ body{
     position:fixed;
     top:10px;
     left:10px;
-    width:25%;
+    width:35%;
     height:20%;
     overflow:auto;
     z-index:7;
@@ -127,12 +127,23 @@ body{
     position:fixed;
     top:23%;
     left:-55%;
-    width:45%;
+    width:33%;
     height:75%;
     z-index:2;
-    opacity: .32;
+    opacity: .72;
     border:3px solid blue;
     color:white;
+}
+
+#planetname img{
+    width:30px;
+    height:30px;
+    display:inline-block;
+    line-height:45px;
+}
+
+#detailedinfo div{
+    opacity:1;
 }
 
 #planetname{
@@ -141,6 +152,9 @@ body{
     text-align:center;
     width:100%;
     font-size:30px;
+    background-color:black;
+    border: 2px solid white;
+    border-radius:10px;
 }
 
 .planet{

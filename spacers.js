@@ -4,7 +4,9 @@ var returner = 10;
 var daycount = 10;
 var currentmessage = 1;
 var onTraveller = false;
-var activeTraveller = 0;
+var activeTraveller = 0
+var planetsperciv = 8;
+var MouseScroller = false;
 
 window.addEventListener('mousemove', function (e) {
     if (curDown) {
@@ -22,7 +24,21 @@ window.addEventListener('mouseup', function (e) {
     curDown = false;
 });
 
+var MouseScroller = false;
 
+var setScroll = function (quit) {
+    MouseScroller = true;
+    if (quit !== true) {
+        timer = setTimeout(setScroll, 100);
+    }
+    else {
+        clearTimeout(timer);
+    }
+};
+
+$('#headerbox').bind('mouseenter', setScroll).bind('mouseleave', function () { setScroll(true); });
+
+document.body.onwheel = function () { if (!MouseScroller) { return false; }}
 
 var findNearest = function (id1) {
     var lowest = 100000;
@@ -55,6 +71,7 @@ var planetnumb = 100;
 
 function affiliation(color) {
     this.color = color;
+    this.applied = false;
 }
 
 function planet(type, id, affiliation) {
@@ -239,7 +256,7 @@ for (i = 1; i < conf.length; i++) {
     planets[r].aff = i;
 }
 
-planets[0] = new planet(0, 0);
+planets[0] = new planet(0, 0, 0);
 
 
  /*  while (i != e && ((Math.abs(planets[i].rx - planets[e].rx) < 90 * (width / planets.length)) || Math.abs(planets[i].ry - planets[e].ry) < 90 * (height / planets.length))) {
@@ -253,6 +270,7 @@ for (i = 1; i < planets.length; i++) {
     image.className = "planet";
 
     image.setAttribute('data-param', i);
+    image.setAttribute('draggable', 'none');
     image.onclick = function () {
         planets[this.id.substring(6)].clicker();
    //   planets[this.id.substring(6)].goto();
@@ -265,11 +283,34 @@ for (i = 1; i < planets.length; i++) {
     document.getElementById("planet" + i).style.left = (((planets[i].rx))) + "px";
     document.getElementById("planet" + i).style.top = (((planets[i].ry))) + "px";
 
-    var closest = findNearest(i);
+    /*var closest = findNearest(i);
     for (r = 0; r < closest.length; r++) {
         if (planets[closest[r]].aff == 0) {
             planets[closest[r]].aff = planets[i].aff;
         }
+    }*/
+
+    if(planets[i].aff != 0 && !conf[planets[i].aff].done){
+        for (r = 0; r < planetsperciv; ) {
+            var lowest = 100000;
+            var lowestID = new Array(20).fill(0);
+            for (o = 0; o < planets.length && r < planetsperciv; o++) {
+                var doNow = true;
+                var he = Math.sqrt(Math.pow(Math.abs(planets[i].rx - planets[o].rx), 2) + Math.pow(Math.abs(planets[i].ry - planets[o].ry), 2));
+                for (t = 0; t < lowestID.length; t++) {
+                    if (lowestID[t] == o) {
+                        doNow = false;
+                    }
+                }
+                if (he < lowest && o != i && doNow && planets[o].aff == 0) {
+                    lowest = he;
+                    lowestID[r] = o;
+                    planets[o].aff = planets[i].aff;
+                    r++;
+                }
+            }
+        }
+        conf[planets[i].aff].done = true;
     }
 }
 
@@ -467,8 +508,12 @@ function repeat() {
         daycount = 0;
     }
 
-    document.getElementById("planetname").innerHTML = "Planet SR" + active;
+    document.getElementById("planetname").innerHTML = '<img src="planet' + planets[active].type + '.png">Planet SR' + active;
     document.getElementById("planetscore").innerHTML = "> " + planets[active].score + " points";
+    document.getElementById("planetname").style.border = '3px solid ' + conf[planets[active].aff].color;
+    if (planets[active].aff == 0) {
+        document.getElementById("planetname").style.border = '3px solid white';
+    }
 
     var finalstring = "";
     var activestring = "";
@@ -536,7 +581,9 @@ function repeat() {
             }
         }
         concluir = 0;
+        MouseScroller = false;
     }
+
 
     setTimeout(repeat, 1);
 }
