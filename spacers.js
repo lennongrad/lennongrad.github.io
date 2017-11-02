@@ -5,8 +5,16 @@ var daycount = 10;
 var currentmessage = 1;
 var onTraveller = false;
 var activeTraveller = 0
-var planetsperciv = 8;
+var planetsperciv = 6;
 var MouseScroller = false;
+var lagger = 10;
+
+var dayscale = 25;
+var supermod = 10;
+var repetir = 99;
+var rep_max = 100;
+var contour = 0;
+
 
 window.addEventListener('mousemove', function (e) {
     if (curDown) {
@@ -38,13 +46,17 @@ var setScroll = function (quit) {
 
 $('#headerbox').bind('mouseenter', setScroll).bind('mouseleave', function () { setScroll(true); });
 
-document.body.onwheel = function () { if (!MouseScroller) { return false; }}
+document.body.onwheel = function () { if (!MouseScroller) { return false; } }
 
-var findNearest = function (id1) {
+var pyth = function (id1, id2) {
+    return Math.sqrt(Math.pow(Math.abs(id1), 2) + Math.pow(Math.abs(id2), 2));
+}
+
+var findNearest = function (id1, id2) {
     var lowest = 100000;
-    var lowestID = new Array(20).fill(0);
+    var lowestID = new Array(planets.length).fill(0);
     for (o = 0; o < planets.length; o++) {
-        var he = Math.sqrt(Math.pow(Math.abs(planets[id1].rx - planets[o].rx), 2) + Math.pow(Math.abs(planets[id1].ry - planets[o].ry), 2));
+       var he = pyth((planets[id1].rx - planets[o].rx), (planets[id1].ry - planets[o].ry));
         if (he < lowest && o != id1) {
             lowest = he;
             lowestID[0] = o;
@@ -52,8 +64,11 @@ var findNearest = function (id1) {
                 lowestID[t] = lowestID[t - 1];
             }
         }
+        if (he > 100000) {
+            alert(he);
+        }
     }
-    return lowestID;
+    return lowestID[id2];
 }
 
 var setnone = function () {
@@ -69,9 +84,31 @@ var setnone = function () {
 
 var planetnumb = 100;
 
+function resource() {
+    this.name = "owo";
+}
+
+var res = new Array(2).fill(new resource()); 
+res[0].name = "Food";
+res[1].name = "Population";
+
+for(var r= 0; r < res.length; r++){
+    var rs = document.createElement("span");
+    rs.className = "msg";
+    rs.id = "planet" + r + "ps";
+
+    document.getElementById('detailedinfo').appendChild(rs);
+
+    var ys = document.createElement("span");
+    ys.id = "planet" + r + "amt";
+    document.getElementById('detailedinfo').appendChild(ys);
+
+}
+
 function affiliation(color) {
     this.color = color;
     this.applied = false;
+    this.amt = new Array(res.length).fill(0);
 }
 
 function planet(type, id, affiliation) {
@@ -86,6 +123,9 @@ function planet(type, id, affiliation) {
     this.maxc = 0;
 
     this.connections = new Array(3).fill(0);
+
+    this.ps = new Array(res.length).fill(0);
+    this.amt = new Array(res.length).fill(0);
 
     /*var cont = true;
     while (cont) {
@@ -191,6 +231,7 @@ function traveller(id) {
     lines.setAttribute("class",  "polypoints");
     document.getElementById('liners').appendChild(lines);
 
+
     document.getElementById("traveller" + id).style.left = planets[this.home].getLX(true);
     document.getElementById("traveller" + id).style.top = planets[this.home].getLY(true);
     $("#traveller" + this.id).animate({ "left": (9 + Math.ceil(((planets[this.destination].rx)))), "top": (9 + Math.ceil(((planets[this.destination].ry)))) }, 9);
@@ -209,7 +250,7 @@ function traveller(id) {
         newMsg("Trader #" + this.id + " has departed from Planet SR" + this.home, 0)
 
         this.moving = true;
-        $("#traveller" + this.id).animate({ "left": (9 + Math.ceil(((planets[this.destination].rx)))), "top": (9 + Math.ceil(((planets[this.destination].ry)))) }, 60000);
+        $("#traveller" + this.id).animate({ "left": (9 + Math.ceil(((planets[this.destination].rx)))), "top": (9 + Math.ceil(((planets[this.destination].ry)))) }, (500 * (pyth((planets[this.destination].rx - planets[this.home].rx), (planets[this.destination].ry - planets[this.home].ry)))) / dayscale);
     }
 }
 
@@ -222,28 +263,30 @@ var height = Math.max(body.scrollHeight, body.offsetHeight,
 var width = Math.max(body.scrollWidth, body.offsetWidth,
                        html.clientWidth, html.scrollWidth, html.offsetWidth);
 
-var conf = new Array(10);
+var conf = new Array();
 conf[0] = new affiliation("transparent");
 conf[1] = new affiliation("green");
 conf[2] = new affiliation("blue");
 conf[3] = new affiliation("orange");
 conf[4] = new affiliation("red");
-conf[5] = new affiliation("grey");
-conf[6] = new affiliation("lightgrey");
-conf[7] = new affiliation("darkgrey");
-conf[8] = new affiliation("darkcyan");
-conf[9] = new affiliation("pink");
+//conf[5] = new affiliation("grey");
+//conf[6] = new affiliation("lightgrey");
+//conf[7] = new affiliation("darkgrey");
+//conf[8] = new affiliation("darkcyan");
+//conf[9] = new affiliation("pink");
 
-var planets = new Array(400);
+var planets = new Array(200);
 
 
 var rotation = 1;
 
 var day = 0;
 
+var typeamount = 5;
+
 for (i = 1; i < planets.length; i++) {
     planets[i] = new planet(rotation, i, 0);
-    if (i % 80 == 0) {
+    if (i % (planets.length / typeamount) == 0) {
         rotation++;
     }
 }
@@ -259,10 +302,6 @@ for (i = 1; i < conf.length; i++) {
 planets[0] = new planet(0, 0, 0);
 
 
- /*  while (i != e && ((Math.abs(planets[i].rx - planets[e].rx) < 90 * (width / planets.length)) || Math.abs(planets[i].ry - planets[e].ry) < 90 * (height / planets.length))) {
-        planets[i].rx += (Math.random() * 20) - 20;
-        planets[i].ry += (Math.random() * 20) - 20;
-    }*/
 
 for (i = 1; i < planets.length; i++) {
     image = document.createElement("img");
@@ -290,6 +329,10 @@ for (i = 1; i < planets.length; i++) {
         }
     }*/
 
+    for (var r = 0; r < res.length; r++) {
+        planets[i].ps[r] = Math.ceil(Math.random() * 100);
+    }
+
     if(planets[i].aff != 0 && !conf[planets[i].aff].done){
         for (r = 0; r < planetsperciv; ) {
             var lowest = 100000;
@@ -314,7 +357,7 @@ for (i = 1; i < planets.length; i++) {
     }
 }
 
-for (i = 1; i < planets.length; i++) {
+/*for (i = 1; i < planets.length; i++) {
     var closest = findNearest(i);
     for (r = 0; r < closest.length; r++) {
         if (planets[closest[r]].maxc <= planets[closest[r]].connections.length - 1 && planets[i].maxc <= planets[i].connections.length - 1 && closest[r] < i) {
@@ -329,27 +372,47 @@ for (i = 1; i < planets.length; i++) {
             planets[i].connections[r] = 1;
         }
     }
-}
+}*/
+
+lagger = 75;
 
 for (i = 1; i < planets.length; i++) {
     var added = new Array(planets.length).fill(false)
     while (planets[i].addedC < planets[i].connections.length) {
         var current = 0;
+        var inter = 0;
+        var ready = true;
         while (added[current] || planets[current].addedC >= 4 || i == current) {
-            current = 1 + Math.ceil(Math.random() * (planets.length - 2));
+            ready = false;
+            current = findNearest(i, inter)//1 + Math.ceil(Math.random() * (planets.length - 2));
+            inter++;
+            if (inter >= lagger) {
+                current = 1 + Math.ceil(Math.random() * (planets.length - 2));
+                inter = 0;
+            }
+            for (e = 1; e < planets[i].connections.length; e++) {
+                if (planets[i].connections[e] == current) {
+                    ready = true;
+                }
+            }
+            for (e = 1; e < planets[current].connections.length; e++) {
+                if (planets[current].connections[e] == i) {
+                    ready = true;
+                }
+            }
         } ;
-
 
         planets[i].connections[planets[i].addedC] = current;
         added[current] = true;
         planets[current].connections[planets[current].addedC] = i;
         planets[current].addedC++;
-            planets[i].addedC++;
+        planets[i].addedC++;
     }
 }
 
 
-var travellers = new Array(planets.length / 10);
+
+var travellers = new Array(Math.ceil(planets.length / 10));
 for (i = 0; i < travellers.length; i++) {
     travellers[i] = new traveller(i);
 }
@@ -396,6 +459,10 @@ document.addEventListener('keydown', function (event) {
         $("#lactive").toggle();
     } else if (event.keyCode == 66) {
         $("#borders").toggle();
+    } else if (event.keyCode == 80) {
+        for (t = 0; t < planets[active].connections.length; t++) {
+            alert(planets[active].connections[t]);
+        }
     } else if (event.keyCode == 78) {
         $(".name").toggle();
     } else if (event.keyCode == 76) {
@@ -453,6 +520,10 @@ $(document).ready(function () {
     planets[active].goto();
 });
 
+var righttime = function () {
+    dayscale += 5;
+}
+
 newMsg("Initial Ownership:", 0);
 for (e = 1; e < conf.length; e++) {
     var strang = "";
@@ -495,17 +566,52 @@ var concluir = 0;
 
 function repeat() {
 
+
     returner--;
     if (returner < 0) {
         returner = 0;
     }
 
-    document.getElementById("daytime").innerHTML = "> " + toDate(day);
+    document.getElementById("superbox").innerHTML = toDate(day);
 
-    daycount += 10;
-    if (daycount > 10000) {
+    daycount += dayscale;
+    repetir = daycount;
+    rep_max = 5000;
+
+    if (Math.floor(daycount % 10) == 0) {
+        for (var a = 1; a < conf.length; a++) {
+            for (var r = 0; r < res.length; r++) {
+                conf[a].amt[r] = 0;
+                for (var i = 0; i < planets.length; i++) {
+                    if (planets[i].aff == a) {
+                        conf[a].amt[r] += planets[i].amt[r];
+                    }
+                }
+            }
+        }
+        document.getElementById('blanker').innerHTML = conf[planets[active].aff].amt[0];
+    }
+
+    if (daycount > 5000) {
         day++;
         daycount = 0;
+        for (var r = 0; r < res.length; r++) {
+            for (var i = 0; i < planets.length; i++) {
+                planets[i].amt[r] += planets[i].ps[r];
+            }
+        }
+    }
+
+    if (repetir > rep_max) {
+        repetir = 0;
+        rep_max = Math.ceil(rep_max * 1.1);
+    }
+
+    planets[1].ps[0] = 10;
+
+    for (var r = 0; r < res.length; r++) {
+        document.getElementById("planet" + r + "amt").innerHTML = "<br>> " + planets[active].amt[r] + " " + res[r].name;
+        document.getElementById("planet" + r + "ps").innerHTML = "<br>> " + planets[active].ps[r] + " " + res[r].name + " Per Day";
     }
 
     document.getElementById("planetname").innerHTML = '<img src="planet' + planets[active].type + '.png">Planet SR' + active;
@@ -539,7 +645,7 @@ function repeat() {
     };
 
     for (e = 1; e < planets.length; e++) {
-        if (e == active) {
+        if (false || e == active) {
             document.getElementById("planet" + e).style.background = "radial-gradient(#33ff66 60%, red 15%, transparent 25%)";
             for (i = 0; i < planets[e].connections.length; i++) {
                 activestring += "" + (9 + Math.ceil((((planets[planets[e].connections[i]].rx))))) + "," + (9 + Math.ceil(((planets[planets[e].connections[i]].ry)))) + " " + Math.ceil(9 + (((planets[e].rx)))) + "," + (9 + Math.ceil(((planets[e].ry)))) + " ";
@@ -584,8 +690,9 @@ function repeat() {
         MouseScroller = false;
     }
 
+    document.getElementById('super').style.width = ((repetir / rep_max) * 200) + "px";
 
-    setTimeout(repeat, 1);
+    setTimeout(repeat, .1);
 }
 
 repeat();

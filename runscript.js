@@ -27,9 +27,6 @@ function Resource(name, unlocked, color, base, limit) {
     this.auto = new Array();
 
     this.toClick = function () {
-        if (this.amt + this.click > this.limit) {
-            return;
-        }
         this.amt = this.amt + this.click;
         clicker[reconback.get(this.name)] = 0;
         rowclicker[reconback.get(this.name)] = 0;
@@ -319,7 +316,6 @@ function moveClick() {
             rowclicker[i] = 296;
         }
         rowclicker[i] += 3;
-        document.getElementsByClassName("row" + res[i].name)[0].style.transform = "scaleY(" + (0 - ((((rowclicker[i] / 3) * -1) % 100) / 100)) + ")";
     }
 
     clicker[clicker.length - 1] += .5;
@@ -424,10 +420,8 @@ function init() {
         if (res[i].unlocked && res[i].name != "cash") {
             document.getElementById(res[i].name.substring(0, 1) + 'ps').innerHTML = "(" + small_int((res[i].ps)) + ' /s)';
             document.getElementById(res[i].name).innerHTML = small_int(Math.floor(res[i].amt));
-            document.getElementById(res[i].name + "limit").innerHTML = res[i].limit;
         } else if (res[i].unlocked) {
             document.getElementById(res[i].name).innerHTML = small_int(Math.floor(res[i].amt));
-            document.getElementById(res[i].name + "limit").innerHTML = res[i].limit
 	}
     }
     
@@ -491,10 +485,6 @@ function auto(first, second){
 
 function converter(first, second) {
     i = (res[first].amt * res[first].rates[second]);
-    if (res[second].amt >= res[second].limit) {
-        auto(first, second);
-        return;
-    }
     if (i > (res[second].amt * .1)) {
         i /= 100;
     }
@@ -538,9 +528,7 @@ function findPS() {
                for (e = 0; e < bldg.length; e++) {
                    if (bldg[e].resource == u && bldg[e].purpose == 0) {
                        res[u].ps += bldg[e].fps;
-                   } else if (bldg[e].resource == u && bldg[e].purpose == 1) {
-                       res[u].limit += bldg[e].fps;
-                   }
+                   } 
                }
            }
 }
@@ -658,17 +646,11 @@ function repeat() {
     }
 
     for (i = 0; i < res.length - 1; i++) {
-        if (res[i].amt + res[i].ps / (1000 / framer) < res[i].limit) {
+        if (res[i].amt + res[i].ps / (1000 / framer) > -1) {
             res[i].amt += res[i].ps / (1000 / framer);
-        } else {
-            res[i].amt = res[i].limit;
         }
         res[i].click = 1 + tech_level / 4;
         document.getElementById(res[i].name + "appear").innerHTML = "+" + res[i].click;
-    }
-
-    if (res[res.length - 1].amt > res[res.length - 1].limit) {
-        res[res.length - 1].amt = res[res.length - 1].limit;
     }
 
    if (repetir > rep_max) {
@@ -683,7 +665,6 @@ function repeat() {
         clicker[5] = 0;
    }
    document.getElementById('super').style.width = ((repetir / rep_max) * 200) + "px";
-   document.getElementById('super').style.background = "linear-gradient(to right, rgb(" + Math.ceil(contour[0]) + "," + Math.ceil(contour[1]) + "," + Math.ceil(contour[2]) + "), rgb(" + Math.ceil(contour[3]) + "," + Math.ceil(contour[4]) + "," + Math.ceil(contour[5]) + ")";
     document.getElementById('superbox').innerHTML = repetir + " / " + rep_max;
     findPS();
     workercost();
