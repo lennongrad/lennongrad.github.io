@@ -9,7 +9,7 @@ var planetsperciv = 6;
 var MouseScroller = false;
 var lagger = 10;
 
-var dayscale = 25;
+var dayscale = 250;
 var supermod = 10;
 var repetir = 99;
 var rep_max = 100;
@@ -84,13 +84,17 @@ var setnone = function () {
 
 var planetnumb = 100;
 
-function resource() {
-    this.name = "owo";
+function resource(name, daily) {
+    this.name = name;
+    this.daily = daily;
 }
 
-var res = new Array(2).fill(new resource()); 
-res[0].name = "Food";
-res[1].name = "Population";
+var res = new Array();
+res[0] = new resource("Food", true);
+res[1] = new resource("Population", false);
+res[2] = new resource("Higher Class", false);
+res[3] = new resource("Middle Class", false);
+res[4] = new resource("Lower Class", false);
 
 for(var r= 0; r < res.length; r++){
     var rs = document.createElement("span");
@@ -127,6 +131,9 @@ function planet(type, id, affiliation) {
     this.ps = new Array(res.length).fill(0);
     this.amt = new Array(res.length).fill(0);
 
+    this.highper = .1;
+    this.midper = .4;
+
     /*var cont = true;
     while (cont) {
         cont = false;
@@ -157,8 +164,8 @@ function planet(type, id, affiliation) {
 
     this.connect = function () {
         var strang = this.type + " ";
-        for(r = 0; r < this.connections.length; r++){
-            strang += this.connections[r] + "(" + planets[this.connections[r]].type + "),";
+        for(c = 0; c < this.connections.length; c++){
+            strang += this.connections[c] + "(" + planets[this.connections[c]].type + "),";
         }
         return strang;
     }
@@ -292,11 +299,11 @@ for (i = 1; i < planets.length; i++) {
 }
 
 for (i = 1; i < conf.length; i++) {
-    var r = Math.ceil(Math.random() * planets.length);
-    while (planets[r].aff != 0) {
-        r = Math.ceil(Math.random() * conf.length);
+    var c = Math.ceil(Math.random() * planets.length);
+    while (planets[c].aff != 0) {
+        c = Math.ceil(Math.random() * conf.length);
     }
-    planets[r].aff = i;
+    planets[c].aff = i;
 }
 
 planets[0] = new planet(0, 0, 0);
@@ -330,8 +337,12 @@ for (i = 1; i < planets.length; i++) {
     }*/
 
     for (var r = 0; r < res.length; r++) {
-        planets[i].ps[r] = Math.ceil(Math.random() * 100);
+        planets[i].ps[r] = 100 + Math.ceil(Math.random() * 1000);
     }
+    planets[i].amt[1] = Math.ceil(Math.random() * 10000);
+    planets[i].highper = Math.random() * .09;
+    planets[i].midper = planets[i].highper + (Math.random() * .4);
+    planets[i].ps[0] = Math.ceil(planets[i].amt[1] * (1 + (Math.random())));
 
     if(planets[i].aff != 0 && !conf[planets[i].aff].done){
         for (r = 0; r < planetsperciv; ) {
@@ -375,6 +386,43 @@ for (i = 1; i < planets.length; i++) {
 }*/
 
 lagger = 75;
+
+function doPlanetCount() {
+    
+        for (var r = 0; r < res.length; r++) {
+            if (res[r].daily) {
+                for (var i = 0; i < planets.length; i++) {
+                    planets[i].amt[r] += planets[i].ps[r];
+                }
+            }
+        }
+        //Population
+        for (var i = 0; i < planets.length; i++){
+            planets[i].amt[2] = Math.floor(planets[i].amt[1] * planets[i].highper);
+            planets[i].amt[3] = Math.floor(planets[i].amt[1] * planets[i].midper);
+            planets[i].amt[4] = planets[i].amt[1] - (planets[i].amt[3] + planets[i].amt[2]);
+        }
+}
+
+function doPop() {
+    for (var i = 0; i < planets.length; i++){
+        var needed = planets[i].amt[1];
+        var recip = 0;
+
+        if (needed > planets[i].amt[0]) {
+            recip = -.5 * planets[i].amt[0] / needed;
+        } else {
+            recip = .1 + (needed / planets[i].amt[0]);
+        }
+
+        planets[i].amt[1] = Math.ceil(planets[i].amt[1] * (1 + (recip * Math.random())));
+
+        planets[i].amt[0] -= Math.abs(Math.ceil(needed));
+        if (planets[i].amt[0] < 0) {
+            planets[i].amt[0] = 0;
+        }
+    }
+}
 
 for (i = 1; i < planets.length; i++) {
     var added = new Array(planets.length).fill(false)
@@ -564,6 +612,8 @@ for (i = 1; i < planets.length; i++) {
 
 var concluir = 0;
 
+doPlanetCount();
+
 function repeat() {
 
 
@@ -595,11 +645,8 @@ function repeat() {
     if (daycount > 5000) {
         day++;
         daycount = 0;
-        for (var r = 0; r < res.length; r++) {
-            for (var i = 0; i < planets.length; i++) {
-                planets[i].amt[r] += planets[i].ps[r];
-            }
-        }
+        doPlanetCount();
+        doPop();
     }
 
     if (repetir > rep_max) {
@@ -611,7 +658,9 @@ function repeat() {
 
     for (var r = 0; r < res.length; r++) {
         document.getElementById("planet" + r + "amt").innerHTML = "<br>> " + planets[active].amt[r] + " " + res[r].name;
-        document.getElementById("planet" + r + "ps").innerHTML = "<br>> " + planets[active].ps[r] + " " + res[r].name + " Per Day";
+        if (res[r].daily) {
+            document.getElementById("planet" + r + "ps").innerHTML = "<br>> " + planets[active].ps[r] + " " + res[r].name + " Per Day";
+        }    
     }
 
     document.getElementById("planetname").innerHTML = '<img src="planet' + planets[active].type + '.png">Planet SR' + active;
@@ -662,8 +711,6 @@ function repeat() {
     //  document.getElementById("polypoints").setAttribute("points", finalstring);
 
     document.getElementById("pactive").setAttribute("points", activestring);
-
-    document.getElementById("title").innerHTML = "Spacers (" + Math.ceil(day) + ")";
 
 
     /* for (e = 1; e < conf.length; e++) {
