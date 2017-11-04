@@ -135,8 +135,23 @@ body{
     opacity: .72;
 }
 
-#headerbox span{
-    opacity:1;
+#ledger{
+    background-color:black;
+    background-image: url("computerscreen.jpeg");
+    background-position:center;
+    background-size:cover;
+    border:3px solid #0c0c0c;
+    position:fixed;
+    top:22%;
+    right:-57%;
+    width:35%;
+    height:60%;
+    overflow:auto;
+    z-index:7;
+    text-align:left;
+    color:#33ff66;
+    font-family:Vt;
+    opacity: .72;
 }
 
 #detailedinfo{

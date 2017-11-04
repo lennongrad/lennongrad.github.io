@@ -9,12 +9,23 @@ var planetsperciv = 6;
 var MouseScroller = false;
 var lagger = 10;
 
-var dayscale = 250;
+var dayscale = 750;
 var supermod = 10;
 var repetir = 99;
 var rep_max = 100;
 var contour = 0;
 
+function sortNumber(a,b) {
+    return a - b;
+}
+
+function caster(numb, tobe) {
+    var numbo = numb.toString();
+    while (tobe > numbo.length) {
+        numbo = "0" + numbo;
+    }
+    return numbo;
+}
 
 window.addEventListener('mousemove', function (e) {
     if (curDown) {
@@ -44,7 +55,7 @@ var setScroll = function (quit) {
     }
 };
 
-$('#headerbox').bind('mouseenter', setScroll).bind('mouseleave', function () { setScroll(true); });
+$('.ui').bind('mouseenter', setScroll).bind('mouseleave', function () { setScroll(true); });
 
 document.body.onwheel = function () { if (!MouseScroller) { return false; } }
 
@@ -129,6 +140,7 @@ function planet(type, id, affiliation) {
     this.connections = new Array(3).fill(0);
 
     this.ps = new Array(res.length).fill(0);
+    this.baseps = new Array(res.length).fill(0);
     this.amt = new Array(res.length).fill(0);
 
     this.highper = .1;
@@ -241,7 +253,7 @@ function traveller(id) {
 
     document.getElementById("traveller" + id).style.left = planets[this.home].getLX(true);
     document.getElementById("traveller" + id).style.top = planets[this.home].getLY(true);
-    $("#traveller" + this.id).animate({ "left": (9 + Math.ceil(((planets[this.destination].rx)))), "top": (9 + Math.ceil(((planets[this.destination].ry)))) }, 9);
+    $("#traveller" + this.id).animate({ "left": (9 + Math.ceil(((planets[this.destination].rx)))), "top": (9 + Math.ceil(((planets[this.destination].ry)))) }, 9)
 
     this.fly = function () {
         this.moving = $("#traveller" + this.id).is(':animated');
@@ -249,15 +261,20 @@ function traveller(id) {
             return;
         } 
 
-        newMsg("Trader #" + this.id + " has arrived at Planet SR" + this.destination, 0)
+        //newMsg("Trader #" + this.id + " has arrived at Planet SR" + caster(this.destination,3), 0)
             this.refresher();
 
-        planets[this.home].score--;
+            planets[this.home].score--;
+            if (planets[this.home].score < 0) {
+                planets[this.home].score = 0;
+            }
+        
         planets[this.destination].score += 1.25;
-        newMsg("Trader #" + this.id + " has departed from Planet SR" + this.home, 0)
+        //newMsg("Trader #" + this.id + " has departed from Planet SR" + caster(this.home,3), 0)
 
         this.moving = true;
-        $("#traveller" + this.id).animate({ "left": (9 + Math.ceil(((planets[this.destination].rx)))), "top": (9 + Math.ceil(((planets[this.destination].ry)))) }, (500 * (pyth((planets[this.destination].rx - planets[this.home].rx), (planets[this.destination].ry - planets[this.home].ry)))) / dayscale);
+            $("#traveller" + this.id).stop(true);
+        $("#traveller" + this.id).animate({ "left": (9 + Math.ceil(((planets[this.destination].rx)))), "top": (9 + Math.ceil(((planets[this.destination].ry)))) }, (500 * (pyth((planets[this.destination].rx - planets[this.home].rx), (planets[this.destination].ry - planets[this.home].ry)))) / (.333 * dayscale));
     }
 }
 
@@ -340,9 +357,9 @@ for (i = 1; i < planets.length; i++) {
         planets[i].ps[r] = 100 + Math.ceil(Math.random() * 1000);
     }
     planets[i].amt[1] = Math.ceil(Math.random() * 10000);
-    planets[i].highper = Math.random() * .09;
+    planets[i].highper = Math.random() * .02;
     planets[i].midper = planets[i].highper + (Math.random() * .4);
-    planets[i].ps[0] = Math.ceil(planets[i].amt[1] * (1 + (Math.random())));
+    planets[i].baseps[0] = Math.ceil(((planets[i].type) + .5) * (1 + (Math.random())));
 
     if(planets[i].aff != 0 && !conf[planets[i].aff].done){
         for (r = 0; r < planetsperciv; ) {
@@ -388,6 +405,26 @@ for (i = 1; i < planets.length; i++) {
 lagger = 75;
 
 function doPlanetCount() {
+    var tempar = new Array();
+    var temstr = " ";
+    for (i = 1; i < planets.length; i++){
+        tempar[i] = planets[i].amt[1];
+    }
+    tempar.sort(sortNumber);
+
+    for (t = 1; t < planets.length; t++){
+        for (i = 1; i < planets.length; i++){
+            if (planets[i].amt[1] == tempar[t]) {
+                temstr += "SR" + caster(i,3);
+                temstr += "  " + planets[i].amt[1] + " ";
+                temstr += caster(planets[i].baseps[0],2) + "  ";
+                temstr += caster(planets[i].ps[0],6) + "  ";
+                temstr += planets[i].type + "<br>";
+                resum = false;
+            }
+        }
+    }
+    document.getElementById('popscore').innerHTML = temstr;
     
         for (var r = 0; r < res.length; r++) {
             if (res[r].daily) {
@@ -405,24 +442,25 @@ function doPlanetCount() {
 }
 
 function doPop() {
+    doPS();
     for (var i = 0; i < planets.length; i++){
         var needed = planets[i].amt[1];
-        var recip = 0;
-
-        if (needed > planets[i].amt[0]) {
-            recip = -.5 * planets[i].amt[0] / needed;
-        } else {
-            recip = .1 + (needed / planets[i].amt[0]);
-        }
-
-        planets[i].amt[1] = Math.ceil(planets[i].amt[1] * (1 + (recip * Math.random())));
-
-        planets[i].amt[0] -= Math.abs(Math.ceil(needed));
+        planets[i].amt[0] -= needed;
         if (planets[i].amt[0] < 0) {
             planets[i].amt[0] = 0;
+            planets[i].amt[1] = Math.ceil(planets[i].amt[1] * .99);
+        } else {
+            planets[i].amt[1] = Math.ceil(planets[i].amt[1] * (1.005));
         }
     }
 }
+
+function doPS() {
+    for (var i = 0; i < planets.length; i++){
+        planets[i].ps[0] = Math.ceil((planets[i].score + planets[i].baseps[0]) * Math.pow(planets[i].amt[1], (.7 + (.1 * Math.random()))));
+    }
+}
+    doPS();
 
 for (i = 1; i < planets.length; i++) {
     var added = new Array(planets.length).fill(false)
@@ -472,9 +510,9 @@ var smallactive = 1;
 
 var toDate = function (time) {
     var stringer = "";
-    stringer = time % 1000;
-    stringer = Math.floor((time / 1000) % 100) + '.' + stringer;
-    stringer = Math.floor((time / 100000)) + '.' + stringer;
+    stringer = caster(time % 100,2);
+    stringer = caster(Math.floor((time / 100) % 10),2) + '.' + stringer;
+    stringer = Math.floor((time / 1000)) + '.' + stringer;
     return stringer;
 }
 
@@ -526,9 +564,21 @@ document.addEventListener('keydown', function (event) {
 $(".ui").toggle();
 $("#borders").toggle();
 
-$("#headerbox").click(function () {
+$('#daybox').click(function () {
+    
     if (active != 0) {
         planets[active].goto();
+    }
+})
+
+$("#headerbox").click(function () {
+    if ($("#ledger").hasClass('visible')) {
+        $("#ledger").animate({ "right": "10px" }, "fast").removeClass('visible');
+    } else {
+        $("#ledger").animate({ "right": "-57%" }, "fast").queue(function () {
+            $("#ledger").addClass('visible');
+            $("#ledger").stop(true);
+        });
     }
 })
 
@@ -543,6 +593,17 @@ $("#detailedinfo").click(function () {
         $("#detailedinfo").animate({ "left": "-57%" }, "fast").queue(function () {
             $("#detailedinfo").addClass('visible');
             $("#detailedinfo").stop(true);
+        });
+    }
+});
+
+$("#ledger").click(function () {
+    if ($("#ledger").hasClass('visible')) {
+        $("#ledger").animate({ "right": "0%" }, "fast").removeClass('visible');
+    } else {
+        $("#ledger").animate({ "right": "-57%" }, "fast").queue(function () {
+            $("#ledger").addClass('visible');
+            $("#ledger").stop(true);
         });
     }
 });
@@ -578,7 +639,7 @@ for (e = 1; e < conf.length; e++) {
     var poly = "";
     for (i = 1; i < planets.length; i++) {
         if(planets[i].aff == e){
-            strang += ", SR" + i;
+            strang += ", SR" + caster(i,3);
             if (Math.random() > .35) {
                 poly += Math.ceil(planets[i].rx) + "," + Math.ceil(planets[i].ry) + " ";
             }
@@ -601,7 +662,7 @@ for (i = 1; i < planets.length; i++) {
 
     var test = document.createElement("div");
     test.id = "name" + i;
-    test.innerHTML = "SR" + i;
+    test.innerHTML = "SR" + caster(i,3);
     test.className += " name";
     test.style.position = "absolute";
     body.appendChild(test);
@@ -613,6 +674,77 @@ for (i = 1; i < planets.length; i++) {
 var concluir = 0;
 
 doPlanetCount();
+
+/*circle('layer-1');
+
+            function circle(id) {
+
+                var el = document.getElementById(id);
+
+                var elDisplay = el.children[0];
+                var elInteraction = el.children[1];
+
+                var offsetRad = null;
+                var targetRad = 0;
+                var previousRad;
+
+
+                try {
+                    elInteraction.addEventListener('mousedown', down);
+                }
+                catch (err) {
+                    console.log("Interaction not found");
+                }
+
+                function down(event) {
+                    offsetRad = getRotation(event);
+                    previousRad = offsetRad;
+                    window.addEventListener('mousemove', move);
+                    window.addEventListener('mouseup', up);
+                }
+
+                function move(event) {
+
+                    var newRad = getRotation(event);
+                    targetRad += (newRad - previousRad);
+                    previousRad = newRad;
+                    elDisplay.style.transform = 'rotate(' + (targetRad / Math.PI * 180) + 'deg)';
+                }
+
+                function up() {
+                    window.removeEventListener('mousemove', move);
+                    window.removeEventListener('mouseup', up);
+                }
+
+                function getRotation(event) {
+                    var pos = mousePos(event, elInteraction);
+                    var x = pos.x - elInteraction.clientWidth * .5;
+                    var y = pos.y - elInteraction.clientHeight * .5;
+                    return Math.atan2(y, x);
+                }
+
+                function mousePos(event, currentElement) {
+                    var totalOffsetX = 0;
+                    var totalOffsetY = 0;
+                    var canvasX = 0;
+                    var canvasY = 0;
+
+                    do {
+                        totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
+                        totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
+                    }
+                    while (currentElement = currentElement.offsetParent)
+
+                    canvasX = event.pageX - totalOffsetX;
+                    canvasY = event.pageY - totalOffsetY;
+
+                    return {
+                        x: canvasX,
+                        y: canvasY
+                    };
+                }
+}*/
+            
 
 function repeat() {
 
@@ -645,8 +777,16 @@ function repeat() {
     if (daycount > 5000) {
         day++;
         daycount = 0;
-        doPlanetCount();
         doPop();
+        doPlanetCount();
+
+        for (y = 0; y < travellers.length; y++) {
+            travellers[y].fly();
+        }
+        if (day % 10 == 0) {
+            $.fx.off = true;
+            $.fx.off = false;
+        }
     }
 
     if (repetir > rep_max) {
@@ -663,7 +803,7 @@ function repeat() {
         }    
     }
 
-    document.getElementById("planetname").innerHTML = '<img src="planet' + planets[active].type + '.png">Planet SR' + active;
+    document.getElementById("planetname").innerHTML = '<img src="planet' + planets[active].type + '.png">Planet SR' + caster(active,3);
     document.getElementById("planetscore").innerHTML = "> " + planets[active].score + " points";
     document.getElementById("planetname").style.border = '3px solid ' + conf[planets[active].aff].color;
     if (planets[active].aff == 0) {
@@ -702,10 +842,6 @@ function repeat() {
         } else {
             document.getElementById("planet" + e).style.background = "radial-gradient(" + conf[planets[e].aff].color + " 60%, red 15%, transparent 25%)";
         }
-    }
-
-    for (y = 0; y < travellers.length; y++) {
-        travellers[y].fly();
     }
 
     //  document.getElementById("polypoints").setAttribute("points", finalstring);
