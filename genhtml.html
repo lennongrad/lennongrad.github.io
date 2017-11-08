@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Azgaar's Fantasy Map Generator (Demo)</title>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="gencss.css"/>
+  <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <script src="https://cdn.rawgit.com/edeno/d3-save-svg/gh-pages/assets/d3-save-svg.min.js"></script>
+  <script src="https://use.fontawesome.com/b6af125a10.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.0.4/jscolor.js"></script>
+  <script src="https://rawgit.com/LuisSevillano/9f6c9edd7f90ac6cca54ed744e28f3ee/raw/38f9774f83f00b286360db1ea97d851f79e594aa/polylabel.js"></script>
+  <script src="https://cdn.rawgit.com/jarek-foksa/path-data-polyfill.js/master/path-data-polyfill.js"></script>
+</head>
+<body>
+  <div id="optionsContainer">
+    <div id="collapsible">
+      <button id="optionsTrigger" class="options" title="Click to display Options">▶</button>
+      <button id="regenerate" class="options" title="Click to generate a new map">New Map!</button>
+    </div>
+    <div id="options">
+      <div class="tab">
+        <button id="layoutTab" class="options">Layout</button>
+        <button id="styleTab" class="options">Style</button>
+        <button id="optionsTab" class="options">Options</button>
+        <button id="customizeTab" class="options">Customize</button>
+      </div>
+      <div id="layoutContent" class="tabcontent">
+        <p>Displayed map layers. Click to toggle</p>
+        <button id="toggleHeight">Heightmap</button>
+        <button onclick="$('.terrain').fadeToggle()">Relief</button>
+        <button onclick="$('.regions').fadeToggle()">Regions</button>
+        <button onclick="$('.borders').fadeToggle()">Borders</button>
+        <button onclick="$('.burgs').fadeToggle()">Burgs</button>
+        <button onclick="$('.labels').fadeToggle()">Labels</button>
+        <button onclick="$('.rivers').fadeToggle()">Rivers</button>
+        <button onclick="$('.ocean').fadeToggle()">Ocean</button>
+        <button id="toggleFlux">Flux</button>
+      </div>
+      <div id="styleContent" class="tabcontent">
+        <p>Set opacity:</p>
+        Regions: <input type="range" min="0" max="1" step="0.05" value="0.6" oninput="$('.regions').css('opacity', this.value)"><br>
+        Borders: <input type="range" min="0" max="1" step="0.05" value="0.6" oninput="$('.borders').css('opacity', this.value)"><br>
+        Ocean: <input type="range" min="0" max="1" step="0.05" value="1" oninput="$('.ocean').css('opacity', this.value)"><br>
+        Heightmap: <input type="range" min="0" max="1" step="0.05" value="1" oninput="$('.terrs').css('opacity', this.value)"><br>
+        Relief: <input type="range" min="0" max="1" step="0.05" value="1" oninput="$('.terrain').css('opacity', this.value)"><br>
+        <p>Set colors:</p>
+        <button class="jscolor {valueElement:'oceanValue', styleElement:'none'}">Ocean</button>
+        <input id="oceanValue" onchange="d3.select('.base').attr('fill', '#'+this.value)"" value="5E4FA2" hidden/>
+        <button class="jscolor {valueElement:'landValue', styleElement:'none'}">Land</button>
+        <input id="landValue" onchange="d3.select('.landmass').attr('fill', '#'+this.value)" value="eef6fb" hidden/>
+        <br><p>Toggle filters:</p>
+        <button onclick="$('svg').toggleClass('grayscale')">Grayscale</button>
+        <button onclick="$('svg').toggleClass('sepia')">Sepia</button>
+      </div>
+      <div id="optionsContent" class="tabcontent">
+        <p>Generate new map to apply the options</p>
+        <label title="Define how many Burgs (towns, manors) should be located">Burgs:</label>
+        <input id="manorsInput" type="range" min="0" max="700" value="500">
+        <output id="manorsOutput">500</output><br>
+        <label title="Define how many Regions (countries, areas) should be created">Regions:</label>
+        <input id="regionsInput" type="range" min="0" max="100" value="13">
+        <output id="regionsOutput">13</output><br>
+        <label title="Define the Capital attraction instability, i.e. Regions area disbalance">Disbalance:</label>
+        <input id="powerInput" type="range" min="0" max="10" step="0.2" value="5">
+        <output id="powerOutput">5</output><br>
+        <label title="Maximum distance to a closer manor to consider polygon as a Neutral Land">Influence:</label>
+        <input id="neutralInput" type="range" min="1" max="100" step="1" value="80">
+        <output id="neutralOutput">80</output><br>
+        <label title="Define the land swampiness. Increase to see more marshes (turn on 'Relief' layer)">Swampiness:</label>
+        <input id="swampinessInput" type="range" min="0" max="100" value="10">
+        <output id="swampinessOutput">10</output><br>
+        <label title="Define the coastline sharpness. Decrease for a more round land shape">Sharpness:</label>
+        <input id="sharpnessInput" type="range" min="0.1" max="0.2" value="0.2" step="0.05">
+        <output id="sharpnessOutput">0.2</output><br><br>
+        <label title="Select the coastline rendering style">Coastline Style:</label>
+        <select id="curveType">
+          <option value="Catmull–Rom" selected>Catmull–Rom</option>
+          <option value="Linear">Linear</option>
+          <option value="Basis">Basis</option>
+          <option value="Cardinal">Cardinal</option>
+          <option value="Step">Step</option>
+        </select>
+      </div>
+      <div id="customizeContent" class="tabcontent">
+        <p>Customize a new Heightmap:</p>
+        <div id="custom">
+          <button id="clear">Clear</button>
+          <button id="addIsland" disabled onclick="this.disabled = true">Add Island</button>
+          <button id="addHill" disabled>Add Hill</button>
+          <button id="rescalePlus" disabled>+</button>
+          <button id="rescaleMinus" disabled>-</button>
+          <button id="getMap" disabled>Complete</button>
+        </div>
+        <p>Click to add a Label:</p>
+        <button status="0" id="addLabel" onclick="this.setAttribute('status', 1); $(this).toggleClass('pressed')">Label</button>
+        <button status="0" id="addBurg" onclick="this.setAttribute('status', 1); $(this).toggleClass('pressed')">Burg</button>
+      </div>
+      <div id="sticked">
+        <button id="randomMap" class="options">New Map</button>
+        <button id="resetZoom" class="options">Reset Zoom</button>
+        <button id="download" class="options">Save in SVG</button>
+      </div>
+    </div>
+  </div>
+  <div id="editDialog" style="display: none">
+    <button id="editClassButton" title="Change / Declare new Class for the label" class="editButton"><i class="fa fa-list-ul" aria-hidden="true"></i></button>
+    <input id="editClass" class="editTrigger"/>
+    <button id="editTextButton" title="Edit Text for the label" class="editButton"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+    <input id="editText" class="editTrigger"/>
+    <button id="editFontButton" title="Select Font for the entire class" class="editButton"><i class="fa fa-font" aria-hidden="true"></i></button>
+    <select id="editFont" class="editTrigger"></select>
+    <button id="editSizeButton" title="Change Font Size for the entire class" class="editButton"><i class="fa fa-text-width" aria-hidden="true"></i></button>
+    <input id="editSize" class="editTrigger" value="14" type="range" min="1" max="100" step="1" oninput="editSizeValue.innerHTML = this.value">
+    <span id="editSizeValue" class="editValue">14</span>
+    <button id="editColorButton" title="Select Color for the entire class" class="editButton"><i class="fa fa-paint-brush" aria-hidden="true"></i></button>
+    <input id="editColor" class="editTrigger jscolor" value="3e3e4b">
+    <button id="editAngleButton" title="Rotate the label" class="editButton"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+    <input id="editAngle" class="editTrigger" value="0" type="range" min="-180" max="180" step="0.2" oninput="editAngleValue.innerHTML = Math.abs(this.value)+'°'">
+    <span id="editAngleValue" class="editValue">0°</span>
+    <i class="fa fa-trash editButton" aria-hidden="true" id="editRemoveButton" title="Remove the label" class="editButton"></i>
+  </div>
+  <svg width="960" height="540">
+    <defs>
+      <filter id="blurFilter" x="-1" y="-1" width="100" height="100">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="0.2" />
+      </filter>
+      <g id="deftemp">
+        <mask id="shape">
+          <rect x="0" y="0" width="100%" height="100%" fill="black" />
+        </mask> 
+      </g>
+      <pattern id="oceanPattern" width="100" height="100" patternUnits="userSpaceOnUse">
+        <filter id='image'>
+          <feImage x="0" y="0" width="100" height="100" xlink:href="./ocean.png">
+        </filter>
+        <rect width='100' height='100' filter="url(#image)" opacity='0.2'/>
+      </pattern>
+      <pattern id="mottling" width="16" height="9" patternUnits="userSpaceOnUse">
+        <filter id='turb'>
+          <feTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='10' stitchTiles='stitch'/>
+        </filter>
+        <rect width='16' height='9' filter="url(#turb)"/>
+      </pattern> 
+      <style type="text/css">@import url('https://fonts.googleapis.com/css?family=IM+Fell+English|Great+Vibes|Bitter|Yellowtail|Montez|Lobster|Josefin+Sans|Shadows+Into+Light|Amatic+SC:700|Orbitron:400|Dancing+Script:700|Bangers|Chewy|Architects+Daughter|Kaushan+Script|Gloria+Hallelujah|Satisfy|Comfortaa:700|Cinzel');</style>     
+    </defs>
+  </svg>
+  <div id="statusbar">
+    Coord: <span id="lx">0</span>/<span id="ly">0</span>; 
+    Cell: <span id="cell">0</span>; 
+    Height: <span id="height">0</span>; 
+    Type: <span id="feature">no</span>; 
+    Flux: <span id="flux">0</span>; 
+    Region: <span id="capital">no</span>; 
+    River: <span id="river">no</span>;<br>
+  </div>
+  <script type="text/javascript" src="script.js"></script>
+</body>

@@ -354,9 +354,12 @@ for (i = 1; i < planets.length; i++) {
     }*/
 
     for (var r = 0; r < res.length; r++) {
-        planets[i].ps[r] = 100 + Math.ceil(Math.random() * 1000);
+        planets[i].ps[r] = Math.ceil(Math.random() * 10000);
     }
     planets[i].amt[1] = Math.ceil(Math.random() * 10000);
+    if (Math.random() < .03) {
+        planets[i].amt[1] = 0;
+    }
     planets[i].highper = Math.random() * .02;
     planets[i].midper = planets[i].highper + (Math.random() * .4);
     planets[i].baseps[0] = Math.ceil(((planets[i].type) + .5) * (1 + (Math.random())));
@@ -450,14 +453,14 @@ function doPop() {
             planets[i].amt[0] = 0;
             planets[i].amt[1] = Math.ceil(planets[i].amt[1] * .99);
         } else {
-            planets[i].amt[1] = Math.ceil(planets[i].amt[1] * (1.005));
+            planets[i].amt[1] = Math.ceil(planets[i].amt[1] * (1 + (Math.random() * .01)));
         }
     }
 }
 
 function doPS() {
     for (var i = 0; i < planets.length; i++){
-        planets[i].ps[0] = Math.ceil((planets[i].score + planets[i].baseps[0]) * Math.pow(planets[i].amt[1], (.7 + (.1 * Math.random()))));
+        planets[i].ps[0] = Math.ceil((planets[i].score + planets[i].baseps[0]) * Math.pow(planets[i].amt[3] + planets[i].amt[4], (.7 + (.1))));
     }
 }
     doPS();
@@ -661,7 +664,7 @@ for (e = 1; e < conf.length; e++) {
 for (i = 1; i < planets.length; i++) {
 
     var test = document.createElement("div");
-    test.id = "name" + i;
+    test.id = "name" + i; 
     test.innerHTML = "SR" + caster(i,3);
     test.className += " name";
     test.style.position = "absolute";
