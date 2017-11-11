@@ -4,6 +4,55 @@
     <title>Agriculture</title>
     <link rel="stylesheet" href="stylesheet.css">
     <link rel="icon" href="faviconagr.ico" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
+
+    <script>
+    
+var iFrameWin;
+
+    </script>
+
+    <script id="entry-template" type="text/x-handlebars-template">
+                <td>
+
+                    <div id="{{type}}details" class="tooltip detailer">
+                        <img draggable="false" src="{{type}}.png" class="food-icon">
+                        <span class="tooltiptext">{{type}}</span>
+                    </div>
+                </td>
+                <td>
+                    <span id="{{type}}" class="text"></span>
+                </td>
+                <td>
+                    <span id="{{abr}}ps" class="text"></span>
+                </td>
+    </script>
+
+    <script id="bldg-template" type="text/x-handlebars-template">
+                    <tr>
+                        <td colspan=2 id="{{bldg}}_header">
+                            <span id="{{bldg}}s_number" class="amt"></span> {{name}}s <br /><span id="{{bldg}}s_fps" class="fpsamt"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="button" onclick="bldg[{{ide}}].left()"> ◄ </span> <span id="{{bldg}}_working"></span><span class="button" onclick="bldg[{{ide}}].right()"> ► </span>
+                        </td>
+                    </tr>
+                    <tr class="button buy_button" onclick="bldg[{{ide}}].buy()">
+                        <td colspan=2>
+                            <span id="{{bldg}}_cost" class="text"></span>
+                            <img draggable="false" src="cash.png" class="cashicon food-icon">
+                        </td>
+                    </tr>
+   </script>
+
+    <script id="appear-template" type="text/x-handlebars-template">
+                <span id="{{name}}appear" class="appearer">+1</span>
+                <div onclick="res[{{ide}}].toClick()" id="{{name}}_click" class="button click">
+                    <img draggable="false" src="{{name}}click.png" class="clicker">
+                </div>
+    </script>
 </head>
 <body>
 
@@ -19,7 +68,8 @@
     <!-- End of Header div -->
     <!-- Start of Ledger div -->
     <div id="ledger">
-        <table class="ledger">
+        <table  class="ledger">
+            <tbody id="ledgerbody">
             <tr>
                 <td colspan="4">
                     <div class="ledgerheader">
@@ -30,7 +80,7 @@
             <tr class="row-odd">
                 <td style="width:30px; ">
 
-                    <div id="fooddetails" class="tooltip detailer">
+                    <div class="tooltip detailer">
                         <img draggable="false" src="cash.png" class="cashicon food-icon">
                         <span class="tooltiptext">Cash</span>
                     </div>
@@ -38,776 +88,36 @@
                 <td style="width:55px">
                     <span id="cash" class="text"></span>
                 </td><td style="width:110px"></td>
-                <td style="width:35px">
-                    <span id="cashlimit" class="text"></span>
-                </td>
             </tr>
-            <tr class="row-even rowfood">
-                <td>
-                    <div class="tooltip detailer">
-                        <img draggable="false" src="food.png" class="foodicon food-icon">
-                        <span class="tooltiptext">Food</span>
-                    </div>
-                </td>
-                <td> <span id="food" class="text"></span></td>
-                <td> <span id="fps" class="text"></span></td>
-                <td>
-                    <span id="foodlimit" class="text"></span></td>
-            <tr class="row-odd rowgold">
-                <td>
-
-                    <div id="golddetails" class="tooltip detailer">
-                        <img draggable="false" src="gold.png" class="food-icon">
-                        <span class="tooltiptext">Gold</span>
-                    </div>
-                </td>
-                <td>
-                    <span id="gold" class="text"></span>
-                </td>
-                <td>
-                    <span id="gps" class="text"></span>
-                </td><td>
-                         <span id="goldlimit" class="text"></span></td>
-            </tr>
-            <tr class="row-even rowmineral">
-                <td>
-
-                    <div id="mineraldetails" class="tooltip detailer">
-                        <img draggable="false" src="mineral.png" class="mineralicon food-icon">
-                        <span class="tooltiptext">Minerals</span>
-                    </div>
-                </td>
-                <td>
-                    <span id="mineral" class="text"></span>
-                </td>
-                <td>
-                    <span id="mps" class="text"></span>
-                </td>
-                <td>
-                    <span id="minerallimit" class="text"></span>
-                </td>
-            </tr>
-            <tr class="row-even rowenergy">
-                <td>
-
-                    <div id="energydetails" class="tooltip detailer">
-                        <img draggable="false" src="energy.png" class="energyicon food-icon">
-                        <span class="tooltiptext">Energy</span>
-                    </div>
-                </td>
-                <td>
-                    <span id="energy" class="text"></span>
-                </td>
-                <td>
-                    <span id="eps" class="text"></span>
-                </td>
-                <td>
-                    <span id="energylimit" class="text"></span>
-                </td>
-            </tr>
-            <tr class="row-odd rowscience">
-                <td>
-
-                    <div id="sciencedetails" class="tooltip detailer">
-                        <img draggable="false" src="science.png" class="scienceicon food-icon">
-                        <span class="tooltiptext">Science</span>
-                    </div>
-                </td>
-                <td>
-                    <span id="science" class="text"></span>
-                </td>
-                <td>
-                    <span id="sps" class="text"></span>
-                </td>
-                <td>
-                    <span id="sciencelimit" class="text"></span></td>
-            </tr>
-            <tr class="row-even rowculture">
-                <td>
-
-                    <div id="culturedetails" class="tooltip detailer">
-                        <img draggable="false" src="culture.png" class="cultureicon food-icon">
-                        <span class="tooltiptext">Culture</span>
-                    </div>
-                </td>
-                <td>
-                    <span id="culture" class="text"></span>
-                </td>
-                <td>
-                    <span id="cps" class="text"></span>
-                </td>
-                <td>
-                    <span id="culturelimit" class="text"></span></td>
-            </tr>
-            <tr class="row-odd">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-even">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-odd">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-even">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-odd">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-even">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-odd">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-even">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-odd">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-even">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-odd">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-even">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-odd">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-even">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-odd">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-even">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-odd">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-even">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-odd">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-even">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr class="row-odd">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+            </tbody>
         </table>
     </div>
     <!-- End of Ledger div -->
     <div id="page1" class="page">
     <table id="main">
-        <colgroup>
+        <colgroup id="colgr">
             <col />
-            <col id="food-column" />
-            <col id="gold-column" />
-            <col id="mineral-column" />
-            <col id="energy-column" />
-            <col id="science-column" />
-            <col id="culture-column" />
         </colgroup>
         <tr><td></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td><td class="buffer"></td></tr>
-        <tr class="row">
+        <tr id="appearrow" class="row">
             <td></td>
-            <td>
-                <span id="foodappear" class="appearer">+1</span>
-                <div onclick="res[0].toClick()" id="food_click" class="button click">
-                    <img draggable="false" src="foodclick.png" class="clicker">
-                </div>
-            </td>
-            <td>
-                <span id="goldappear" class="appearer">+1</span>
-                <div onclick="res[1].toClick()" id="gold_click" class="button click">
-                    <img draggable="false" src="goldclick.png" class="clicker">
-                </div>
-            </td>
-            <td>
-                <span id="mineralappear" class="appearer">+1</span>
-                <div onclick="res[3].toClick()" id="mineral_click" class="button click">
-                    <img draggable="false" src="mineralclick.png" class="clicker">
-                </div>
-            </td>
-            <td>
-                <span id="energyappear" class="appearer">+1</span>
-                <div onclick="res[5].toClick()" id="energy_click" class="button click">
-                    <img draggable="false" src="energyclick.png" class="clicker">
-                </div>
-            </td>
-            <td>
-                <span id="scienceappear" class="appearer">+1</span>
-                <div onclick="res[2].toClick()" id="science_click" class="button click">
-                    <img draggable="false" src="scienceclick.png" class="clicker">
-                </div>
-            </td>
-            <td>
-                <span id="cultureappear" class="appearer">+1</span>
-                <div onclick="res[4].toClick()" id="culture_click" class="button click">
-                    <img draggable="false" src="cultureclick.png" class="clicker">
-                </div>
-            </td>
         </tr>
-        <tr class="row">
-            <td></td>
-            <td colspan="6" class="break">
-                Production
-            </td>
-        </tr>
-        <tr class="row">
+        <tr id="row">
             <td><div class="sidebar"></div></td>
-            <td class="topalign">
-
-                <table id="farm_holder" class="boxholder">
-                    <tr>
-                        <td colspan=2 id="farm_header">
-                            <span id="farms_number" class="amt"></span> Farms <br /><span id="farms_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[0].left()"> ◄ </span> <span id="farm_working"></span><span class="button" onclick="bldg[0].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[0].buy()">
-                        <td colspan=2>
-                            <span id="farm_cost" class="text"></span>
-                            <img draggable="false" src="cash.png" class="cashicon food-icon">
-                        </td>
-                    </tr>
-                </table>
-
-                <table id="plantation_holder" class="boxholder">
-                    <tr>
-                        <td id="plantation_header" colspan=2>
-                            <span id="plantations_number" class="amt"></span> Plantations <br /><span id="plantations_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td id="plantation_number" class="amt">
-                            <span class="button" onclick="bldg[2].left()"> ◄ </span>
-                            <span id="plantation_working"></span>
-                            <span class="button" onclick="bldg[2].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[2].buy()">
-                        <td colspan=2>
-                            <p id="plantation_cost" class="text"></p>
-                            <img draggable="false" src="cash.png" class="cashicon food-icon">
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td class="topalign">
-
-                <table id="mine_holder" class="boxholder">
-                    <tr>
-                        <td id="mine_header">
-                            <span id="mines_number" class="amt"></span> Mines <br /><span id="mines_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[3].left()"> ◄ </span>
-                            <span id="mine_working"></span>
-                            <span class="button" onclick="bldg[3].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[3].buy()">
-                        <td>
-                            <p id="mine_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                <table id="mint_holder" class="boxholder">
-                    <tr>
-                        <td id="mint_header">
-                            <span id="mints_number" class="amt"></span> Mints<br /> <span id="mints_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[5].left()"> ◄ </span>
-                            <span id="mint_working"></span>
-                            <span class="button" onclick="bldg[5].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[5].buy()">
-                        <td>
-                            <p id="mint_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td class="topalign">
-                <table id="quarry_holder" class="boxholder">
-                    <tr>
-                        <td id="quarry_header">
-                            <span id="quarrys_number" class="amt"></span> Quarries<br /> <span id="quarrys_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button depress" onclick="bldg[9].left()"> ◄ </span>
-                            <span id="quarry_working"></span>
-                            <span class="button depress" onclick="bldg[9].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[9].buy()">
-                        <td>
-                            <p id="quarry_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                <table id="fracker_holder" class="boxholder">
-                    <tr>
-                        <td id="fracker_header">
-                            <span id="frackers_number" class="amt"></span> Frackers<br /> <span id="frackers_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[11].left()"> ◄ </span>
-                            <span id="fracker_working"></span>
-                            <span class="button" onclick="bldg[11].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[11].buy()">
-                        <td>
-                            <p id="fracker_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-
-
-            </td>
-            <td class="topalign">
-                <table id="generator_holder" class="boxholder">
-                    <tr>
-                        <td id="generator_header">
-                            <span id="generators_number" class="amt"></span> Generators <br /><span id="generators_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[15].left()"> ◄ </span>
-                            <span id="generator_working"></span>
-                            <span class="button" onclick="bldg[15].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[15].buy()">
-                        <td>
-                            <p id="generator_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                <table id="powerplant_holder" class="boxholder">
-                    <tr>
-                        <td id="powerplant_header">
-                            <span id="powerplants_number" class="amt"></span> Power Plants <br /><span id="powerplants_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[17].left()"> ◄ </span>
-                            <span id="powerplant_working"></span>
-                            <span class="button" onclick="bldg[17].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[17].buy()">
-                        <td>
-                            <p id="powerplant_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td class="topalign">
-                <table id="lab_holder" class="boxholder">
-                    <tr>
-                        <td id="lab_header">
-                            <span id="labs_number" class="amt"></span> Labs <br /><span id="labs_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[6].left()"> ◄ </span>
-                            <span id="lab_working"></span>
-                            <span class="button" onclick="bldg[6].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[6].buy()">
-                        <td>
-                            <p id="lab_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                <table id="collider_holder" class="boxholder">
-                    <tr>
-                        <td id="collider_header">
-                            <span id="colliders_number" class="amt"></span> Collider <br /><span id="colliders_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[8].left()"> ◄ </span>
-                            <span id="collider_working"></span>
-                            <span class="button" onclick="bldg[8].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[8].buy()">
-                        <td>
-                            <p id="collider_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td class="topalign">
-
-                <table id="theatre_holder" class="boxholder">
-                    <tr>
-                        <td id="theatre_header">
-                            <span id="theatres_number" class="amt"></span> Theatre <br /><span id="theatres_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[12].left()"> ◄ </span>
-                            <span id="theatre_working"></span>
-                            <span class="button" onclick="bldg[12].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[12].buy()">
-                        <td>
-                            <p id="theatre_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                <table id="auditorium_holder" class="boxholder">
-                    <tr>
-                        <td id="auditorium_header">
-                            <span id="auditoriums_number" class="amt"></span> Auditorium <br /><span id="auditoriums_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[14].left()"> ◄ </span>
-                            <span id="auditorium_working"></span>
-                            <span class="button" onclick="bldg[14].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[14].buy()">
-                        <td>
-                            <p id="auditorium_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr class="row">
-            <td></td>
-            <td colspan="6" class="break">
-                Storage
-            </td>
-        </tr>
-        <tr class="row">
-            <td><div class="sidebar"></div></td>
-            <td>
-
-
-                <table id="silo_holder" class="boxholder">
-                    <tr>
-                        <td id="silo_header" colspan=2>
-                            <span id="silos_number" class="amt"></span> Silos <br /><span id="silos_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td id="silo_number" class="amt">
-                            <span class="button" onclick="bldg[1].left()"> ◄ </span>
-                            <span id="silo_working"></span>
-                            <span class="button" onclick="bldg[1].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[1].buy()">
-                        <td colspan=2>
-                            <p id="silo_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                            <div class="tooltip">
-                                <img draggable="false" src="mineral.png" class="mineralicon food-icon">
-                                <span class="tooltiptext">Mineral</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td>
-                <table id="bank_holder" class="boxholder">
-                    <tr>
-                        <td id="bank_header">
-                            <span id="banks_number" class="amt"></span> Banks <br /><span id="banks_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[4].left()"> ◄ </span>
-                            <span id="bank_working"></span>
-                            <span class="button" onclick="bldg[4].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[4].buy()">
-                        <td>
-                            <p id="bank_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                            <div class="tooltip">
-                                <img draggable="false" src="mineral.png" class="mineralicon food-icon">
-                                <span class="tooltiptext">Mineral</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td>
-                <table id="storehouse_holder" class="boxholder">
-                    <tr>
-                        <td id="storehouse_header">
-                            <span id="storehouses_number" class="amt"></span> Storehouses<br /> <span id="storehouses_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[10].left()"> ◄ </span>
-                            <span id="storehouse_working"></span>
-                            <span class="button" onclick="bldg[10].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[10].buy()">
-                        <td>
-                            <p id="storehouse_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                            <div class="tooltip">
-                                <img draggable="false" src="mineral.png" class="mineralicon food-icon">
-                                <span class="tooltiptext">Mineral</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td>
-                <table id="accumulator_holder" class="boxholder">
-                    <tr>
-                        <td id="accumulator_header">
-                            <span id="accumulators_number" class="amt"></span> Accumulators<br /> <span id="accumulators_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[16].left()"> ◄ </span>
-                            <span id="accumulator_working"></span>
-                            <span class="button" onclick="bldg[16].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[16].buy()">
-                        <td>
-                            <p id="accumulator_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                            <div class="tooltip">
-                                <img draggable="false" src="mineral.png" class="mineralicon food-icon">
-                                <span class="tooltiptext">Mineral</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td>
-
-                <table id="school_holder" class="boxholder">
-                    <tr>
-                        <td id="school_header">
-                            <span id="schools_number" class="amt"></span> School <br /><span id="schools_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[7].left()"> ◄ </span>
-                            <span id="school_working"></span>
-                            <span class="button" onclick="bldg[7].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[7].buy()">
-                        <td>
-                            <p id="school_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                            <div class="tooltip">
-                                <img draggable="false" src="mineral.png" class="mineralicon food-icon">
-                                <span class="tooltiptext">Mineral</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td>
-                <table id="museum_holder" class="boxholder">
-                    <tr>
-                        <td id="museum_header">
-                            <span id="museums_number" class="amt"></span> Museum <br /><span id="museums_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[13].left()"> ◄ </span>
-                            <span id="museum_working"></span>
-                            <span class="button" onclick="bldg[13].right()"> ► </span>
-                        </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[13].buy()">
-                        <td>
-                            <p id="museum_cost" class="text"></p>
-                            <div class="tooltip">
-                                <img draggable="false" src="cash.png" class="cashicon food-icon">
-                                <span class="tooltiptext">Cash</span>
-                            </div>
-                            <div class="tooltip">
-                                <img draggable="false" src="mineral.png" class="mineralicon food-icon">
-                                <span class="tooltiptext">Mineral</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </td>
+            
         </tr>
         <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
     </table>
         </div>
 
     <div class="page" id="page2">
+        <iframe src="spacers.html" id="hi" name="targetframe" allowTransparency="true" scrolling="no" frameborder="0" style="width:100%; height:100%;">
+    </iframe>
     </div>
 
     <div class="page" id="page3">
+        <div id="exp"></div>
+        <button class="clicker button" onclick="exporto()"></button>
     </div>
 
     <table id="rightside">

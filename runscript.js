@@ -123,7 +123,7 @@ var reconback = new Map();
 
 var res = new Array();
 res[0] = new Resource("food", true, "#b6ff9e", 0, 10000);
-res[1] = new Resource("gold", true, "#fff69e", 0, 10000);
+res[1] = new Resource("gold", true, "#fff69e", 90, 10000);
 res[2] = new Resource("science", true, "#9ea7ff", 10000, 10000);
 res[3] = new Resource("mineral", false, "#baab9c", 0, 10000);
 res[4] = new Resource("culture", false, "#d19eff", 0, 10000);
@@ -173,6 +173,58 @@ for (i = 0; i < bldg.length; i++) {
     bldgtxt.set(i, bldg[i].name.toLowerCase());
     builds.set(bldg[i].name.toLowerCase(), i);
 }
+
+iFrameWin.document.getElementbyId('headerbox');
+
+var source = document.getElementById("entry-template").innerHTML;
+var template = Handlebars.compile(source);
+
+for (var i = 0; i < res.length - 1; i++) {
+    source = document.getElementById("entry-template").innerHTML;
+    template = Handlebars.compile(source);
+
+    var context = { type: res[i].name, abr: res[i].name.substring(0,1) };
+    var html = template(context);
+
+    var owos = document.createElement("TR");
+    owos.innerHTML = html;
+    owos.className = 'row' + res[i].name;
+    document.getElementById('ledgerbody').appendChild(owos);
+    
+    var newrow = document.createElement("TD");
+    newrow.id = "col" + (i + 1);
+    newrow.className = "topalign";
+    document.getElementById('row').appendChild(newrow);
+
+    source = document.getElementById("appear-template").innerHTML;
+    template = Handlebars.compile(source);
+    
+    var newappear = document.createElement("TD");
+    context = { name: res[i].name.toLowerCase(), ide: i };
+    html = template(context);
+    newappear.innerHTML = html;
+    document.getElementById('appearrow').appendChild(newappear);
+
+    var newcol = document.createElement("COL");
+    newcol.id = res[i].name.toLowerCase() + "-column";
+    document.getElementById('colgr').appendChild(newcol);
+}    
+
+source = document.getElementById("bldg-template").innerHTML;
+template = Handlebars.compile(source);
+
+for (var i = 0; i < bldg.length; i++) {
+    var context = { bldg: bldg[i].name.toLowerCase(), name: bldg[i].name, ide: i };
+    var html = template(context);
+
+    var owos = document.createElement("table");
+    owos.innerHTML = html;
+    owos.className = 'boxholder';
+    owos.id = bldg[i].name.toLowerCase() + "_holder";
+        document.getElementById('col' + (bldg[i].resource + 1)).appendChild(owos);
+}  
+
+
 
 var tech_level = 0;
 var tech_unlocked = new Array();
@@ -255,7 +307,7 @@ function switchPage(inter) {
     }
     activatePage();
 
-}
+}  
 
 function activatePage() {
     for (r = 1; r < pages + 1; r++) {
@@ -276,6 +328,8 @@ activatePage();
 // Audio
 var snd = new Audio("click.wav");
 // snd.play();
+
+//document.getElementById('ledgerbody').appendChild( document.getElementsByClassName('rowfood')[0].cloneNode(true) );
 
 function small_int(e){
       var size = Math.floor(Math.log10(Math.abs(e))) + 1;
@@ -458,7 +512,6 @@ document.addEventListener('keydown', function (event) {
     }
     else if (event.keyCode == 38) {
         debug = !debug;
-        exporto();
     }
 
     if (event.keyCode == 83) {
@@ -726,23 +779,41 @@ for (r = 1; r < pages + 1; r++) {
 //alert(parseInt(setter, 36));
 //alert(setter);
 
-function exporto(){
     var exporter = "";
-    for(i = 0; i < bldg.length; i++){
-        exporter += bldg[i].amt.toString(36) + "ȧ";
-        exporter += bldg[i].working.toString(36) + "ȧ";
-        exporter += (bldg[i].efficiency * 1000).toString(36) + "ȧ";
-        exporter += bldg[i].unlocked.toString() + "ȧ";
-        exporter += bldg[i].onDebug.toString() + "ȧ";
+function exporto() {
+alert(doc.dayscale)
+    exporter = "";
+    for (i = 0; i < bldg.length; i++) {
+        exporter += bldg[i].amt + "ȧ";
+        exporter += bldg[i].working + "ȧ";
+        exporter += (bldg[i].efficiency * 1000) + "ȧ";
+        exporter += bldg[i].unlocked + "ȧ";
+        exporter += bldg[i].onDebug + "ȧ";
     }
+    document.getElementById('exp').innerHTML = exporter;
+}
+
+function importo() {
     var owo = exporter.split("ȧ");
+
+    for (i = 0; i < bldg.length; i++) {
+        bldg[i].amt = owo[(i * 5)];
+        bldg[i].working= owo[(i * 5) + 1];
+        bldg[i].efficiency = owo[(i * 5) + 2] / 1000;
+        bldg[i].unlocked = owo[(i * 5) + 3];
+        bldg[i].onDebug = owo[(i * 5) + 4];
+    }
+
+
+    /*var stranger = "";
     for (i = 0; i < owo.length; i++) {
         if (owo[i] != true && owo[i] != false) {
-            alert(parseInt(owo[i], 36));
+            stranger += parseInt(owo[i], 36) + "<br>";
         } else {
-            alert(owo[i]);
+            stranger += owo[i] + "<br>";
         }
     }
+    document.getElementById('imp').innerHTML = stranger;*/
 }
 
 
