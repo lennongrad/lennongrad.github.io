@@ -300,7 +300,7 @@ conf[4] = new affiliation("red");
 //conf[8] = new affiliation("darkcyan");
 //conf[9] = new affiliation("pink");
 
-var planets = new Array(200);
+var planets = new Array(100);
 
 
 var rotation = 1;

@@ -125,10 +125,13 @@ var res = new Array();
 res[0] = new Resource("food", true, "#b6ff9e", 0, 10000);
 res[1] = new Resource("gold", true, "#fff69e", 90, 10000);
 res[2] = new Resource("science", true, "#9ea7ff", 10000, 10000);
-res[3] = new Resource("mineral", false, "#baab9c", 0, 10000);
-res[4] = new Resource("culture", false, "#d19eff", 0, 10000);
-res[5] = new Resource("energy", false, "#9effd9", 0, 100000);
-res[6] = new Resource("cash", true, "#d19eff", 0, 100000);
+res[3] = new Resource("mineral", false, "#d8c2a4", 0, 10000);
+res[4] = new Resource("uranium", false, "#d8c2a4", 0, 100000);
+res[5] = new Resource("oil", false, "#d8c2a4", 0, 100000);
+res[6] = new Resource("culture", false, "#d19eff", 0, 10000);
+res[7] = new Resource("energy", false, "#9effd9", 0, 100000);
+res[8] = new Resource("manpower", false, "#ff8b82", 0, 100000);
+res[9] = new Resource("cash", true, "#d19eff", 0, 100000);
 
 for (i = 0; i < res.length; i++) {
     recon.set(i, res[i].name);
@@ -165,6 +168,15 @@ bldg[14] = new Building("Auditorium", 4, 2000, 2.95, 45, false, [6], 0); // coll
 bldg[15] = new Building("Generator", 5, 300, 2.95, .25, false, [6], 0); // collider (n/a)
 bldg[16] = new Building("Accumulator", 5, 200, 2.95, 45, false, [6, 3], 1); // collider (n/a)
 bldg[17] = new Building("Powerplant", 5, 2000, 2.95, 45, false, [6], 0); // collider (n/a)
+bldg[18] = new Building("1", 6, 300, 2.95, .25, false, [6], 0); // collider (n/a)
+bldg[19] = new Building("2", 6, 200, 2.95, 45, false, [6, 3], 1); // collider (n/a)
+bldg[20] = new Building("3", 6, 2000, 2.95, 45, false, [6], 0); // collider (n/a)
+bldg[21] = new Building("4", 7, 300, 2.95, .25, false, [6], 0); // collider (n/a)
+bldg[22] = new Building("5", 7, 200, 2.95, 45, false, [6, 3], 1); // collider (n/a)
+bldg[23] = new Building("6", 7, 2000, 2.95, 45, false, [6], 0); // collider (n/a)
+bldg[24] = new Building("7", 8, 300, 2.95, .25, false, [6], 0); // collider (n/a)
+bldg[25] = new Building("8", 8, 200, 2.95, 45, false, [6, 3], 1); // collider (n/a)
+bldg[26] = new Building("9", 8, 2000, 2.95, 45, false, [6], 0); // collider (n/a)
 
 var bldgtxt = new Map();
 var builds = new Map();
@@ -174,12 +186,16 @@ for (i = 0; i < bldg.length; i++) {
     builds.set(bldg[i].name.toLowerCase(), i);
 }
 
-iFrameWin.document.getElementbyId('headerbox');
+var clicker = new Array();
+var rowclicker = new Array();
 
 var source = document.getElementById("entry-template").innerHTML;
 var template = Handlebars.compile(source);
 
 for (var i = 0; i < res.length - 1; i++) {
+    clicker[i] = 0;
+    rowclicker[i] = 0;
+
     source = document.getElementById("entry-template").innerHTML;
     template = Handlebars.compile(source);
 
@@ -208,6 +224,10 @@ for (var i = 0; i < res.length - 1; i++) {
     var newcol = document.createElement("COL");
     newcol.id = res[i].name.toLowerCase() + "-column";
     document.getElementById('colgr').appendChild(newcol);
+
+    var newbuffer = document.createElement("TD");
+    newbuffer.className = "buffer";
+    document.getElementById('bufferrow').appendChild(newbuffer);
 }    
 
 source = document.getElementById("bldg-template").innerHTML;
@@ -242,6 +262,7 @@ for (i = 0; i < 12; i++) {
     tech_unlocked[i] = false;
     tech_possible[i] = false;
 }
+
 
 function techleft() {
     techpossible();
@@ -355,17 +376,15 @@ function small_int(e){
       return e + suffix;
 }
 
-var clicker = [0, 0, 0, 0, 0, 0, 0];
-var rowclicker = [296, 296, 296, 0, 0, 0, 0];
 
 function moveClick() {
-    for (i = 0; i < clicker.length - 1; i++) {
+    for (i = 0; i < clicker.length; i++) {
         clicker[i] += 5;
         document.getElementById(recon.get(i) + 'appear').style.transform = "translateY(" + (clicker[i] / 3) * -1 + "px)";
         document.getElementById(recon.get(i) + 'appear').style.opacity = 1 - (clicker[i] / 100);
     }
 
-    for (i = 0; i < rowclicker.length - 1; i++) {
+    for (i = 0; i < rowclicker.length; i++) {
         if (rowclicker[i] > 296) {
             rowclicker[i] = 296;
         }
@@ -682,12 +701,9 @@ function workercost(){
 
 tech_level_active = tech_level + 1;
 var contour = new Array();
-contour[0] = 10;
-contour[1] = 20;
-contour[2] = 30;
-contour[3] = 30;
-contour[4] = 30;
-contour[5] = 30;
+for (var i = 0; i < res.length - 1; i++) {
+    contour[i] = 10;
+}
     
 function repeat() {
 
@@ -798,7 +814,7 @@ function importo() {
 
     for (i = 0; i < bldg.length; i++) {
         bldg[i].amt = owo[(i * 5)];
-        bldg[i].working= owo[(i * 5) + 1];
+        bldg[i].working = owo[(i * 5) + 1];
         bldg[i].efficiency = owo[(i * 5) + 2] / 1000;
         bldg[i].unlocked = owo[(i * 5) + 3];
         bldg[i].onDebug = owo[(i * 5) + 4];
@@ -818,12 +834,12 @@ function importo() {
 
 
 switchPage(1);
-auto(0, 6);
-auto(0, 6);
-auto(1, 6);
-auto(2, 6);
-auto(2, 6);
-auto(3, 6);
-auto(3, 6);
+auto(0, res.length - 1);
+auto(0, res.length - 1);
+auto(1, res.length - 1);
+auto(2, res.length - 1);
+auto(2, res.length - 1);
+auto(3, res.length - 1);
+auto(3, res.length - 1);
 init();
 repeat();

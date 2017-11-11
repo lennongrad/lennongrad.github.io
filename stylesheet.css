@@ -51,6 +51,18 @@ body{
     color:#750ad3;
 }
 
+#uraniumappear{
+    color:#750ad3;
+}
+
+#manpowerappear{
+    color:#750ad3;
+}
+
+#oilappear{
+    color:#750ad3;
+}
+
 .appearer{
     z-index:3;
     position:absolute;
@@ -374,7 +386,25 @@ body{
 }
 
 #mineral_click{
-    background-color: #847b70;
+    background-color: #A59989;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#uranium_click{
+    background-color: #A59989;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#manpower_click{
+    background-color: #ff5d4f;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#oil_click{
+    background-color: #A59989;
     margin-left:auto;
     margin-right:auto;
 }
