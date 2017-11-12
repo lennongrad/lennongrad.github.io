@@ -55,7 +55,7 @@ body{
     color:#750ad3;
 }
 
-#manpowerappear{
+#traditionappear{
     color:#750ad3;
 }
 
@@ -210,16 +210,15 @@ body{
 .pager{
     color: #626262;
     border-radius:8px;
-    height:34px;
-    padding:2px;
+    height:29px;
     background-color:white;
     border:1px ridge black;
-    margin-bottom:5px;
+    padding-bottom:5px;
     display:inline-block;
 }
 
 .depress:active{
-  transform: scale(.95,.95);
+  transform: scale(1.1,1.1);
   }
 
 .clicker{
@@ -397,7 +396,7 @@ body{
     margin-right:auto;
 }
 
-#manpower_click{
+#tradition_click{
     background-color: #ff5d4f;
     margin-left:auto;
     margin-right:auto;
