@@ -34,8 +34,6 @@ var setScroll = function () {
     MouseScroller = true;
 };
 
-$('#appearrow').bind('mouseenter', setScroll);
-$('#appearrow').bind('mouseleave', function () { MouseScroller = false});
 
 function Resource(name, unlocked, color, base, limit) {
     this.name = name;
@@ -247,6 +245,10 @@ for (var i = 0; i < res.length - 1; i++) {
     clicker[i] = 1000;
     rowclicker[i] = 1000;
 
+    var newcol = document.createElement("TR");
+    newcol.id = res[i].name.toLowerCase() + "-column";
+    document.getElementById('mainbody').appendChild(newcol);
+
     source = document.getElementById("entry-template").innerHTML;
     template = Handlebars.compile(source);
 
@@ -261,7 +263,6 @@ for (var i = 0; i < res.length - 1; i++) {
     var newrow = document.createElement("TD");
     newrow.id = "col" + (i + 1);
     newrow.className = "topalign";
-    document.getElementById('row').appendChild(newrow);
 
     source = document.getElementById("appear-template").innerHTML;
     template = Handlebars.compile(source);
@@ -270,17 +271,14 @@ for (var i = 0; i < res.length - 1; i++) {
     context = { name: res[i].name.toLowerCase(), ide: i };
     html = template(context);
     newappear.innerHTML = html;
-    document.getElementById('appearrow').appendChild(newappear);
-
-    var newcol = document.createElement("COL");
-    newcol.id = res[i].name.toLowerCase() + "-column";
-    document.getElementById('colgr').appendChild(newcol);
-
-    var newbuffer = document.createElement("TD");
-    newbuffer.className = "buffer";
-    newbuffer.id = "buffer" + res[i].name;
-    document.getElementById('bufferrow').appendChild(newbuffer);
+    newappear.className = 'clicktd';
+    document.getElementById(res[i].name.toLowerCase() + "-column").appendChild(newappear);
+    document.getElementById(res[i].name.toLowerCase() + "-column").appendChild(newrow);
 }
+
+    $('.clicktd').on('mouseenter', setScroll);
+    $('.clicktd').on('mouseleave', function () { MouseScroller = false });
+
 
 var into = 0;
 
@@ -388,7 +386,7 @@ function techpossible() {
 }
 }
 
-var framer = 10;
+var framer = 1;
 
 var all = false;
 
@@ -513,7 +511,6 @@ function isUnlocked() {
            document.getElementById(res[i].name + '_click').style.display = "none";
            document.getElementById(res[i].name + '-column').style.backgroundColor = "#dbdbdb";
             document.getElementsByClassName('row' + res[i].name)[0].style.display = "none";
-            document.getElementById('buffer' + res[i].name).style.width = "0px";
 
             var lister = document.getElementsByClassName(res[i].name + "icon");
             for (r = 0; r < lister.length; r++) {
@@ -527,7 +524,6 @@ function isUnlocked() {
            document.getElementById(res[i].name + '-column').style.backgroundColor = res[i].color;
            document.getElementsByClassName('row' + res[i].name)[0].style.backgroundColor = res[i].color;
            document.getElementsByClassName('row' + res[i].name)[0].style.display = "table-row";
-            document.getElementById('buffer' + res[i].name).style.width = "178px";
 
             var lister = document.getElementsByClassName(res[i].name + "icon");
             for (r = 0; r < lister.length; r++) {
@@ -569,7 +565,7 @@ function isUnlocked() {
             bldg[i].amt = 0;
             bldg[i].working = 0;
         } else {
-            document.getElementById(bldgtxt.get(i) + '_holder').style.display = "table";
+            document.getElementById(bldgtxt.get(i) + '_holder').style.display = "inline-table";
         }
    }
 
@@ -689,7 +685,7 @@ function findPS() {
                res[u].ps = 0;
                res[u].limit = res[u].baselimit;
                for (e = 0; e < bldg.length; e++) {
-                   if (bldg[e].resource == u && bldg[e].purpose == 0) {
+                   if (bldg[e].resource == u && (true || bldg[e].purpose == 0)) {
                        res[u].ps += bldg[e].fps;
                    } 
                }
@@ -795,6 +791,7 @@ var contour = new Array();
 for (var i = 0; i < res.length - 1; i++) {
     contour[i] = 10;
 }
+
     
 function repeat() {
 
@@ -806,8 +803,8 @@ function repeat() {
     }
 
     for (i = 0; i < res.length - 1; i++) {
-        if (res[i].amt + res[i].ps / (1000 / framer) > -1) {
-            res[i].amt += res[i].ps / (1000 / framer);
+        if (res[i].amt + res[i].ps / (126 / framer) > -1) {
+            res[i].amt += res[i].ps / (126 / framer);
         }
         res[i].click = 1 + tech_level / 4;
         document.getElementById(res[i].name + "appear").innerHTML = "+" + res[i].click;

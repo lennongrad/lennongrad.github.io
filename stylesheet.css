@@ -40,10 +40,6 @@ body{
     cursor: context-menu;
 }
 
-.boxholder{
-    text-align:center;
-}
-
 #foodappear{
     color:green;
 }
@@ -186,8 +182,8 @@ body{
 }
 
 .buffer{
-    height:10px;
-    width:178px;
+    height:0px;
+    width:0px;
 }
 
 
@@ -195,7 +191,7 @@ body{
     margin-left: auto;
     margin-right:auto;
     border-collapse: collapse;
-    height:150%;
+    width:100%;
     opacity: .94;
 }
 
@@ -276,6 +272,7 @@ body{
     margin-left:5px;
     margin-right:5px;
     margin-bottom:15px;
+    margin-top:15px;
     z-index:-1;
 }
 
@@ -595,6 +592,14 @@ body{
 .row-even{
     background-color:#eff2f2;
     height:40px;
+}
+
+.clicktd{
+    width:170px;
+}
+
+#appearrow{
+    height:0px;
 }
 
 .row-odd{
