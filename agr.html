@@ -5,6 +5,9 @@
     <link rel="stylesheet" href="stylesheet.css">
     <link rel="icon" href="faviconagr.ico" type="image/x-icon">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
     <script>
     
@@ -38,13 +41,17 @@ var iFrameWin = "hi";
                         <td>
                             <span class="button" onclick="bldg[{{ide}}].left()"> ◄ </span> <span id="{{bldg}}_working"></span><span class="button" onclick="bldg[{{ide}}].right()"> ► </span>
                         </td>
-                    </tr>
-                    <tr class="button buy_button" onclick="bldg[{{ide}}].buy()">
-                        <td colspan=2 id="{{ide}}cost">
-                            <span id="{{bldg}}_cost" class="text"></span>
-                            <img draggable="false" src="cash.png" class="cashicon food-icon">
+                    </tr><tr><td>
+                    <table class="bldgbuy button buy_button" onclick="bldg[{{ide}}].buy()">
+                        <tr>
+                        <td id="{{bldg}}_cost" style="font-size:18px;line-height:20px;height:20px">
                         </td>
+                        </tr>
+                    <tr>
+                        <td style="height:1px; line-height:3px" colspan=2 id="{{ide}}cost">
+                            <img draggable="false" src="cash.png" class="cashicon food-icon"></td>
                     </tr>
+                    </table></td></tr>
    </script>
 
     <script id="appear-template" type="text/x-handlebars-template">
@@ -53,6 +60,27 @@ var iFrameWin = "hi";
                     <img draggable="false" src="{{name}}click.png" class="clicker">
                 </div>
     </script>
+
+    <script id="conv-template" type="text/x-handlebars-template">
+    
+                            <td>
+                                <div class="tooltip button" onclick="auto({{ide1}},{{ide2}})"><span id="{{name1}}{{name2}}convo">☐</span><span class="tooltiptext convert">Auto-convert {{name1}} to {{name2}}?</span></div>
+                                (<span id="{{name1}}_to_{{name2}}_rate" class="rate"></span>)
+                            </td>
+                            <td>
+                                <div onclick="converter({{ide1}},{{ide2}})" id="convertbutton" class="button">
+                                    <div class="tooltip">
+                                        <img draggable="false" src="{{name1}}.png" class="foodicon food-icon">
+                                        <span class="tooltiptext">{{name1}}</span>
+                                    </div>
+                                    <img draggable="false" src="sideswipe.png" class="convert-clicker">
+                                    <div class="tooltip">
+                                        <img draggable="false" src="{{name2}}.png" class="cashicon food-icon">
+                                        <span class="tooltiptext">{{name2}}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            </script>
 </head>
 <body>
 
@@ -92,21 +120,17 @@ var iFrameWin = "hi";
             </tbody>
         </table>
     </div>
-    <!-- End of Ledger div -->
+    
     <div id="page1" class="page">
     <table id="main">
         <colgroup id="colgr">
-            <col />
         </colgroup>
-        <tr id="bufferrow"><td></td></tr>
+        <tr id="bufferrow"></tr>
         <tr id="appearrow" class="row">
-            <td></td>
         </tr>
         <tr id="row">
-            <td><div class="sidebar"></div></td>
             
         </tr>
-        <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
     </table>
         </div>
 
@@ -137,11 +161,11 @@ var iFrameWin = "hi";
                         </tr>
                         <tr class="row-odd" style="text-align:center">
                             <td>
-                                <div class="tooltip button" onclick="auto(0,5)"><span id="foodcashconvo">☐</span><span class="tooltiptext convert">Auto-convert Food to Cash?</span></div>
+                                <div class="tooltip button" onclick="auto(0,res.length-1)"><span id="foodcashconvo">☐</span><span class="tooltiptext convert">Auto-convert Food to Cash?</span></div>
                                 (<span id="food_to_cash_rate" class="rate"></span>)
                             </td>
                             <td>
-                                <div onclick="converter(0,5)" id="convertbutton" class="button">
+                                <div onclick="converter(0,res.length-1)" id="convertbutton" class="button">
                                     <div class="tooltip">
                                         <img draggable="false" src="food.png" class="foodicon food-icon">
                                         <span class="tooltiptext">Food</span>
@@ -156,11 +180,11 @@ var iFrameWin = "hi";
                         </tr>
                         <tr class="row-even" style="text-align:center">
                             <td>
-                                <div class="tooltip button" onclick="auto(1,5)"><span id="goldcashconvo">☑</span><span class="tooltiptext convert">Auto-convert Gold to Cash?</span></div>
+                                <div class="tooltip button" onclick="auto(2,res.length-1)"><span id="goldcashconvo">☑</span><span class="tooltiptext convert">Auto-convert Gold to Cash?</span></div>
                                 (<span id="gold_to_cash_rate" class="rate"></span>)
                             </td>
                             <td>
-                                <div onclick="converter(1,5)" id="convertbutton" class="button">
+                                <div onclick="converter(2,res.length-1)" id="convertbutton" class="button">
                                     <div class="tooltip">
                                         <img draggable="false" src="gold.png" class="food-icon">
                                         <span class="tooltiptext">Gold</span>
@@ -175,11 +199,11 @@ var iFrameWin = "hi";
                         </tr>
                         <tr class="row-odd" style="text-align:center">
                             <td>
-                                <div class="tooltip button" onclick="auto(2,5)"><span id="sciencecashconvo">☐</span><span class="tooltiptext convert">Auto-convert Science to Cash?</span></div>
+                                <div class="tooltip button" onclick="auto(4,res.length-1)"><span id="sciencecashconvo">☐</span><span class="tooltiptext convert">Auto-convert Science to Cash?</span></div>
                                 (<span id="science_to_cash_rate" class="rate"></span>)
                             </td>
                             <td>
-                                <div onclick="converter(2,5)" id="convertbutton" class="button">
+                                <div onclick="converter(4,res.length-1)" id="convertbutton" class="button">
                                     <div class="tooltip">
                                         <img draggable="false" src="science.png" class="scienceicon food-icon">
                                         <span class="tooltiptext">Science</span>
@@ -194,11 +218,11 @@ var iFrameWin = "hi";
                         </tr>
                         <tr class="row-even" style="text-align:center">
                             <td>
-                                <div class="tooltip button" onclick="auto(3,5)"><span id="mineralcashconvo">☐</span><span class="tooltiptext convert">Auto-convert Minerals to Cash?</span></div>
+                                <div class="tooltip button" onclick="auto(5,res.length-1)"><span id="mineralcashconvo">☐</span><span class="tooltiptext convert">Auto-convert Minerals to Cash?</span></div>
                                 (<span id="mineral_to_cash_rate" class="rate"></span>)
                             </td>
                             <td>
-                                <div onclick="converter(3,5)" id="convertbutton" class="button">
+                                <div onclick="converter(5,res.length-1)" id="convertbutton" class="button">
                                     <div class="tooltip">
                                         <img draggable="false" src="mineral.png" class="food-icon">
                                         <span class="tooltiptext">Mineral</span>

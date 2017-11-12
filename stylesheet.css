@@ -1,16 +1,29 @@
 .food-icon{
-    width: 30px;
-    height: 30px;
+    width: 22px;
+    height: 22px;
     margin-top:4px;
     display: inline-block;
     background-color: #404040;
     border-radius: 6px;
+    margin-right:2px;
+    margin-left:0px;
+}
+
+.cashicon{
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    line-height:1px !important;
 }
 
 .page-icon{
     width: 30px;
     height: 30px;
     display: inline-block;
+}
+
+.bldgbuy{
+        width:100% !important;
+        border-radius:3px !important;
 }
 
 .text{
@@ -52,15 +65,35 @@ body{
 }
 
 #uraniumappear{
-    color:#750ad3;
+    color:#898989;
 }
 
 #traditionappear{
-    color:#750ad3;
+    color:#e82110;
 }
 
 #oilappear{
+    color:#898989;
+}
+
+#politicalappear{
     color:#750ad3;
+}
+
+#housingappear{
+    color:green;
+}
+
+#equipmentappear{
+    color:#e82110;
+}
+
+#jewelappear{
+    color:#e06c00;
+}
+
+#energyappear{
+    color:#17d670;
 }
 
 .appearer{
@@ -360,7 +393,19 @@ body{
     margin-right:auto;
 }
 
+#housing_click{
+    background-color:#4fff51;
+    margin-left:auto;
+    margin-right:auto;
+}
+
 #gold_click{
+    background-color:#ffc44f;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#jewel_click{
     background-color:#ffc44f;
     margin-left:auto;
     margin-right:auto;
@@ -384,6 +429,12 @@ body{
     margin-right:auto;
 }
 
+#political_click{
+    background-color: #ac4fff;
+    margin-left:auto;
+    margin-right:auto;
+}
+
 #mineral_click{
     background-color: #A59989;
     margin-left:auto;
@@ -397,6 +448,12 @@ body{
 }
 
 #tradition_click{
+    background-color: #ff5d4f;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#equipment_click{
     background-color: #ff5d4f;
     margin-left:auto;
     margin-right:auto;

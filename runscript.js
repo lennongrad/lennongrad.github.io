@@ -10,6 +10,33 @@ var worker_cost = workers_cost_base;
 var total_workers = 3;
 var av_workers = 3;
 
+var curYPos, curXPos, curDown;
+
+window.addEventListener('mousemove', function (e) {
+    if (curDown && !MouseScroller) {
+        document.getElementById('page1').scrollTo(document.getElementById('page1').scrollLeft - e.movementX, document.getElementById('page1').scrollTop - e.movementY);
+    }
+});
+
+window.addEventListener('mousedown', function (e) {
+    curYPos = e.pageY;
+    curXPos = e.pageX;
+    curDown = true;
+});
+
+window.addEventListener('mouseup', function (e) {
+    curDown = false;
+});
+
+var MouseScroller = false;
+
+var setScroll = function () {
+    MouseScroller = true;
+};
+
+$('#appearrow').bind('mouseenter', setScroll);
+$('#appearrow').bind('mouseleave', function () { MouseScroller = false});
+
 function Resource(name, unlocked, color, base, limit) {
     this.name = name;
     this.ps = 0;
@@ -123,15 +150,19 @@ var reconback = new Map();
 
 var res = new Array();
 res[0] = new Resource("food", true, "#b6ff9e", 0, 10000);
-res[1] = new Resource("gold", true, "#fff69e", 90000, 10000);
-res[2] = new Resource("science", true, "#9ea7ff", 10000, 10000);
-res[3] = new Resource("mineral", false, "#d8c2a4", 0, 10000);
-res[4] = new Resource("uranium", false, "#d8c2a4", 0, 100000);
-res[5] = new Resource("oil", false, "#d8c2a4", 0, 100000);
-res[6] = new Resource("culture", false, "#d19eff", 0, 10000);
-res[7] = new Resource("energy", false, "#9effd9", 0, 100000);
-res[8] = new Resource("tradition", false, "#ff8b82", 0, 100000);
-res[9] = new Resource("cash", true, "#d19eff", 0, 100000);
+res[1] = new Resource("housing", false, "#b6ff9e", 0, 10000);
+res[2] = new Resource("gold", true, "#fff69e", 90000, 10000);
+res[3] = new Resource("jewel", false, "#fff69e", 90000, 10000);
+res[4] = new Resource("science", true, "#9ea7ff", 10000, 10000);
+res[5] = new Resource("mineral", false, "#d8c2a4", 0, 10000);
+res[6] = new Resource("uranium", false, "#d8c2a4", 0, 100000);
+res[7] = new Resource("oil", false, "#d8c2a4", 0, 100000);
+res[8] = new Resource("culture", false, "#d19eff", 0, 10000);
+res[9] = new Resource("political", false, "#d19eff", 0, 10000);
+res[10] = new Resource("energy", false, "#9effd9", 0, 100000);
+res[11] = new Resource("tradition", false, "#ff8b82", 0, 100000);
+res[12] = new Resource("equipment", false, "#ff8b82", 0, 100000);
+res[13] = new Resource("cash", true, "#d19eff", 0, 100000);
 
 for (i = 0; i < res.length; i++) {
     recon.set(i, res[i].name);
@@ -142,10 +173,10 @@ for (i = 0; i < res.length; i++) {
     }
 }
 
-res[0].rates[5] =   .5;
-res[1].rates[5] = 1.3;
-res[2].rates[5] =   .9;
-res[3].rates[5] = 1.1;
+res[0].rates[res.length - 1] =   .5;
+res[2].rates[res.length - 1] = 1.3;
+res[4].rates[res.length - 1] =   .9;
+res[5].rates[res.length - 1] = 1.1;
 
 
 // name, resource, cost_base, cost_mult, efficiency, unlocked
@@ -160,25 +191,37 @@ bldg[4] = new Building("Bank",            reconback.get('gold'), 200,      2.1, 
 bldg[5] = new Building("Mint",              reconback.get('gold'), 3500,   2.7,       3.5, false, [res.length - 1], 0); // mints
 bldg[6] = new Building("Lab",               reconback.get('science'), 200,     2.5,      2, false, [res.length - 1], 0); // labs
 bldg[7] = new Building("School",          reconback.get('science'), 200, 2.95,    45, false, [res.length - 1,3], 1); // school
-bldg[8] = new Building("Collider",        reconback.get('science'), 2000,  2.95,    3.5, false, [res.length - 1], 0); // collider (n/a)
-bldg[9] = new Building("Quarry",          reconback.get('mineral'), 50,       1.95,    .24, false, [res.length - 1], 0); // collider (n/a)
-bldg[10] = new Building("Storehouse", reconback.get('mineral'), 200, 2.95,    45, false, [res.length - 1,3], 1); // collider (n/a)
-bldg[11] = new Building("Fracker",       reconback.get('mineral'), 2000, 2.95,    45, false, [res.length - 1], 0); // collider (n/a)
-bldg[12] = new Building("Theatre",       reconback.get('culture'), 1500, 2.95,    .25, false, [res.length - 1], 0); // collider (n/a)
-bldg[13] = new Building("Museum", reconback.get('culture'), 200, 2.95, 45, false, [res.length - 1, 3], 1); // collider (n/a)
-bldg[14] = new Building("Auditorium", reconback.get('culture'), 2000, 2.95, 45, false, [res.length - 1], 0); // collider (n/a)
-bldg[15] = new Building("Generator", reconback.get('energy'), 300, 2.95, .25, false, [res.length - 1], 0); // collider (n/a)
-bldg[16] = new Building("Accumulator", reconback.get('energy'), 200, 2.95, 45, false, [res.length - 1, 3], 1); // collider (n/a)
-bldg[17] = new Building("Powerplant", reconback.get('energy'), 2000, 2.95, 45, false, [res.length - 1], 0); // collider (n/a)
-bldg[18] = new Building("1", reconback.get('uranium'), 300, 2.95, .25, false, [res.length - 1], 0); // collider (n/a)
-bldg[19] = new Building("2", reconback.get('uranium'), 200, 2.95, 45, false, [res.length - 1, 3], 1); // collider (n/a)
-bldg[20] = new Building("3", reconback.get('uranium'), 2000, 2.95, 45, false, [res.length - 1], 0); // collider (n/a)
-bldg[21] = new Building("4", reconback.get('oil'), 300, 2.95, .25, false, [res.length - 1], 0); // collider (n/a)
-bldg[22] = new Building("5", reconback.get('oil'), 200, 2.95, 45, false, [res.length - 1, 3], 1); // collider (n/a)
-bldg[23] = new Building("6", reconback.get('oil'), 2000, 2.95, 45, false, [res.length - 1], 0); // collider (n/a)
-bldg[24] = new Building("7", reconback.get('tradition'), 300, 2.95, .25, false, [res.length - 1], 0); // collider (n/a)
-bldg[25] = new Building("8", reconback.get('tradition'), 200, 2.95, 45, false, [res.length - 1, 3], 1); // collider (n/a)
-bldg[26] = new Building("9", reconback.get('tradition'), 2000, 2.95, 45, false, [res.length - 1], 0); // collider (n/a)
+bldg[8] = new Building("Collider",        reconback.get('science'), 2000,  2.95,    3.5, false, [res.length - 1], 0); 
+bldg[9] = new Building("Quarry",          reconback.get('mineral'), 50,       1.95,    .24, false, [res.length - 1], 0); 
+bldg[10] = new Building("Storehouse", reconback.get('mineral'), 200, 2.95,    45, false, [res.length - 1,3], 1); 
+bldg[11] = new Building("Fracker",       reconback.get('mineral'), 2000, 2.95,    45, false, [res.length - 1], 0); 
+bldg[12] = new Building("Theatre",       reconback.get('culture'), 1500, 2.95,    .25, false, [res.length - 1], 0); 
+bldg[13] = new Building("Museum", reconback.get('culture'), 200, 2.95, 45, false, [res.length - 1, 3], 1); 
+bldg[14] = new Building("Auditorium", reconback.get('culture'), 2000, 2.95, 45, false, [res.length - 1], 0); 
+bldg[15] = new Building("Generator", reconback.get('energy'), 300, 2.95, .25, false, [res.length - 1], 0); 
+bldg[16] = new Building("Accumulator", reconback.get('energy'), 200, 2.95, 45, false, [res.length - 1, 3], 1); 
+bldg[17] = new Building("Powerplant", reconback.get('energy'), 2000, 2.95, 45, false, [res.length - 1], 0); 
+bldg[18] = new Building("1", reconback.get('uranium'), 300, 2.95, .25, false, [res.length - 1], 0); 
+bldg[19] = new Building("2", reconback.get('uranium'), 200, 2.95, 45, false, [res.length - 1, 3,6], 1); 
+bldg[20] = new Building("3", reconback.get('uranium'), 2000, 2.95, 45, false, [res.length - 1], 0); 
+bldg[21] = new Building("4", reconback.get('oil'), 300, 2.95, .25, false, [res.length - 1], 0); 
+bldg[22] = new Building("5", reconback.get('oil'), 200, 2.95, 45, false, [res.length - 1, 3], 1); 
+bldg[23] = new Building("6", reconback.get('oil'), 2000, 2.95, 45, false, [res.length - 1], 0); 
+bldg[24] = new Building("7", reconback.get('tradition'), 300, 2.95, .25, false, [res.length - 1], 0); 
+bldg[25] = new Building("8", reconback.get('tradition'), 200, 2.95, 45, false, [res.length - 1, 3], 1); 
+bldg[26] = new Building("9", reconback.get('tradition'), 2000, 2.95, 45, false, [res.length - 1], 0); 
+bldg[27] = new Building("a1", reconback.get('housing'), 2000, 2.95, 45, false, [res.length - 1], 0); 
+bldg[28] = new Building("a2", reconback.get('housing'), 2000, 2.95, 45, false, [res.length - 1], 0); 
+bldg[29] = new Building("a3", reconback.get('housing'), 2000, 2.95, 45, false, [res.length - 1], 0); 
+bldg[30] = new Building("a4", reconback.get('jewel'), 2000, 2.95, 45, false, [res.length - 1], 0); 
+bldg[31] = new Building("a5", reconback.get('jewel'), 2000, 2.95, 45, false, [res.length - 1], 0); 
+bldg[32] = new Building("a6", reconback.get('jewel'), 2000, 2.95, 45, false, [res.length - 1], 0); 
+bldg[33] = new Building("a7", reconback.get('political'), 2000, 2.95, 45, false, [res.length - 1], 0);
+bldg[34] = new Building("a8", reconback.get('political'), 2000, 2.95, 45, false, [res.length - 1], 0);
+bldg[35] = new Building("a9", reconback.get('political'), 2000, 2.95, 45, false, [res.length - 1], 0);
+bldg[36] = new Building("a0", reconback.get('equipment'), 2000, 2.95, 45, false, [res.length - 1], 0); 
+bldg[37] = new Building("a11", reconback.get('equipment'), 2000, 2.95, 45, false, [res.length - 1], 0); 
+bldg[38] = new Building("a12", reconback.get('equipment'), 2000, 2.95, 45, false, [res.length - 1], 0); 
 
 var bldgtxt = new Map();
 var builds = new Map();
@@ -191,17 +234,19 @@ for (i = 0; i < bldg.length; i++) {
 var clicker = new Array();
 var rowclicker = new Array();
 
+var supclick = 1000;
+
 var source = document.getElementById("entry-template").innerHTML;
 var template = Handlebars.compile(source);
 
 for (var i = 0; i < res.length - 1; i++) {
-    clicker[i] = 0;
-    rowclicker[i] = 0;
+    clicker[i] = 1000;
+    rowclicker[i] = 1000;
 
     source = document.getElementById("entry-template").innerHTML;
     template = Handlebars.compile(source);
 
-    var context = { type: res[i].name, abr: res[i].name.substring(0,1) };
+    var context = { type: res[i].name, abr: res[i].name.substring(0,2) };
     var html = template(context);
 
     var owos = document.createElement("TR");
@@ -229,6 +274,7 @@ for (var i = 0; i < res.length - 1; i++) {
 
     var newbuffer = document.createElement("TD");
     newbuffer.className = "buffer";
+    newbuffer.id = "buffer" + res[i].name;
     document.getElementById('bufferrow').appendChild(newbuffer);
 }    
 
@@ -249,7 +295,7 @@ for (var i = 0; i < bldg.length; i++) {
         for (var e = 1; e < bldg[i].costers.length; e++) {
             var newcost = document.createElement("img");
             newcost.setAttribute("src", res[bldg[i].costers[e]].name + ".png");
-            newcost.className = "food-icon";
+            newcost.className = "food-icon cashicon";
             document.getElementById(i + "cost").appendChild(newcost);
         }
     }
@@ -403,8 +449,8 @@ function moveClick() {
     }
 
     clicker[clicker.length - 1] += .5;
-    document.getElementById("superappear").style.transform = "translateY(" + (clicker[i] / 3) * -1 + "px)";
-    document.getElementById('superappear').style.opacity = 1 - (clicker[i] / 100)
+    document.getElementById("superappear").style.transform = "translateY(" + (supclick / 3) * -1 + "px)";
+    document.getElementById('superappear').style.opacity = 1 - (supclick / 100)
 }
 
 function doFlasher() {
@@ -433,10 +479,11 @@ function isUnlocked() {
    for (i = 0; i < res.length; i++) {
        if (!res[i].unlocked) {
            document.getElementById(res[i].name).style.display = "none";
-           document.getElementById(res[i].name.substring(0, 1) + "ps").style.display = "none";
+           document.getElementById(res[i].name.substring(0, 2) + "ps").style.display = "none";
            document.getElementById(res[i].name + '_click').style.display = "none";
            document.getElementById(res[i].name + '-column').style.backgroundColor = "#dbdbdb";
             document.getElementsByClassName('row' + res[i].name)[0].style.display = "none";
+            document.getElementById('buffer' + res[i].name).style.width = "0px";
 
             var lister = document.getElementsByClassName(res[i].name + "icon");
             for (r = 0; r < lister.length; r++) {
@@ -445,18 +492,20 @@ function isUnlocked() {
 
        } else if(i != res.length - 1){
            document.getElementById(res[i].name).style.display = "inline";
-           document.getElementById(res[i].name.substring(0, 1) + "ps").style.display = "inline";
+           document.getElementById(res[i].name.substring(0, 2) + "ps").style.display = "inline";
            document.getElementById(res[i].name + '_click').style.display = "block";
            document.getElementById(res[i].name + '-column').style.backgroundColor = res[i].color;
            document.getElementsByClassName('row' + res[i].name)[0].style.backgroundColor = res[i].color;
            document.getElementsByClassName('row' + res[i].name)[0].style.display = "table-row";
+            document.getElementById('buffer' + res[i].name).style.width = "178px";
 
             var lister = document.getElementsByClassName(res[i].name + "icon");
             for (r = 0; r < lister.length; r++) {
                 lister[r].src = res[i].name + ".png";
             }
         }
-   }
+    }
+
 
 
     if (debug) {
@@ -502,17 +551,17 @@ function init() {
 
     for(i = 0; i < res.length - 1; i++){
         if (res[i].unlocked) {
-            document.getElementById(res[i].name.substring(0, 1) + 'ps').innerHTML = "(" + small_int((res[i].ps)) + ' /s)';
+            document.getElementById(res[i].name.substring(0, 2) + 'ps').innerHTML = "(" + small_int((res[i].ps)) + ' /s)';
             document.getElementById(res[i].name).innerHTML = small_int(Math.floor(res[i].amt));
         }
     }
     
     document.getElementById('cash').innerHTML = small_int(Math.floor(res[res.length - 1].amt));  
     
-    document.getElementById('food_to_cash_rate').innerHTML = res[0].rates[5];
-    document.getElementById('gold_to_cash_rate').innerHTML = res[1].rates[5];
-    document.getElementById('science_to_cash_rate').innerHTML = res[2].rates[5];
-    document.getElementById('mineral_to_cash_rate').innerHTML = res[3].rates[5];
+    document.getElementById('food_to_cash_rate').innerHTML = res[0].rates[res.length - 1];
+    document.getElementById('gold_to_cash_rate').innerHTML = res[2].rates[res.length - 1];
+    document.getElementById('science_to_cash_rate').innerHTML = res[4].rates[res.length - 1];
+    document.getElementById('mineral_to_cash_rate').innerHTML = res[5].rates[res.length - 1];
     
     document.getElementById('workers_number').innerHTML = av_workers + " / " + total_workers;
     document.getElementById('worker_cost').innerHTML = small_int(Math.ceil(worker_cost));
@@ -555,7 +604,7 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
-function auto(first, second){
+function auto(first, second) {
     res[first].auto[second] = !res[first].auto[second];
       if(res[first].auto[second]){
           document.getElementById(res[first].name + res[second].name + 'convo').innerHTML = '☑';
@@ -574,7 +623,7 @@ function converter(first, second) {
 }
 
 function buytech() {
-    if (res[2].amt >= tech_cost) {
+    if (res[4].amt >= tech_cost) {
         for (i = 0; i < contour.length; i++) {
             if (i > 2) {
                 contour[i] = contour[i - 3];
@@ -582,7 +631,7 @@ function buytech() {
                 contour[i] = Math.floor(Math.random() * 256) - 1;
             }
         }
-        res[2].amt -= tech_cost;
+        res[4].amt -= tech_cost;
         ++tech_level;
         techcost();
         unlocktech();
@@ -632,10 +681,10 @@ function unlocktech() {
       switch (tech_level_active){
             case 1: bldg[0].efficiency += .1; break;
             case 2: bldg[6].unlocker(); break;
-            case 3: res[3].unlocker(); bldg[3].unlocker(); bldg[9].unlocker(); break;
+            case 3: res[5].unlocker(); bldg[3].unlocker(); bldg[9].unlocker(); break;
             case 4: bldg[4].unlocker(); break;
             case 5: bldg[1].unlocker(); bldg[0].efficiency *= 1.5; break;
-            case 6: bldg[2].unlocker(); res[0].rates[5] += .3; break;
+            case 6: bldg[2].unlocker(); res[0].rates[res.length-1] += .3; break;
             case 7: bldg[5].unlocker(); bldg[6].efficiency *= 1.25; break;
           case 8: bldg[7].unlocker(); break;
           case 9: workers_cost_mult *= .8; workercost(); break;
@@ -735,6 +784,7 @@ function repeat() {
         repetir = 0;
         rep_max = Math.ceil(rep_max * 1.1);
         if (last_click == 1) { last_click = 5 };
+        supclick = 0;
 
         var rec = (res[last_click].amt * ((res[last_click].click* 20 / rep_max) + 1) - res[last_click].amt);
          document.getElementById("superappear").innerHTML = "+" + Math.ceil(rec);
@@ -743,7 +793,8 @@ function repeat() {
         clicker[5] = 0;
    }
    document.getElementById('super').style.width = ((repetir / rep_max) * 200) + "px";
-    document.getElementById('superbox').innerHTML = repetir + " / " + rep_max;
+   document.getElementById('superbox').innerHTML = repetir + " / " + rep_max;
+   supclick++;
     findPS();
     workercost();
     isUnlocked();
@@ -783,7 +834,7 @@ function repeat() {
        flash_worker = false;
    }
 
-   if(res[2].amt >= tech_cost){
+   if(res[4].amt >= tech_cost){
        document.getElementById("tech_cost").style.color = active_colour;
        flash_tech = true;
    } else {
@@ -845,10 +896,10 @@ function importo() {
 switchPage(1);
 auto(0, res.length - 1);
 auto(0, res.length - 1);
-auto(1, res.length - 1);
 auto(2, res.length - 1);
-auto(2, res.length - 1);
-auto(3, res.length - 1);
-auto(3, res.length - 1);
+auto(4, res.length - 1);
+auto(4, res.length - 1);
+auto(5, res.length - 1);
+auto(5, res.length - 1);
 init();
 repeat();
