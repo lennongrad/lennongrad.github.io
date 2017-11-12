@@ -168,15 +168,19 @@ for (i = 0; i < res.length; i++) {
     recon.set(i, res[i].name);
     reconback.set(res[i].name, i);
     for (e = 0; e < res.length; e++) {
-        res[i].rates[e] = 1;
+        res[i].rates[e] = 0;
         res[i].auto[e] = false;
     }
 }
 
 res[0].rates[res.length - 1] =   .5;
 res[2].rates[res.length - 1] = 1.3;
-res[4].rates[res.length - 1] =   .9;
 res[5].rates[res.length - 1] = 1.1;
+res[4].rates[res.length - 1] = 1.05;
+res[3].rates[res.length - 1] = 1.5;
+res[6].rates[res.length - 1] = 1.2;
+res[7].rates[res.length - 1] = 1.45;
+res[11].rates[9] = 1;
 
 
 // name, resource, cost_base, cost_mult, efficiency, unlocked
@@ -246,7 +250,7 @@ for (var i = 0; i < res.length - 1; i++) {
     source = document.getElementById("entry-template").innerHTML;
     template = Handlebars.compile(source);
 
-    var context = { type: res[i].name, abr: res[i].name.substring(0,2) };
+    var context = { type: res[i].name, abr: res[i].name.substring(0, 2) };
     var html = template(context);
 
     var owos = document.createElement("TR");
@@ -276,7 +280,33 @@ for (var i = 0; i < res.length - 1; i++) {
     newbuffer.className = "buffer";
     newbuffer.id = "buffer" + res[i].name;
     document.getElementById('bufferrow').appendChild(newbuffer);
-}    
+}
+
+var into = 0;
+
+for (var i = 0; i < res.length; i++) {
+    for (var e = 0; e < res.length; e++) {
+        if (res[i].rates[e] != 0) {
+            var owos = document.createElement("TR");
+
+            source = document.getElementById("conv-template").innerHTML;
+            template = Handlebars.compile(source);
+
+            var context = { name1: res[i].name, name2: res[e].name, ide1: i, ide2: e };
+            var html = template(context);
+
+            owos.innerHTML = html;
+
+            if ((into % 2) == 1) {
+                owos.className = 'row-even';
+            } else {
+                owos.className = 'row-odd';
+            }
+            into++;
+            document.getElementById('conver').insertBefore(owos, document.getElementById('convanchor'));
+        }
+    }
+}
 
 source = document.getElementById("bldg-template").innerHTML;
 template = Handlebars.compile(source);
@@ -558,10 +588,13 @@ function init() {
     
     document.getElementById('cash').innerHTML = small_int(Math.floor(res[res.length - 1].amt));  
     
-    document.getElementById('food_to_cash_rate').innerHTML = res[0].rates[res.length - 1];
-    document.getElementById('gold_to_cash_rate').innerHTML = res[2].rates[res.length - 1];
-    document.getElementById('science_to_cash_rate').innerHTML = res[4].rates[res.length - 1];
-    document.getElementById('mineral_to_cash_rate').innerHTML = res[5].rates[res.length - 1];
+    for (var i = 0; i < res.length; i++) {
+        for (var e = 0; e < res.length; e++){
+            if (res[i].rates[e] != 0) {
+                document.getElementById(res[i].name + "_to_" + res[e].name + "_rate").innerHTML = res[i].rates[e];
+            }
+        }
+    }
     
     document.getElementById('workers_number').innerHTML = av_workers + " / " + total_workers;
     document.getElementById('worker_cost').innerHTML = small_int(Math.ceil(worker_cost));
