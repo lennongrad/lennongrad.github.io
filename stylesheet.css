@@ -594,6 +594,28 @@ body{
     height:40px;
 }
 
+#charge_box{
+    margin-left:auto;
+    margin-right:auto;
+    border: 3px solid #efefef ;
+    border-radius:3px;
+    width:168px;
+    text-align: center;
+    background-color: white;
+    margin-top: 70px;
+}
+
+#chargebox{
+    text-align:center;
+    width:100%;
+}
+
+.chargetitle{
+    
+    font-size:12px;
+    font-weight: bolder;
+}
+
 .clicktd{
     width:170px;
 }

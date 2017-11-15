@@ -66,21 +66,58 @@ function Resource(name, unlocked, color, base, limit) {
     }
 }
 
-function Building(name, resource, cost_base, cost_mult, efficiency, unlocked, costs, purpose) {
+function Building(name, resource, cost_base, cost_mult, efficiency, unlocked, costs) {
     this.resource = resource;
-    this.cost_base = cost_base;
-    this.cost_mult = cost_mult;
-    this.efficiency = efficiency;
     this.unlocked = unlocked;
     this.name = name;
-    this.purpose = purpose;
 
     this.costers = new Array();
 
-    for(i = 0; i < costs.length; i++){
-        this.costers[i] = costs[i];
+    switch (costs) {
+        case 0:
+            this.costers = [res.length - 1];
+            this.cost_base = 50;
+            this.cost_mult = 1.5;
+            this.efficiency = .15;
+            break;
+        case 1:
+            this.costers = [res.length - 1, 5];
+            this.cost_base = 500;
+            this.cost_mult = 2.1;
+            this.efficiency = 1.6;
+            break;
+        case 2:
+            this.costers = [res.length - 1, 5];
+            this.cost_base = 5000;
+            this.cost_mult = 3;
+            this.efficiency = 15.6;
+            break;
+        case 3:
+            this.costers = [res.length - 1, 6];
+            this.cost_base = 50000;
+            this.cost_mult = 4.3;
+            this.efficiency = 98.5;
+            break;
+        case 4:
+            this.costers = [res.length - 1, 7];
+            this.cost_base = 500000;
+            this.cost_mult = 6.2;
+            this.efficiency = 567.34;
+            break;
     }
 
+    if (cost_base != 0) {
+        this.cost_base = cost_base;
+    }
+    
+    if (cost_mult != 0) {
+        this.cost_mult = cost_mult;
+    }
+    
+    if (efficiency != 0) {
+        this.efficiency = efficiency;
+    }    
+    
     this.onDebug = false;
 
     this.fps = 0;
@@ -147,20 +184,20 @@ var recon = new Map();
 var reconback = new Map();
 
 var res = new Array();
-res[0] = new Resource("food", true, "#b6ff9e", 0, 10000);
-res[1] = new Resource("housing", false, "#b6ff9e", 0, 10000);
-res[2] = new Resource("gold", true, "#fff69e", 90000, 10000);
-res[3] = new Resource("jewel", false, "#fff69e", 90000, 10000);
-res[4] = new Resource("science", true, "#9ea7ff", 10000, 10000);
-res[5] = new Resource("mineral", false, "#d8c2a4", 0, 10000);
-res[6] = new Resource("uranium", false, "#d8c2a4", 0, 100000);
-res[7] = new Resource("oil", false, "#d8c2a4", 0, 100000);
-res[8] = new Resource("culture", false, "#d19eff", 0, 10000);
-res[9] = new Resource("political", false, "#d19eff", 0, 10000);
-res[10] = new Resource("energy", false, "#9effd9", 0, 100000);
-res[11] = new Resource("tradition", false, "#ff8b82", 0, 100000);
-res[12] = new Resource("equipment", false, "#ff8b82", 0, 100000);
-res[13] = new Resource("cash", true, "#d19eff", 0, 100000);
+res[0] = new Resource("food", true, "#b6ff9e", 0);
+res[1] = new Resource("housing", false, "#b6ff9e", 0);
+res[2] = new Resource("gold", true, "#fff69e", 90000);
+res[3] = new Resource("jewel", false, "#fff69e", 90000);
+res[4] = new Resource("science", true, "#9ea7ff", 10000);
+res[5] = new Resource("mineral", false, "#d8c2a4", 0);
+res[6] = new Resource("oil", false, "#d8c2a4", 0);
+res[7] = new Resource("uranium", false, "#d8c2a4", 0);
+res[8] = new Resource("culture", false, "#d19eff", 0);
+res[9] = new Resource("political", false, "#d19eff", 0);
+res[10] = new Resource("energy", false, "#9effd9", 10000);
+res[11] = new Resource("tradition", false, "#ff8b82", 0);
+res[12] = new Resource("equipment", false, "#ff8b82", 0);
+res[13] = new Resource("cash", true, "#d19eff", 0);
 
 for (i = 0; i < res.length; i++) {
     recon.set(i, res[i].name);
@@ -185,45 +222,83 @@ res[11].rates[9] = 1;
 var a = res.length - 1;
 
 var bldg = new Array();
-bldg[0] = new Building("Farm",           reconback.get('food'), 25,         1.6,     .15, true, [res.length - 1], 0); // farms
-bldg[1] = new Building("Silo",              reconback.get('food'), 200,       1.8,      2.5, false, [res.length - 1,3], 1); // silos
-bldg[2] = new Building("Plantation",     reconback.get('food'), 3450,    2,         3.5, false, [res.length - 1], 0); // plantations
-bldg[3] = new Building("Mine",             reconback.get('gold'), 25,        1.65,    .25, false, [res.length - 1], 0); // mines
-bldg[4] = new Building("Bank",            reconback.get('gold'), 200,      2.1,      8, false, [res.length - 1,3], 1); // banks
-bldg[5] = new Building("Mint",              reconback.get('gold'), 3500,   2.7,       3.5, false, [res.length - 1], 0); // mints
-bldg[6] = new Building("Lab",               reconback.get('science'), 200,     2.5,      2, false, [res.length - 1], 0); // labs
-bldg[7] = new Building("School",          reconback.get('science'), 200, 2.95,    45, false, [res.length - 1,3], 1); // school
-bldg[8] = new Building("Collider",        reconback.get('science'), 2000,  2.95,    3.5, false, [res.length - 1], 0); 
-bldg[9] = new Building("Quarry",          reconback.get('mineral'), 50,       1.95,    .24, false, [res.length - 1], 0); 
-bldg[10] = new Building("Storehouse", reconback.get('mineral'), 200, 2.95,    45, false, [res.length - 1,3], 1); 
-bldg[11] = new Building("Fracker",       reconback.get('mineral'), 2000, 2.95,    45, false, [res.length - 1], 0); 
-bldg[12] = new Building("Theatre",       reconback.get('culture'), 1500, 2.95,    .25, false, [res.length - 1], 0); 
-bldg[13] = new Building("Museum", reconback.get('culture'), 200, 2.95, 45, false, [res.length - 1, 3], 1); 
-bldg[14] = new Building("Auditorium", reconback.get('culture'), 2000, 2.95, 45, false, [res.length - 1], 0); 
-bldg[15] = new Building("Generator", reconback.get('energy'), 300, 2.95, .25, false, [res.length - 1], 0); 
-bldg[16] = new Building("Accumulator", reconback.get('energy'), 200, 2.95, 45, false, [res.length - 1, 3], 1); 
-bldg[17] = new Building("Powerplant", reconback.get('energy'), 2000, 2.95, 45, false, [res.length - 1], 0); 
-bldg[18] = new Building("1", reconback.get('uranium'), 300, 2.95, .25, false, [res.length - 1], 0); 
-bldg[19] = new Building("2", reconback.get('uranium'), 200, 2.95, 45, false, [res.length - 1, 3,6], 1); 
-bldg[20] = new Building("3", reconback.get('uranium'), 2000, 2.95, 45, false, [res.length - 1], 0); 
-bldg[21] = new Building("4", reconback.get('oil'), 300, 2.95, .25, false, [res.length - 1], 0); 
-bldg[22] = new Building("5", reconback.get('oil'), 200, 2.95, 45, false, [res.length - 1, 3], 1); 
-bldg[23] = new Building("6", reconback.get('oil'), 2000, 2.95, 45, false, [res.length - 1], 0); 
-bldg[24] = new Building("7", reconback.get('tradition'), 300, 2.95, .25, false, [res.length - 1], 0); 
-bldg[25] = new Building("8", reconback.get('tradition'), 200, 2.95, 45, false, [res.length - 1, 3], 1); 
-bldg[26] = new Building("9", reconback.get('tradition'), 2000, 2.95, 45, false, [res.length - 1], 0); 
-bldg[27] = new Building("a1", reconback.get('housing'), 2000, 2.95, 45, false, [res.length - 1], 0); 
-bldg[28] = new Building("a2", reconback.get('housing'), 2000, 2.95, 45, false, [res.length - 1], 0); 
-bldg[29] = new Building("a3", reconback.get('housing'), 2000, 2.95, 45, false, [res.length - 1], 0); 
-bldg[30] = new Building("a4", reconback.get('jewel'), 2000, 2.95, 45, false, [res.length - 1], 0); 
-bldg[31] = new Building("a5", reconback.get('jewel'), 2000, 2.95, 45, false, [res.length - 1], 0); 
-bldg[32] = new Building("a6", reconback.get('jewel'), 2000, 2.95, 45, false, [res.length - 1], 0); 
-bldg[33] = new Building("a7", reconback.get('political'), 2000, 2.95, 45, false, [res.length - 1], 0);
-bldg[34] = new Building("a8", reconback.get('political'), 2000, 2.95, 45, false, [res.length - 1], 0);
-bldg[35] = new Building("a9", reconback.get('political'), 2000, 2.95, 45, false, [res.length - 1], 0);
-bldg[36] = new Building("a0", reconback.get('equipment'), 2000, 2.95, 45, false, [res.length - 1], 0); 
-bldg[37] = new Building("a11", reconback.get('equipment'), 2000, 2.95, 45, false, [res.length - 1], 0); 
-bldg[38] = new Building("a12", reconback.get('equipment'), 2000, 2.95, 45, false, [res.length - 1], 0); 
+bldg[0] = new Building("Farm",           reconback.get('food'), 0, 0, 0, true, 0); // farms
+bldg[1] = new Building("Silo",              reconback.get('food'), 0, 0,0 , false, 1); // silos
+bldg[2] = new Building("Plantation",     reconback.get('food'), 0, 0, 0, false, 2); // plantations
+bldg[3] = new Building("b1", reconback.get('food'), 0, 0, 0, false, 3); // plantations
+bldg[52] = new Building("b14", reconback.get('food'), 0,0, 0, false, 4); 
+
+bldg[36] = new Building("a1", reconback.get('housing'), 0, 0, 0, false, 0); 
+bldg[37] = new Building("a2", reconback.get('housing'), 0, 0, 45, false, 1); 
+bldg[38] = new Building("a3", reconback.get('housing'), 0, 0, 0, false, 2); 
+bldg[39] = new Building("b10", reconback.get('housing'), 0, 0, 0, false, 3); 
+bldg[53] = new Building("b15", reconback.get('housing'), 0, 0, 0, false, 4);
+
+bldg[4] = new Building("Mine",             reconback.get('gold'), 0,  0, 0, false, 0); // mines
+bldg[5] = new Building("Bank",            reconback.get('gold'), 0,  0, 0, false, 1); // banks
+bldg[6] = new Building("Mint",              reconback.get('gold'), 0, 0,  0, false, 2); // mints
+bldg[7] = new Building("b2", reconback.get('gold'), 0,0,0, false, 3); // mints
+bldg[54] = new Building("b16", reconback.get('gold'), 0, 0, 0, false, 4); 
+
+bldg[40] = new Building("a4", reconback.get('jewel'), 0, 0, 0, false, 0); 
+bldg[41] = new Building("a5", reconback.get('jewel'), 0, 0, 0, false, 1); 
+bldg[42] = new Building("a6", reconback.get('jewel'), 0, 0, 0, false, 2); 
+bldg[43] = new Building("b11", reconback.get('jewel'), 0, 0, 0, false, 3); 
+bldg[55] = new Building("b17", reconback.get('jewel'), 0, 0, 0, false, 4); 
+
+bldg[8] = new Building("Lab",               reconback.get('science'), 0,   0,      0, false, 0); // labs
+bldg[9] = new Building("School",          reconback.get('science'), 0, 0,  0, false, 1); // school
+bldg[10] = new Building("Collider",        reconback.get('science'), 0,  0,    0, false, 2); 
+bldg[11] = new Building("b3", reconback.get('science'), 0, 0, 0, false, 3); 
+bldg[56] = new Building("b18", reconback.get('science'), 0, 0, 0, false, 4); 
+
+bldg[12] = new Building("Quarry",          reconback.get('mineral'), 0,  0,  0, false, 0); 
+bldg[13] = new Building("Storehouse", reconback.get('mineral'), 0, 0,    0, false, 1); 
+bldg[14] = new Building("Fracker",       reconback.get('mineral'), 0, 0,   0, false, 2);
+bldg[15] = new Building("b4", reconback.get('mineral'), 0, 0, 0, false, 3); 
+bldg[57] = new Building("b19", reconback.get('mineral'), 0, 0, 0, false, 4); 
+
+bldg[24] = new Building("4", reconback.get('oil'), 0, 0, 0, false, 0); 
+bldg[25] = new Building("5", reconback.get('oil'), 0, 0, 0, false, 1); 
+bldg[26] = new Building("6", reconback.get('oil'), 0, 0, 0, false, 2); 
+bldg[27] = new Building("b7", reconback.get('oil'), 0, 0, 0, false, 3); 
+bldg[58] = new Building("b20", reconback.get('oil'), 0, 0, 0, false, 4); 
+
+bldg[28] = new Building("1", reconback.get('uranium'), 0, 0, 0, false, 0); 
+bldg[29] = new Building("2", reconback.get('uranium'), 0, 0, 0, false, 1); 
+bldg[30] = new Building("3", reconback.get('uranium'), 0, 0, 0, false, 2); 
+bldg[31] = new Building("b8", reconback.get('uranium'), 0, 0, 0, false, 3); 
+bldg[59] = new Building("b21", reconback.get('uranium'), 0, 0, 0, false, 4); 
+
+bldg[16] = new Building("Theatre",       reconback.get('culture'), 0,0, 0, false, 0); 
+bldg[17] = new Building("Museum", reconback.get('culture'), 0, 0, 0, false, 1); 
+bldg[18] = new Building("Auditorium", reconback.get('culture'), 0, 0, 0, false, 2); 
+bldg[19] = new Building("b5", reconback.get('culture'), 0, 0, 0, false, 3); 
+bldg[60] = new Building("b22", reconback.get('culture'), 0, 0, 0, false, 4); 
+
+bldg[44] = new Building("a7", reconback.get('political'), 0, 0, 0, false, 0);
+bldg[45] = new Building("a8", reconback.get('political'), 0, 0, 0, false, 1);
+bldg[46] = new Building("a9", reconback.get('political'), 0, 0, 0, false, 2);
+bldg[47] = new Building("b12", reconback.get('political'), 0, 0, 0, false, 3);
+bldg[61] = new Building("b23", reconback.get('political'), 0, 0, 0, false, 4); 
+
+bldg[20] = new Building("Generator", reconback.get('energy'), 0, 0, 0, false, 0); 
+bldg[21] = new Building("Accumulator", reconback.get('energy'), 0, 0, 0, false, 1); 
+bldg[22] = new Building("Powerplant", reconback.get('energy'), 0, 0, 0, false, 2); 
+bldg[23] = new Building("b6", reconback.get('energy'), 0, 0, 0, false, 3); 
+bldg[62] = new Building("b24", reconback.get('energy'), 0, 0, 0, false, 4); 
+
+bldg[32] = new Building("7", reconback.get('tradition'), 0, 0, 0, false, 0); 
+bldg[33] = new Building("8", reconback.get('tradition'), 0, 0, 0, false, 1); 
+bldg[34] = new Building("9", reconback.get('tradition'), 0, 0, 0, false, 2); 
+bldg[35] = new Building("b9", reconback.get('tradition'), 0, 0, 0, false, 3); 
+bldg[63] = new Building("b25", reconback.get('tradition'), 0, 0, 0, false, 4); 
+
+bldg[48] = new Building("a0", reconback.get('equipment'), 0, 0, 0, false, 0); 
+bldg[49] = new Building("a11", reconback.get('equipment'), 0, 0, 0, false, 1); 
+bldg[50] = new Building("a12", reconback.get('equipment'), 0, 0, 0, false, 2); 
+bldg[51] = new Building("b13", reconback.get('equipment'), 0, 0, 0, false, 3); 
+bldg[64] = new Building("b26", reconback.get('equipment'), 0, 0, 0, false, 4); 
 
 var bldgtxt = new Map();
 var builds = new Map();
@@ -318,7 +393,7 @@ for (var i = 0; i < bldg.length; i++) {
     owos.className = 'boxholder';
     owos.id = bldg[i].name.toLowerCase() + "_holder";
     document.getElementById('col' + (bldg[i].resource + 1)).appendChild(owos);
-
+ 
     if (bldg[i].costers.length > 1) {
         for (var e = 1; e < bldg[i].costers.length; e++) {
             var newcost = document.createElement("img");
@@ -651,6 +726,31 @@ function converter(first, second) {
     res[first].amt -= i / res[first].rates[second];
 }
 
+var check_cost = new Array(1);
+
+for (i = 0; i < check_cost.length; i++){
+    check_cost[i] = 10 * (1 + i);
+    document.getElementById('charge_cost' + i).innerHTML = check_cost[i];
+}
+
+function chargecost(typer){
+    check_cost[typer] = Math.floor(check_cost[typer] *= 1.1) + 10;
+    document.getElementById('charge_cost' + typer).innerHTML = check_cost[typer];
+}
+
+function buy_charge(type) {
+    if (res[10].amt >= check_cost[type]) {
+        res[10].amt -= check_cost[type];
+        chargecost(type);
+        var sel = Math.floor(res.length * Math.random());
+        var times = (5 + Math.ceil(3 * Math.random()));
+
+        switch (type) {
+            case 0: res[sel].amt *= times; break;
+        }
+    }
+}
+
 function buytech() {
     if (res[4].amt >= tech_cost) {
         for (i = 0; i < contour.length; i++) {
@@ -685,7 +785,7 @@ function findPS() {
                res[u].ps = 0;
                res[u].limit = res[u].baselimit;
                for (e = 0; e < bldg.length; e++) {
-                   if (bldg[e].resource == u && (true || bldg[e].purpose == 0)) {
+                   if (bldg[e].resource == u) {
                        res[u].ps += bldg[e].fps;
                    } 
                }
