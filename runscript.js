@@ -210,7 +210,8 @@ res[9] = new Resource("political", false, "#d19eff", 0);
 res[10] = new Resource("energy", false, "#9effd9", 10000);
 res[11] = new Resource("tradition", false, "#ff8b82", 0);
 res[12] = new Resource("equipment", false, "#ff8b82", 0);
-res[13] = new Resource("cash", true, "#d19eff", 0);
+res[13] = new Resource("unrest", false, "#d19eff", 0);
+res[14] = new Resource("cash", true, "#d19eff", 0);
 
 for (i = 0; i < res.length; i++) {
     recon.set(i, res[i].name);
@@ -329,7 +330,7 @@ var supclick = 1000;
 var source = document.getElementById("entry-template").innerHTML;
 var template = Handlebars.compile(source);
 
-for (var i = 0; i < res.length - 1; i++) {
+for (var i = 0; i < res.length - 2; i++) {
     clicker[i] = 1000;
     rowclicker[i] = 1000;
 
@@ -778,7 +779,7 @@ function doFlasher() {
 }
 
 function isUnlocked() {
-   for (i = 0; i < res.length; i++) {
+   for (i = 0; i < res.length - 2; i++) {
        if (!res[i].unlocked) {
            document.getElementById(res[i].name).style.display = "none";
            document.getElementById(res[i].name.substring(0, 2) + "ps").style.display = "none";
@@ -803,7 +804,7 @@ function isUnlocked() {
             for (r = 0; r < lister.length; r++) {
                 lister[r].src = res[i].name + ".png";
             }
-        }
+       }
     }
 
 
@@ -852,14 +853,15 @@ function init() {
     displaytech();
     displayidea();
 
-    for(i = 0; i < res.length - 1; i++){
+    for(i = 0; i < res.length - 2; i++){
         if (res[i].unlocked) {
             document.getElementById(res[i].name.substring(0, 2) + 'ps').innerHTML = "(" + small_int((res[i].ps)) + ' /s)';
             document.getElementById(res[i].name).innerHTML = small_int(Math.floor(res[i].amt));
         }
     }
-    
+
     document.getElementById('cash').innerHTML = small_int(Math.floor(res[res.length - 1].amt));  
+    document.getElementById('unrest').innerHTML = small_int(Math.floor(res[res.length - 2].amt));  
     
     for (var i = 0; i < res.length; i++) {
         for (var e = 0; e < res.length; e++){
@@ -996,7 +998,7 @@ function findPS() {
                bldg[i].fps = bldg[i].working * bldg[i].efficiency * res[bldg[i].resource].mult;
            }
 
-           for (u = 0; u < res.length; u++) {
+           for (u = 0; u < res.length - 2; u++) {
                res[u].ps = 0;
                res[u].limit = res[u].baselimit;
                for (e = 0; e < bldg.length; e++) {
@@ -1243,7 +1245,7 @@ function repeat() {
         clickSpinner();
     }
     
-    for (i = 0; i < res.length - 1; i++) {
+    for (i = 0; i < res.length - 2; i++) {
         if (res[i].amt + res[i].ps / (126 / framer) > -1) {
             res[i].amt += res[i].ps / (126 / framer);
         }
@@ -1269,7 +1271,6 @@ function repeat() {
     findPS();
     workercost();
     isUnlocked();
-    
    moveClick();
 
     for (y = 0; y < res.length; y++) {
