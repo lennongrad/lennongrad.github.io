@@ -208,6 +208,12 @@ body{
     padding:5px;
 }
 
+canvas{
+    z-index:5;
+    right:50px;
+    position:fixed;
+    opacity: .65;
+}
 
 .footer{
     width:100%;
@@ -348,6 +354,15 @@ body{
 }
 
 #tech_descr{
+    font-size:12px;
+    width:90px;
+}
+
+#idea_name{
+    font-weight:bold;
+}
+
+#idea_descr{
     font-size:12px;
     width:90px;
 }
@@ -527,6 +542,11 @@ body{
 }
 
 #near_tech{
+    right: 220px;
+    bottom: 19%;
+}
+
+#near_idea{
     right: 220px;
     bottom: 19%;
 }

@@ -381,6 +381,8 @@ for (var i = 0; i < res.length; i++) {
     }
 }
 
+
+
 source = document.getElementById("bldg-template").innerHTML;
 template = Handlebars.compile(source);
 
@@ -404,6 +406,20 @@ for (var i = 0; i < bldg.length; i++) {
     }
 }  
 
+chargeamt = 3;
+
+
+source = document.getElementById("charge-template").innerHTML;
+template = Handlebars.compile(source);
+
+for (var i = 0; i < chargeamt; i++) {
+    var context = { chargename: "doogus", chargeid: i};
+    var html = template(context);
+
+    var owos = document.createElement("TR");
+    owos.innerHTML = html;
+    document.getElementById('chargeanchor').appendChild(owos);
+}  
 
 
 var tech_level = 0;
@@ -421,6 +437,23 @@ var tech_descr = 0;
 for (i = 0; i < 12; i++) {
     tech_unlocked[i] = false;
     tech_possible[i] = false;
+}
+
+var idea_level = 0;
+var idea_unlocked = new Array();
+var idea_possible = new Array();
+var earliest_idea = 1;
+var idea_level_active;
+
+var ideas_cost_base = 20;
+var ideas_cost_mult = 5;
+var idea_cost = ideas_cost_base;
+var idea_name = 0;
+var idea_descr = 0;
+
+for (i = 0; i < 12; i++) {
+    idea_unlocked[i] = false;
+    idea_possible[i] = false;
 }
 
 
@@ -461,9 +494,155 @@ function techpossible() {
 }
 }
 
+
+function idealeft() {
+    ideapossible();
+    if (idea_possible[idea_level_active - 1]) {
+        --idea_level_active;
+    } else {
+        idea_level_active = earliest_idea;
+    }
+}
+
+function idearight(go) {
+    ideapossible();
+    if (go > idea_level_active * 2) {
+        idea_level_active = earliest;
+    }
+    if (idea_possible[idea_level_active + go]) {
+        idea_level_active += go;
+    } else {
+        idearight(go + 1);
+    }
+}
+
+function ideapossible() {
+    e = false;
+    holt = idea_possible.length + 1;
+    for(i = 0; i < holt; i++){
+        if (i > 0 && i < idea_level + 4 && !idea_unlocked[i]) {
+            idea_possible[i] = true;
+            if (!e) {
+                earliest_idea = i;
+                e = true;
+            }
+    } else {
+        idea_possible[i] = false;
+}
+}
+}
+
 var framer = 1;
 
 var all = false;
+
+function Matrix() {
+  this.a = 1; // identity matrix
+  this.b = 0;
+  this.c = 0;
+  this.d = 1;
+  this.e = 0;
+  this.f = 0;
+}
+
+Matrix.prototype = {
+
+    applyToPoint: function(p) {
+      return {
+        x: p.x * this.a + p.y * this.c + this.e + 15,
+        y: p.x * this.b + p.y * this.d + this.f + 15
+      }
+    },
+
+    transform: function(a2, b2, c2, d2, e2, f2) {
+
+      var a1 = this.a,
+          b1 = this.b,
+          c1 = this.c,
+          d1 = this.d,
+          e1 = this.e,
+          f1 = this.f;
+
+      /* matrix order (canvas compatible):
+       * ace
+       * bdf
+       * 001
+       */
+      this.a = a1 * a2 + c1 * b2;
+      this.b = b1 * a2 + d1 * b2;
+      this.c = a1 * c2 + c1 * d2;
+      this.d = b1 * c2 + d1 * d2;
+      this.e = a1 * e2 + c1 * f2 + e1;
+      this.f = b1 * e2 + d1 * f2 + f1;
+    },
+
+    rotate: function(angle) {
+      var cos = Math.cos(angle),
+          sin = Math.sin(angle);
+      this.transform(cos, sin, -sin, cos, 0, 0);
+    },
+
+    scale: function(sx, sy) {
+      this.transform(sx, 0, 0, sy, 0, 0);
+    },
+
+    translate: function(tx, ty) {
+      this.transform(1, 0, 0, 1, tx, ty);
+    },
+
+    reset: function () {
+        this.a = 1; // identity matrix
+        this.b = 1;
+        this.c = 1;
+        this.d = 1;
+        this.e = 1;
+        this.f = 1;
+    }
+};
+
+// apply some transformation:
+var m = new Matrix();     // our manual transformation-matrix
+m.translate(50, 50);      // center of box
+m.rotate(.25 * Math.PI);            // some angle in radians
+m.translate(-50, -50);    // translate back
+
+var points = [
+      {x: 0, y: 0},       // upper-left
+      {x: 40, y:  0},     // upper-right
+      {x: 40, y: 40},   // bottom-right
+      {x: 0, y: 40}      // bottom-left
+    ],
+    result = [], i = 0, p;
+
+// transform points
+while(p = points[i++]) result.push(m.applyToPoint(p));
+
+// draw boxes to canvas:
+var canvas = document.querySelector("canvas");
+var ctx = document.querySelector("canvas").getContext("2d");
+ctx.translate(30, 30);    // give some room for rotation for this demo
+
+drawPolygon(result, "blue");
+ 
+//drawCoord(points[0]);     // plot old point
+//drawCoord(result[0]);     // plot resulting point
+
+
+// plot result:
+function drawPolygon(pts, color) {
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for(var i = 1, p; p = pts[i++];) ctx.lineTo(p.x, p.y);
+  ctx.closePath();
+  ctx.stroke();
+  ctx.fillStyle = "red";
+  ctx.fill();
+}
+
+function drawCoord(p) {
+  ctx.fillText('!');
+}
 
 var repetir = 99;
 var rep_max = 100;
@@ -477,10 +656,11 @@ var flasher = 0;
 var flasher_interval = 70;
 
 var flash_tech = false;
+var flash_idea = false;
 var flash_worker = false;
 
 var active_page = 2;
-var pages = 3;
+var pages = 4;
 
 function switchPage(inter) {
     if (inter < pages + 1) {
@@ -573,6 +753,9 @@ function doFlasher() {
     if (!flash_tech) {
         document.getElementById('near_tech').style.display = "none";
     }
+    if (!flash_idea) {
+        document.getElementById('near_idea').style.display = "none";
+    }
     if (!flash_worker) {
         document.getElementById('near_worker').style.display = "none";
     }
@@ -649,6 +832,7 @@ function isUnlocked() {
 
 function init() {
     displaytech();
+    displayidea();
 
     for(i = 0; i < res.length - 1; i++){
         if (res[i].unlocked) {
@@ -684,6 +868,12 @@ function init() {
 
     document.getElementById('tech_name').innerHTML = tech_name;
     document.getElementById('tech_descr').innerHTML = tech_descr;
+
+    document.getElementById('idea_level').innerHTML = idea_level_active;
+    document.getElementById('idea_cost').innerHTML = small_int(Math.ceil(idea_cost));
+
+    document.getElementById('idea_name').innerHTML = idea_name;
+    document.getElementById('idea_descr').innerHTML = idea_descr;
 }
 
 document.addEventListener('keydown', function (event) {
@@ -702,9 +892,6 @@ document.addEventListener('keydown', function (event) {
     }
     else if (event.keyCode > 48 && event.keyCode <= 49 + res.length ){
         res[event.keyCode - 49].amt *= 100;
-    }
-    else if (event.keyCode == 40) {
-        alert(contour[0] + "," + contour[1] + "," + contour[2])
     }
 });
 
@@ -726,7 +913,7 @@ function converter(first, second) {
     res[first].amt -= i / res[first].rates[second];
 }
 
-var check_cost = new Array(1);
+var check_cost = new Array(chargeamt);
 
 for (i = 0; i < check_cost.length; i++){
     check_cost[i] = 10 * (1 + i);
@@ -753,13 +940,6 @@ function buy_charge(type) {
 
 function buytech() {
     if (res[4].amt >= tech_cost) {
-        for (i = 0; i < contour.length; i++) {
-            if (i > 2) {
-                contour[i] = contour[i - 3];
-            } else {
-                contour[i] = Math.floor(Math.random() * 256) - 1;
-            }
-        }
         res[4].amt -= tech_cost;
         ++tech_level;
         techcost();
@@ -773,6 +953,23 @@ function buytech() {
 
 function techcost() {
     tech_cost = (techs_cost_base * techs_cost_mult * (Math.pow(1.37, (tech_level + 1)) - Math.pow(1.37, tech_level))) / 0.40;
+}
+
+function buyidea() {
+    if (res[8].amt >= idea_cost) {
+        res[8].amt -= idea_cost;
+        ++idea_level;
+        ideacost();
+        unlockidea();
+
+        ideapossible();
+        idea_level_active = earliest_idea;
+    }
+    init();
+}
+
+function ideacost() {
+    idea_cost = (ideas_cost_base * ideas_cost_mult * (Math.pow(1.37, (idea_level + 1)) - Math.pow(1.37, idea_level))) / 0.40;
 }
 
 
@@ -817,7 +1014,7 @@ function unlocktech() {
             case 7: bldg[5].unlocker(); bldg[6].efficiency *= 1.25; break;
           case 8: bldg[7].unlocker(); break;
           case 9: workers_cost_mult *= .8; workercost(); break;
-          case 10: res[4].unlocker(); break;
+          case 10: res[5].unlocker(); break;
       }
 
       if (tech_level + 1> tech_unlocked.length) {
@@ -869,6 +1066,70 @@ function displaytech(){
       }
 }
 
+function unlockidea() {
+
+      switch (idea_level_active){
+            case 1: bldg[0].efficiency += .1; break;
+            case 2: bldg[6].unlocker(); break;
+            case 3: res[5].unlocker(); bldg[3].unlocker(); bldg[9].unlocker(); break;
+            case 4: bldg[4].unlocker(); break;
+            case 5: bldg[1].unlocker(); bldg[0].efficiency *= 1.5; break;
+            case 6: bldg[2].unlocker(); res[0].rates[res.length-1] += .3; break;
+            case 7: bldg[5].unlocker(); bldg[6].efficiency *= 1.25; break;
+          case 8: bldg[7].unlocker(); break;
+          case 9: workers_cost_mult *= .8; workercost(); break;
+          case 10: res[4].unlocker(); break;
+      }
+
+      if (idea_level + 1> idea_unlocked.length) {
+          res[0].mult += .1;
+          res[1].mult += .1;
+      }
+
+      idea_unlocked[idea_level_active] = true;
+
+      isUnlocked();
+
+}
+
+function displayidea(){
+      switch (idea_level_active){
+            case 1: idea_name = "Agriculture";
+                    idea_descr ="Farms become more efficient";
+                    break;
+            case 2: idea_name = "Philosophy";
+                    idea_descr ="Allows automated production of Science through Labs";
+                    break;
+                case 3: idea_name = "Mining";
+                    idea_descr = "Unlocks the Quarry and the Mine";
+                    break;
+                case 4: idea_name = "Trade";
+                    idea_descr = "Unlocks the Trading Post";
+                    break;
+            case 5: idea_name = "Agriculture+";
+                    idea_descr ="Unlocks the Silo and makes Farms 50% more efficient";
+                    break;
+            case 6: idea_name = "Cash Crops";
+                    idea_descr ="Unlocks the Plantation and improves the Food ➩ Cash rate";
+                    break;
+            case 7: idea_name = "Central Bank";
+                    idea_descr ="Unlocks the Mint and makes Trading Posts 25% more efficient";
+                    break;
+            case 8: idea_name = "Public Education";
+                    idea_descr ="Unlocks the school to produce more Science";
+                    break;
+                case 9: idea_name = "Healthcare";
+                    idea_descr = "Food Cost to buy Workers reduced by 20%";
+                    break;
+                case 10: idea_name = "Cultural Revolution";
+                    idea_descr = "Culture unlocked";
+                    break;
+            case 11: idea_name = "Internal Improvements";
+                    idea_descr ="GPS and FPS multiplier increased by 10%";
+                    break;
+      }
+}
+
 function buyWorker() {
     if (!(res[0].amt >= worker_cost)) {
         return;
@@ -887,21 +1148,64 @@ function workercost(){
 }
 
 tech_level_active = tech_level + 1;
-var contour = new Array();
-for (var i = 0; i < res.length - 1; i++) {
-    contour[i] = 10;
+idea_level_active = idea_level + 1;
+
+var spinnerActive = true;
+
+var rotateP = 0;
+var rotateV = .075;
+var rotateA = .995;
+var rotateSize = 75;
+var rotatePange = 2;
+
+canvas.width = rotateSize + 30;
+canvas.height = rotateSize + 30;
+
+var spinnerChance = .998;
+
+function resetRotate() {
+    rotateV = .065 + (.05 * Math.random());
+    rotateA = .98 + (.017 * Math.random());
+
+    var locX = (window.innerWidth - (rotateSize + 30)) * Math.random();
+    var locY = (window.innerHeight - (rotateSize + 30)) * Math.random();
+
+    document.getElementById("spinner").style.left = locX + "px";
+    document.getElementById("spinner").style.top = locY + "px";
 }
 
+resetRotate();
+
+function showSpinner() {
+    if (spinnerActive) {
+        document.getElementById("spinner").style.display = "block";
+    } else {
+        document.getElementById("spinner").style.display = "none";
+    }
+}
+
+function clickSpinner() {
+    spinnerActive = !spinnerActive;
+    resetRotate();
+    res[res.length - 1].amt *= 1.1;
+}
     
 function repeat() {
+    showSpinner();
 
-    for (i = 0; i < contour.length; i++) {
-        contour[i] += .01 + ((Math.pow(8,1 + (repetir / (rep_max + 1))) * framer * ((i % 3) * 5)) / 1000);
-        if (contour[i] > 256) {
-            contour[i] = 0;
-        }
+    if (rotateP > rotatePange) {
+        rotateP = 0;
+    }
+    rotateP += rotateV;
+
+    if (!(rotateV < .005)) {
+        rotateV *= rotateA;
     }
 
+    if (Math.random() > spinnerChance) {
+        spinnerActive = true;
+    }
+    
     for (i = 0; i < res.length - 1; i++) {
         if (res[i].amt + res[i].ps / (126 / framer) > -1) {
             res[i].amt += res[i].ps / (126 / framer);
@@ -943,6 +1247,28 @@ function repeat() {
         bldg[u].costfind();
     }
 
+// apply some transformation: 
+var g = new Matrix();     // our manual transformation-matrix
+g.translate(rotateSize / 2, rotateSize / 2);      // center of box
+g.rotate(((rotateP)) * Math.PI);            // some angle in radians
+g.translate(-rotateSize / 2, -rotateSize / 2);    // translate back
+
+var pointsa = [
+      {x: 0, y: 0},       // upper-left
+      {x: rotateSize, y:  0},     // upper-right
+      {x: rotateSize, y: rotateSize},   // bottom-right
+      {x: 0, y: rotateSize}      // bottom-left
+    ],
+    result = [], e = 0, o;
+
+// transform points
+while(o = pointsa[e++]) result.push(g.applyToPoint(o));
+    ctx.clearRect (-200, -200, 500, 500);
+    drawPolygon(result, "blue");   
+    ctx.font = "50px Georgia";
+    ctx.fillStyle = "white";
+    ctx.fillText("!", 7.5 + (rotateSize / 2), 31 + (rotateSize / 2)); 
+    
     
 
     for (i = 0; i < bldg.length; i++) {
@@ -970,6 +1296,14 @@ function repeat() {
    } else {
        document.getElementById("tech_cost").style.color = inactive_colour;
        flash_tech = false;
+   }
+
+   if(res[8].amt >= idea_cost){
+       document.getElementById("idea_cost").style.color = active_colour;
+       flash_idea = true;
+   } else {
+       document.getElementById("idea_cost").style.color = inactive_colour;
+       flash_idea = false;
    }
 
    init();

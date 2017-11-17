@@ -71,15 +71,24 @@ var iFrameWin = "hi";
                                 <div onclick="converter({{ide1}},{{ide2}})" id="convertbutton" class="button">
                                     <div class="tooltip">
                                         <img draggable="false" src="{{name1}}.png" class="food-icon">
-                                        <span class="tooltiptext">{{name1}}</span>
                                     </div>
                                     <img draggable="false" src="sideswipe.png" class="convert-clicker">
                                     <div class="tooltip">
                                         <img draggable="false" src="{{name2}}.png" class="cashicon food-icon">
-                                        <span class="tooltiptext">{{name2}}</span>
                                     </div>
                                 </div>
                             </td>
+                            </script>
+
+    <script id="charge-template" type="text/x-handlebars-template">
+                <td class="chargetitle">{{chargename}}<br>
+                            <div  id="convertbutton" >
+                                <div class="button charger" onclick="buy_charge({{chargeid}})">
+                                    <span id="charge_cost{{chargeid}}" class="text"></span>
+                                    <img draggable="false" src="energy.png" class="energyicon food-icon">
+                                        
+                                </div>
+                            </div>
                             </script>
 </head>
 <body>
@@ -90,7 +99,10 @@ var iFrameWin = "hi";
 
         <table id="2pageclick" class="pager button depress" onclick="switchPage(2)"> <tr><td><img src="page2.png" class="page-icon" /></td><td>Government</td></tr></table>
 
+        <table id="4pageclick" class="pager button depress" onclick="switchPage(4)"> <tr><td><img src="page4.png" class="page-icon" /></td><td>Development</td></tr></table>
+
         <table id="3pageclick" class="pager button depress" onclick="switchPage(3)"> <tr><td><img src="page3.png" class="page-icon" /></td><td>Settings</td></tr></table>
+
 
     </div>
     <!-- End of Header div -->
@@ -123,6 +135,7 @@ var iFrameWin = "hi";
     
     <div id="page1" class="page">
     <table id="main"><tbody id="mainbody"></tbody></table>
+    <div style="height:58px"></div>
         </div>
 
     <div class="page" id="page2">
@@ -131,22 +144,16 @@ var iFrameWin = "hi";
 
 
         <div id="charge_box">
-            <table id="chargebox"><tr>
-                <tr><td class="chargetitle">Mega-Charge</td></tr><tr>
-                            <td  id="convertbutton" >
-                                <div class="button charger" onclick="buy_charge(0)">
-                                    <span id="charge_cost0" class="text"></span>
-                                    <img draggable="false" src="energy.png" class="energyicon food-icon">
-                                        
-                                </div>
-                            </td></tr><tr><td></td>
-                            </tr></table>
+            <table id="chargebox"><tbody id="chargeanchor"></tbody></table>
         </div>
     </div>
 
     <div class="page" id="page3">
         <div id="exp"></div>
         <button class="clicker button" onclick="exporto()"></button>
+    </div>
+
+    <div class="page" id="page4">
     </div>
 
     <table id="rightside">
@@ -202,6 +209,27 @@ var iFrameWin = "hi";
                             </td>
                         </tr><tr class="row-even"><td><span id="tech_name"></span>:</td><td>
 <span id="tech_descr"></span></td></tr>
+        <tr class="row-odd">
+            <td>
+                <div class="flashing" id="near_idea">!</div>
+            </td>
+                            <td id="science_header">
+                                Ideas
+                            </td>
+                        </tr>
+                        <tr class="row-even">
+                            <td style="width:110px">
+                                <span class="button depress" onclick="idealeft()"> ◄ </span> Lvl. <span id="idea_level"></span> <span class="button depress" onclick="idearight(1)"> ► </span>
+                            </td>
+                            <td  id="convertbutton" >
+                                <div class="button" onclick="buyidea()">
+                                    <span id="idea_cost" class="text"></span>
+                                    <img draggable="false" src="culture.png" class="cultureicon food-icon">
+                                        
+                                </div>
+                            </td>
+                        </tr><tr class="row-even"><td><span id="idea_name"></span>:</td><td>
+<span id="idea_descr"></span></td></tr>
         <tr><td></td></tr></tbody>
     </table>
 
@@ -213,7 +241,7 @@ var iFrameWin = "hi";
                 Game by <a href="http://lennongrad.com">Brock Dilley</a>.
             </td>
             <td id="tester">
-                v1.02
+                v1.03 (Spinner Update)
             </td>
             <td>
                 Icons by <a href="http://lorcblog.blogspot.com/">Lorc</a>, <a href="http://delapouite.com/">Delapouite</a>, and <a href="http://blackdogofdoom.blogspot.co.uk/">Felbrigg</a>. Retrieved from <a href="http://game-icons.net">http://game-icons.net</a>.
@@ -221,6 +249,7 @@ var iFrameWin = "hi";
         </tr>
     </table>
     <!-- End of Footer div -->
+<canvas id="spinner" onclick="clickSpinner()">
 
     <script src="runscript.js"></script>
 </body>
