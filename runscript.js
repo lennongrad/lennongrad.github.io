@@ -705,28 +705,31 @@ var snd = new Audio("click.wav");
 
 //document.getElementById('ledgerbody').appendChild( document.getElementsByClassName('rowfood')[0].cloneNode(true) );
 
-function small_int(e){
-      var size = Math.floor(Math.log10(Math.abs(e))) + 1;
-      var suffix = "";
+var suffixarray = ["", "k", "m", "b", "t", "qu", "qi", "sx", "sp"]; 
 
-      if(size < 4){
-            return e.toString().substring(0, 3);
-      } else {
-           e = e.toExponential(9);
-         e = e.substring(0,4 + size%3 + 4);
-      }
-      switch(size){
-          case 5: e = e.substring(0, 1) + e.substring(2, 3) + "." + e.substring(3); e = e.substring(0, 6); suffix = "k"; break;
-          case 6: e = e.substring(0, 1) + e.substring(2, 4) + "." + e.substring(4); e = e.substring(0, 7); suffix = "k"; break;
-          case 4: e = e.substring(0, 5);suffix = "k"; break;
-          case 8: e = e.substring(0, 1) + e.substring(2, 3) + "." + e.substring(3); e = e.substring(0, 6); suffix = "m"; break;
-          case 9: e = e.substring(0, 1) + e.substring(2, 4) + "." + e.substring(4); e = e.substring(0, 7); suffix = "m"; break;
-          case 7: e = e.substring(0, 5); suffix = "m"; break;
-          case 11: e = e.substring(0, 1) + e.substring(2, 3) + "." + e.substring(3); e = e.substring(0, 6); suffix = "b"; break;
-          case 12: e = e.substring(0, 1) + e.substring(2, 4) + "." + e.substring(4); e = e.substring(0, 7); suffix = "b"; break;
-          case 10: e = e.substring(0, 5); suffix = "b"; break;
-      }
-      return e + suffix;
+function small_int(e) {
+    var size = Math.floor(Math.log10(Math.abs(e))) + 1;
+    var suffix = "";
+
+    if (size < 4) {
+        return e.toString().substring(0, 3);
+    } else {
+        e = e.toExponential(9);
+        e = e.substring(0, 4 + size % 3 + 4);
+    }
+    if (size > 4) {
+        switch (size % 3) {
+            case 0: e = e.substring(0, 1) + e.substring(2, 4) + "." + e.substring(4); e = e.substring(0, 7);break;
+            case 1: e = e.substring(0, 5); break;
+            case 2: e = e.substring(0, 1) + e.substring(2, 3) + "." + e.substring(3); e = e.substring(0, 6);break;
+        }
+        suffix = suffixarray[Math.floor((size - 1) / 3)]
+    }
+    if ((Math.floor((size - 1) / 3)) < suffixarray.length) {
+        return e + suffix;
+    } else {
+        return e + "A ?";
+    }
 }
 
 
@@ -1214,9 +1217,9 @@ function clickSpinner() {
     res[resnow].amt *= 1 + (rotateSize / 500);
 
     switch (currColor) {
-        case "Blue": resnow = 5; break;
+        case "Blue": resnow = 4; break;
         case "Red": resnow = 11; break;
-        case "Purple": resnow = 9; break;
+        case "Purple": resnow = 8; break;
         case "Grey": resnow = 5; break;
         case "Yellow": resnow = res.length - 1;break;
         case "Green": resnow = 0;
@@ -1237,6 +1240,7 @@ function repeat() {
 
     if (Math.random() > spinnerChance) {
         spinnerActive = true;
+        clickSpinner();
     }
     
     for (i = 0; i < res.length - 1; i++) {
