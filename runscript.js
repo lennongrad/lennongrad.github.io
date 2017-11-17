@@ -12,6 +12,19 @@ var av_workers = 3;
 
 var curYPos, curXPos, curDown;
 
+var colorRand = [
+    "Red",
+    "Blue",
+    "Yellow",
+    "Purple",
+    "Grey",
+    "Green"
+]
+
+var currColor = colorRand[Math.floor(colorRand.length * Math.random())];
+
+var baseChanceSpinner = .998;
+
 window.addEventListener('mousemove', function (e) {
     if (curDown && !MouseScroller) {
         document.getElementById('page1').scrollTo(document.getElementById('page1').scrollLeft - e.movementX, document.getElementById('page1').scrollTop - e.movementY);
@@ -636,7 +649,7 @@ function drawPolygon(pts, color) {
   for(var i = 1, p; p = pts[i++];) ctx.lineTo(p.x, p.y);
   ctx.closePath();
   ctx.stroke();
-  ctx.fillStyle = "red";
+  ctx.fillStyle = currColor;
   ctx.fill();
 }
 
@@ -792,7 +805,8 @@ function isUnlocked() {
 
 
 
-    if (debug) {
+   if (debug) {
+       spinnerChance = 0;
         for (i = 0; i < bldg.length; i++) {
             if (!bldg[i].unlocked) {
                 bldg[i].unlocked = true;
@@ -804,7 +818,8 @@ function isUnlocked() {
             }
         }
         
-    } else {
+   } else {
+       spinnerChance = baseChanceSpinner;
         for (i = 0; i < bldg.length; i++) {
             if (bldg[i].onDebug) {
                 bldg[i].unlocked = false;
@@ -1155,15 +1170,16 @@ var spinnerActive = true;
 var rotateP = 0;
 var rotateV = .075;
 var rotateA = .995;
-var rotateSize = 75;
+var rotateSize = 60;
 var rotatePange = 2;
 
 canvas.width = rotateSize + 30;
 canvas.height = rotateSize + 30;
 
-var spinnerChance = .998;
+var spinnerChance = baseChanceSpinner;
 
 function resetRotate() {
+    rotateSize = Math.ceil(65 + (40 * Math.random()));
     rotateV = .065 + (.05 * Math.random());
     rotateA = .98 + (.017 * Math.random());
 
@@ -1172,6 +1188,11 @@ function resetRotate() {
 
     document.getElementById("spinner").style.left = locX + "px";
     document.getElementById("spinner").style.top = locY + "px";
+
+    canvas.width = rotateSize + 30;
+    canvas.height = rotateSize + 30;
+    currColor = colorRand[Math.floor(colorRand.length * Math.random())]
+
 }
 
 resetRotate();
@@ -1184,10 +1205,22 @@ function showSpinner() {
     }
 }
 
+    var resnow = res.length - 1;
+
 function clickSpinner() {
     spinnerActive = !spinnerActive;
     resetRotate();
-    res[res.length - 1].amt *= 1.1;
+
+    res[resnow].amt *= 1 + (rotateSize / 500);
+
+    switch (currColor) {
+        case "Blue": resnow = 5; break;
+        case "Red": resnow = 11; break;
+        case "Purple": resnow = 9; break;
+        case "Grey": resnow = 5; break;
+        case "Yellow": resnow = res.length - 1;break;
+        case "Green": resnow = 0;
+    }
 }
     
 function repeat() {
@@ -1247,6 +1280,9 @@ function repeat() {
         bldg[u].costfind();
     }
 
+    //rotateP = 0;
+    //spinnerActive = true;
+    
 // apply some transformation: 
 var g = new Matrix();     // our manual transformation-matrix
 g.translate(rotateSize / 2, rotateSize / 2);      // center of box
@@ -1254,12 +1290,17 @@ g.rotate(((rotateP)) * Math.PI);            // some angle in radians
 g.translate(-rotateSize / 2, -rotateSize / 2);    // translate back
 
 var pointsa = [
-      {x: 0, y: 0},       // upper-left
-      {x: rotateSize, y:  0},     // upper-right
-      {x: rotateSize, y: rotateSize},   // bottom-right
-      {x: 0, y: rotateSize}      // bottom-left
+      {x: 10, y: 0},       // upper-left
+      {x: 0, y: 10},       // upper-left
+      {x: 0, y: rotateSize - 10},      // bottom-left
+      {x: 10, y: rotateSize},      // bottom-left
+      {x: rotateSize - 10, y: rotateSize},      // bottom-right
+      {x: rotateSize, y: rotateSize - 10},      // bottom-right
+      {x: rotateSize , y: 10},      // upper-right
+      {x: rotateSize - 10, y: 0},      // upper-right
     ],
     result = [], e = 0, o;
+
 
 // transform points
 while(o = pointsa[e++]) result.push(g.applyToPoint(o));
