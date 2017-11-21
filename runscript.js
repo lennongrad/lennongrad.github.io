@@ -12,18 +12,11 @@ var av_workers = 3;
 
 var curYPos, curXPos, curDown;
 
-var colorRand = [
-    "Red",
-    "Blue",
-    "Yellow",
-    "Purple",
-    "Grey",
-    "Green"
-]
-
-var currColor = colorRand[Math.floor(colorRand.length * Math.random())];
+var currShape = 0;
+var currColor = 0
 
 var baseChanceSpinner = .998;
+
 
 window.addEventListener('mousemove', function (e) {
     if (curDown && !MouseScroller) {
@@ -48,7 +41,7 @@ var setScroll = function () {
 };
 
 
-function Resource(name, unlocked, color, base, limit) {
+function Resource(name, unlocked, color, color2, base, limit) {
     this.name = name;
     this.ps = 0;
     this.amt = base;
@@ -56,26 +49,49 @@ function Resource(name, unlocked, color, base, limit) {
     this.mult = 1;
     this.unlocked = unlocked;
     this.color = color;
+    this.color2 = color2;
     this.baselimit = limit;
     this.limit = limit;
 
     this.onDebug = false;
 
-    this.rates = new Array();
-    this.auto = new Array();
+    this.rates = [];
+    this.auto = [];
 
     this.toClick = function () {
         this.amt = this.amt + this.click;
-        clicker[reconback.get(this.name)] = 0;
-        rowclicker[reconback.get(this.name)] = 0;
+        clicker[rcb.get(this.name)] = 0;
+        rowclicker[rcb.get(this.name)] = 0;
         repetir += this.click;
-        last_click = reconback.get(this.name);
+        last_click = rcb.get(this.name);
+        clickerV[rcb.get(this.name)] = 6;
+        clickerHV[rcb.get(this.name)] = -5 + (10 * Math.random());
+        clickerH[rcb.get(this.name)] = 3;
+        clickerO[rcb.get(this.name)] = 0;
     }
 
     this.unlocker = function () {
         this.unlocked = true;
         this.onDebug = false;
-        rowclicker[reconback.get(this.name)] = 0;
+        rowclicker[rcb.get(this.name)] = 0;
+    }
+
+    this.multBy = function (times) {
+        var gotRate = 0;
+        var isRate = 0;
+
+        for (var y = 0; y < res.length && gotRate == 0; y++) {
+            if (this.auto[y]) {
+                gotRate = y;
+                isRate = this.rates[y];
+            }
+        }
+
+        if (gotRate == 0) {
+            this.amt *= times;
+        } else {
+            res[gotRate].multBy(isRate * times);
+        }
     }
 }
 
@@ -84,35 +100,35 @@ function Building(name, resource, cost_base, cost_mult, efficiency, unlocked, co
     this.unlocked = unlocked;
     this.name = name;
 
-    this.costers = new Array();
+    this.costers = [];
 
     switch (costs) {
         case 0:
-            this.costers = [res.length - 1];
+            this.costers = [a];
             this.cost_base = 50;
             this.cost_mult = 1.5;
             this.efficiency = .15;
             break;
         case 1:
-            this.costers = [res.length - 1, 5];
+            this.costers = [a, 5];
             this.cost_base = 500;
             this.cost_mult = 2.1;
             this.efficiency = 1.6;
             break;
         case 2:
-            this.costers = [res.length - 1, 5];
+            this.costers = [a, 5];
             this.cost_base = 5000;
             this.cost_mult = 3;
             this.efficiency = 15.6;
             break;
         case 3:
-            this.costers = [res.length - 1, 6];
+            this.costers = [a, 6];
             this.cost_base = 50000;
             this.cost_mult = 4.3;
             this.efficiency = 98.5;
             break;
         case 4:
-            this.costers = [res.length - 1, 7];
+            this.costers = [a, 7];
             this.cost_base = 500000;
             this.cost_mult = 6.2;
             this.efficiency = 567.34;
@@ -165,7 +181,7 @@ function Building(name, resource, cost_base, cost_mult, efficiency, unlocked, co
                 ++this.working;
             }
             findPS();
-        } while (res[least].amt >= this.cost & all);
+        } while (res[lesser].amt >= this.cost & all);
         init();
     }
 
@@ -194,144 +210,154 @@ function Building(name, resource, cost_base, cost_mult, efficiency, unlocked, co
 }
 
 var recon = new Map();
-var reconback = new Map();
+var rcb = new Map();
 
-var res = new Array();
-res[0] = new Resource("food", true, "#b6ff9e", 0);
-res[1] = new Resource("housing", false, "#b6ff9e", 0);
-res[2] = new Resource("gold", true, "#fff69e", 90000);
-res[3] = new Resource("jewel", false, "#fff69e", 90000);
-res[4] = new Resource("science", true, "#9ea7ff", 10000);
-res[5] = new Resource("mineral", false, "#d8c2a4", 0);
-res[6] = new Resource("oil", false, "#d8c2a4", 0);
-res[7] = new Resource("uranium", false, "#d8c2a4", 0);
-res[8] = new Resource("culture", false, "#d19eff", 0);
-res[9] = new Resource("political", false, "#d19eff", 0);
-res[10] = new Resource("energy", false, "#9effd9", 10000);
-res[11] = new Resource("tradition", false, "#ff8b82", 0);
-res[12] = new Resource("equipment", false, "#ff8b82", 0);
-res[13] = new Resource("unrest", false, "#d19eff", 0);
-res[14] = new Resource("cash", true, "#d19eff", 0);
+var res = [];
+res[0] = new Resource("food", true, "#b6ff9e", "#4fff51", 0);
+res[1] = new Resource("housing", false, "#b6ff9e", "#4fff51", 0);
+res[2] = new Resource("gold", true, "#fff69e", "#ffc44f", 90000);
+res[3] = new Resource("jewel", false, "#fff69e", "#ffc44f", 90000);
+res[4] = new Resource("science", true, "#9ea7ff", "#4f6fff", 10000);
+res[5] = new Resource("mineral", false, "#d8c2a4", "#A59989", 0);
+res[6] = new Resource("oil", false, "#d8c2a4", "#A59989", 0);
+res[7] = new Resource("uranium", false, "#d8c2a4", "#A59989", 0);
+res[8] = new Resource("culture", false, "#d19eff", "#ac4fff", 0);
+res[9] = new Resource("political", false, "#d19eff", "#ac4fff", 0);
+res[10] = new Resource("energy", false, "#9effd9", "#4fffa1", 10000);
+res[11] = new Resource("tradition", false, "#ff8b82", "#ff5d4f", 0);
+res[12] = new Resource("equipment", false, "#ff8b82", "#ff5d4f", 0);
+res[13] = new Resource("unrest", false, "#d19eff", "#", 0);
+res[14] = new Resource("cash", true, "#d19eff", "#", 0);
+
+var a = res.length - 1;
+var b = a - 1;
 
 for (i = 0; i < res.length; i++) {
     recon.set(i, res[i].name);
-    reconback.set(res[i].name, i);
+    rcb.set(res[i].name, i);
     for (e = 0; e < res.length; e++) {
         res[i].rates[e] = 0;
         res[i].auto[e] = false;
     }
 }
 
-res[0].rates[res.length - 1] =   .5;
-res[2].rates[res.length - 1] = 1.3;
-res[5].rates[res.length - 1] = 1.1;
-res[4].rates[res.length - 1] = 1.05;
-res[3].rates[res.length - 1] = 1.5;
-res[6].rates[res.length - 1] = 1.2;
-res[7].rates[res.length - 1] = 1.45;
+res[0].rates[a] =   .5;
+res[2].rates[a] = 1.3;
+res[5].rates[a] = 1.1;
+res[4].rates[a] = 1.05;
+res[3].rates[a] = 1.5;
+res[6].rates[a] = 1.2;
+res[7].rates[a] = 1.45;
 res[11].rates[9] = 1;
 
 
 // name, resource, cost_base, cost_mult, efficiency, unlocked
-var a = res.length - 1;
 
-var bldg = new Array();
-bldg[0] = new Building("Farm",           reconback.get('food'), 0, 0, 0, true, 0); // farms
-bldg[1] = new Building("Silo",              reconback.get('food'), 0, 0,0 , false, 1); // silos
-bldg[2] = new Building("Plantation",     reconback.get('food'), 0, 0, 0, false, 2); // plantations
-bldg[3] = new Building("b1", reconback.get('food'), 0, 0, 0, false, 3); // plantations
-bldg[52] = new Building("b14", reconback.get('food'), 0,0, 0, false, 4); 
+var bldg = [];
+bldg[0] = new Building("Farm",           rcb.get('food'), 0, 0, 0, false, 0); // farms
+bldg[1] = new Building("Silo",              rcb.get('food'), 0, 0,0 , false, 1); // silos
+bldg[2] = new Building("Plantation",     rcb.get('food'), 0, 0, 0, false, 2); // plantations
+bldg[3] = new Building("b1", rcb.get('food'), 0, 0, 0, false, 3); // plantations
+bldg[52] = new Building("b14", rcb.get('food'), 0,0, 0, false, 4); 
 
-bldg[36] = new Building("a1", reconback.get('housing'), 0, 0, 0, false, 0); 
-bldg[37] = new Building("a2", reconback.get('housing'), 0, 0, 45, false, 1); 
-bldg[38] = new Building("a3", reconback.get('housing'), 0, 0, 0, false, 2); 
-bldg[39] = new Building("b10", reconback.get('housing'), 0, 0, 0, false, 3); 
-bldg[53] = new Building("b15", reconback.get('housing'), 0, 0, 0, false, 4);
+bldg[36] = new Building("a1", rcb.get('housing'), 0, 0, 0, false, 0); 
+bldg[37] = new Building("a2", rcb.get('housing'), 0, 0, 45, false, 1); 
+bldg[38] = new Building("a3", rcb.get('housing'), 0, 0, 0, false, 2); 
+bldg[39] = new Building("b10", rcb.get('housing'), 0, 0, 0, false, 3); 
+bldg[53] = new Building("b15", rcb.get('housing'), 0, 0, 0, false, 4);
 
-bldg[4] = new Building("Mine",             reconback.get('gold'), 0,  0, 0, false, 0); // mines
-bldg[5] = new Building("Bank",            reconback.get('gold'), 0,  0, 0, false, 1); // banks
-bldg[6] = new Building("Mint",              reconback.get('gold'), 0, 0,  0, false, 2); // mints
-bldg[7] = new Building("b2", reconback.get('gold'), 0,0,0, false, 3); // mints
-bldg[54] = new Building("b16", reconback.get('gold'), 0, 0, 0, false, 4); 
+bldg[4] = new Building("Mine",             rcb.get('gold'), 0,  0, 0, false, 0); // mines
+bldg[5] = new Building("Bank",            rcb.get('gold'), 0,  0, 0, false, 1); // banks
+bldg[6] = new Building("Mint",              rcb.get('gold'), 0, 0,  0, false, 2); // mints
+bldg[7] = new Building("b2", rcb.get('gold'), 0,0,0, false, 3); // mints
+bldg[54] = new Building("b16", rcb.get('gold'), 0, 0, 0, false, 4); 
 
-bldg[40] = new Building("a4", reconback.get('jewel'), 0, 0, 0, false, 0); 
-bldg[41] = new Building("a5", reconback.get('jewel'), 0, 0, 0, false, 1); 
-bldg[42] = new Building("a6", reconback.get('jewel'), 0, 0, 0, false, 2); 
-bldg[43] = new Building("b11", reconback.get('jewel'), 0, 0, 0, false, 3); 
-bldg[55] = new Building("b17", reconback.get('jewel'), 0, 0, 0, false, 4); 
+bldg[40] = new Building("a4", rcb.get('jewel'), 0, 0, 0, false, 0); 
+bldg[41] = new Building("a5", rcb.get('jewel'), 0, 0, 0, false, 1); 
+bldg[42] = new Building("a6", rcb.get('jewel'), 0, 0, 0, false, 2); 
+bldg[43] = new Building("b11", rcb.get('jewel'), 0, 0, 0, false, 3); 
+bldg[55] = new Building("b17", rcb.get('jewel'), 0, 0, 0, false, 4); 
 
-bldg[8] = new Building("Lab",               reconback.get('science'), 0,   0,      0, false, 0); // labs
-bldg[9] = new Building("School",          reconback.get('science'), 0, 0,  0, false, 1); // school
-bldg[10] = new Building("Collider",        reconback.get('science'), 0,  0,    0, false, 2); 
-bldg[11] = new Building("b3", reconback.get('science'), 0, 0, 0, false, 3); 
-bldg[56] = new Building("b18", reconback.get('science'), 0, 0, 0, false, 4); 
+bldg[8] = new Building("Lab",               rcb.get('science'), 0,   0,      0, false, 0); // labs
+bldg[9] = new Building("School",          rcb.get('science'), 0, 0,  0, false, 1); // school
+bldg[10] = new Building("Collider",        rcb.get('science'), 0,  0,    0, false, 2); 
+bldg[11] = new Building("b3", rcb.get('science'), 0, 0, 0, false, 3); 
+bldg[56] = new Building("b18", rcb.get('science'), 0, 0, 0, false, 4); 
 
-bldg[12] = new Building("Quarry",          reconback.get('mineral'), 0,  0,  0, false, 0); 
-bldg[13] = new Building("Storehouse", reconback.get('mineral'), 0, 0,    0, false, 1); 
-bldg[14] = new Building("Fracker",       reconback.get('mineral'), 0, 0,   0, false, 2);
-bldg[15] = new Building("b4", reconback.get('mineral'), 0, 0, 0, false, 3); 
-bldg[57] = new Building("b19", reconback.get('mineral'), 0, 0, 0, false, 4); 
+bldg[12] = new Building("Quarry",          rcb.get('mineral'), 0,  0,  0, false, 0); 
+bldg[13] = new Building("Storehouse", rcb.get('mineral'), 0, 0,    0, false, 1); 
+bldg[14] = new Building("Fracker",       rcb.get('mineral'), 0, 0,   0, false, 2);
+bldg[15] = new Building("b4", rcb.get('mineral'), 0, 0, 0, false, 3); 
+bldg[57] = new Building("b19", rcb.get('mineral'), 0, 0, 0, false, 4); 
 
-bldg[24] = new Building("4", reconback.get('oil'), 0, 0, 0, false, 0); 
-bldg[25] = new Building("5", reconback.get('oil'), 0, 0, 0, false, 1); 
-bldg[26] = new Building("6", reconback.get('oil'), 0, 0, 0, false, 2); 
-bldg[27] = new Building("b7", reconback.get('oil'), 0, 0, 0, false, 3); 
-bldg[58] = new Building("b20", reconback.get('oil'), 0, 0, 0, false, 4); 
+bldg[24] = new Building("4", rcb.get('oil'), 0, 0, 0, false, 0); 
+bldg[25] = new Building("5", rcb.get('oil'), 0, 0, 0, false, 1); 
+bldg[26] = new Building("6", rcb.get('oil'), 0, 0, 0, false, 2); 
+bldg[27] = new Building("b7", rcb.get('oil'), 0, 0, 0, false, 3); 
+bldg[58] = new Building("b20", rcb.get('oil'), 0, 0, 0, false, 4); 
 
-bldg[28] = new Building("1", reconback.get('uranium'), 0, 0, 0, false, 0); 
-bldg[29] = new Building("2", reconback.get('uranium'), 0, 0, 0, false, 1); 
-bldg[30] = new Building("3", reconback.get('uranium'), 0, 0, 0, false, 2); 
-bldg[31] = new Building("b8", reconback.get('uranium'), 0, 0, 0, false, 3); 
-bldg[59] = new Building("b21", reconback.get('uranium'), 0, 0, 0, false, 4); 
+bldg[28] = new Building("1", rcb.get('uranium'), 0, 0, 0, false, 0); 
+bldg[29] = new Building("2", rcb.get('uranium'), 0, 0, 0, false, 1); 
+bldg[30] = new Building("3", rcb.get('uranium'), 0, 0, 0, false, 2); 
+bldg[31] = new Building("b8", rcb.get('uranium'), 0, 0, 0, false, 3); 
+bldg[59] = new Building("b21", rcb.get('uranium'), 0, 0, 0, false, 4); 
 
-bldg[16] = new Building("Theatre",       reconback.get('culture'), 0,0, 0, false, 0); 
-bldg[17] = new Building("Museum", reconback.get('culture'), 0, 0, 0, false, 1); 
-bldg[18] = new Building("Auditorium", reconback.get('culture'), 0, 0, 0, false, 2); 
-bldg[19] = new Building("b5", reconback.get('culture'), 0, 0, 0, false, 3); 
-bldg[60] = new Building("b22", reconback.get('culture'), 0, 0, 0, false, 4); 
+bldg[16] = new Building("Theatre",       rcb.get('culture'), 0,0, 0, false, 0); 
+bldg[17] = new Building("Museum", rcb.get('culture'), 0, 0, 0, false, 1); 
+bldg[18] = new Building("Auditorium", rcb.get('culture'), 0, 0, 0, false, 2); 
+bldg[19] = new Building("b5", rcb.get('culture'), 0, 0, 0, false, 3); 
+bldg[60] = new Building("b22", rcb.get('culture'), 0, 0, 0, false, 4); 
 
-bldg[44] = new Building("a7", reconback.get('political'), 0, 0, 0, false, 0);
-bldg[45] = new Building("a8", reconback.get('political'), 0, 0, 0, false, 1);
-bldg[46] = new Building("a9", reconback.get('political'), 0, 0, 0, false, 2);
-bldg[47] = new Building("b12", reconback.get('political'), 0, 0, 0, false, 3);
-bldg[61] = new Building("b23", reconback.get('political'), 0, 0, 0, false, 4); 
+bldg[44] = new Building("a7", rcb.get('political'), 0, 0, 0, false, 0);
+bldg[45] = new Building("a8", rcb.get('political'), 0, 0, 0, false, 1);
+bldg[46] = new Building("a9", rcb.get('political'), 0, 0, 0, false, 2);
+bldg[47] = new Building("b12", rcb.get('political'), 0, 0, 0, false, 3);
+bldg[61] = new Building("b23", rcb.get('political'), 0, 0, 0, false, 4); 
 
-bldg[20] = new Building("Generator", reconback.get('energy'), 0, 0, 0, false, 0); 
-bldg[21] = new Building("Accumulator", reconback.get('energy'), 0, 0, 0, false, 1); 
-bldg[22] = new Building("Powerplant", reconback.get('energy'), 0, 0, 0, false, 2); 
-bldg[23] = new Building("b6", reconback.get('energy'), 0, 0, 0, false, 3); 
-bldg[62] = new Building("b24", reconback.get('energy'), 0, 0, 0, false, 4); 
+bldg[20] = new Building("Generator", rcb.get('energy'), 0, 0, 0, false, 0); 
+bldg[21] = new Building("Accumulator", rcb.get('energy'), 0, 0, 0, false, 1); 
+bldg[22] = new Building("Powerplant", rcb.get('energy'), 0, 0, 0, false, 2); 
+bldg[23] = new Building("b6", rcb.get('energy'), 0, 0, 0, false, 3); 
+bldg[62] = new Building("b24", rcb.get('energy'), 0, 0, 0, false, 4); 
 
-bldg[32] = new Building("7", reconback.get('tradition'), 0, 0, 0, false, 0); 
-bldg[33] = new Building("8", reconback.get('tradition'), 0, 0, 0, false, 1); 
-bldg[34] = new Building("9", reconback.get('tradition'), 0, 0, 0, false, 2); 
-bldg[35] = new Building("b9", reconback.get('tradition'), 0, 0, 0, false, 3); 
-bldg[63] = new Building("b25", reconback.get('tradition'), 0, 0, 0, false, 4); 
+bldg[32] = new Building("7", rcb.get('tradition'), 0, 0, 0, false, 0); 
+bldg[33] = new Building("8", rcb.get('tradition'), 0, 0, 0, false, 1); 
+bldg[34] = new Building("9", rcb.get('tradition'), 0, 0, 0, false, 2); 
+bldg[35] = new Building("b9", rcb.get('tradition'), 0, 0, 0, false, 3); 
+bldg[63] = new Building("b25", rcb.get('tradition'), 0, 0, 0, false, 4); 
 
-bldg[48] = new Building("a0", reconback.get('equipment'), 0, 0, 0, false, 0); 
-bldg[49] = new Building("a11", reconback.get('equipment'), 0, 0, 0, false, 1); 
-bldg[50] = new Building("a12", reconback.get('equipment'), 0, 0, 0, false, 2); 
-bldg[51] = new Building("b13", reconback.get('equipment'), 0, 0, 0, false, 3); 
-bldg[64] = new Building("b26", reconback.get('equipment'), 0, 0, 0, false, 4); 
+bldg[48] = new Building("a0", rcb.get('equipment'), 0, 0, 0, false, 0); 
+bldg[49] = new Building("a11", rcb.get('equipment'), 0, 0, 0, false, 1); 
+bldg[50] = new Building("a12", rcb.get('equipment'), 0, 0, 0, false, 2); 
+bldg[51] = new Building("b13", rcb.get('equipment'), 0, 0, 0, false, 3); 
+bldg[64] = new Building("b26", rcb.get('equipment'), 0, 0, 0, false, 4); 
 
 var bldgtxt = new Map();
-var builds = new Map();
+var bs = new Map();
 
 for (i = 0; i < bldg.length; i++) {
     bldgtxt.set(i, bldg[i].name.toLowerCase());
-    builds.set(bldg[i].name.toLowerCase(), i);
+    bs.set(bldg[i].name.toLowerCase(), i);
 }
 
-var clicker = new Array();
-var rowclicker = new Array();
+var clicker = [];
+var clickerV = [];
+var clickerO = [];
+var clickerH = [];
+var clickerHV = [];
+var rowclicker = [];
 
 var supclick = 1000;
 
 var source = document.getElementById("entry-template").innerHTML;
 var template = Handlebars.compile(source);
 
-for (var i = 0; i < res.length - 2; i++) {
+for (var i = 0; i < b; i++) {
     clicker[i] = 1000;
+    clickerV[i] = -1;
+    clickerHV[i] = -1;
+    clickerH[i] = -1;
+    clickerO[i] = 1000;
     rowclicker[i] = 1000;
 
     var newcol = document.createElement("TR");
@@ -357,7 +383,7 @@ for (var i = 0; i < res.length - 2; i++) {
     template = Handlebars.compile(source);
     
     var newappear = document.createElement("TD");
-    context = { name: res[i].name.toLowerCase(), ide: i };
+    context = { name: res[i].name.toLowerCase(), ide: i , color: res[i].color2};
     html = template(context);
     newappear.innerHTML = html;
     newappear.className = 'clicktd';
@@ -375,6 +401,7 @@ for (var i = 0; i < res.length; i++) {
     for (var e = 0; e < res.length; e++) {
         if (res[i].rates[e] != 0) {
             var owos = document.createElement("TR");
+            owos.id = i + "to" + e;
 
             source = document.getElementById("conv-template").innerHTML;
             template = Handlebars.compile(source);
@@ -437,8 +464,8 @@ for (var i = 0; i < chargeamt; i++) {
 
 
 var tech_level = 0;
-var tech_unlocked = new Array();
-var tech_possible = new Array();
+var tech_unlocked = [];
+var tech_possible = [];
 var earliest_tech = 1;
 var tech_level_active;
 
@@ -454,8 +481,8 @@ for (i = 0; i < 12; i++) {
 }
 
 var idea_level = 0;
-var idea_unlocked = new Array();
-var idea_possible = new Array();
+var idea_unlocked = [];
+var idea_possible = [];
 var earliest_idea = 1;
 var idea_level_active;
 
@@ -650,7 +677,7 @@ function drawPolygon(pts, color) {
   for(var i = 1, p; p = pts[i++];) ctx.lineTo(p.x, p.y);
   ctx.closePath();
   ctx.stroke();
-  ctx.fillStyle = currColor;
+  ctx.fillStyle = res[currColor].color2;
   ctx.fill();
 }
 
@@ -718,7 +745,7 @@ function small_int(e) {
         e = e.toExponential(9);
         e = e.substring(0, 4 + size % 3 + 4);
     }
-    if (size > 4) {
+    if (size >= 4) {
         switch (size % 3) {
             case 0: e = e.substring(0, 1) + e.substring(2, 4) + "." + e.substring(4); e = e.substring(0, 7);break;
             case 1: e = e.substring(0, 5); break;
@@ -736,9 +763,12 @@ function small_int(e) {
 
 function moveClick() {
     for (i = 0; i < clicker.length; i++) {
-        clicker[i] += 5;
-        document.getElementById(recon.get(i) + 'appear').style.transform = "translateY(" + (clicker[i] / 3) * -1 + "px)";
-        document.getElementById(recon.get(i) + 'appear').style.opacity = 1 - (clicker[i] / 100);
+        clickerV[i] -= .5;
+        if(Math.abs(clicker[i]) < 100)         clicker[i] += clickerV[i];
+        if(Math.abs(clickerH[i]) < 100)         clickerH[i] += clickerHV[i];
+        clickerO[i] += 2.5;
+        document.getElementById(recon.get(i) + 'appear').style.transform = "translate(" + (clickerH[i] / 3) * -1 + "px, "  + (clicker[i] / 3) * -1 + "px)";
+        document.getElementById(recon.get(i) + 'appear').style.opacity = 1 - (clickerO[i] / 100);
     }
 
     for (i = 0; i < rowclicker.length; i++) {
@@ -779,12 +809,12 @@ function doFlasher() {
 }
 
 function isUnlocked() {
-   for (i = 0; i < res.length - 2; i++) {
-       if (!res[i].unlocked) {
-           document.getElementById(res[i].name).style.display = "none";
-           document.getElementById(res[i].name.substring(0, 2) + "ps").style.display = "none";
-           document.getElementById(res[i].name + '_click').style.display = "none";
-           document.getElementById(res[i].name + '-column').style.backgroundColor = "#dbdbdb";
+    for (i = 0; i < b; i++) {
+        if (!res[i].unlocked) {
+            document.getElementById(res[i].name).style.display = "none";
+            document.getElementById(res[i].name.substring(0, 2) + "ps").style.display = "none";
+            document.getElementById(res[i].name + '_click').style.display = "none";
+            document.getElementById(res[i].name + '-column').style.backgroundColor = "#dbdbdb";
             document.getElementsByClassName('row' + res[i].name)[0].style.display = "none";
 
             var lister = document.getElementsByClassName(res[i].name + "icon");
@@ -792,21 +822,37 @@ function isUnlocked() {
                 lister[r].src = "empty.png";
             }
 
-       } else if(i != res.length - 1){
-           document.getElementById(res[i].name).style.display = "inline";
-           document.getElementById(res[i].name.substring(0, 2) + "ps").style.display = "inline";
-           document.getElementById(res[i].name + '_click').style.display = "block";
-           document.getElementById(res[i].name + '-column').style.backgroundColor = res[i].color;
-           document.getElementsByClassName('row' + res[i].name)[0].style.backgroundColor = res[i].color;
-           document.getElementsByClassName('row' + res[i].name)[0].style.display = "table-row";
+            for (var e = 0; e < res.length; e++) {
+                if (res[i].rates[e] != 0) {
+                    document.getElementById(i + "to" + e).style.display = "none";
+                }
+                if (res[e].rates[i] != 0) {
+                    document.getElementById(e + "to" + i).style.display = "none";
+                }
+            }
+        } else if (i != a) {
+            document.getElementById(res[i].name).style.display = "inline";
+            document.getElementById(res[i].name.substring(0, 2) + "ps").style.display = "inline";
+            document.getElementById(res[i].name + '_click').style.display = "block";
+            document.getElementById(res[i].name + '-column').style.backgroundColor = res[i].color;
+            document.getElementsByClassName('row' + res[i].name)[0].style.backgroundColor = res[i].color;
+            document.getElementsByClassName('row' + res[i].name)[0].style.display = "table-row";
 
             var lister = document.getElementsByClassName(res[i].name + "icon");
             for (r = 0; r < lister.length; r++) {
                 lister[r].src = res[i].name + ".png";
             }
-       }
+            for (var e = 0; e < res.length; e++) {
+                if (res[i].rates[e] != 0) {
+                    document.getElementById(i + "to" + e).style.display = "table-row";
+                }
+                if (res[e].rates[i] != 0) {
+                    document.getElementById(e + "to" + i).style.display = "table-row";
+                }
+            }
+        }
+        
     }
-
 
 
    if (debug) {
@@ -853,15 +899,15 @@ function init() {
     displaytech();
     displayidea();
 
-    for(i = 0; i < res.length - 2; i++){
+    for(i = 0; i < b; i++){
         if (res[i].unlocked) {
             document.getElementById(res[i].name.substring(0, 2) + 'ps').innerHTML = "(" + small_int((res[i].ps)) + ' /s)';
             document.getElementById(res[i].name).innerHTML = small_int(Math.floor(res[i].amt));
         }
     }
 
-    document.getElementById('cash').innerHTML = small_int(Math.floor(res[res.length - 1].amt));  
-    document.getElementById('unrest').innerHTML = small_int(Math.floor(res[res.length - 2].amt));  
+    document.getElementById('cash').innerHTML = small_int(Math.floor(res[a].amt));  
+    document.getElementById('unrest').innerHTML = small_int(Math.floor(res[b].amt));  
     
     for (var i = 0; i < res.length; i++) {
         for (var e = 0; e < res.length; e++){
@@ -959,7 +1005,8 @@ function buy_charge(type) {
 }
 
 function buytech() {
-    if (res[4].amt >= tech_cost) {
+    var tempall = true;
+    while (res[4].amt >= tech_cost && tempall) {
         res[4].amt -= tech_cost;
         ++tech_level;
         techcost();
@@ -967,6 +1014,8 @@ function buytech() {
 
         techpossible();
         tech_level_active = earliest_tech;
+
+        tempall = all;
     }
     init();
 }
@@ -976,7 +1025,8 @@ function techcost() {
 }
 
 function buyidea() {
-    if (res[8].amt >= idea_cost) {
+    var tempall = true;
+    while (res[8].amt >= idea_cost && tempall) {
         res[8].amt -= idea_cost;
         ++idea_level;
         ideacost();
@@ -984,6 +1034,7 @@ function buyidea() {
 
         ideapossible();
         idea_level_active = earliest_idea;
+        tempall = all;
     }
     init();
 }
@@ -998,7 +1049,7 @@ function findPS() {
                bldg[i].fps = bldg[i].working * bldg[i].efficiency * res[bldg[i].resource].mult;
            }
 
-           for (u = 0; u < res.length - 2; u++) {
+           for (u = 0; u < b; u++) {
                res[u].ps = 0;
                res[u].limit = res[u].baselimit;
                for (e = 0; e < bldg.length; e++) {
@@ -1025,12 +1076,12 @@ function decimalToHexString(number) {
 function unlocktech() {
 
       switch (tech_level_active){
-            case 1: bldg[0].efficiency += .1; break;
-            case 2: bldg[6].unlocker(); break;
-            case 3: res[5].unlocker(); bldg[3].unlocker(); bldg[9].unlocker(); break;
+            case 1: bldg[bs.get("farm")].unlocker();bldg[bs.get("mine")].unlocker();bldg[bs.get("lab")].unlocker();  break;
+            case 2: res[rcb.get("mineral")].unlocker(); bldg[bs.get("silo")].unlocker();  break;
+            case 3: bldg[bs.get("quarry")].unlocker(); break;
             case 4: bldg[4].unlocker(); break;
             case 5: bldg[1].unlocker(); bldg[0].efficiency *= 1.5; break;
-            case 6: bldg[2].unlocker(); res[0].rates[res.length-1] += .3; break;
+            case 6: bldg[2].unlocker(); res[0].rates[a] += .3; break;
             case 7: bldg[5].unlocker(); bldg[6].efficiency *= 1.25; break;
           case 8: bldg[7].unlocker(); break;
           case 9: workers_cost_mult *= .8; workercost(); break;
@@ -1086,6 +1137,7 @@ function displaytech(){
       }
 }
 
+
 function unlockidea() {
 
       switch (idea_level_active){
@@ -1094,7 +1146,7 @@ function unlockidea() {
             case 3: res[5].unlocker(); bldg[3].unlocker(); bldg[9].unlocker(); break;
             case 4: bldg[4].unlocker(); break;
             case 5: bldg[1].unlocker(); bldg[0].efficiency *= 1.5; break;
-            case 6: bldg[2].unlocker(); res[0].rates[res.length-1] += .3; break;
+            case 6: bldg[2].unlocker(); res[0].rates[a] += .3; break;
             case 7: bldg[5].unlocker(); bldg[6].efficiency *= 1.25; break;
           case 8: bldg[7].unlocker(); break;
           case 9: workers_cost_mult *= .8; workercost(); break;
@@ -1196,7 +1248,8 @@ function resetRotate() {
 
     canvas.width = rotateSize + 30;
     canvas.height = rotateSize + 30;
-    currColor = colorRand[Math.floor(colorRand.length * Math.random())]
+    currColor = Math.floor(b * Math.random());
+    currShape = Math.floor(Math.random() * 3.99);
 
 }
 
@@ -1210,22 +1263,13 @@ function showSpinner() {
     }
 }
 
-    var resnow = res.length - 1;
+    var resnow = a;
 
 function clickSpinner() {
     spinnerActive = !spinnerActive;
+    res[currColor].multBy(1 + (rotateSize / 500));
     resetRotate();
 
-    res[resnow].amt *= 1 + (rotateSize / 500);
-
-    switch (currColor) {
-        case "Blue": resnow = 4; break;
-        case "Red": resnow = 11; break;
-        case "Purple": resnow = 8; break;
-        case "Grey": resnow = 5; break;
-        case "Yellow": resnow = res.length - 1;break;
-        case "Green": resnow = 0;
-    }
 }
     
 function repeat() {
@@ -1242,36 +1286,35 @@ function repeat() {
 
     if (Math.random() > spinnerChance) {
         spinnerActive = true;
-        clickSpinner();
     }
     
-    for (i = 0; i < res.length - 2; i++) {
+    for (i = 0; i < b; i++) {
         if (res[i].amt + res[i].ps / (126 / framer) > -1) {
             res[i].amt += res[i].ps / (126 / framer);
         }
         res[i].click = 1 + tech_level / 4;
-        document.getElementById(res[i].name + "appear").innerHTML = "+" + res[i].click;
+        document.getElementById(res[i].name + "appear").innerHTML = "+" + res[i].click + ' <img src="' + res[i].name + '.png" class="food-icon">';
     }
 
-   if (repetir > rep_max) {
+    if (repetir > rep_max) {
         repetir = 0;
         rep_max = Math.ceil(rep_max * 1.1);
         if (last_click == 1) { last_click = 5 };
         supclick = 0;
 
-        var rec = (res[last_click].amt * ((res[last_click].click* 20 / rep_max) + 1) - res[last_click].amt);
-         document.getElementById("superappear").innerHTML = "+" + Math.ceil(rec);
-         res[last_click].amt += rec;
+        var rec = (res[last_click].amt * ((res[last_click].click * 20 / rep_max) + 1) - res[last_click].amt);
+        document.getElementById("superappear").innerHTML = "+" + Math.ceil(rec);
+        res[last_click].amt += rec;
 
         clicker[5] = 0;
-   }
-   document.getElementById('super').style.width = ((repetir / rep_max) * 200) + "px";
-   document.getElementById('superbox').innerHTML = repetir + " / " + rep_max;
-   supclick++;
+    }
+    document.getElementById('super').style.width = ((repetir / rep_max) * 200) + "px";
+    document.getElementById('superbox').innerHTML = repetir + " / " + rep_max;
+    supclick++;
     findPS();
     workercost();
     isUnlocked();
-   moveClick();
+    moveClick();
 
     for (y = 0; y < res.length; y++) {
         for (e = 0; e < res.length; e++) {
@@ -1288,29 +1331,58 @@ function repeat() {
     //rotateP = 0;
     //spinnerActive = true;
     
-// apply some transformation: 
-var g = new Matrix();     // our manual transformation-matrix
-g.translate(rotateSize / 2, rotateSize / 2);      // center of box
-g.rotate(((rotateP)) * Math.PI);            // some angle in radians
-g.translate(-rotateSize / 2, -rotateSize / 2);    // translate back
+    // apply some transformation: 
+    var g = new Matrix();     // our manual transformation-matrix
+    g.translate(rotateSize / 2, rotateSize / 2);      // center of box
+    g.rotate(((rotateP)) * Math.PI);            // some angle in radians
+    g.translate(-rotateSize / 2, -rotateSize / 2);    // translate back
 
-var pointsa = [
-      {x: 10, y: 0},       // upper-left
-      {x: 0, y: 10},       // upper-left
-      {x: 0, y: rotateSize - 10},      // bottom-left
-      {x: 10, y: rotateSize},      // bottom-left
-      {x: rotateSize - 10, y: rotateSize},      // bottom-right
-      {x: rotateSize, y: rotateSize - 10},      // bottom-right
-      {x: rotateSize , y: 10},      // upper-right
-      {x: rotateSize - 10, y: 0},      // upper-right
-    ],
-    result = [], e = 0, o;
+    var pointsa = [];
+    
+    switch (currShape) {
+        case 0: pointsa = [
+            { x: 10, y: 0 },       // upper-left
+            { x: 0, y: 10 },       // upper-left
+            { x: 0, y: rotateSize - 10 },      // bottom-left
+            { x: 10, y: rotateSize },      // bottom-left
+            { x: rotateSize - 10, y: rotateSize },      // bottom-right
+            { x: rotateSize, y: rotateSize - 10 },      // bottom-right
+            { x: rotateSize, y: 10 },      // upper-right
+            { x: rotateSize - 10, y: 0 },      // upper-right
+        ]; break;
+        case 1: pointsa = [
+            { x: rotateSize / 2, y: 0 },       // upper-left
+            { x: 0, y: rotateSize - 17 },       // upper-left
+            { x: rotateSize, y: rotateSize - 17 }      // bottom-left
+        ]; break;
+        case 2: pointsa = [
+            { x: rotateSize / 4, y: 0 },       // upper-left
+            { x: (3 * rotateSize) / 4, y: 0 },       // upper-left
+            { x: rotateSize, y: rotateSize / 2 },      // bottom-left
+            { x: (3 * rotateSize) / 4, y: rotateSize },       // upper-left
+            { x: rotateSize / 4, y: rotateSize },       // upper-left
+            { x: 0, y: rotateSize / 2 }       // upper-left
+        ]; break;
+        case 3: pointsa = [
+            { x: 0, y: rotateSize / 2 },       // upper-left
+            { x: rotateSize / 4 - 5, y: (3 * rotateSize) / 4 + 5 },       // upper-left
+            { x: rotateSize / 2, y: rotateSize},      // bottom-left
+            { x: (3 * rotateSize) / 4 + 5, y: (3 * rotateSize) / 4 + 5},       // upper-left
+            { x: rotateSize, y: rotateSize / 2 },       // upper-left
+            { x: (3 * rotateSize) / 4 + 5, y: rotateSize / 4 - 5},       // upper-left
+            { x: rotateSize / 2, y: 0 },       // upper-left
+            { x: (rotateSize) / 4 - 5, y: rotateSize / 4 - 5},       // upper-left
+            { x: 0, y: rotateSize / 2 }       // upper-left
+        ]; break;
+    }
+    
+var result = [], e = 0, o;
 
 
 // transform points
 while(o = pointsa[e++]) result.push(g.applyToPoint(o));
     ctx.clearRect (-200, -200, 500, 500);
-    drawPolygon(result, "blue");   
+    drawPolygon(result, "black");   
     ctx.font = "50px Georgia";
     ctx.fillStyle = "white";
     ctx.fillText("!", 7.5 + (rotateSize / 2), 31 + (rotateSize / 2)); 
@@ -1404,12 +1476,12 @@ function importo() {
 
 
 switchPage(1);
-auto(0, res.length - 1);
-auto(0, res.length - 1);
-auto(2, res.length - 1);
-auto(4, res.length - 1);
-auto(4, res.length - 1);
-auto(5, res.length - 1);
-auto(5, res.length - 1);
+auto(0, a);
+auto(0, a);
+auto(2, a);
+auto(4, a);
+auto(4, a);
+auto(5, a);
+auto(5, a);
 init();
 repeat();

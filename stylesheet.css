@@ -93,6 +93,7 @@ body{
 }
 
 .appearer{
+    pointer-events: none;
     z-index:3;
     position:absolute;
     text-align:center;
@@ -212,7 +213,7 @@ canvas{
     z-index:5;
     right:50px;
     position:fixed;
-    opacity: .65;
+    opacity: .78;
 }
 
 .footer{
@@ -240,6 +241,20 @@ canvas{
 
 .noinline{
     display: inline-block;
+}
+
+#farm_back{
+    
+   background: linear-gradient(to bottom right, rgba(0, 0, 0, .2) ,#004092), url('farm_back.jpeg') no-repeat center; 
+    background-size: 50px 50px;  
+
+}
+
+.bldgback{
+    width: 50px;
+    height: 50px;
+    margin-left:auto;
+    margin-right:auto;
 }
 
 .pager{
@@ -347,6 +362,7 @@ canvas{
     background-color: white;
     margin-top: 7px;
     margin-bottom: 7px;
+    font-size:14px;
 }
 
 #tech_name{
@@ -399,84 +415,10 @@ canvas{
   transform: scale(.95,.95);
 }
 
-#food_click{
-    background-color:#4fff51;
+.clickeer{
     margin-left:auto;
     margin-right:auto;
 }
-
-#housing_click{
-    background-color:#4fff51;
-    margin-left:auto;
-    margin-right:auto;
-}
-
-#gold_click{
-    background-color:#ffc44f;
-    margin-left:auto;
-    margin-right:auto;
-}
-
-#jewel_click{
-    background-color:#ffc44f;
-    margin-left:auto;
-    margin-right:auto;
-}
-
-#science_click{
-    background-color: #4f6fff;
-    margin-left:auto;
-    margin-right:auto;
-}
-
-#energy_click{
-    background-color: #4fffa1;
-    margin-left:auto;
-    margin-right:auto;
-}
-
-#culture_click{
-    background-color: #ac4fff;
-    margin-left:auto;
-    margin-right:auto;
-}
-
-#political_click{
-    background-color: #ac4fff;
-    margin-left:auto;
-    margin-right:auto;
-}
-
-#mineral_click{
-    background-color: #A59989;
-    margin-left:auto;
-    margin-right:auto;
-}
-
-#uranium_click{
-    background-color: #A59989;
-    margin-left:auto;
-    margin-right:auto;
-}
-
-#tradition_click{
-    background-color: #ff5d4f;
-    margin-left:auto;
-    margin-right:auto;
-}
-
-#equipment_click{
-    background-color: #ff5d4f;
-    margin-left:auto;
-    margin-right:auto;
-}
-
-#oil_click{
-    background-color: #A59989;
-    margin-left:auto;
-    margin-right:auto;
-}
-
 #convertbutton{
     background-color: turquoise;
     display: inline-block;
