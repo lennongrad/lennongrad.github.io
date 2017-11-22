@@ -48,6 +48,11 @@ function caster(numb, tobe) {
     return numbo;
 }
 
+function loaded() {
+    spinnerCanBeActive = true;
+    $('#loadingleft').toggle("slide", { direction: "left" }, 1000);
+    $('#loadingright').toggle("slide", { direction: "right" }, 1000);
+}
 
 function Resource(name, unlocked, color, color2, base, limit) {
     this.name = name;
@@ -355,6 +360,7 @@ bldg[51] = new Building("b13", rcb.get('equipment'), 0, 0, 0, false, 3);
 bldg[64] = new Building("b26", rcb.get('equipment'), 0, 0, 0, false, 4); 
 
 bldg[14].plural = "Quarries";
+bldg[8].plural = "Libraries";
 
 var unused = [24, 28, 29, 20];
 for (i = 0; i < unused.length; i++){
@@ -464,6 +470,8 @@ for (var i = 0; i < bldg.length; i++) {
     owos.innerHTML = html;
     if (bldg[i].canShow) { owos.className = 'boxholder'; } else { owos.className = 'fakeholder' };
     owos.id = bldg[i].name.toLowerCase() + "_holder";
+    owos.style.background = "url('frontlayer.png'), url('" + bldg[i].name.toLowerCase() + "_back.jpeg') no-repeat center";
+    owos.style.backgroundSize = "cover";
     document.getElementById('col' + (bldg[i].resource + 1)).appendChild(owos);
  
     if (bldg[i].costers.length > 1) {
@@ -1258,7 +1266,8 @@ function workercost(){
 tech_level_active = tech_level + 1;
 idea_level_active = idea_level + 1;
 
-var spinnerActive = true;
+var spinnerActive = false;
+var spinnerCanBeActive = false;
 
 var rotateP = 0;
 var rotateV = .075;
@@ -1308,7 +1317,14 @@ function clickSpinner() {
 
 }
     
+var doLoad = 0;
+
 function repeat() {
+    doLoad++;
+    if (doLoad === 100) {
+        loaded();
+    }
+
     showSpinner();
 
     if (rotateP > rotatePange) {
@@ -1320,7 +1336,7 @@ function repeat() {
         rotateV *= rotateA;
     }
 
-    if (Math.random() > spinnerChance) {
+    if (Math.random() > spinnerChance && spinnerCanBeActive) {
         spinnerActive = true;
     }
     

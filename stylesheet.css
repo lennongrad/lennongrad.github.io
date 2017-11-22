@@ -1,7 +1,25 @@
-#loading{
+#loadingleft{
     z-index:5;
-    width:100%;
+    width:50%;
     height:100%;
+   background:  linear-gradient(to right bottom, rgba(0,0,0,.2), rgba(0,0,0,.8)),  url('steelback.jpg') no-repeat center;
+   background-size: cover;
+    position:absolute;
+    top:0;
+    left:0%;
+    border-right: 5px solid black;
+}
+
+#loadingright{
+    z-index:6;
+    width:50%;
+    height:100%;
+   background: linear-gradient(to left bottom, rgba(0,0,0,.2), rgba(0,0,0,.8)),  url('steelback.jpg') no-repeat center;
+   background-size: cover;
+    position:absolute;
+    top:0;
+    right:0;
+    border-left: 5px solid black;
 }
 
 .food-icon{
@@ -27,12 +45,17 @@
 }
 
 .bldgbuy{
-        width:100% !important;
+        width:104% !important;
         border-radius:0px 0px 3px 3px !important;
         position: relative;
         top:20px;
         height:30px;
+        left:-3px;
         padding-top:2px !important;
+        background-color: rgba(0,0,0,.3);
+}
+
+.bldgbuy:hover{
         background-color: rgba(0,0,0,.2);
 }
 
@@ -363,11 +386,9 @@ canvas{
     width:168px;
     height:105px;
     text-align: center;
-    background-color: white;
     margin-top: 2px;
     margin-bottom: 2px;
     font-size:14px;
-   background:  url('frontlayer.png'), url('farm_back.jpeg') no-repeat center;
    background-size:cover; 
 }
 
