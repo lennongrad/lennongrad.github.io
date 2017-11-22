@@ -32,28 +32,17 @@ var iFrameWin = "hi";
     </script>
 
     <script id="bldg-template" type="text/x-handlebars-template">
-                    <tr>
-                        <td rowspan=2 style="width:0px; background-color:white"> <table class="bldgback" id="{{bldg}}_back"></table>
-                            </td>
-                        <td colspan=2 id="{{bldg}}_header">
-                            <span id="{{bldg}}s_number" class="amt"></span> {{name}}s <br /><span id="{{bldg}}s_fps" class="fpsamt"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="button" onclick="bldg[{{ide}}].left()"> ◄ </span> <span id="{{bldg}}_working"></span><span class="button" onclick="bldg[{{ide}}].right()"> ► </span>
-                        </td>
-                    </tr><tr><td colspan=2>
-                    <table class="bldgbuy button buy_button" onclick="bldg[{{ide}}].buy()">
-                        <tr>
-                        <td id="{{bldg}}_cost" style="font-size:18px;line-height:20px;height:20px">
-                        </td>
-                        </tr>
-                    <tr>
-                        <td style="height:1px; line-height:3px" colspan=2 id="{{ide}}cost">
-                            <img draggable="false" src="cash.png" class="cashicon food-icon"></td>
-                    </tr>
-                    </table></td></tr>
+                        <div id="{{bldg}}_header" class="boxholderheader">
+                            <span id="{{bldg}}s_number" class="amt"></span> <span id="{{bldg}}plural">{{name}}s</span>
+                            <br />
+                            <span id="{{bldg}}s_fps" class="fpsamt"></span>
+                            <br />
+                            <span class="button" onclick="bldg[{{ide}}].left()"> ◄ </span> <span id="{{bldg}}_working"></span>
+                            <span class="button" onclick="bldg[{{ide}}].right()"> ► </span>
+                        </div>
+                        <div class="bldgbuy button" onclick="bldg[{{ide}}].buy()">
+                            <span id="{{bldg}}_cost" style="font-size:18px; height:20px"></span>
+                            <span style="height:1px; top:3px; position:relative" colspan=2 id="{{ide}}cost"><img draggable="false" src="cash.png" class="cashicon food-icon"></span></div>
    </script>
 
     <script id="appear-template" type="text/x-handlebars-template">

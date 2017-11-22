@@ -40,6 +40,14 @@ var setScroll = function () {
     MouseScroller = true;
 };
 
+function caster(numb, tobe) {
+    var numbo = numb.toString();
+    while (tobe > numbo.length) {
+        numbo = numbo + "0";
+    }
+    return numbo;
+}
+
 
 function Resource(name, unlocked, color, color2, base, limit) {
     this.name = name;
@@ -57,6 +65,8 @@ function Resource(name, unlocked, color, color2, base, limit) {
 
     this.rates = [];
     this.auto = [];
+
+    this.canUnlock = true;
 
     this.toClick = function () {
         this.amt = this.amt + this.click;
@@ -99,8 +109,11 @@ function Building(name, resource, cost_base, cost_mult, efficiency, unlocked, co
     this.resource = resource;
     this.unlocked = unlocked;
     this.name = name;
+    this.plural = name + "s";
 
     this.costers = [];
+
+    this.canUnlock = res[resource].canUnlock;
 
     switch (costs) {
         case 0:
@@ -132,6 +145,7 @@ function Building(name, resource, cost_base, cost_mult, efficiency, unlocked, co
             this.cost_base = 500000;
             this.cost_mult = 6.2;
             this.efficiency = 567.34;
+            //this.canUnlock = false;
             break;
     }
 
@@ -229,6 +243,13 @@ res[12] = new Resource("equipment", false, "#ff8b82", "#ff5d4f", 0);
 res[13] = new Resource("unrest", false, "#d19eff", "#", 0);
 res[14] = new Resource("cash", true, "#d19eff", "#", 0);
 
+res[3].canUnlock = false;
+res[9].canUnlock = false;
+res[12].canUnlock = false;
+res[11].canUnlock = false;
+res[1].canUnlock = false;/*
+res[7].canUnlock = false;*/
+
 var a = res.length - 1;
 var b = a - 1;
 
@@ -254,7 +275,7 @@ res[11].rates[9] = 1;
 // name, resource, cost_base, cost_mult, efficiency, unlocked
 
 var bldg = [];
-bldg[0] = new Building("Farm",           rcb.get('food'), 0, 0, 0, false, 0); // farms
+bldg[0] = new Building("Farm",           rcb.get('food'), 0, 0, 0, true, 0); // farms
 bldg[1] = new Building("Silo",              rcb.get('food'), 0, 0,0 , false, 1); // silos
 bldg[2] = new Building("Plantation",     rcb.get('food'), 0, 0, 0, false, 2); // plantations
 bldg[3] = new Building("b1", rcb.get('food'), 0, 0, 0, false, 3); // plantations
@@ -331,6 +352,8 @@ bldg[49] = new Building("a11", rcb.get('equipment'), 0, 0, 0, false, 1);
 bldg[50] = new Building("a12", rcb.get('equipment'), 0, 0, 0, false, 2); 
 bldg[51] = new Building("b13", rcb.get('equipment'), 0, 0, 0, false, 3); 
 bldg[64] = new Building("b26", rcb.get('equipment'), 0, 0, 0, false, 4); 
+
+bldg[12].plural = "Quarries";
 
 var bldgtxt = new Map();
 var bs = new Map();
@@ -690,7 +713,7 @@ var rep_max = 100;
 var last_click;
 var supermod = 10;
 
-var active_colour = "#1a1c1b";
+var active_colour = "#C5C5C5";
 var inactive_colour = "#7e8c85";
 
 var flasher = 0;
@@ -858,11 +881,11 @@ function isUnlocked() {
    if (debug) {
        spinnerChance = 0;
         for (i = 0; i < bldg.length; i++) {
-            if (!bldg[i].unlocked) {
+            if (!bldg[i].unlocked && bldg[i].canUnlock) {
                 bldg[i].unlocked = true;
                 bldg[i].onDebug = true;
             }
-            if(i < res.length && !res[i].unlocked){
+            if(i < res.length && !res[i].unlocked && res[i].canUnlock){
                 res[i].unlocked = true;
                 res[i].onDebug = true;
             }
@@ -912,7 +935,7 @@ function init() {
     for (var i = 0; i < res.length; i++) {
         for (var e = 0; e < res.length; e++){
             if (res[i].rates[e] != 0) {
-                document.getElementById(res[i].name + "_to_" + res[e].name + "_rate").innerHTML = res[i].rates[e];
+                document.getElementById(res[i].name + "_to_" + res[e].name + "_rate").innerHTML = caster(res[i].rates[e],4);
             }
         }
     }
@@ -926,6 +949,12 @@ function init() {
             document.getElementById(bldgtxt.get(i) + 's_fps').innerHTML = "(" + small_int(bldg[i].fps) + ' /s)';
             document.getElementById(bldgtxt.get(i) + '_cost').innerHTML = small_int(Math.ceil(bldg[i].cost));
             document.getElementById(bldgtxt.get(i) + '_working').innerHTML = bldg[i].working + " / " + bldg[i].amt;
+
+            if (bldg[i].amt != 1) {
+            document.getElementById(bldgtxt.get(i) + 'plural').innerHTML = bldg[i].plural;
+            } else {
+            document.getElementById(bldgtxt.get(i) + 'plural').innerHTML = bldg[i].name;
+            }
         }
     }
 
@@ -1350,11 +1379,11 @@ function repeat() {
             { x: rotateSize, y: 10 },      // upper-right
             { x: rotateSize - 10, y: 0 },      // upper-right
         ]; break;
-        case 1: pointsa = [
+        case 1: /*pointsa = [
             { x: rotateSize / 2, y: 0 },       // upper-left
             { x: 0, y: rotateSize - 17 },       // upper-left
             { x: rotateSize, y: rotateSize - 17 }      // bottom-left
-        ]; break;
+        ]; break;*/
         case 2: pointsa = [
             { x: rotateSize / 4, y: 0 },       // upper-left
             { x: (3 * rotateSize) / 4, y: 0 },       // upper-left

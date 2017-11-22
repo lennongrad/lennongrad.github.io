@@ -10,9 +10,8 @@
 }
 
 .cashicon{
-    margin-top: 0px !important;
+    margin-top: -1px !important;
     margin-bottom: 0px !important;
-    line-height:1px !important;
 }
 
 .page-icon{
@@ -23,7 +22,12 @@
 
 .bldgbuy{
         width:100% !important;
-        border-radius:3px !important;
+        border-radius:0px 0px 3px 3px !important;
+        position: relative;
+        top:20px;
+        height:30px;
+        padding-top:2px !important;
+        background-color: rgba(0,0,0,.2);
 }
 
 .text{
@@ -243,13 +247,6 @@ canvas{
     display: inline-block;
 }
 
-#farm_back{
-    
-   background: linear-gradient(to bottom right, rgba(0, 0, 0, .2) ,#004092), url('farm_back.jpeg') no-repeat center; 
-    background-size: 50px 50px;  
-
-}
-
 .bldgback{
     width: 50px;
     height: 50px;
@@ -353,16 +350,30 @@ canvas{
 }
 
 .boxholder{
-    margin-left:5px;
-    margin-right:5px;
-    border: 3px solid #efefef ;
+    margin-left:2px;
+    margin-right:2px;
+    border: 2px solid #4f4f4f ;
     border-radius:3px;
     width:168px;
+    height:105px;
     text-align: center;
     background-color: white;
-    margin-top: 7px;
-    margin-bottom: 7px;
+    margin-top: 2px;
+    margin-bottom: 2px;
     font-size:14px;
+   background:  url('frontlayer.png'), url('farm_back.jpeg') no-repeat center;
+   background-size:cover; 
+}
+
+.boxholderheader{
+    color:white;
+    background: rgba(0,0,0,.2);
+    border-radius:5px;
+    width:100px;
+    top:6px;
+    position:relative;
+    margin-right:auto;
+    margin-left:auto;
 }
 
 #tech_name{
