@@ -114,6 +114,7 @@ function Building(name, resource, cost_base, cost_mult, efficiency, unlocked, co
     this.costers = [];
 
     this.canUnlock = res[resource].canUnlock;
+    this.canShow = true;
 
     switch (costs) {
         case 0:
@@ -275,11 +276,11 @@ res[11].rates[9] = 1;
 // name, resource, cost_base, cost_mult, efficiency, unlocked
 
 var bldg = [];
-bldg[0] = new Building("Farm",           rcb.get('food'), 0, 0, 0, true, 0); // farms
-bldg[1] = new Building("Silo",              rcb.get('food'), 0, 0,0 , false, 1); // silos
-bldg[2] = new Building("Plantation",     rcb.get('food'), 0, 0, 0, false, 2); // plantations
-bldg[3] = new Building("b1", rcb.get('food'), 0, 0, 0, false, 3); // plantations
-bldg[52] = new Building("b14", rcb.get('food'), 0,0, 0, false, 4); 
+bldg[0] = new Building("Field",           rcb.get('food'), 0, 0, 0, true, 0); // farms
+bldg[1] = new Building("Farm",              rcb.get('food'), 0, 0,0 , false, 1); // silos
+bldg[2] = new Building("Barn",     rcb.get('food'), 0, 0, 0, false, 2); // plantations
+bldg[3] = new Building("Plantation", rcb.get('food'), 0, 0, 0, false, 3); // plantations
+bldg[52] = new Building("Greenhouse", rcb.get('food'), 0,0, 0, false, 4); 
 
 bldg[36] = new Building("a1", rcb.get('housing'), 0, 0, 0, false, 0); 
 bldg[37] = new Building("a2", rcb.get('housing'), 0, 0, 45, false, 1); 
@@ -287,11 +288,11 @@ bldg[38] = new Building("a3", rcb.get('housing'), 0, 0, 0, false, 2);
 bldg[39] = new Building("b10", rcb.get('housing'), 0, 0, 0, false, 3); 
 bldg[53] = new Building("b15", rcb.get('housing'), 0, 0, 0, false, 4);
 
-bldg[4] = new Building("Mine",             rcb.get('gold'), 0,  0, 0, false, 0); // mines
-bldg[5] = new Building("Bank",            rcb.get('gold'), 0,  0, 0, false, 1); // banks
-bldg[6] = new Building("Mint",              rcb.get('gold'), 0, 0,  0, false, 2); // mints
-bldg[7] = new Building("b2", rcb.get('gold'), 0,0,0, false, 3); // mints
-bldg[54] = new Building("b16", rcb.get('gold'), 0, 0, 0, false, 4); 
+bldg[4] = new Building("Gold Mine",             rcb.get('gold'), 0,  0, 0, false, 0); // mines
+bldg[5] = new Building("Dredger",            rcb.get('gold'), 0,  0, 0, false, 1); // banks
+bldg[6] = new Building("Bank",              rcb.get('gold'), 0, 0,  0, false, 2); // mints
+bldg[7] = new Building("Mint", rcb.get('gold'), 0,0,0, false, 3); // mints
+bldg[54] = new Building("Alchemist", rcb.get('gold'), 0, 0, 0, false, 4); 
 
 bldg[40] = new Building("a4", rcb.get('jewel'), 0, 0, 0, false, 0); 
 bldg[41] = new Building("a5", rcb.get('jewel'), 0, 0, 0, false, 1); 
@@ -299,35 +300,35 @@ bldg[42] = new Building("a6", rcb.get('jewel'), 0, 0, 0, false, 2);
 bldg[43] = new Building("b11", rcb.get('jewel'), 0, 0, 0, false, 3); 
 bldg[55] = new Building("b17", rcb.get('jewel'), 0, 0, 0, false, 4); 
 
-bldg[8] = new Building("Lab",               rcb.get('science'), 0,   0,      0, false, 0); // labs
+bldg[8] = new Building("Library",               rcb.get('science'), 0,   0,      0, false, 0); // labs
 bldg[9] = new Building("School",          rcb.get('science'), 0, 0,  0, false, 1); // school
-bldg[10] = new Building("Collider",        rcb.get('science'), 0,  0,    0, false, 2); 
-bldg[11] = new Building("b3", rcb.get('science'), 0, 0, 0, false, 3); 
-bldg[56] = new Building("b18", rcb.get('science'), 0, 0, 0, false, 4); 
+bldg[10] = new Building("Lab",        rcb.get('science'), 0,  0,    0, false, 2); 
+bldg[11] = new Building("University", rcb.get('science'), 0, 0, 0, false, 3); 
+bldg[56] = new Building("Collider", rcb.get('science'), 0, 0, 0, false, 4); 
 
-bldg[12] = new Building("Quarry",          rcb.get('mineral'), 0,  0,  0, false, 0); 
-bldg[13] = new Building("Storehouse", rcb.get('mineral'), 0, 0,    0, false, 1); 
-bldg[14] = new Building("Fracker",       rcb.get('mineral'), 0, 0,   0, false, 2);
-bldg[15] = new Building("b4", rcb.get('mineral'), 0, 0, 0, false, 3); 
-bldg[57] = new Building("b19", rcb.get('mineral'), 0, 0, 0, false, 4); 
+bldg[12] = new Building("Deposit",          rcb.get('mineral'), 0,  0,  0, false, 0); 
+bldg[13] = new Building("Strip Mine", rcb.get('mineral'), 0, 0,    0, false, 1); 
+bldg[14] = new Building("Quarry",       rcb.get('mineral'), 0, 0,   0, false, 2);
+bldg[15] = new Building("Deep Mine", rcb.get('mineral'), 0, 0, 0, false, 3); 
+bldg[57] = new Building("Synthetic", rcb.get('mineral'), 0, 0, 0, false, 4); 
 
 bldg[24] = new Building("4", rcb.get('oil'), 0, 0, 0, false, 0); 
-bldg[25] = new Building("5", rcb.get('oil'), 0, 0, 0, false, 1); 
-bldg[26] = new Building("6", rcb.get('oil'), 0, 0, 0, false, 2); 
-bldg[27] = new Building("b7", rcb.get('oil'), 0, 0, 0, false, 3); 
-bldg[58] = new Building("b20", rcb.get('oil'), 0, 0, 0, false, 4); 
+bldg[25] = new Building("Whaler", rcb.get('oil'), 0, 0, 0, false, 1); 
+bldg[26] = new Building("Land Rig", rcb.get('oil'), 0, 0, 0, false, 2); 
+bldg[27] = new Building("Offshore Rig", rcb.get('oil'), 0, 0, 0, false, 3); 
+bldg[58] = new Building("Fracker", rcb.get('oil'), 0, 0, 0, false, 4); 
 
 bldg[28] = new Building("1", rcb.get('uranium'), 0, 0, 0, false, 0); 
 bldg[29] = new Building("2", rcb.get('uranium'), 0, 0, 0, false, 1); 
-bldg[30] = new Building("3", rcb.get('uranium'), 0, 0, 0, false, 2); 
-bldg[31] = new Building("b8", rcb.get('uranium'), 0, 0, 0, false, 3); 
-bldg[59] = new Building("b21", rcb.get('uranium'), 0, 0, 0, false, 4); 
+bldg[30] = new Building("U. Mine", rcb.get('uranium'), 0, 0, 0, false, 2); 
+bldg[31] = new Building("Leacher", rcb.get('uranium'), 0, 0, 0, false, 3); 
+bldg[59] = new Building("Xenolith", rcb.get('uranium'), 0, 0, 0, false, 4); 
 
 bldg[16] = new Building("Theatre",       rcb.get('culture'), 0,0, 0, false, 0); 
 bldg[17] = new Building("Museum", rcb.get('culture'), 0, 0, 0, false, 1); 
 bldg[18] = new Building("Auditorium", rcb.get('culture'), 0, 0, 0, false, 2); 
-bldg[19] = new Building("b5", rcb.get('culture'), 0, 0, 0, false, 3); 
-bldg[60] = new Building("b22", rcb.get('culture'), 0, 0, 0, false, 4); 
+bldg[19] = new Building("Stadium", rcb.get('culture'), 0, 0, 0, false, 3); 
+bldg[60] = new Building("Broadcaster", rcb.get('culture'), 0, 0, 0, false, 4); 
 
 bldg[44] = new Building("a7", rcb.get('political'), 0, 0, 0, false, 0);
 bldg[45] = new Building("a8", rcb.get('political'), 0, 0, 0, false, 1);
@@ -335,11 +336,11 @@ bldg[46] = new Building("a9", rcb.get('political'), 0, 0, 0, false, 2);
 bldg[47] = new Building("b12", rcb.get('political'), 0, 0, 0, false, 3);
 bldg[61] = new Building("b23", rcb.get('political'), 0, 0, 0, false, 4); 
 
-bldg[20] = new Building("Generator", rcb.get('energy'), 0, 0, 0, false, 0); 
-bldg[21] = new Building("Accumulator", rcb.get('energy'), 0, 0, 0, false, 1); 
-bldg[22] = new Building("Powerplant", rcb.get('energy'), 0, 0, 0, false, 2); 
-bldg[23] = new Building("b6", rcb.get('energy'), 0, 0, 0, false, 3); 
-bldg[62] = new Building("b24", rcb.get('energy'), 0, 0, 0, false, 4); 
+bldg[20] = new Building("b6", rcb.get('energy'), 0, 0, 0, false, 0); 
+bldg[21] = new Building("Generator", rcb.get('energy'), 0, 0, 0, false, 1); 
+bldg[22] = new Building("Accumulator", rcb.get('energy'), 0, 0, 0, false, 2); 
+bldg[23] = new Building("Powerplant", rcb.get('energy'), 0, 0, 0, false, 3); 
+bldg[62] = new Building("Reactor", rcb.get('energy'), 0, 0, 0, false, 4); 
 
 bldg[32] = new Building("7", rcb.get('tradition'), 0, 0, 0, false, 0); 
 bldg[33] = new Building("8", rcb.get('tradition'), 0, 0, 0, false, 1); 
@@ -353,7 +354,12 @@ bldg[50] = new Building("a12", rcb.get('equipment'), 0, 0, 0, false, 2);
 bldg[51] = new Building("b13", rcb.get('equipment'), 0, 0, 0, false, 3); 
 bldg[64] = new Building("b26", rcb.get('equipment'), 0, 0, 0, false, 4); 
 
-bldg[12].plural = "Quarries";
+bldg[14].plural = "Quarries";
+
+var unused = [24, 28, 29, 20];
+for (i = 0; i < unused.length; i++){
+    bldg[unused[i]].canShow = false;
+}
 
 var bldgtxt = new Map();
 var bs = new Map();
@@ -456,7 +462,7 @@ for (var i = 0; i < bldg.length; i++) {
 
     var owos = document.createElement("table");
     owos.innerHTML = html;
-    owos.className = 'boxholder';
+    if (bldg[i].canShow) { owos.className = 'boxholder'; } else { owos.className = 'fakeholder' };
     owos.id = bldg[i].name.toLowerCase() + "_holder";
     document.getElementById('col' + (bldg[i].resource + 1)).appendChild(owos);
  
@@ -1105,9 +1111,9 @@ function decimalToHexString(number) {
 function unlocktech() {
 
       switch (tech_level_active){
-            case 1: bldg[bs.get("farm")].unlocker();bldg[bs.get("mine")].unlocker();bldg[bs.get("lab")].unlocker();  break;
-            case 2: res[rcb.get("mineral")].unlocker(); bldg[bs.get("silo")].unlocker();  break;
-            case 3: bldg[bs.get("quarry")].unlocker(); break;
+            case 1: bldg[bs.get("farm")].unlocker();bldg[bs.get("gold mine")].unlocker();bldg[bs.get("lab")].unlocker();  break;
+            case 2: res[rcb.get("mineral")].unlocker(); bldg[bs.get("barn")].unlocker();  break;
+           case 3: bldg[bs.get("quarry")].unlocker(); break;
             case 4: bldg[4].unlocker(); break;
             case 5: bldg[1].unlocker(); bldg[0].efficiency *= 1.5; break;
             case 6: bldg[2].unlocker(); res[0].rates[a] += .3; break;
@@ -1115,6 +1121,7 @@ function unlocktech() {
           case 8: bldg[7].unlocker(); break;
           case 9: workers_cost_mult *= .8; workercost(); break;
           case 10: res[5].unlocker(); break;
+          default: break;
       }
 
       if (tech_level + 1> tech_unlocked.length) {
