@@ -17,7 +17,6 @@ var currColor = 0
 
 var baseChanceSpinner = .998;
 
-
 window.addEventListener('mousemove', function (e) {
     if (curDown && !MouseScroller) {
         document.getElementById('page1').scrollTo(document.getElementById('page1').scrollLeft - e.movementX, document.getElementById('page1').scrollTop - e.movementY);
@@ -48,10 +47,15 @@ function caster(numb, tobe) {
     return numbo;
 }
 
+var hasLoaded = false;
+
 function loaded() {
-    spinnerCanBeActive = true;
-    $('#loadingleft').toggle("slide", { direction: "left" }, 1000);
-    $('#loadingright').toggle("slide", { direction: "right" }, 1000);
+    if (!hasLoaded) {
+        spinnerCanBeActive = true;
+        $('#loadingleft').toggle("slide", { direction: "left" }, 1000);
+        $('#loadingright').toggle("slide", { direction: "right" }, 1000);
+    }
+    hasLoaded = true;
 }
 
 function Resource(name, unlocked, color, color2, base, limit) {
@@ -793,7 +797,7 @@ function small_int(e) {
     if ((Math.floor((size - 1) / 3)) < suffixarray.length) {
         return e + suffix;
     } else {
-        return e + "A ?";
+        return e + "e" + (size - 3);
     }
 }
 
@@ -846,6 +850,10 @@ function doFlasher() {
 }
 
 function isUnlocked() {
+    if (!hasLoaded) {
+        return;
+    }
+
     for (i = 0; i < b; i++) {
         if (!res[i].unlocked) {
             document.getElementById(res[i].name).style.display = "none";
@@ -893,6 +901,7 @@ function isUnlocked() {
 
 
    if (debug) {
+       loaded();
        spinnerChance = 0;
         for (i = 0; i < bldg.length; i++) {
             if (!bldg[i].unlocked && bldg[i].canUnlock) {
@@ -936,11 +945,21 @@ function init() {
     displaytech();
     displayidea();
 
-    for(i = 0; i < b; i++){
-        if (res[i].unlocked) {
+    for (i = 0; i < res.length; i++) {
+        if (res[i].amt < 0) {
+            res[i].amt = 0;
+        }
+        if (res[i].unlocked && i < b) {
             document.getElementById(res[i].name.substring(0, 2) + 'ps').innerHTML = "(" + small_int((res[i].ps)) + ' /s)';
             document.getElementById(res[i].name).innerHTML = small_int(Math.floor(res[i].amt));
         }
+        for (e = 0; e < res.length; e++) {
+            if (res[i].auto[e] && res[i].rates[e] != 0) {
+                document.getElementById(res[i].name + res[e].name + 'convo').innerHTML = '☑';
+            } else if (res[i].rates[e] != 0){
+                document.getElementById(res[i].name + res[e].name + 'convo').innerHTML = ' ☐';
+            }
+        }    
     }
 
     document.getElementById('cash').innerHTML = small_int(Math.floor(res[a].amt));  
@@ -998,6 +1017,8 @@ document.addEventListener('keydown', function (event) {
         techleft();
     } else if (event.keyCode == 68) {
         techright(1);
+    } else if (event.keyCode == 48) {
+        res[a].amt *= 100;
     }
     else if (event.keyCode > 48 && event.keyCode <= 49 + res.length ){
         res[event.keyCode - 49].amt *= 100;
@@ -1006,11 +1027,6 @@ document.addEventListener('keydown', function (event) {
 
 function auto(first, second) {
     res[first].auto[second] = !res[first].auto[second];
-      if(res[first].auto[second]){
-          document.getElementById(res[first].name + res[second].name + 'convo').innerHTML = '☑';
-      } else {
-          document.getElementById(res[first].name + res[second].name + 'convo').innerHTML = ' ☐';
-      }
 }
 
 function converter(first, second) {
@@ -1321,7 +1337,7 @@ var doLoad = 0;
 
 function repeat() {
     doLoad++;
-    if (doLoad === 100) {
+    if (doLoad === 300) {
         loaded();
     }
 
