@@ -15,6 +15,8 @@ var repetir = 99;
 var rep_max = 100;
 var contour = 0;
 
+function getPlanet(e) { return document.getElementById("planet" + e) };
+
 
 function sortNumber(a,b) {
     return a - b;
@@ -297,7 +299,7 @@ conf[1] = new affiliation("green");
 conf[2] = new affiliation("blue");
 conf[3] = new affiliation("orange");
 conf[4] = new affiliation("red");
-//conf[5] = new affiliation("grey");
+conf[5] = new affiliation("grey");
 //conf[6] = new affiliation("lightgrey");
 //conf[7] = new affiliation("darkgrey");
 //conf[8] = new affiliation("darkcyan");
@@ -369,10 +371,10 @@ for (i = 1; i < planets.length; i++) {
     planets[i].baseps[0] = Math.ceil(((planets[i].type) + .5) * (1 + (Math.random())));
 
     if(planets[i].aff != 0 && !conf[planets[i].aff].done){
-        for (r = 0; r < planetsperciv; ) {
+        for (r = 0; r < planetsperciv - 1; ) {
             var lowest = 100000;
             var lowestID = new Array(20).fill(0);
-            for (o = 0; o < planets.length && r < planetsperciv; o++) {
+            for (o = 0; o < planets.length && r < planetsperciv - 1; o++) {
                 var doNow = true;
                 var he = Math.sqrt(Math.pow(Math.abs(planets[i].rx - planets[o].rx), 2) + Math.pow(Math.abs(planets[i].ry - planets[o].ry), 2));
                 for (t = 0; t < lowestID.length; t++) {
@@ -646,47 +648,28 @@ newMsg("Initial Ownership:", 0);
 for (e = 1; e < conf.length; e++) {
     var strang = "";
 
-    var lowestX = width;
-    var highestX = 0;
-    var lowestY = height;
-    var highestY = 0;
+    var affplanets = [];
 
     for (i = 1; i < planets.length; i++) {
         if (planets[i].aff == e) {
-            if (planets[i].rx < lowestX) {
-                lowestX = planets[i].rx;
-                lowestXplanet = i;
-            }
-            if (planets[i].rx > highestX) {
-                highestX = planets[i].rx;
-                highestXplanet = i;
-            }
-            if (planets[i].ry < lowestY) {
-                lowestY = planets[i].ry;
-                lowestYplanet = i;
-            }
-            if (planets[i].ry > highestY) {
-                highestY = planets[i].ry;
-                highestYplanet = i;
-            }
+            affplanets[affplanets.length] = i;
             strang += ", SR" + caster(i, 3);
         }
     }
     newMsg(conf[e].color + ": {" + strang.substring(2) + "}", 1);
 
-    var line;
-    line = document.createElementNS('http://www.w3.org/2000/svg', "rect");
-
-    line.id = "borders" + e;
-    line.setAttributeNS(null, "x", lowestX);
-    line.setAttributeNS(null, "y", lowestY);
-    line.setAttributeNS(null, "width", highestX);
-    line.setAttributeNS(null, "height", highestY);
-    line.className = "borders";
-    line.style.fill = conf[e].color;
-    line.style.stroke = "white" ;
-    line.style.strokeWidth = "4px" ;
-    document.getElementById('borders').appendChild(line);
+    for (i = 0; i < affplanets.length; i++) {
+        var line;
+        line = document.createElementNS('http://www.w3.org/2000/svg', "rect");
+        line.id = "borders" + e;
+        line.setAttributeNS(null, "x", planets[affplanets[i]].rx - 75);
+        line.setAttributeNS(null, "y", planets[affplanets[i]].ry - 75);
+        line.setAttributeNS(null, "width", 190 + "px");
+        line.setAttributeNS(null, "height", 190 + "px");
+        line.className = "borders";
+        line.style.fill = conf[e].color;
+        document.getElementById('borders').appendChild(line);
+    }
 }
 
 
