@@ -9,7 +9,7 @@ var planetsperciv = 6;
 var MouseScroller = false;
 var lagger = 10;
 
-var dayscale = 750;
+var dayscale = 75;
 var supermod = 10;
 var repetir = 99;
 var rep_max = 100;
@@ -137,6 +137,9 @@ function planet(type, id, affiliation) {
     this.done = false;
     this.aff = affiliation;
     this.maxc = 0;
+
+    this.rotation = Math.random() * 360;
+    this.rotationSpeed = -2 + Math.random() * 4;
 
     this.connections = new Array(3).fill(0);
 
@@ -748,9 +751,100 @@ doPlanetCount();
                     };
                 }
 }*/
-            
+
+var x = 0;
+var y = 1;
+
+var playingField = document.body;
+
+var numberStars = 1000;
+var globalGlitch = (.09 * Math.random()) + .9;
+
+var colors = ["Red", "Blue", "Green", "White", "Yellow", "Pink", "White", "White"];
+function getRandColor() { return colors[Math.floor(colors.length * Math.random())] };
+
+var units = [];
+
+var gravity = Math.floor(2 * Math.random()) + 1;
+var gravityMod = 10 * Math.random() + 6;
+
+var offscreen = true;
+
+function getUnit(id) {
+    return document.getElementById("UNIT" + id);
+}
+
+function halfside(e) {
+    return (-1 * e) + (2 * e * Math.random());
+};
+
+
+function Unit(unitIDe) {
+    this.color = getRandColor();
+    this.pos = [(width * Math.random()), (height * Math.random())];
+    this.goal = [0, 0];
+    this.unitID = unitIDe;
+    this.glitch = globalGlitch;
+
+    this.speed = [];
+    this.speed[x] = Math.random() + .2;
+    this.speed[y] = Math.random() + .2;
+
+
+    var newUnit = document.createElement("div");
+    newUnit.className = "unit";
+    newUnit.id = "UNIT" + i;
+    newUnit.style.backgroundColor = this.color;
+
+    newUnit.style.left = 0 + "px";
+    newUnit.style.top = 0 + "px";
+
+
+    playingField.appendChild(newUnit);
+
+    this.setPos = function () {
+        document.getElementById("UNIT" + this.unitID).style.left = this.pos[x] + "px";
+        document.getElementById("UNIT" + this.unitID).style.top = this.pos[y] + "px";
+    }
+
+    this.move = function (direction, amt) {
+        this.pos[0] += amt;
+    }
+
+    this.goto = function () {
+        if (offscreen && this.pos[x] < 10) { this.pos[x] = width - 11 }
+        if (offscreen && this.pos[x] > width - 10) { this.pos[x] = 1 };
+        if (offscreen && this.pos[y] < 4) { this.pos[y] = height - 21 }
+        if (offscreen && this.pos[y] > height - 20) { this.pos[y] = 5 };
+
+        switch (gravity) {
+            case 1: this.move(x, this.speed[x] * gravityMod); break;
+            case 2: this.move(x, -1 * this.speed[x] * gravityMod); break;
+            default: break;
+        }
+    }
+
+    this.moment = function () {
+        this.goto();
+        this.setPos();
+    }
+}
+
+for (i = 0; i < numberStars; i++){
+    units[i] = new Unit(i);
+    if (Math.random() > .85) {
+        units[i].behaviour = "jester";
+    }
+    if (Math.random() > .85) {
+        units[i].behaviour = "randomer";
+    }
+}
 
 function repeat() {
+
+    for (i = 0; i < units.length; i++) {
+        units[i].moment();
+    }
 
 
     returner--;
@@ -792,6 +886,7 @@ function repeat() {
             $.fx.off = false;
         }
     }
+
 
     if (repetir > rep_max) {
         repetir = 0;
@@ -838,6 +933,8 @@ function repeat() {
     };
 
     for (e = 1; e < planets.length; e++) {
+        planets[e].rotation += planets[e].rotationSpeed;
+        document.getElementById("planet" + e).style.transform = "rotate("  + planets[e].rotation + "deg)";
         if (false || e == active) {
             document.getElementById("planet" + e).style.background = "radial-gradient(#33ff66 60%, red 15%, transparent 25%)";
             for (i = 0; i < planets[e].connections.length; i++) {
@@ -847,6 +944,7 @@ function repeat() {
             document.getElementById("planet" + e).style.background = "radial-gradient(" + conf[planets[e].aff].color + " 60%, red 15%, transparent 25%)";
         }
     }
+    
 
     //  document.getElementById("polypoints").setAttribute("points", finalstring);
 

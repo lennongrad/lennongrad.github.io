@@ -4,9 +4,9 @@
 
 body{
     background-color:black;
-    background-image: url("space.gif");
-    width: 1200px;
-    height:1200px;
+    /*background-image: url("space.gif");*/
+    width: 3000px;
+    height:3000px;
     user-select:none;
     font-family:Arial;
 }
@@ -235,4 +235,11 @@ body{
 #lactive{
     z-index:-4;
     position: absolute;
+}
+
+.unit{
+    position:fixed;
+    width:1px;
+    height:1px;
+    background-color:white;
 }
