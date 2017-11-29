@@ -660,12 +660,11 @@ for (e = 1; e < conf.length; e++) {
 
     for (i = 0; i < affplanets.length; i++) {
         var line;
-        line = document.createElementNS('http://www.w3.org/2000/svg', "rect");
-        line.id = "borders" + e;
-        line.setAttributeNS(null, "x", planets[affplanets[i]].rx - 75);
-        line.setAttributeNS(null, "y", planets[affplanets[i]].ry - 75);
-        line.setAttributeNS(null, "width", 190 + "px");
-        line.setAttributeNS(null, "height", 190 + "px");
+        line = document.createElementNS('http://www.w3.org/2000/svg', "circle");
+        line.id = "borders" + affplanets[i];
+        line.setAttributeNS(null, "cx", planets[affplanets[i]].rx + 15);
+        line.setAttributeNS(null, "cy", planets[affplanets[i]].ry + 15);
+        line.setAttributeNS(null, "r", 55);
         line.className = "borders";
         line.style.fill = conf[e].color;
         document.getElementById('borders').appendChild(line);
@@ -854,7 +853,11 @@ function repeat() {
         units[i].moment();
     }
 
-
+    for (i = 0; i < planets.length; i++){
+        if (planets[i].aff != 0) {
+            document.getElementById("borders" + i).setAttributeNS(null, "r", 55 * Math.pow(planets[i].amt[0], .05));
+        }
+    }
     returner--;
     if (returner < 0) {
         returner = 0;

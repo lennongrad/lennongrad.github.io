@@ -11,9 +11,11 @@ body{
     font-family:Arial;
 }
 
-#borders rect{
+#borders circle{
     opacity:.15;
+    background: radial-gradient(#33ff66 60%, red 40%);
 }
+
 .traveller{
     position:absolute;
     border-radius:50px;
