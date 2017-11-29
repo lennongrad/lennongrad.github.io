@@ -527,6 +527,8 @@ document.getElementById("lactive").style.height = 2400 + height;
 document.getElementById("liners").style.height = 2400 + height;
 document.getElementById("lactive").style.width = 2400 + width;
 document.getElementById("liners").style.width = 2400 + width
+document.getElementById("borders").style.width = 2400 + width
+document.getElementById("borders").style.height = 2400 + height;
 
 var msg;
 function newMsg(message, indent){
@@ -643,24 +645,47 @@ var righttime = function () {
 newMsg("Initial Ownership:", 0);
 for (e = 1; e < conf.length; e++) {
     var strang = "";
-    var poly = "";
+
+    var lowestX = width;
+    var highestX = 0;
+    var lowestY = height;
+    var highestY = 0;
+
     for (i = 1; i < planets.length; i++) {
-        if(planets[i].aff == e){
-            strang += ", SR" + caster(i,3);
-            if (Math.random() > .35) {
-                poly += Math.ceil(planets[i].rx) + "," + Math.ceil(planets[i].ry) + " ";
+        if (planets[i].aff == e) {
+            if (planets[i].rx < lowestX) {
+                lowestX = planets[i].rx;
+                lowestXplanet = i;
             }
+            if (planets[i].rx > highestX) {
+                highestX = planets[i].rx;
+                highestXplanet = i;
+            }
+            if (planets[i].ry < lowestY) {
+                lowestY = planets[i].ry;
+                lowestYplanet = i;
+            }
+            if (planets[i].ry > highestY) {
+                highestY = planets[i].ry;
+                highestYplanet = i;
+            }
+            strang += ", SR" + caster(i, 3);
         }
     }
-    var holder = poly.split(" ");
     newMsg(conf[e].color + ": {" + strang.substring(2) + "}", 1);
 
     var line;
-    line = document.createElementNS('http://www.w3.org/2000/svg', "polyline");
+    line = document.createElementNS('http://www.w3.org/2000/svg', "rect");
+
     line.id = "borders" + e;
-    line.setAttributeNS(null, "points", poly + holder[0]);
+    line.setAttributeNS(null, "x", lowestX);
+    line.setAttributeNS(null, "y", lowestY);
+    line.setAttributeNS(null, "width", highestX);
+    line.setAttributeNS(null, "height", highestY);
     line.className = "borders";
     line.style.fill = conf[e].color;
+    line.style.stroke = "white" ;
+    line.style.strokeWidth = "4px" ;
     document.getElementById('borders').appendChild(line);
 }
 
