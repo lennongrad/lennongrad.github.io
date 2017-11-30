@@ -3,7 +3,7 @@ var y = 1;
 var framer = 10;
 var ps = 1000 / framer;
 
-var g = .1;
+var g = -.1;
 
 function m(e){
     return document.getElementById(e);
