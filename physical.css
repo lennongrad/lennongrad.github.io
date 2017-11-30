@@ -1,0 +1,17 @@
+body{
+    background-color: black;
+}
+
+.boy{
+    width:20px;
+    height:20px;
+    position:absolute;
+}
+
+#dude{
+    background-color:green;
+}
+
+#man{
+    background-color: red;
+}
