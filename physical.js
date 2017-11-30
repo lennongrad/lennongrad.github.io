@@ -29,7 +29,11 @@ function Thing(elem, doG, dim) {
     this.update = function () {
 
         this.v[x] += this.a[x] / ps;
-        this.v[y] += this.a[y] / ps;
+        this.v[y] += this.a[y] / ps;        
+        
+        if (this.v[x] < .01) this.v[x] = 0;
+        if (this.v[y] < .01) this.v[y] = 0;
+        
         this.p[x] += this.v[x] / ps;
         this.p[y] += this.v[y] / ps;
 
