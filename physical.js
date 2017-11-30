@@ -31,8 +31,8 @@ function Thing(elem, doG, dim) {
         this.v[x] += this.a[x] / ps;
         this.v[y] += this.a[y] / ps;        
         
-        if (Math.abs(this.v[x]) < .0001) this.v[x] = 0;
-        if (Math.abs(this.v[y]) < .0001) this.v[y] = 0;
+        //if (Math.abs(this.v[x]) < .0001) this.v[x] = 0;
+        //if (Math.abs(this.v[y]) < .0001) this.v[y] = 0;
         
         this.p[x] += this.v[x] / ps;
         this.p[y] += this.v[y] / ps;
@@ -40,7 +40,7 @@ function Thing(elem, doG, dim) {
         var collide = this.collide();
         
         if (collide[y]) {
-            this.p[y] -= this.v[y];
+            this.p[y] = 0;
         }
 
         if (collide[x] || collide[x + 2]) {
