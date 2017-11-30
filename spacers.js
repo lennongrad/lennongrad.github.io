@@ -96,7 +96,7 @@ var setnone = function () {
     }
 }
 
-var planetnumb = 100;
+var planetnumb = 50;
 
 function resource(name, daily) {
     this.name = name;
@@ -177,6 +177,10 @@ function planet(type, id, affiliation) {
 
     this.randY = function () {
         this.ry = (1200 + (Math.random() * .90 * height));
+    }
+
+    this.radius = function () {
+        return 55 * Math.min(Math.pow(this.amt[0], .05), 10);
     }
 
 
@@ -764,7 +768,7 @@ var y = 1;
 
 var playingField = document.body;
 
-var numberStars = 1000;
+var numberStars = 500;
 var globalGlitch = (.09 * Math.random()) + .9;
 
 var colors = ["Red", "Blue", "Green", "White", "Yellow", "Pink", "White", "White"];
@@ -788,7 +792,7 @@ function halfside(e) {
 
 function Unit(unitIDe) {
     this.color = getRandColor();
-    this.pos = [(width * Math.random()), (height * Math.random())];
+    this.pos = [(screen.width * Math.random()), (screen.height * Math.random())];
     this.goal = [0, 0];
     this.unitID = unitIDe;
     this.glitch = globalGlitch;
@@ -819,10 +823,10 @@ function Unit(unitIDe) {
     }
 
     this.goto = function () {
-        if (offscreen && this.pos[x] < 10) { this.pos[x] = width - 11 }
-        if (offscreen && this.pos[x] > width - 10) { this.pos[x] = 1 };
+        if (offscreen && this.pos[x] < 20) { this.pos[x] = screen.width - 20 }
+        if (offscreen && this.pos[x] > screen.width - 5) { this.pos[x] = 25 };
         if (offscreen && this.pos[y] < 4) { this.pos[y] = height - 21 }
-        if (offscreen && this.pos[y] > height - 20) { this.pos[y] = 5 };
+        if (offscreen && this.pos[y] > screen.height - 20) { this.pos[y] = 5 };
 
         switch (gravity) {
             case 1: this.move(x, this.speed[x] * gravityMod); break;
@@ -847,7 +851,76 @@ for (i = 0; i < numberStars; i++){
     }
 }
 
+var gridsize = 35;
+var coordinates = [];
+for (i = 0; i < (2400 + width) / gridsize; i++){
+    coordinates[i] = new Array(2400 + height);
+    for (e = 0; e < (2400 + height) / gridsize; e++){
+        coordinates[i][e] = 0;
+    }
+}
+
+for (i = 0; i < (2400 + height) / gridsize; i++) {
+   // var newrow = document.createElement('TR');
+
+    for (e = 0; e < (2400 + width) / gridsize; e++) {
+        //var newcol = document.createElement('TD');
+
+        var listPlanets = []
+
+        for (var p = 0; p < planets.length; p++) {
+            var mult = 1;
+            if (planets[p].aff == 0) { mult = 100 };
+            listPlanets[p] = {
+                name: planets[p].id, distance: pyth(
+                    mult * Math.abs(planets[p].rx - (gridsize * e ))
+                    , mult * Math.abs(planets[p].ry - (gridsize * i ))
+                )
+            }
+        }
+ 
+        listPlanets.sort(function (a, b) {
+            return a.distance - b.distance;
+        })
+        
+        if (pyth(
+            Math.abs(planets[listPlanets[0].name].rx - (gridsize * e ))
+            , Math.abs(planets[listPlanets[0].name].ry - (gridsize * i ))
+        ) < planets[listPlanets[0].name].radius() + 70) {
+            coordinates[e][i] = listPlanets[0].name;
+            //newcol.style.backgroundColor = conf[planets[listPlanets[0].name].aff].color;
+        }
+
+         //newcol.style.paddingTop = gridsize - 1 + "px";
+         //newcol.style.paddingLeft = gridsize - 1 + "px";
+    
+         //newcol.id = "grid" + i + "-" + e;
+        // newrow.appendChild(newcol);
+    }
+
+   // document.getElementById('grid').appendChild(newrow);
+}
+
 function repeat() {
+
+    for (var i = 0; i < travellers.length; i++) {
+        var cox = document.getElementById("traveller" + i).style.left;
+        var coy = document.getElementById("traveller" + i).style.top;
+        cox = cox.substring(0, cox.length - 2);
+        coy = coy.substring(0, coy.length - 2);
+        cox -= (cox % gridsize);
+        coy -= (coy % gridsize);
+        cox /= gridsize;
+        coy /= gridsize;
+        
+        if (coordinates[cox][coy] != 0 && planets[coordinates[cox][coy]].aff != 0) {
+            document.getElementById("traveller" + i).style.backgroundColor = conf[planets[coordinates[cox][coy]].aff].color;
+        } else {
+            document.getElementById("traveller" + i).style.backgroundColor = "purple"
+        }
+    }
+
+
 
     for (i = 0; i < units.length; i++) {
         units[i].moment();
@@ -855,7 +928,7 @@ function repeat() {
 
     for (i = 0; i < planets.length; i++){
         if (planets[i].aff != 0) {
-            document.getElementById("borders" + i).setAttributeNS(null, "r", 55 * Math.pow(planets[i].amt[0], .05));
+            document.getElementById("borders" + i).setAttributeNS(null, "r", planets[i].radius());
         }
     }
     returner--;
@@ -879,7 +952,7 @@ function repeat() {
                     }
                 }
             }
-        }
+        }  
         document.getElementById('blanker').innerHTML = conf[planets[active].aff].amt[0];
     }
 
@@ -895,6 +968,37 @@ function repeat() {
         if (day % 10 == 0) {
             $.fx.off = true;
             $.fx.off = false;
+        }
+
+        for (i = 0; i < (2400 + height) / gridsize; i++) {
+            if(i != 15){ continue}
+
+            for (e = 0; e < (2400 + width) / gridsize; e++) {
+                var listPlanets = []
+
+                for (var p = 0; p < planets.length; p++) {
+                    var mult = 1;
+                    if (planets[p].aff == 0) { mult = 100 };
+                    listPlanets[p] = {
+                        name: planets[p].id, distance: pyth(
+                            mult * Math.abs(planets[p].rx - (gridsize * e))
+                            , mult * Math.abs(planets[p].ry - (gridsize * i))
+                        )
+                    }
+                }
+ 
+                listPlanets.sort(function (a, b) {
+                    return a.distance - b.distance;
+                })
+        
+                if (pyth(
+                    Math.abs(planets[listPlanets[0].name].rx - (gridsize * e))
+                    , Math.abs(planets[listPlanets[0].name].ry - (gridsize * i))
+                ) < planets[listPlanets[0].name].radius() + 40) {
+                    coordinates[e][i] = listPlanets[0].name;
+                    document.getElementById("grid" + i + "-" + e) = conf[planets[listPlanets[0].name].aff].color;
+                }
+            }
         }
     }
 
@@ -929,7 +1033,7 @@ function repeat() {
             document.getElementById('traveller' + y).style.backgroundColor = "#33ff66";
             window.scrollTo(document.getElementById('traveller' + y).x, document.getElementById('traveller' + y).y);
         } else {
-            document.getElementById('traveller' + y).style.backgroundColor = "purple";
+            //document.getElementById('traveller' + y).style.backgroundColor = "purple";
         }
     }
 

@@ -11,18 +11,34 @@ body{
     font-family:Arial;
 }
 
-#borders circle{
+#borders{
     opacity:.15;
-    background: radial-gradient(#33ff66 60%, red 40%);
 }
 
 .traveller{
     position:absolute;
     border-radius:50px;
-    background-color:purple;
     width:20px;
     height:20px;
     z-index:0;
+}
+
+#fol{
+    position: absolute;
+    width:20px;
+    height:20px;
+    background-color:red;
+}
+
+table{
+    border-collapse:collapse;
+    z-index:-5;
+    position:absolute;
+    opacity:.2;
+}
+
+#grid td{
+    border:0px solid #5C5C5C;
 }
 
 .name{
