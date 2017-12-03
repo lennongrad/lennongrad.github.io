@@ -14,6 +14,8 @@ var supermod = 10;
 var repetir = 99;
 var rep_max = 100;
 var contour = 0;
+var planetCount = 100;
+var gridsize = 25;
 
 function getPlanet(e) { return document.getElementById("planet" + e) };
 
@@ -127,15 +129,18 @@ function affiliation(color) {
     this.color = color;
     this.applied = false;
     this.amt = new Array(res.length).fill(0);
+    this.terr = 0;
 }
 
 function planet(type, id, affiliation) {
-    this.rx = (1200 + (Math.random() * .90 * height));
-    this.ry = (1200 + (Math.random() * .90 * width));
+    this.rx = (200 + (Math.random() * .90 * height));
+    this.ry = (200 + (Math.random() * .90 * width));
+    this.rx -= this.rx % gridsize;
+    this.ry -= this.ry % gridsize;
     this.type = type;
     this.id = id;
     this.addedC = 0;
-    this.score = 0;
+    this.credit = 0;
     this.done = false;
     this.aff = affiliation;
     this.maxc = 0;
@@ -152,6 +157,43 @@ function planet(type, id, affiliation) {
     this.highper = .1;
     this.midper = .4;
 
+    this.adjP = [];
+    
+    
+    var continuir = true;
+    this.listPlanets = []
+
+    while (continuir) {
+        this.listPlanets = [];
+        if (id > 2) {
+            for (var p = 1; p < planets.length - 1; p++) {
+                var mult = 1;
+                this.listPlanets[p] = {
+                    name: planets[p].id, distance: pyth(
+                        Math.abs(planets[p].rx - this.rx)
+                        , Math.abs(planets[p].ry - this.ry)
+                    )
+                }
+            }
+
+            this.listPlanets.sort(function (a, b) {
+                return a.distance - b.distance;
+            })
+
+            if (this.listPlanets[0].distance < 150 || this.listPlanets[0].distance > 375) {
+                this.rx = (200 + (Math.random() * .90 * height));
+                this.ry = (200 + (Math.random() * .90 * width));
+                this.rx -= this.rx % gridsize;
+                this.ry -= this.ry % gridsize;
+            } else {
+                continuir = false;
+            }
+        } else {
+            continuir = false;
+        }
+    }
+
+
     /*var cont = true;
     while (cont) {
         cont = false;
@@ -163,30 +205,38 @@ function planet(type, id, affiliation) {
         }
     }*/
 
+
+    this.addAff = function (e) {
+        this.aff = e;
+        this.amt[1] = Math.floor(this.amt[1] * 1.8)
+        doBorders();
+    }
+    
     this.getLX = function () {
-            return this.rx + "px";
+        return this.rx + "px";
     }
 
     this.getLY = function () {
-            return this.ry + "px";
+        return this.ry + "px";
     }
 
     this.randX = function () {
-        this.rx = (1200 + (Math.random() * .90 * width));
+        this.rx = (200 + (Math.random() * .90 * width));
     }
 
     this.randY = function () {
-        this.ry = (1200 + (Math.random() * .90 * height));
+        this.ry = (200 + (Math.random() * .90 * height));
     }
 
     this.radius = function () {
-        return 55 * Math.min(Math.pow(this.amt[0], .05), 10);
+        if (this.amt[1] == 0) return 0;
+        return 65 * Math.min(Math.pow(this.amt[1], .05), 10) + 15;
     }
 
 
     this.connect = function () {
         var strang = this.type + " ";
-        for(c = 0; c < this.connections.length; c++){
+        for (c = 0; c < this.connections.length; c++) {
             strang += this.connections[c] + "(" + planets[this.connections[c]].type + "),";
         }
         return strang;
@@ -199,9 +249,9 @@ function planet(type, id, affiliation) {
     }
 
     this.goto = function () {
-        var x = this.rx - (window.innerWidth / 2) ;
-        var y = this.ry - (window.innerHeight / 2) ;
-        if(x > width){
+        var x = this.rx - (window.innerWidth / 2);
+        var y = this.ry - (window.innerHeight / 2);
+        if (x > width) {
             x = width;
         }
         if (y > height) {
@@ -217,6 +267,14 @@ function planet(type, id, affiliation) {
             }
         }
         return false;
+    }
+
+    this.fix = function (todo) {
+        var unique = this.adjP.filter(function (elem, index, self) {
+            return index === self.indexOf(elem);
+        })
+    
+        this.adjP = unique;
     }
 }
 
@@ -257,7 +315,7 @@ function traveller(id) {
     lines = document.createElementNS('http://www.w3.org/2000/svg', "polyline");
     lines.id = "polypoints" + id;
     lines.setAttributeNS(null, "points", "200,200 300,300");
-    lines.setAttribute("class",  "polypoints");
+    lines.setAttribute("class", "polypoints");
     document.getElementById('liners').appendChild(lines);
 
 
@@ -269,22 +327,20 @@ function traveller(id) {
         this.moving = $("#traveller" + this.id).is(':animated');
         if (this.moving) {
             return;
-        } 
+        }
 
         //newMsg("Trader #" + this.id + " has arrived at Planet SR" + caster(this.destination,3), 0)
-            this.refresher();
-
-            planets[this.home].score--;
-            if (planets[this.home].score < 0) {
-                planets[this.home].score = 0;
-            }
-        
-        planets[this.destination].score += 1.25;
+        this.refresher();
         //newMsg("Trader #" + this.id + " has departed from Planet SR" + caster(this.home,3), 0)
 
         this.moving = true;
-            $("#traveller" + this.id).stop(true);
-        $("#traveller" + this.id).animate({ "left": (9 + Math.ceil(((planets[this.destination].rx)))), "top": (9 + Math.ceil(((planets[this.destination].ry)))) }, (500 * (pyth((planets[this.destination].rx - planets[this.home].rx), (planets[this.destination].ry - planets[this.home].ry)))) / (.333 * dayscale));
+        $("#traveller" + this.id).stop(true);
+        $("#traveller" + this.id).animate(
+            {
+                "left": ((gridsize / 2) + Math.ceil(((planets[this.destination].rx)))),
+                "top": ((gridsize / 2) + Math.ceil(((planets[this.destination].ry))))
+            },
+            (500 * (pyth((planets[this.destination].rx - planets[this.home].rx),(planets[this.destination].ry - planets[this.home].ry)))) / (.333 * dayscale));
     }
 }
 
@@ -309,8 +365,7 @@ conf[5] = new affiliation("grey");
 //conf[8] = new affiliation("darkcyan");
 //conf[9] = new affiliation("pink");
 
-var planets = new Array(100);
-
+var planets = [];
 
 var rotation = 1;
 
@@ -318,16 +373,16 @@ var day = 0;
 
 var typeamount = 5;
 
-for (i = 1; i < planets.length; i++) {
+for (i = 1; i < planetCount; i++) {
     planets[i] = new planet(rotation, i, 0);
-    if (i % (planets.length / typeamount) == 0) {
+    if (i % (planetCount / typeamount) == 0) {
         rotation++;
     }
 }
 
 for (i = 1; i < conf.length; i++) {
     var c = Math.ceil(Math.random() * planets.length);
-    while (planets[c].aff != 0) {
+    while (planets[c].aff != 0 && planets[c].listPlanets.length > 0) {
         c = Math.ceil(Math.random() * conf.length);
     }
     planets[c].aff = i;
@@ -346,15 +401,19 @@ for (i = 1; i < planets.length; i++) {
     image.setAttribute('draggable', 'none');
     image.onclick = function () {
         planets[this.id.substring(6)].clicker();
+        planets[this.id.substring(6)].addAff(1);
    //   planets[this.id.substring(6)].goto();
     }
 
     image.id = "planet" + i;
 
+    image.style.width = gridsize * 2 + "px";
+    image.style.height = gridsize * 2 + "px";
+
     document.body.appendChild(image);
 
-    document.getElementById("planet" + i).style.left = (((planets[i].rx))) + "px";
-    document.getElementById("planet" + i).style.top = (((planets[i].ry))) + "px";
+    document.getElementById("planet" + i).style.left = (((planets[i].rx)) + (5)) + "px";
+    document.getElementById("planet" + i).style.top = (((planets[i].ry)) + 5) + "px";
 
     /*var closest = findNearest(i);
     for (r = 0; r < closest.length; r++) {
@@ -375,24 +434,8 @@ for (i = 1; i < planets.length; i++) {
     planets[i].baseps[0] = Math.ceil(((planets[i].type) + .5) * (1 + (Math.random())));
 
     if(planets[i].aff != 0 && !conf[planets[i].aff].done){
-        for (r = 0; r < planetsperciv - 1; ) {
-            var lowest = 100000;
-            var lowestID = new Array(20).fill(0);
-            for (o = 0; o < planets.length && r < planetsperciv - 1; o++) {
-                var doNow = true;
-                var he = Math.sqrt(Math.pow(Math.abs(planets[i].rx - planets[o].rx), 2) + Math.pow(Math.abs(planets[i].ry - planets[o].ry), 2));
-                for (t = 0; t < lowestID.length; t++) {
-                    if (lowestID[t] == o) {
-                        doNow = false;
-                    }
-                }
-                if (he < lowest && o != i && doNow && planets[o].aff == 0) {
-                    lowest = he;
-                    lowestID[r] = o;
-                    planets[o].aff = planets[i].aff;
-                    r++;
-                }
-            }
+        for (r = 0; r < planetsperciv - 1 && r < planets[i].listPlanets.length - 1; r++) {
+            planets[planets[i].listPlanets[r].name].aff = planets[i].aff;
         }
         conf[planets[i].aff].done = true;
     }
@@ -470,7 +513,7 @@ function doPop() {
 
 function doPS() {
     for (var i = 0; i < planets.length; i++){
-        planets[i].ps[0] = Math.ceil((planets[i].score + planets[i].baseps[0]) * Math.pow(planets[i].amt[3] + planets[i].amt[4], (.7 + (.1))));
+        planets[i].ps[0] = Math.ceil((planets[i].credit + planets[i].baseps[0]) * Math.pow(planets[i].amt[3] + planets[i].amt[4], (.7 + (.1))));
     }
 }
     doPS();
@@ -529,12 +572,10 @@ var toDate = function (time) {
     return stringer;
 }
 
-document.getElementById("lactive").style.height = 2400 + height;
-document.getElementById("liners").style.height = 2400 + height;
-document.getElementById("lactive").style.width = 2400 + width;
-document.getElementById("liners").style.width = 2400 + width
-document.getElementById("borders").style.width = 2400 + width
-document.getElementById("borders").style.height = 2400 + height;
+document.getElementById("lactive").style.height = 400 + height;
+document.getElementById("liners").style.height = 400 + height;
+document.getElementById("lactive").style.width = 400 + width;
+document.getElementById("liners").style.width = 400 + width
 
 var msg;
 function newMsg(message, indent){
@@ -553,19 +594,17 @@ function newMsg(message, indent){
     currentmessage++;
 }
 
-
 document.addEventListener('keydown', function (event) {
     if (event.keyCode == 65) {
         $(".ui").toggle();
         $("#lactive").toggle();
     } else if (event.keyCode == 66) {
-        $("#borders").toggle();
+        $("#borderbox").toggle();
     } else if (event.keyCode == 80) {
-        for (t = 0; t < planets[active].connections.length; t++) {
-            alert(planets[active].connections[t]);
-        }
+        $(".planet").toggle();
     } else if (event.keyCode == 78) {
         $(".name").toggle();
+    } else if (event.keyCode == 78) {
     } else if (event.keyCode == 76) {
         $(".traveller").toggle();
         $(".polypoints").toggle();
@@ -577,8 +616,7 @@ document.addEventListener('keydown', function (event) {
 })
 
 $(".ui").toggle();
-$("#borders").toggle();
-
+$("#borderbox").toggle();
 $('#daybox').click(function () {
     
     if (active != 0) {
@@ -623,11 +661,11 @@ $("#ledger").click(function () {
     }
 });
 
+planets[1].connections.shift();
 var visible = new Array(planets.length).fill(true);
 
 $('.planet').mousedown(function (event) {
     if (event.which == 3) {
-        // alert(this.id + "  " + planets[this.id.substring(6)].connect());
         if ($("#detailedinfo").hasClass('visible')) {
             $("#detailedinfo").animate({ "left": "2%" }, "fast").removeClass('visible');
         }
@@ -656,23 +694,10 @@ for (e = 1; e < conf.length; e++) {
 
     for (i = 1; i < planets.length; i++) {
         if (planets[i].aff == e) {
-            affplanets[affplanets.length] = i;
             strang += ", SR" + caster(i, 3);
         }
     }
     newMsg(conf[e].color + ": {" + strang.substring(2) + "}", 1);
-
-    for (i = 0; i < affplanets.length; i++) {
-        var line;
-        line = document.createElementNS('http://www.w3.org/2000/svg', "circle");
-        line.id = "borders" + affplanets[i];
-        line.setAttributeNS(null, "cx", planets[affplanets[i]].rx + 15);
-        line.setAttributeNS(null, "cy", planets[affplanets[i]].ry + 15);
-        line.setAttributeNS(null, "r", 55);
-        line.className = "borders";
-        line.style.fill = conf[e].color;
-        document.getElementById('borders').appendChild(line);
-    }
 }
 
 
@@ -777,7 +802,7 @@ function getRandColor() { return colors[Math.floor(colors.length * Math.random()
 var units = [];
 
 var gravity = Math.floor(2 * Math.random()) + 1;
-var gravityMod = 10 * Math.random() + 6;
+var gravityMod = 4 * Math.random() + 3;
 
 var offscreen = true;
 
@@ -851,30 +876,41 @@ for (i = 0; i < numberStars; i++){
     }
 }
 
-var gridsize = 35;
 var coordinates = [];
-for (i = 0; i < (2400 + width) / gridsize; i++){
-    coordinates[i] = new Array(2400 + height);
-    for (e = 0; e < (2400 + height) / gridsize; e++){
+for (i = 0; i < (400 + width) / gridsize; i++){
+    coordinates[i] = new Array(400 + height);
+    for (e = 0; e < (400 + height) / gridsize; e++){
         coordinates[i][e] = 0;
     }
 }
 
-for (i = 0; i < (2400 + height) / gridsize; i++) {
-   // var newrow = document.createElement('TR');
+var squares = [];
+for (i = 0; i < (400 + width) / gridsize; i++){
+    squares[i] = new Array(400 + height);
+    for (e = 0; e < (400 + height) / gridsize; e++){
+        squares[i][e] = [0];
+    }
+}
 
-    for (e = 0; e < (2400 + width) / gridsize; e++) {
-        //var newcol = document.createElement('TD');
+var rendercol = true;
+
+for (i = 0; i < (400 + height) / gridsize; i++) {
+    if (rendercol) var newrow = document.createElement('TR');
+
+    for (e = 0; e < (400 + width) / gridsize; e++) {
+        if (rendercol) {
+            var newcol = document.createElement('TD');
+            newcol.style.border = "1px solid blue";
+        }
 
         var listPlanets = []
 
         for (var p = 0; p < planets.length; p++) {
             var mult = 1;
-            if (planets[p].aff == 0) { mult = 100 };
             listPlanets[p] = {
                 name: planets[p].id, distance: pyth(
-                    mult * Math.abs(planets[p].rx - (gridsize * e ))
-                    , mult * Math.abs(planets[p].ry - (gridsize * i ))
+                    mult * Math.abs(planets[p].rx - (gridsize * e))
+                    , mult * Math.abs(planets[p].ry - (gridsize * i))
                 )
             }
         }
@@ -884,22 +920,95 @@ for (i = 0; i < (2400 + height) / gridsize; i++) {
         })
         
         if (pyth(
-            Math.abs(planets[listPlanets[0].name].rx - (gridsize * e ))
-            , Math.abs(planets[listPlanets[0].name].ry - (gridsize * i ))
-        ) < planets[listPlanets[0].name].radius() + 70) {
+            Math.abs(planets[listPlanets[0].name].rx - (gridsize * (e - .5)))
+            , Math.abs(planets[listPlanets[0].name].ry - (gridsize * (i - .5 )))
+        ) < planets[listPlanets[0].name].radius() + 80) {
             coordinates[e][i] = listPlanets[0].name;
-            //newcol.style.backgroundColor = conf[planets[listPlanets[0].name].aff].color;
+            if (rendercol) newcol.style.backgroundColor = conf[planets[listPlanets[0].name].aff].color;
+            if (rendercol && planets[listPlanets[0].name].aff != 0) newcol.style.border = "1px solid " + conf[planets[listPlanets[0].name].aff].color;
         }
 
-         //newcol.style.paddingTop = gridsize - 1 + "px";
-         //newcol.style.paddingLeft = gridsize - 1 + "px";
-    
-         //newcol.id = "grid" + i + "-" + e;
-        // newrow.appendChild(newcol);
+        if (rendercol) {
+            newcol.style.paddingTop = gridsize - 2 + "px";
+            newcol.style.paddingLeft = gridsize - 2 + "px";
+            newcol.id = "grid" + i + "-" + e;
+             newrow.appendChild(newcol);
+        }
+            squares[e][i] = listPlanets;
     }
 
-   // document.getElementById('grid').appendChild(newrow);
+    if (rendercol) document.getElementById('grid').appendChild(newrow);
 }
+
+function doBorders() {
+    for (i = 0; i < conf.length; i++) {
+        conf[i].terr = 0;
+    }
+
+    for (i = 0; i < (400 + height) / gridsize; i++) {
+        for (e = 0; e < (400 + width) / gridsize; e++) {
+            var listPlanets = squares[e][i];
+        
+            if (pyth(
+                Math.abs(planets[listPlanets[0].name].rx - (gridsize * (e - .5)))
+                , Math.abs(planets[listPlanets[0].name].ry - (gridsize * (i - .5)))
+            ) < planets[listPlanets[0].name].radius()) {
+                coordinates[e][i] = listPlanets[0].name;
+                if (rendercol) document.getElementById("grid" + i + "-" + e).style.backgroundColor = conf[planets[listPlanets[0].name].aff].color;
+                if (rendercol && planets[listPlanets[0].name].aff != 0) document.getElementById("grid" + i + "-" + e).style.border = "1px solid " + conf[planets[listPlanets[0].name].aff].color;
+                conf[planets[listPlanets[0].name].aff].terr++;
+            } else {
+                coordinates[e][i] = 0;
+                if (rendercol) document.getElementById("grid" + i + "-" + e).style.backgroundColor = "#000000";
+                if (rendercol && planets[listPlanets[0].name].aff != 0) document.getElementById("grid" + i + "-" + e).style.border = "1px solid transparent"
+                if (rendercol && planets[listPlanets[0].name].aff == 0) document.getElementById("grid" + i + "-" + e).style.border = "1px solid transparent"
+            }
+        }
+    }
+
+    for (i = 1; i < (400 + height) / gridsize - 1; i++) {
+        for (e = 1; e < (400 + width) / gridsize - 1; e++) {
+            var the = coordinates[e][i];
+            var curff = planets[coordinates[e][i]].aff;
+            if (planets[coordinates[e - 1][i]].aff != curff) {
+                if (rendercol) document.getElementById("grid" + i + "-" + (e - 1)).style.borderRight = "1px solid #FFFFFF"; 
+            }
+            if (planets[coordinates[e + 1][i]].aff != curff) {
+                if (rendercol) document.getElementById("grid" + i + "-" + e).style.borderRight = "1px solid #FFFFFF"; 
+            }
+            if (planets[coordinates[e][i - 1]].aff != curff) {
+                if (rendercol) document.getElementById("grid" + (i - 1) + "-" + e).style.borderBottom = "1px solid #FFFFFF"; 
+            }
+            if (planets[coordinates[e][i + 1]].aff != curff) {
+                if (rendercol) document.getElementById("grid" + i + "-" + e).style.borderBottom = "1px solid #FFFFFF"; 
+            }
+                
+            if (coordinates[e - 1][i] != the) {
+                planets[the].adjP.push(coordinates[e - 1][i]);
+                if (rendercol) document.getElementById("grid" + i + "-" + (e - 1)).style.borderRight = "1px solid #FFFFFF"; 
+            }
+            if (coordinates[e + 1][i] != the) {
+                planets[the].adjP.push(coordinates[e + 1][i]);
+                if (rendercol) document.getElementById("grid" + i + "-" + e).style.borderRight = "1px solid #FFFFFF"; 
+            }
+            if (coordinates[e][i - 1] != the) {
+                planets[the].adjP.push(coordinates[e][i - 1]);
+                if (rendercol) document.getElementById("grid" + (i - 1) + "-" + e).style.borderBottom = "1px solid #FFFFFF"; 
+            }
+            if (coordinates[e][i + 1] != the) {
+                planets[the].adjP.push(coordinates[e][i + 1]);
+                if (rendercol) document.getElementById("grid" + i + "-" + e).style.borderBottom = "1px solid #FFFFFF"; 
+            }
+        }
+    }
+
+    for (i = 1; i < planets.length; i++){
+        planets[i].fix(true);
+    }
+}
+        doPop();
+        doPlanetCount();
+doBorders();
 
 function repeat() {
 
@@ -918,6 +1027,7 @@ function repeat() {
         } else {
             document.getElementById("traveller" + i).style.backgroundColor = "purple"
         }
+            planets[coordinates[cox][coy]].credit = (Math.floor(planets[coordinates[cox][coy]].credit * 100) / 100 ) + .1;
     }
 
 
@@ -926,11 +1036,6 @@ function repeat() {
         units[i].moment();
     }
 
-    for (i = 0; i < planets.length; i++){
-        if (planets[i].aff != 0) {
-            document.getElementById("borders" + i).setAttributeNS(null, "r", planets[i].radius());
-        }
-    }
     returner--;
     if (returner < 0) {
         returner = 0;
@@ -953,7 +1058,11 @@ function repeat() {
                 }
             }
         }  
-        document.getElementById('blanker').innerHTML = conf[planets[active].aff].amt[0];
+        if (planets[active].aff != 0) {
+            document.getElementById('blanker').innerHTML = "POP: " + conf[planets[active].aff].amt[1] + " TERR: " + conf[planets[active].aff].terr;
+        } else {
+            document.getElementById('blanker').innerHTML = " ";
+        }    
     }
 
     if (daycount > 5000) {
@@ -961,6 +1070,7 @@ function repeat() {
         daycount = 0;
         doPop();
         doPlanetCount();
+        doBorders();
 
         for (y = 0; y < travellers.length; y++) {
             travellers[y].fly();
@@ -968,37 +1078,6 @@ function repeat() {
         if (day % 10 == 0) {
             $.fx.off = true;
             $.fx.off = false;
-        }
-
-        for (i = 0; i < (2400 + height) / gridsize; i++) {
-            if(i != 15){ continue}
-
-            for (e = 0; e < (2400 + width) / gridsize; e++) {
-                var listPlanets = []
-
-                for (var p = 0; p < planets.length; p++) {
-                    var mult = 1;
-                    if (planets[p].aff == 0) { mult = 100 };
-                    listPlanets[p] = {
-                        name: planets[p].id, distance: pyth(
-                            mult * Math.abs(planets[p].rx - (gridsize * e))
-                            , mult * Math.abs(planets[p].ry - (gridsize * i))
-                        )
-                    }
-                }
- 
-                listPlanets.sort(function (a, b) {
-                    return a.distance - b.distance;
-                })
-        
-                if (pyth(
-                    Math.abs(planets[listPlanets[0].name].rx - (gridsize * e))
-                    , Math.abs(planets[listPlanets[0].name].ry - (gridsize * i))
-                ) < planets[listPlanets[0].name].radius() + 40) {
-                    coordinates[e][i] = listPlanets[0].name;
-                    document.getElementById("grid" + i + "-" + e) = conf[planets[listPlanets[0].name].aff].color;
-                }
-            }
         }
     }
 
@@ -1017,8 +1096,8 @@ function repeat() {
         }    
     }
 
-    document.getElementById("planetname").innerHTML = '<img src="planet' + planets[active].type + '.png">Planet SR' + caster(active,3);
-    document.getElementById("planetscore").innerHTML = "> " + planets[active].score + " points";
+    document.getElementById("planetname").innerHTML = '<img src="planet' + planets[active].type + '.png" style="width:' + (gridsize * 2) + 'px; height: ' + (gridsize * 2) + 'px">Planet SR' + caster(active,3);
+    document.getElementById("planetscore").innerHTML = "> " + Math.floor(planets[active].credit) + " points";
     document.getElementById("planetname").style.border = '3px solid ' + conf[planets[active].aff].color;
     if (planets[active].aff == 0) {
         document.getElementById("planetname").style.border = '3px solid white';
@@ -1030,8 +1109,7 @@ function repeat() {
 
     for (y = 0; y < travellers.length; y++) {
         if (travellers[y].id == activeTraveller && onTraveller) {
-            document.getElementById('traveller' + y).style.backgroundColor = "#33ff66";
-            window.scrollTo(document.getElementById('traveller' + y).x, document.getElementById('traveller' + y).y);
+            window.scrollTo(document.getElementById('traveller' + y).x, document.getElementById('traveller' + y).y - 400);
         } else {
             //document.getElementById('traveller' + y).style.backgroundColor = "purple";
         }
@@ -1041,22 +1119,27 @@ function repeat() {
         for (i = 1; i < planets.length; i++) {
             for (e = 1; e < planets.length; e++) {
                 if (travellers[y].destination == e && travellers[y].home == i && travellers[y].destination != i && travellers[y].home != e) {
-                    document.getElementById('polypoints' + y).setAttribute("points", (9 + Math.ceil((((planets[i].rx))))) + "," + (9 + Math.ceil(((planets[i].ry)))) + " " + Math.ceil(9 + (((planets[e].rx)))) + "," + (9 + Math.ceil(((planets[e].ry)))) + "   ");
+                    document.getElementById('polypoints' + y).setAttribute("points", ((gridsize / 2) + Math.ceil((((planets[i].rx))))) + "," + ((gridsize / 2) + Math.ceil(((planets[i].ry)))) + " " + Math.ceil((gridsize / 2) + (((planets[e].rx)))) + "," + ((gridsize / 2) + Math.ceil(((planets[e].ry)))) + "   ");
                 }
             }
         }
     };
-
+    
     for (e = 1; e < planets.length; e++) {
+        if (planets[e].amt[1] == 0) { planets[e].aff = 0 };
         planets[e].rotation += planets[e].rotationSpeed;
-        document.getElementById("planet" + e).style.transform = "rotate("  + planets[e].rotation + "deg)";
+        //document.getElementById("planet" + e).style.transform = "rotate("  + planets[e].rotation + "deg)";
         if (false || e == active) {
-            document.getElementById("planet" + e).style.background = "radial-gradient(#33ff66 60%, red 15%, transparent 25%)";
+            document.getElementById("planet" + e).style.background = "radial-gradient(#33ff66 35%, transparent 75%)";
             for (i = 0; i < planets[e].connections.length; i++) {
                 activestring += "" + (9 + Math.ceil((((planets[planets[e].connections[i]].rx))))) + "," + (9 + Math.ceil(((planets[planets[e].connections[i]].ry)))) + " " + Math.ceil(9 + (((planets[e].rx)))) + "," + (9 + Math.ceil(((planets[e].ry)))) + " ";
             }
-        } else {
-            document.getElementById("planet" + e).style.background = "radial-gradient(" + conf[planets[e].aff].color + " 60%, red 15%, transparent 25%)";
+        }         else {
+            document.getElementById("planet" + e).style.background = "radial-gradient(" + conf[planets[e].aff].color + " 35%, transparent 75%)";
+        }
+        
+        if (planets[active].adjP.includes(e) && active != 0) {
+            document.getElementById("planet" + e).style.background = "radial-gradient(#33ff66 35%, transparent 75%)";
         }
     }
     
@@ -1064,7 +1147,6 @@ function repeat() {
     //  document.getElementById("polypoints").setAttribute("points", finalstring);
 
     document.getElementById("pactive").setAttribute("points", activestring);
-
 
     /* for (e = 1; e < conf.length; e++) {
          var poly = "";
@@ -1081,9 +1163,9 @@ function repeat() {
     if (concluir >= 5) {
         for (i = 1; i < planets.length; i++) {
             if (i != active) {
-                $('#name' + i).animate({ 'opacity': '.2' }, 150)
+                $('#name' + i).animate({ 'opacity': '.2' }, 160)
             } else {
-                $('#name' + i).animate({ 'opacity': '1' }, 150)
+                $('#name' + i).animate({ 'opacity': '1' }, 160)
             }
         }
         concluir = 0;

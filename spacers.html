@@ -12,7 +12,10 @@
 </script>
 </head>
 <body oncontextmenu="setnone();return false;">
-<table><tbody id="grid"></tbody><table>
+<div id="borderbox"> 
+    <svg id="borders" clickable="false" style="display: block"></svg>
+    <table><tbody id="grid"></tbody></table>
+        </div>
 
     <div id="headerbox" class="ui" >
         > Initializing...         
@@ -44,8 +47,7 @@
         <polyline points="0,0" id="pactive" style="stroke:#33ff66;fill:transparent;stroke-width:1;" />
     </svg>
 
-    <svg id="borders" clickable="false" style="display: block">
-    </svg>
+   
 </div>
 
 
