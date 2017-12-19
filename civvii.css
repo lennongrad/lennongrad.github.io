@@ -1,0 +1,136 @@
+.box{
+    width:100%;
+    padding-top:50px;
+    height:850px;
+}
+
+p{
+    width:100%;
+    margin-top:175px;
+    text-align:justify;
+    color:white;
+    font-family: calibri;
+    font-size:26px;
+}
+
+body{
+    margin:0;
+}
+
+.expand{
+    text-align:center !important;
+    width:200px;
+}
+
+#box1{
+    height: 800px !important;
+  background: linear-gradient(to bottom,rgba(0,0,255,.75),rgba(0,0,255,.9),rgba(0,0,255,.95),rgba(70,0,215,1)), url('https://i.pinimg.com/474x/3a/3f/04/3a3f0434e7b941c181ce6e97fad8e473--honeycomb-tile-honeycomb-pattern.jpg') repeat;
+}
+
+#box1 img{
+    width:100%;
+    box-shadow: inset 0px 0px 50px black;
+}
+
+#leftside{
+    width:75%;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#box2{
+  background: linear-gradient(to bottom,rgba(70,0,215,1),rgba(80,0,190,.98),rgba(120,0,185,.98),rgba(140,0,155,1)), url('https://i.pinimg.com/474x/3a/3f/04/3a3f0434e7b941c181ce6e97fad8e473--honeycomb-tile-honeycomb-pattern.jpg') repeat;
+}
+
+#box2 img{
+    width:42%;
+    position:absolute;
+    right:5%;
+    margin-top:2%;
+    opacity:.4;
+}
+
+#leftside2{
+    width:50%;
+    margin-left:50px;
+}
+
+#box3{
+  background: linear-gradient(to bottom,rgba(140,0,155,1),rgba(175,0,125,.97),rgba(195,0,95,.98),rgba(210,0,45,1)), url('https://i.pinimg.com/474x/3a/3f/04/3a3f0434e7b941c181ce6e97fad8e473--honeycomb-tile-honeycomb-pattern.jpg') repeat;
+}
+
+#box3 img{
+    width:42%;
+    position:absolute;
+    margin-top:2%;
+    opacity:.4;
+}
+
+#leftside3{
+    width:50%;
+    margin-left:45%;
+}
+
+#box3{
+  background: linear-gradient(to bottom,rgba(140,0,155,1),rgba(175,0,125,.97),rgba(195,0,95,.98),rgba(210,0,45,1)), url('https://i.pinimg.com/474x/3a/3f/04/3a3f0434e7b941c181ce6e97fad8e473--honeycomb-tile-honeycomb-pattern.jpg') repeat;
+}
+
+#box3 img{
+    width:42%;
+    position:absolute;
+    margin-top:2%;
+    opacity:.4;
+}
+
+#leftside3{
+    width:50%;
+    margin-left:45%;
+}
+
+#box4{
+  background: linear-gradient(to bottom,rgba(210,0,45,1),rgba(225,15,0,.96),rgba(250,25,0,.96),rgba(255,35,0,1)), url('https://i.pinimg.com/474x/3a/3f/04/3a3f0434e7b941c181ce6e97fad8e473--honeycomb-tile-honeycomb-pattern.jpg') repeat;
+}
+
+#box4 img{
+    width:42%;
+    position:absolute;
+    margin-top:2%;
+    opacity:.4;
+}
+
+#leftside4{
+    width:50%;
+    margin-left:45%;
+}
+
+#box5{
+  background: linear-gradient(to bottom,rgba(255,35,0,1),rgba(235,50,0,.96),rgba(210,70,0,.96),rgba(170,85,0,1)), url('https://i.pinimg.com/474x/3a/3f/04/3a3f0434e7b941c181ce6e97fad8e473--honeycomb-tile-honeycomb-pattern.jpg') repeat;
+}
+
+#box5 img{
+    width:42%;
+    position:absolute;
+    margin-top:2%;
+    opacity:.4;
+}
+
+#leftside5{
+    width:50%;
+    margin-left:45%;
+}
+
+#box6{
+  background: linear-gradient(to bottom,rgba(170,85,0,1),rgba(150,105,0,.98),rgba(150,120,0,.97),rgba(140,130,0,1)), url('https://i.pinimg.com/474x/3a/3f/04/3a3f0434e7b941c181ce6e97fad8e473--honeycomb-tile-honeycomb-pattern.jpg') repeat;
+}
+
+#box6 img{
+    width:42%;
+    position:absolute;
+    margin-top:2%;
+    opacity:.4;
+}
+
+#leftside6{
+    width:50%;
+    margin-left:45%;
+}
