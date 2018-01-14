@@ -53,9 +53,20 @@ body{
 }
 
 #hexTable{
-    margin-left:80px;
-    margin-top:70px;
-    margin-bottom:70px;
+    margin-left:800px;
+    margin-top:700px;
+    margin-bottom:1400px;
+    margin-right:700px;
+    transform: scale(.5, .5);
+}
+
+#banner{
+    height:1000px;
+    background-color:black;
+    width:500px;
+    position:absolute;
+    right:-15000px;
+    bottom:-15000px;
 }
 
 .unit{
@@ -64,9 +75,11 @@ body{
     width:64px;
     height:64px;
     pointer-events: none;
+    will-change: top, left;
 }
 
 #boxholder{
+    will-change: top, left;
     position:fixed;
     z-index:2;
     background-color:white;
@@ -98,7 +111,7 @@ body{
     position:absolute;
     left:70px;
     top:12px;
-    font-size:15px;
+    font-variant: small-caps;
 }
 
 #boxOK{

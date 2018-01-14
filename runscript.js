@@ -1168,6 +1168,7 @@ res[7].canUnlock = false;*/
     }
 
     function displaytech() {
+        if(tech.length <= tech_level_active) return;
         tech_name = tech[tech_level_active - 1].name;
         tech_descr = tech[tech_level_active - 1].descr;
     }
