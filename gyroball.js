@@ -8,8 +8,8 @@ var treasuresCollected = [];
 var messages = [];
 var messageClosed = false;
 var messageSkip = false;
-messages.push("hewwo???/Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur facilisis turpis purus, et accumsan mi molestie ac./OK/1");
-messages.push("hewwo2/Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur facilisis turpis purus, et accumsan mi molestie ac./OK/1");
+messages.push("Welcome to Cybercrawl/This is a Rougelike game made by Lennongrad/Get Started/1");
+messages.push("How To Play/Click on green hexagons to move. For now, just collect Treasure/OK/1");
 var messageX = "50px";
 
 var setMessage = function(){
