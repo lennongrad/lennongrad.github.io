@@ -1,3 +1,25 @@
-.date{
-    width:300px;
+
+#result{
+    height:300px;
+     margin-bottom:10px; 
+    text-align:center; 
+    font-style:bold;
+    font-size:50px;
+    line-height:290px;
+}
+
+.input{
+    width:100px;
+}
+
+.button{
+    width:100px;
+    display:inline-block;
+    background-color:#becdce;
+    border:1px solid black;
+}
+
+body{
+    text-align:center;
+    user-select: none;
 }
