@@ -4,7 +4,12 @@ var testRed = [7,5];
 
 var notMapMess = true;
 var treasuresCollected = [];
+var treasuresCol = [];
 var treasures = [];
+var cols = [];
+
+var itemSlots = 3;
+var itemCols = 10;
 
 var allSeen = false;
 
@@ -45,6 +50,90 @@ window.onload = function() {
 
 }
 
+var curYPos, curXPos, curDown, down, downTr, notDownFor;
+down = "";
+downTr = 0;
+notDownFor = 0;
+
+window.addEventListener('mousemove', function (e) {
+    if (curDown) {
+        notDownFor = 0;
+        switch(down){
+            case "trea": document.getElementById("treasures" + downTr).style.left = e.clientX - 25 + "px"; document.getElementById("treasures" + downTr).style.top = e.clientY - 25 + "px"; break;
+            case "msg": document.getElementById("boxholder").style.left = e.clientX - 150 + "px"; document.getElementById("boxholder").style.top = e.clientY - 50 + "px"; break;
+            case "scrn": window.scrollTo(scrollX - e.movementX, scrollY - e.movementY); break;
+            default: break;
+        }
+    } else {
+        notDownFor++;
+    }
+
+    if(down != "trea"){
+        for(var i = 0; i < treasuresCollected.length; i++){
+            document.getElementById("treasures" + treasuresCollected[i]).style.left = $("#col" + treasuresCol[treasuresCollected[i]]).position().left + "px"; 
+            document.getElementById("treasures" + treasuresCollected[i]).style.top = $("#col" + treasuresCol[treasuresCollected[i]]).position().top + "px";
+        }
+    }
+});
+
+window.addEventListener('mouseup', function (e) {
+    down = "";
+
+    for(var i = 0; i < cols.length; i++){
+        if(collision($("#col" + i),$("#treasures" + downTr)) && cols[i] == 0){
+            cols[treasuresCol[downTr]] = 0;
+            treasuresCol[downTr] = i;
+            cols[i] = downTr;
+        }
+    }
+})
+
+window.addEventListener('mousedown', function (e) {
+    curYPos = e.screenY;
+    curXPos = e.screenX;
+    curDown = true;
+    
+    if(down != "trea") down = "scrn";
+    
+    if($('#boxholder').is(":hover") && !$('#boxOK').is(":hover")){
+        down = "msg";
+    } else if($('#boxOK').is(":hover")){
+        down = "";
+    }else if(!$(".treasure").is(":hover")){
+        down = "scrn";
+    }
+});
+
+window.addEventListener('mouseup', function (e) {
+    curDown = false;
+});
+
+document.addEventListener('keydown', function (event) {
+    if (event.keyCode == 13) {
+        closeBox();
+    } else   if (event.keyCode == 17) {
+        allSeen = !allSeen;
+    }
+})
+
+function collision($div1, $div2) {
+    var x1 = $div1.offset().left;
+    var y1 = $div1.offset().top;
+    var h1 = $div1.outerHeight(true);
+    var w1 = $div1.outerWidth(true);
+    var b1 = y1 + h1;
+    var r1 = x1 + w1;
+    var x2 = $div2.offset().left;
+    var y2 = $div2.offset().top;
+    var h2 = $div2.outerHeight(true);
+    var w2 = $div2.outerWidth(true);
+    var b2 = y2 + h2;
+    var r2 = x2 + w2;
+
+    if (b1 < y2 || y1 > b2 || r1 < x2 || x1 > r2) return false;
+    return true;
+  }
+
 var setMessage = function(){
     if(messages.length == 0) return;
     var message = messages.shift();
@@ -72,43 +161,33 @@ var closeBox = function(){
 
 setMessage();
 
-var curYPos, curXPos, curDown;
-window.addEventListener('mousemove', function (e) {
-    if (curDown) {
-        if($('#boxholder').is(":hover") && !$('#boxOK').is(":hover")){
-            document.getElementById("boxholder").style.left = e.clientX - 150 + "px";
-            document.getElementById("boxholder").style.top = e.clientY - 50 + "px";
-        } else if(!$('#boxOK').is(":hover")){
-            window.scrollTo(scrollX - e.movementX, scrollY - e.movementY);
-        }
-    }
-});
+var firstItemSlot = document.getElementsByClassName("col").length;
+for(var i = 0; i < itemSlots; i++){
+    itemCols++;
+    cols[firstItemSlot + i] = 0;
 
-window.addEventListener('mousedown', function (e) {
-    curYPos = e.screenY;
-    curXPos = e.screenX;
-    curDown = true;
-});
+    var iC = document.createElement("div");
+    iC.className = "col";
+    iC.id = "col" + (firstItemSlot + i);
+    iC.style.left = (20 + 70 * i) + "px";
+    iC.style.bottom = "10px";
 
-window.addEventListener('mouseup', function (e) {
-    curDown = false;
-});
-
-document.addEventListener('keydown', function (event) {
-    if (event.keyCode == 13) {
-        closeBox();
-    } else   if (event.keyCode == 17) {
-        allSeen = !allSeen;
-    }
-})
+    document.body.appendChild(iC);
+}
 
 function Unit(pos, spr){
+
+    // positioning
     this.position = [];
     this.position[0] = pos[0];
     this.position[1] = pos[1];
     this.sprite = spr;
     this.target = 0;
     this.spd = 2;
+
+    // battle
+    this.maxHP = 50;
+    this.HP = this.maxHP;
 
     this.getPos = function(){
         return [21 +  ((this.position[1] % 2 * -50) + (this.position[0] * 52 * 2)), 23 +  (this.position[1] * 88)];
@@ -120,23 +199,30 @@ function Unit(pos, spr){
         var hX = units[0][this.target].position[0] > p[0];
         var hY = units[0][this.target].position[1] > p[1];
         var moved = this.spd;
+        var newPos = [];
 
         if(Math.random() > .9) hX = !hX;
         if(Math.random() > .9) hY = !hY;
 
         if(p[1] % 2 == 0){
-            if(hY && hX && moved >= 0 && coordinates[p[0]+1][p[1]+1].type != 1){this.position = [p[0]+1, p[1]+1]; moved--}   ;
-            if(hX && !hY && moved >= 0 && coordinates[p[0]+1][p[1]-1].type != 1){this.position = [p[0]+1,p[1]-1]; moved--} ;
-            if(hY && moved >= 0 && coordinates[p[0]][p[1]+1].type != 1){this.position = [p[0],p[1]+1]; moved--}   ;
-            if(!hY && moved >= 0 && coordinates[p[0]][p[1]-1].type != 1){this.position = [p[0],p[1]-1]; moved--} ;
+            if(hY && hX && moved >= 0 && coordinates[p[0]+1][p[1]+1].type != 1){newPos = [p[0]+1, p[1]+1]; moved--}   ;
+            if(hX && !hY && moved >= 0 && coordinates[p[0]+1][p[1]-1].type != 1){newPos = [p[0]+1,p[1]-1]; moved--} ;
+            if(hY && moved >= 0 && coordinates[p[0]][p[1]+1].type != 1){newPos = [p[0],p[1]+1]; moved--}   ;
+            if(!hY && moved >= 0 && coordinates[p[0]][p[1]-1].type != 1){newPos = [p[0],p[1]-1]; moved--} ;
         } else {
-            if(!hX && !hY && moved >= 0 && coordinates[p[0]-1][p[1]-1].type != 1){this.position = [p[0]-1,p[1]-1]; moved--} ;
-            if(!hX && hY && moved >= 0 && coordinates[p[0]-1][p[1]+1].type != 1){this.position = [p[0]-1,p[1]+1]; moved--}   ;
-            if(hY && moved >= 0 && coordinates[p[0]][p[1]+1].type != 1){this.position = [p[0],p[1]+1]; moved--}   ;
-            if(!hY && moved >= 0 && coordinates[p[0]][p[1]-1].type != 1){this.position = [p[0],p[1]-1]; moved--} ;
+            if(!hX && !hY && moved >= 0 && coordinates[p[0]-1][p[1]-1].type != 1){newPos = [p[0]-1,p[1]-1]; moved--} ;
+            if(!hX && hY && moved >= 0 && coordinates[p[0]-1][p[1]+1].type != 1){newPos = [p[0]-1,p[1]+1]; moved--}   ;
+            if(hY && moved >= 0 && coordinates[p[0]][p[1]+1].type != 1){newPos = [p[0],p[1]+1]; moved--}   ;
+            if(!hY && moved >= 0 && coordinates[p[0]][p[1]-1].type != 1){newPos = [p[0],p[1]-1]; moved--} ;
         }
-        if(hX && moved >= 0 && coordinates[p[0]+1][p[1]].type != 1){this.position = [p[0]+1,p[1]]; moved--}   ;
-        if(hY && moved >= 0 && coordinates[p[0]-1][p[1]].type != 1){this.position = [p[0]-1,p[1]]; moved--}   ;
+        if(hX && moved >= 0 && coordinates[p[0]+1][p[1]].type != 1){newPos = [p[0]+1,p[1]]; moved--}   ;
+        if(hY && moved >= 0 && coordinates[p[0]-1][p[1]].type != 1){newPos = [p[0]-1,p[1]]; moved--}   ;
+
+        if(coordinates[newPos[0]][newPos[1]].unitOn){
+
+        } else {
+            this.position = newPos;
+        }
     }
 }
 
@@ -155,12 +241,14 @@ function Tile(pos, ide){
     this.seen = false;
     this.type = 0;
     this.unitOn = false;
-    this.unit = "beanFighter.gif";
+    this.unit = [0,0];
+    this.sprite = "beanFighter.gif";
     this.passable = true;
     this.canStep = false;
     this.treasure = 0;
     this.hasNotified = false;
     this.isEnemy = false;
+    this.attackable = false;
 
     this.update = function(){
         if(this.seen) this.uncovered = true;
@@ -169,27 +257,34 @@ function Tile(pos, ide){
         this.unitOn = false;
         this.isEnemy = false;
         this.passable = true;
+        this.sprite = "";
+        this.attackable = false;
 
         if(this.treasure != 0){
-            this.unitOn = true;
-            this.unit = "treasures\\" + 0 + ".png";
+            this.sprite = "treasures\\" + 0 + ".png";
         }
+
+        var tempIDE = [0,0];
 
         for(var i = 0; i < units[0].length; i++){
             if(parseInt(units[0][i].position[0]) == parseInt(this.position[0]) && parseInt(units[0][i].position[1]) == parseInt(this.position[1])){
                 this.unitOn = true;
-                this.unit = units[0][i].sprite;
+                this.unit = [0,i];
                 this.uncovered = true;
                 this.type = 0;
+                this.sprite = units[0][i].sprite;  
+                tempIDE = [0,i];
             }
         }
 
         for(var i = 0; i < units[1].length; i++){
             if(parseInt(units[1][i].position[0]) == parseInt(this.position[0]) && parseInt(units[1][i].position[1]) == parseInt(this.position[1])){
                 this.unitOn = true;
-                this.unit = units[1][i].sprite;
+                this.unit = [1,i];
                 this.type = 0;
                 this.isEnemy = true;
+                this.sprite = units[1][i].sprite;  
+                tempIDE = [1,i];
             }
         }
 
@@ -198,15 +293,25 @@ function Tile(pos, ide){
             this.treasure = 0;
         }
 
-        if(this.unitOn){
+        if(this.unitOn || this.treasure != 0){
             var uni = document.createElement("IMG");
             uni.className = "unit";
             uni.style.left = 21 +  ((this.position[1] % 2 * -50) + (this.position[0] * 52 * 2)) + "px";
-            uni.style.top = 23 +  (this.position[1] * 88) + "px";
+            uni.style.top = 13 +  (this.position[1] * 88) + "px";
             uni.draggable = false;
-            uni.src = this.unit;    
+            uni.src = this.sprite;    
             uni.id = "unit" + this.id;
             uni.style.display = "none";
+
+            var bar = document.createElement("div");
+            bar.className = "bar";
+            bar.style.left = 21 +  ((this.position[1] % 2 * -50) + (this.position[0] * 52 * 2)) + "px";
+            bar.style.top = 85 +  (this.position[1] * 88) + "px";
+            bar.draggable = false;
+            bar.id = "bar" + this.id;
+            bar.style.width = ((units[tempIDE[0]][tempIDE[1]].HP / units[tempIDE[0]][tempIDE[1]].maxHP) * 64) + "px";
+            bar.style.display = "none";
+            document.getElementById("hexTable").appendChild(bar);
             
             document.getElementById("hexTable").appendChild(uni);
         }
@@ -248,9 +353,11 @@ for(var x = 0; x < maxXHex; x++){
         
         hex.onclick = function () {
             var coordHere = this.id.substring(3).split(" ");
-            if(coordinates[coordHere[0]][coordHere[1]].canStep){
+            if(coordinates[coordHere[0]][coordHere[1]].canStep && notDownFor > 0){
                 units[0][0].position[0] = parseInt(coordHere[0]);
                 units[0][0].position[1] = parseInt(coordHere[1]);
+                coordinates[units[0][0].position[0]][units[0][0].position[1]].unitOn = true;
+                coordinates[units[0][0].position[0]][units[0][0].position[1]].unit = [0,0];
                 doMov();
             }
         }
@@ -354,6 +461,36 @@ var getMov = function(current, rec, type, first){
     if(coordinates[goXY[0] - 1][goXY[1]].passable){getMov([goXY[0] - 1,goXY[1]], rec, type, false)} else {coordinates[goXY[0] - 1][goXY[1]].seen = true};
 }
 
+
+var getRange = function(current, rec){
+    if(rec == -1) return;
+
+    var goXY = [];
+    goXY[0] = current[0];
+    goXY[1] = current[1];
+    
+    if(coordinates[goXY[0]][goXY[1]].isEnemy){
+        coordinates[goXY[0]][goXY[1]].attackable = true;
+    }
+
+    rec--;
+
+    if(goXY[1] % 2 == 0){
+        if(coordinates[goXY[0]][goXY[1] - 1].type != 1){getRange([goXY[0],goXY[1] - 1], rec  )}
+        if(coordinates[goXY[0] + 1][goXY[1] + 1].type != 1){getRange([goXY[0] + 1,goXY[1] + 1], rec )}
+        if(coordinates[goXY[0] + 1][goXY[1] - 1].type != 1){getRange([goXY[0] + 1,goXY[1] - 1], rec )} 
+        if(coordinates[goXY[0]][goXY[1] + 1].type != 1){getRange([goXY[0],goXY[1] + 1], rec )} 
+    } else {
+        if(coordinates[goXY[0] - 1][goXY[1] - 1].type != 1){getRange([goXY[0] - 1,goXY[1] - 1], rec  )} 
+        if(coordinates[goXY[0]][goXY[1] + 1].type != 1){getRange([goXY[0],goXY[1] + 1], rec )}
+        if(coordinates[goXY[0]][goXY[1] - 1].type != 1){getRange([goXY[0],goXY[1] - 1], rec )} 
+        if(coordinates[goXY[0] - 1][goXY[1] + 1].type != 1){getRange([goXY[0] - 1,goXY[1] + 1], rec )} 
+    }
+
+    if(coordinates[goXY[0] + 1][goXY[1]].type != 1){getRange([goXY[0] + 1,goXY[1]], rec )} 
+    if(coordinates[goXY[0] - 1][goXY[1]].type != 1){getRange([goXY[0] - 1,goXY[1]], rec )} 
+}
+
 var genMove = function(pos){
     var curPos = [];
     curPos[0] = pos[0];
@@ -410,6 +547,41 @@ for (var x = 0; x < maxXHex; x++){
     }
 }
 
+var treaCol = function(trc){
+    messages.push("New Treasure/You've collected a new Treasure! (" + trc + ")/OK/1")
+
+    var trea = document.createElement("IMG");
+    trea.draggable = false;
+    trea.src = "treasures\\" + trc + ".png";
+    trea.className = "treasure";
+    trea.id = "treasures" + trc;
+
+    trea.style.bottom =  "20px";
+    trea.style.left =  "20px";
+
+    trea.addEventListener('mouseover', function (e) {
+        var idec = this.src.substring(69);
+        idec = parseInt(idec.split(".")[0]);
+
+        downTr = idec;
+        down = "trea";
+    });
+
+    var cont = true;
+    for(var i = firstItemSlot; cont && i < firstItemSlot + itemSlots; i++){
+        if(cols[i] == 0){
+            cols[i] = trc;
+            treasuresCol[trc] = i;
+            cont = false;
+        }
+    }
+    
+    document.body.appendChild(trea);
+
+    treasuresCollected.push(trc);
+    treasuresCol.push(trc);
+}
+
 /*coordinates[testRed[0]][testRed[1]] = 1;
 coordinates[getHex([testRed[0], testRed[1]], "dr")[0]][getHex([testRed[0], testRed[1]], "dr")[1]] = 2; 
 coordinates[getHex([testRed[0], testRed[1]], "dl")[0]][getHex([testRed[0], testRed[1]], "dl")[1]] = 2;
@@ -428,25 +600,26 @@ var doMov = function(){
         coordinates[units[0][0].position[0] + 1][units[0][0].position[1]].type = 0;
     }
 
+    $(".unit").remove();
+    $(".bar").remove();
+    
     for(var i = 0; i < units[1].length; i++){
         units[1][i].mov();
     }
+    
+    var isEmpty = false;
+    for(var i = firstItemSlot; i < firstItemSlot + itemSlots; i++){
+        if(cols[i] == 0){
+            isEmpty = true;
+        }
+    }
 
-    $(".unit").remove();
-
-    if(coordinates[units[0][0].position[0]][units[0][0].position[1]].treasure != 0){
+    if(coordinates[units[0][0].position[0]][units[0][0].position[1]].treasure != 0 && isEmpty){
         var trCol = coordinates[units[0][0].position[0]][units[0][0].position[1]].treasure;
         coordinates[units[0][0].position[0]][units[0][0].position[1]].treasure = 0;
-        messages.push("New Treasure/You've collected a new Treasure! (" + trCol + ")/OK/1")
-
-        var trea = document.createElement("IMG");
-        trea.draggable = false;
-        trea.src = "treasures\\" + trCol + ".png";
-        trea.className = "treasure";
-        
-        document.getElementById("bookmarks").appendChild(trea);
-
-        treasuresCollected.push(trCol);
+        treaCol(trCol);
+    } else if(coordinates[units[0][0].position[0]][units[0][0].position[1]].treasure != 0){
+        messages.push("Oops!/You're out of empty slots!!/Oh/1")
     }
 
     for(var x = 0; x < maxXHex; x++){
@@ -454,9 +627,12 @@ var doMov = function(){
             coordinates[x][y].update();
         }
     }
-    
-    getMov([units[0][0].position[0], units[0][0].position[1]], 4, 0, true);
+
     getMov([units[0][0].position[0], units[0][0].position[1]], 2, 1, true);
+    getMov([units[0][0].position[0], units[0][0].position[1]], 4, 0, true);
+    getMov([units[0][0].position[0], units[0][0].position[1]], 4, 0, true);
+    getRange([units[0][0].position[0], units[0][0].position[1]], 1);
+
     
     rep = 0;
     var uncTotal = 0;
@@ -468,8 +644,11 @@ var doMov = function(){
             if(coordinates[x][y].uncovered){
                 uncTotal++;
                 document.getElementById("hex" + x + " " + y).src = "backUncovered.png";
-                if(coordinates[x][y].unitOn && (coordinates[x][y].seen || !coordinates[x][y].isEnemy)){
+                if(coordinates[x][y].treasure != 0 || (coordinates[x][y].unitOn && (coordinates[x][y].seen || !coordinates[x][y].isEnemy))){
                     document.getElementById("unit" + rep).style.display = "block";
+                }
+                if((coordinates[x][y].unitOn && (coordinates[x][y].seen || !coordinates[x][y].isEnemy))){
+                    document.getElementById("bar" + rep).style.display = "block";
                 }
             }
             if(coordinates[x][y].type == 1 && coordinates[x][y].uncovered){
@@ -482,6 +661,9 @@ var doMov = function(){
                 document.getElementById("hex" + x + " " + y).src = "backBlue.png";
             }
             if(coordinates[x][y].isEnemy && coordinates[x][y].seen){
+                document.getElementById("hex" + x + " " + y).src = "hexRed.png";
+            }
+            if(coordinates[x][y].attackable){
                 document.getElementById("hexback" + x + " " + y).src = "frontRed.png";
                 document.getElementById("hexback" + x + " " + y).style.zIndex = 3;
             } else {
@@ -500,3 +682,4 @@ var doMov = function(){
 doMov();
 doMov();
 turnCount--;
+goToMain();

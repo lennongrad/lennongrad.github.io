@@ -13,9 +13,27 @@
 <body>
     <div id="front"></div>
 
-    <div id="bookmarks"><div id="turnCount" onclick="goToMain()"></div></div>
+    <div id="inventory">
+        <div id="inventoryTop"></div>
+        <div id="inventoryBottom">
+            <div class="col" id="col0" style="top: 25px; left:25px; position:absolute"></div>
+            <div class="col" id="col1" style="top: 95px; left:25px; position:absolute"></div>
+            <div class="col" id="col2" style="top: 165px; left:25px; position:absolute"></div>
+             <div class="col" id="col3" style="top: 235px; left:25px; position:absolute"></div>
+        </div>
+    </div>
+    
 
-    <div id="boxholder">
+    <div id="bookmarks">
+        <div id="bookmarksTop">
+
+        </div>
+         <div id="bookmarksBottom">
+                <div id="turnCount" onclick="goToMain()"></div>
+         </div>
+    </div>
+
+    <div id="boxholder" style="top:50px;">
         <div id="boxTop"></div>
         <div id="boxBottom">
             <div id="boxText"></div>
