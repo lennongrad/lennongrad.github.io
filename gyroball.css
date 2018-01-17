@@ -24,7 +24,7 @@ body{
     height:92px;
     width:392px;
     background-color:white;
-    z-index:5;
+    z-index:2;
 }
 
 #inventoryBottom{
@@ -38,6 +38,10 @@ body{
     background-image: url("boxTop.png");
     height:21px;
     width:392px;
+    padding-left:7px;
+    padding-top:5px;
+    color:white;
+    font-size:20px;
     background-size: cover;
 }
 
@@ -61,14 +65,15 @@ body{
 
 .treasure{
     display:inline-block;
+    z-index:5;
 }
 
 #turnCount{
     position:absolute;
-    right:5px;
-    color:white;
+    right:25px;
+    color:black;
     font-size:40px;
-    top:10px;
+    top:22px;
     font-weight:bold;
     font-family:Arial, Helvetica, sans-serif;
 }
@@ -91,7 +96,7 @@ body{
 }
 
 #bookmarksTop{
-    background-image: url("boxTop.png");
+    background-image: url("boxTopWidth.png");
     height:21px;
     width:100%;
     background-size: cover;

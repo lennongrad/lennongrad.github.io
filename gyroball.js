@@ -61,6 +61,7 @@ window.addEventListener('mousemove', function (e) {
         switch(down){
             case "trea": document.getElementById("treasures" + downTr).style.left = e.clientX - 25 + "px"; document.getElementById("treasures" + downTr).style.top = e.clientY - 25 + "px"; break;
             case "msg": document.getElementById("boxholder").style.left = e.clientX - 150 + "px"; document.getElementById("boxholder").style.top = e.clientY - 50 + "px"; break;
+            case "inv": document.getElementById("inventory").style.left = e.clientX - 150 + "px"; document.getElementById("inventory").style.top = e.clientY - 50 + "px"; break;
             case "scrn": window.scrollTo(scrollX - e.movementX, scrollY - e.movementY); break;
             default: break;
         }
@@ -70,8 +71,13 @@ window.addEventListener('mousemove', function (e) {
 
     if(down != "trea"){
         for(var i = 0; i < treasuresCollected.length; i++){
-            document.getElementById("treasures" + treasuresCollected[i]).style.left = $("#col" + treasuresCol[treasuresCollected[i]]).position().left + "px"; 
-            document.getElementById("treasures" + treasuresCollected[i]).style.top = $("#col" + treasuresCol[treasuresCollected[i]]).position().top + "px";
+            if(treasuresCol[treasuresCollected[i]] < firstItemSlot){
+                document.getElementById("treasures" + treasuresCollected[i]).style.left = $("#col" + treasuresCol[treasuresCollected[i]]).position().left + $("#inventory").position().left + "px"; 
+                document.getElementById("treasures" + treasuresCollected[i]).style.top = $("#col" + treasuresCol[treasuresCollected[i]]).position().top + $("#inventory").position().top + "px";
+            } else {
+                document.getElementById("treasures" + treasuresCollected[i]).style.left = $("#col" + treasuresCol[treasuresCollected[i]]).position().left + "px"; 
+                document.getElementById("treasures" + treasuresCollected[i]).style.top = $("#col" + treasuresCol[treasuresCollected[i]]).position().top + "px";
+            }
         }
     }
 });
@@ -99,6 +105,8 @@ window.addEventListener('mousedown', function (e) {
         down = "msg";
     } else if($('#boxOK').is(":hover")){
         down = "";
+    }else if($("#inventory").is(":hover")){
+        down = "inv";
     }else if(!$(".treasure").is(":hover")){
         down = "scrn";
     }
@@ -161,7 +169,13 @@ var closeBox = function(){
 
 setMessage();
 
+
 var firstItemSlot = document.getElementsByClassName("col").length;
+
+for(var i = 0; i < firstItemSlot; i++){
+    cols[i] = 0;
+}
+
 for(var i = 0; i < itemSlots; i++){
     itemCols++;
     cols[firstItemSlot + i] = 0;
@@ -581,6 +595,8 @@ var treaCol = function(trc){
     treasuresCollected.push(trc);
     treasuresCol.push(trc);
 }
+
+treaCol(1);
 
 /*coordinates[testRed[0]][testRed[1]] = 1;
 coordinates[getHex([testRed[0], testRed[1]], "dr")[0]][getHex([testRed[0], testRed[1]], "dr")[1]] = 2; 
