@@ -14,12 +14,16 @@
     <div id="front"></div>
 
     <div id="inventory">
-        <div id="inventoryTop">Equip</div>
+        <div id="inventoryTop">Equip <span class="toggle" style="right:0px; width:20px; height:20px; color:black; line-height:20px" onclick="invSet('toggle')">X</span></div>
         <div id="inventoryBottom">
             <div class="col" id="col0" style="top: 29px; left:25px; position:absolute"></div>
             <div class="col" id="col1" style="top: 99px; left:25px; position:absolute"></div>
             <div class="col" id="col2" style="top: 169px; left:25px; position:absolute"></div>
              <div class="col" id="col3" style="top: 239px; left:25px; position:absolute"></div>
+             <div style="top: 34px; left:100px; position:absolute; font-size:20px; font-weight:bold"><span id="atkSet"></span> Attack (+<span id="atkBonus">0</span>)<br>(<span id="atkSpecial">none</span>)</div>
+             <div style="top: 104px; left:100px; position:absolute; font-size:20px; font-weight:bold"><span id="defSet"></span> Defense (+<span id="defBonus">0</span>)<br>(<span id="defSpecial">none</span>)</div>
+             <div style="top: 174px; left:100px; position:absolute; font-size:20px; font-weight:bold"><span id="spdSet"></span> Speed (+<span id="spdBonus">0</span>)<br>(<span id="spdSpecial">none</span>)</div>
+             <div style="top: 244px; left:100px; position:absolute; font-size:20px; font-weight:bold"><span id="secSet"></span> Security (+<span id="secBonus">0</span>)<br>(<span id="secSpecial">none</span>)</div>
         </div>
     </div>
     
@@ -29,6 +33,7 @@
 
         </div>
          <div id="bookmarksBottom">
+                <div class="toggle" style="right:20px; bottom:5px" onclick="invSet('toggle')"></div>
                 <div id="turnCount" onclick="goToMain()"></div>
          </div>
     </div>
