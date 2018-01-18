@@ -60,7 +60,9 @@ body{
     width:64px;
     height:64px;
     background-image: url("boxOKCol.png");
-    background-size: cover;
+    background-size: cover, 40px 40px;
+    background-repeat: no-repeat;
+    background-position: center center, center center;
 }
 
 .treasure{
@@ -83,7 +85,9 @@ body{
     height:32px;
     width:32px;
     background-image: url("boxOKCol.png");
-    background-size: cover;
+    background-size: cover, 40px 40px;
+    background-repeat: no-repeat;
+    background-position: center center, center center;
 }
 
 #bookmarks{

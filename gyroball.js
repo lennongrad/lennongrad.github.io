@@ -62,8 +62,8 @@ window.addEventListener('mousemove', function (e) {
         notDownFor = 0;
         switch(down){
             case "trea": document.getElementById("treasures" + downTr).style.left = e.clientX - 25 + "px"; document.getElementById("treasures" + downTr).style.top = e.clientY - 25 + "px"; break;
-            case "msg": document.getElementById("boxholder").style.left = e.clientX - 150 + "px"; document.getElementById("boxholder").style.top = e.clientY - 50 + "px"; break;
-            case "inv": document.getElementById("inventory").style.left = e.clientX - 150 + "px"; document.getElementById("inventory").style.top = e.clientY - 50 + "px"; break;
+            case "msg": document.getElementById("boxholder").style.left = e.clientX - 150 + "px"; document.getElementById("boxholder").style.top = e.clientY - 8 + "px"; break;
+            case "inv": document.getElementById("inventory").style.left = e.clientX - 150 + "px"; document.getElementById("inventory").style.top = e.clientY - 8 + "px"; break;
             case "scrn": window.scrollTo(scrollX - e.movementX, scrollY - e.movementY); break;
             default: break;
         }
@@ -164,7 +164,7 @@ var setMessage = function(){
 }
 
 var closeBox = function(){
-    if(!document.getElementById("boxholder").style.left == "-500px") messageX = document.getElementById("boxholder").style.left;
+    if(!(document.getElementById("boxholder").style.left == "-500px")) messageX = document.getElementById("boxholder").style.left;
     document.getElementById("boxholder").style.left = "-500px";
 
     if(messages.length > 0){
@@ -185,8 +185,14 @@ var invSet = function(toBe){
 
     if(invOn){
         document.getElementById("inventory").style.display = "block";
+        for(var i = 0; i < firstItemSlot; i++){
+            document.getElementById("treasures" + cols[i]).style.display = "block";
+        }
     } else {
         document.getElementById("inventory").style.display = "none";
+        for(var i = 0; i < firstItemSlot; i++){
+            document.getElementById("treasures" + cols[i]).style.display = "none";
+        }
     }
 }
 
@@ -273,6 +279,10 @@ function Unit(pos, spr, ide){
 
         units[first][second].HP += give;
         this.HP += receive;
+
+        if(units[first][second].HP < 1){
+            units[first][second] = new Unit([20,20], "enemyFighter.gif", [first,second])
+        }
     }
 
     this.getAtk = function(){
@@ -650,7 +660,7 @@ for (var x = 0; x < maxXHex; x++){
 }
 
 var treaCol = function(trc){
-    messages.push("New Treasure/You've collected a new Treasure! (" + trc + ")/OK/1")
+    messages.push("New Item/You've collected a new Item! (" + trc + ")/OK/1")
 
     var trea = document.createElement("IMG");
     trea.draggable = false;
