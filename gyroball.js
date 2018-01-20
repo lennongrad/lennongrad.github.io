@@ -269,10 +269,10 @@ function Unit(pos, spr, ide){
             return;
         }
 
-        if(coordinates[newPos[0]][newPos[1]] === undefined){
-            return
+        if(coordinates[newPos[0]] === undefined){
+            return;
         }
-        
+
         if(coordinates[newPos[0]][newPos[1]].unitOn){
             this.battle([coordinates[newPos[0]][newPos[1]].unit[0],coordinates[newPos[0]][newPos[1]].unit[1]]);
         } else {
