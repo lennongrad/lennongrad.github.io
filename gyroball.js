@@ -16,7 +16,7 @@ var allSeen = false;
 var messages = [];
 var messageClosed = false;
 var messageSkip = false;
-messages.push("Welcome to Cybercrawl/This is a Rougelike game made by Lennongrad/Start/1");
+messages.push("Welcome to Cybercrawl/This is a Roguelike game made by Lennongrad/Start/1");
 messages.push("How To Play/Click on green hexagons to move. For now, just collect Treasure/OK/1");
 var messageX = "50px";
 
@@ -59,7 +59,8 @@ notDownFor = 0;
 
 window.addEventListener('mousemove', function (e) {
     if (curDown) {
-        notDownFor = 0;
+        notDownFor = Math.min(notDownFor, 10);
+        notDownFor--;
         switch(down){
             case "trea": document.getElementById("treasures" + downTr).style.left = e.clientX - 25 + "px"; document.getElementById("treasures" + downTr).style.top = e.clientY - 25 + "px"; break;
             case "msg": document.getElementById("boxholder").style.left = e.clientX - 150 + "px"; document.getElementById("boxholder").style.top = e.clientY - 8 + "px"; break;
@@ -87,11 +88,13 @@ window.addEventListener('mousemove', function (e) {
 window.addEventListener('mouseup', function (e) {
     down = "";
 
-    for(var i = 0; i < cols.length; i++){
-        if(collision($("#col" + i),$("#treasures" + downTr)) && cols[i] == 0){
-            cols[treasuresCol[downTr]] = 0;
-            treasuresCol[downTr] = i;
-            cols[i] = downTr;
+    if(downTr != 0){
+        for(var i = 0; i < cols.length; i++){
+            if(collision($("#col" + i),$("#treasures" + downTr)) && cols[i] == 0){
+                cols[treasuresCol[downTr]] = 0;
+                treasuresCol[downTr] = i;
+                cols[i] = downTr;
+            }
         }
     }
 
@@ -107,16 +110,14 @@ window.addEventListener('mousedown', function (e) {
     curDown = true;
     
     if(down != "trea") down = "scrn";
-    
-    if($('#boxholder').is(":hover") && !$('#boxOK').is(":hover")){
-        down = "msg";
-    } else if($('#boxOK').is(":hover")){
-        down = "";
-    }else if($("#inventory").is(":hover")){
-        down = "inv";
-    }else if(!$(".treasure").is(":hover")){
-        down = "scrn";
-    }
+});
+
+document.getElementById("boxholder").addEventListener('mouseover', function (e) {
+    down = "msg";
+});
+
+document.getElementById("inventory").addEventListener('mouseover', function (e) {
+    down = "inv";
 });
 
 window.addEventListener('mouseup', function (e) {
@@ -264,6 +265,14 @@ function Unit(pos, spr, ide){
         if(hX && moved >= 0 && coordinates[p[0]+1][p[1]].type != 1){newPos = [p[0]+1,p[1]]; moved--}   ;
         if(hY && moved >= 0 && coordinates[p[0]-1][p[1]].type != 1){newPos = [p[0]-1,p[1]]; moved--}   ;
 
+        if(newPos[0] <= 0 || newPos[0] >= maxXHex || newPos[1] >= maxYHex || newPos[1] <= 0){
+            return;
+        }
+
+        if(coordinates[newPos[0]][newPos[1]] === undefined){
+            return
+        }
+        
         if(coordinates[newPos[0]][newPos[1]].unitOn){
             this.battle([coordinates[newPos[0]][newPos[1]].unit[0],coordinates[newPos[0]][newPos[1]].unit[1]]);
         } else {
@@ -338,7 +347,7 @@ var units = [];
 units[0] = [];
 units[1] = [];
 units[0][0] = new Unit([7,5], "beanFighter.gif", [0,0])
-units[1][0] = new Unit([9,5], "enemyFighter.gif", [1,0])
+units[1][0] = new Unit([11,5], "enemyFighter.gif", [1,0])
 
 function Tile(pos, ide){
     this.position = [];
@@ -448,7 +457,7 @@ for(var x = 0; x < maxXHex; x++){
         hex.style.marginLeft = ((y % 2 * -50) + (x * 52 * 2)) + "px";
         hex.style.marginTop = (y * 88) + "px";
         hex.draggable = false;
-        hex.id = "hex" + x + " " + y;
+        hex.id = "hex" + x + "_" + y;
         hex.src = "hexGrey.png"    
         
         var hexback = document.createElement("IMG");
@@ -457,18 +466,18 @@ for(var x = 0; x < maxXHex; x++){
         hexback.style.marginTop = (y * 88) + "px";
         hexback.draggable = false;
         hexback.src = "frontBlack.png"   
-        hexback.id = "hexback" + x + " " + y; 
+        hexback.id = "hexback" + x + "_" + y; 
         
         hex.onclick = function () {
-            var coordHere = this.id.substring(3).split(" ");
-            if(coordinates[coordHere[0]][coordHere[1]].canStep && notDownFor > 0){
+            var coordHere = this.id.substring(3).split("_");
+            if(coordinates[parseInt(coordHere[0])][parseInt(coordHere[1])].canStep && !(notDownFor <= 2)){
                 units[0][0].position[0] = parseInt(coordHere[0]);
                 units[0][0].position[1] = parseInt(coordHere[1]);
                 coordinates[units[0][0].position[0]][units[0][0].position[1]].unitOn = true;
                 coordinates[units[0][0].position[0]][units[0][0].position[1]].unit = [0,0];
                 doMov();
                 coordinates[units[0][0].position[0]][units[0][0].position[1]].update();
-            } else if(notDownFor > 0 && coordinates[coordHere[0]][coordHere[1]].attackable){
+            } else if(!(notDownFor <= 2) && coordinates[coordHere[0]][coordHere[1]].attackable){
                 units[0][0].battle([coordinates[parseInt(coordHere[0])][parseInt(coordHere[1])].unit[0],coordinates[parseInt(coordHere[0])][parseInt(coordHere[1])].unit[1]]);
                 doMov();
             }
@@ -784,10 +793,10 @@ var doMov = function(){
     for(var x = 0; x < maxXHex; x++){
         for(var y = 0; y < maxYHex; y++){
             if(allSeen) coordinates[x][y].uncovered = true;
-            document.getElementById("hex" + x + " " + y).src = "backWall.png";
+            document.getElementById("hex" + x + "_" + y).src = "backWall.png";
             if(coordinates[x][y].uncovered){
                 uncTotal++;
-                document.getElementById("hex" + x + " " + y).src = "backUncovered.png";
+                document.getElementById("hex" + x + "_" + y).src = "backUncovered.png";
                 if(coordinates[x][y].treasure != 0 || (coordinates[x][y].unitOn && (coordinates[x][y].seen || !coordinates[x][y].isEnemy))){
                     document.getElementById("unit" + rep).style.display = "block";
                 }
@@ -796,23 +805,23 @@ var doMov = function(){
                 }
             }
             if(coordinates[x][y].type == 1 && coordinates[x][y].uncovered){
-                document.getElementById("hex" + x + " " + y).src = "backBlack.png";
+                document.getElementById("hex" + x + "_" + y).src = "backBlack.png";
             }
             if(coordinates[x][y].seen && coordinates[x][y].type == 0){
-                document.getElementById("hex" + x + " " + y).src = "backSeen.png";
+                document.getElementById("hex" + x + "_" + y).src = "backSeen.png";
             }
             if(coordinates[x][y].canStep){
-                document.getElementById("hex" + x + " " + y).src = "backBlue.png";
+                document.getElementById("hex" + x + "_" + y).src = "backBlue.png";
             }
             if(coordinates[x][y].isEnemy && coordinates[x][y].seen){
-                document.getElementById("hex" + x + " " + y).src = "hexRed.png";
+                document.getElementById("hex" + x + "_" + y).src = "hexRed.png";
             }
             if(coordinates[x][y].attackable){
-                document.getElementById("hexback" + x + " " + y).src = "frontRed.png";
-                document.getElementById("hexback" + x + " " + y).style.zIndex = 3;
+                document.getElementById("hexback" + x + "_" + y).src = "frontRed.png";
+                document.getElementById("hexback" + x + "_" + y).style.zIndex = 3;
             } else {
-                document.getElementById("hexback" + x + " " + y).src = "frontBlack.png";
-                document.getElementById("hexback" + x + " " + y).style.zIndex = 2;
+                document.getElementById("hexback" + x + "_" + y).src = "frontBlack.png";
+                document.getElementById("hexback" + x + "_" + y).style.zIndex = 2;
             }
             rep++;
         }
