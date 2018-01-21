@@ -8,16 +8,16 @@
     <!-- <link rel="icon" href="faviconspacers.ico" type="image/x-icon"><script> -->
 </script>
 </head>
-<body>
+<body id="body">
     <div id="front"></div>
 
-    <div id="inventory">
+    <div id="inventory" style="right:15px; top:15px;">
         <div id="inventoryTop">Equip <span class="toggle" style="right:0px; width:20px; height:20px; color:black; line-height:20px; " onclick="invSet('toggle')">X</span></div>
         <div id="inventoryBottom">
-            <div class="col" id="col0" style="top: 29px; left:25px; position:absolute;  background-image: url('boxOKCol.png'), url('cyberIcons/attack.ico');"></div>
-            <div class="col" id="col1" style="top: 99px; left:25px; position:absolute;  background-image: url('boxOKCol.png'), url('cyberIcons/defense.ico');"></div>
-            <div class="col" id="col2" style="top: 169px; left:25px; position:absolute;  background-image: url('boxOKCol.png'), url('cyberIcons/speed.ico');"></div>
-             <div class="col" id="col3" style="top: 239px; left:25px; position:absolute;  background-image: url('boxOKCol.png'), url('cyberIcons/security.ico');"></div>
+            <div class="col" id="col1" style="top: 29px; left:25px; position:absolute;  background-image: url('boxOKCol.png'), url('cyberIcons/attack.ico');"></div>
+            <div class="col" id="col2" style="top: 99px; left:25px; position:absolute;  background-image: url('boxOKCol.png'), url('cyberIcons/defense.ico');"></div>
+            <div class="col" id="col3" style="top: 169px; left:25px; position:absolute;  background-image: url('boxOKCol.png'), url('cyberIcons/speed.ico');"></div>
+             <div class="col" id="col4" style="top: 239px; left:25px; position:absolute;  background-image: url('boxOKCol.png'), url('cyberIcons/security.ico');"></div>
              <div style="top: 34px; left:100px; position:absolute; font-size:20px; font-weight:bold;"><span id="atkSet"></span> Attack (+<span id="atkBonus">0</span>)<br>(<span id="atkSpecial">none</span>)</div>
              <div style="top: 104px; left:100px; position:absolute; font-size:20px; font-weight:bold"><span id="defSet"></span> Defense (+<span id="defBonus">0</span>)<br>(<span id="defSpecial">none</span>)</div>
              <div style="top: 174px; left:100px; position:absolute; font-size:20px; font-weight:bold"><span id="spdSet"></span> Speed (+<span id="spdBonus">0</span>)<br>(<span id="spdSpecial">none</span>)</div>
@@ -30,13 +30,15 @@
     <div id="bookmarks">
         <div id="bookmarksTop">
 
+            <div class="col" id="col0" style="bottom: 8px; right:95px; position:fixed;  background-image: url('boxOKCol.png'), url('cyberIcons/trash.ico');"></div>
+
         </div>
          <div id="bookmarksBottom">
                 <div id="turnCount" onclick="goToMain()"></div>
          </div>
     </div>
 
-    <div id="boxholder" style="top:50px;">
+    <div id="boxholder" style="top:25px; left:25px">
         <div id="boxTop"></div>
         <div id="boxBottom">
             <div id="boxText"></div>

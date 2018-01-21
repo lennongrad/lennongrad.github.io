@@ -13,14 +13,12 @@ body{
     z-index:6;
     background-image: url("computerscreen.jpeg");
     background-size:cover;
-    opacity:.4;   
+    opacity:.35;   
     pointer-events: none;
 }
 
 #inventory{
     position:fixed;
-    top:30px;
-    right:30px;
     height:92px;
     width:392px;
     background-color:white;
@@ -50,6 +48,16 @@ body{
     z-index:6;
     background-color:red;
     height:5px;
+    box-shadow:2px 2px black;
+    border:1px solid black;
+}
+
+.bar2{
+    position:absolute;
+    z-index:6;
+    background-color:blue;
+    height:5px;
+    box-shadow:2px 2px black;
     border:1px solid black;
 }
 

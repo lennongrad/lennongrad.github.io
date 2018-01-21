@@ -3,28 +3,32 @@ var maxYHex = 41;
 var testRed = [7,5];
 
 var notMapMess = true;
-var treasuresCollected = [];
-var treasuresCol = [];
+var items = [];
 var treasures = [];
-var cols = [];
+var itemInSlot = [];
 
-var itemSlots = 3;
-var itemCols = 10;
+var invSlots = 3;
+var itemitemInSlot = 10;
 
 var allSeen = false;
+
+var isShift = false;
 
 var messages = [];
 var messageClosed = false;
 var messageSkip = false;
 messages.push("Welcome to Cybercrawl/This is a Roguelike game made by Lennongrad/Start/1");
-messages.push("How To Play/Click on green hexagons to move. For now, just collect Treasure/OK/1");
-var messageX = "50px";
+messages.push("How To Play/Click on green hexagons to move./OK/1");
+messages.push("How To Play/Attack enemies by clicking on them when adjacent/OK/1");
+messages.push("How To Play/Click on items and drag them to equip/OK/1");
+messages.push("How To Play/Your red bar is your RAM/OK/1");
+messages.push("How To Play/Your blue bar is your Purity/OK/1");
+var messageX = "55px";
 
 var invOn = true;
 
 var scale = 1;
 document.getElementById("hexTable").style.transform = "scale(" + scale + ", " + scale + ")";
-
 
 window.onload = function() {
 
@@ -54,15 +58,15 @@ window.onload = function() {
 
 var curYPos, curXPos, curDown, down, downTr, notDownFor;
 down = "";
-downTr = 0;
+downTr = -1;
 notDownFor = 0;
 
 window.addEventListener('mousemove', function (e) {
     if (curDown) {
-        notDownFor = Math.min(notDownFor, 10);
+        notDownFor = Math.min(notDownFor, 14);
         notDownFor--;
         switch(down){
-            case "trea": document.getElementById("treasures" + downTr).style.left = e.clientX - 25 + "px"; document.getElementById("treasures" + downTr).style.top = e.clientY - 25 + "px"; break;
+            case "trea": break;
             case "msg": document.getElementById("boxholder").style.left = e.clientX - 150 + "px"; document.getElementById("boxholder").style.top = e.clientY - 8 + "px"; break;
             case "inv": document.getElementById("inventory").style.left = e.clientX - 150 + "px"; document.getElementById("inventory").style.top = e.clientY - 8 + "px"; break;
             case "scrn": window.scrollTo(scrollX - e.movementX, scrollY - e.movementY); break;
@@ -72,36 +76,22 @@ window.addEventListener('mousemove', function (e) {
         notDownFor++;
     }
 
-    if(down != "trea"){
-        for(var i = 0; i < treasuresCollected.length; i++){
-            if(treasuresCol[treasuresCollected[i]] < firstItemSlot){
-                document.getElementById("treasures" + treasuresCollected[i]).style.left = $("#col" + treasuresCol[treasuresCollected[i]]).position().left + $("#inventory").position().left + "px"; 
-                document.getElementById("treasures" + treasuresCollected[i]).style.top = $("#col" + treasuresCol[treasuresCollected[i]]).position().top + $("#inventory").position().top + "px";
+    if(down == "trea"){
+        document.getElementById("item_" + downTr).style.left = e.clientX - 25 + "px"; document.getElementById("item_" + downTr).style.top = e.clientY - 25 + "px"; 
+    } else {
+        for(var i = 0; i < items.length; i++){
+            if(items[i].location < firstInvSlot && items[i].location != 0){
+                document.getElementById("item_" + i).style.left = $("#col" + items[i].location).position().left + $("#inventory").position().left + "px"; 
+                document.getElementById("item_" + i).style.top = $("#col" + items[i].location).position().top + $("#inventory").position().top + "px";
             } else {
-                document.getElementById("treasures" + treasuresCollected[i]).style.left = $("#col" + treasuresCol[treasuresCollected[i]]).position().left + "px"; 
-                document.getElementById("treasures" + treasuresCollected[i]).style.top = $("#col" + treasuresCol[treasuresCollected[i]]).position().top + "px";
+                document.getElementById("item_" + i).style.left = $("#col" + items[i].location).position().left + "px"; 
+                document.getElementById("item_" + i).style.top = $("#col" + items[i].location).position().top + "px";
             }
         }
     }
 });
 
 window.addEventListener('mouseup', function (e) {
-    down = "";
-
-    if(downTr != 0){
-        for(var i = 0; i < cols.length; i++){
-            if(collision($("#col" + i),$("#treasures" + downTr)) && cols[i] == 0){
-                cols[treasuresCol[downTr]] = 0;
-                treasuresCol[downTr] = i;
-                cols[i] = downTr;
-            }
-        }
-    }
-
-    units[0][0].getAtk();
-    units[0][0].getDef();
-    units[0][0].getSpd();
-    units[0][0].getSec();
 })
 
 window.addEventListener('mousedown', function (e) {
@@ -113,11 +103,11 @@ window.addEventListener('mousedown', function (e) {
 });
 
 document.getElementById("boxholder").addEventListener('mouseover', function (e) {
-    down = "msg";
+    //down = "msg";
 });
 
 document.getElementById("inventory").addEventListener('mouseover', function (e) {
-    down = "inv";
+    //down = "inv";
 });
 
 window.addEventListener('mouseup', function (e) {
@@ -127,9 +117,15 @@ window.addEventListener('mouseup', function (e) {
 document.addEventListener('keydown', function (event) {
     if (event.keyCode == 13) {
         closeBox();
-    } else   if (event.keyCode == 17) {
+    } else if(event.keyCode == 16){
+        isShift = true;
+    }else if (event.keyCode == 17) {
         allSeen = !allSeen;
     }
+})
+
+$("#body").keyup(function(){
+    isShift = false;
 })
 
 function collision($div1, $div2) {
@@ -155,7 +151,7 @@ var setMessage = function(){
     var message = messages.shift();
     message = message.split("/");
     
-    document.getElementById("boxTop").innerHTML = message[0];
+    document.getElementById("boxTop").innerHTML = message[0].replace(/ /g, "_").toLowerCase() + ".txt";
     document.getElementById("boxText").innerHTML = message[1];
     document.getElementById("boxOK").innerHTML = message[2];
 
@@ -186,36 +182,44 @@ var invSet = function(toBe){
 
     if(invOn){
         document.getElementById("inventory").style.display = "block";
-        for(var i = 0; i < firstItemSlot; i++){
-            document.getElementById("treasures" + cols[i]).style.display = "block";
+        for(var i = 0; i < firstInvSlot; i++){
+            document.getElementById("item_" + itemInSlot[i]).style.display = "block";
         }
     } else {
         document.getElementById("inventory").style.display = "none";
-        for(var i = 0; i < firstItemSlot; i++){
-            document.getElementById("treasures" + cols[i]).style.display = "none";
+        for(var i = 0; i < firstInvSlot; i++){
+            document.getElementById("item_" + itemInSlot[i]).style.display = "none";
         }
     }
 }
 
 invSet(true);
 
-var firstItemSlot = document.getElementsByClassName("col").length;
+var firstInvSlot = document.getElementsByClassName("col").length;
 
-for(var i = 0; i < firstItemSlot; i++){
-    cols[i] = 0;
+for(var i = 0; i < firstInvSlot; i++){
+    itemInSlot[i] = -1;
 }
 
-for(var i = 0; i < itemSlots; i++){
-    itemCols++;
-    cols[firstItemSlot + i] = 0;
+for(var i = 0; i < invSlots; i++){
+    itemitemInSlot++;
+    itemInSlot[firstInvSlot + i] = -1;
 
     var iC = document.createElement("div");
     iC.className = "col";
-    iC.id = "col" + (firstItemSlot + i);
+    iC.id = "col" + (firstInvSlot + i);
     iC.style.left = (20 + 70 * i) + "px";
     iC.style.bottom = "10px";
 
     document.body.appendChild(iC);
+}
+
+function Item(idT, spriteT, locationT, extensionT, powT){
+    this.id = idT;
+    this.sprite = spriteT;
+    this.location = locationT;
+    this.extension = extensionT;
+    this.power = powT;
 }
 
 function Unit(pos, spr, ide){
@@ -232,10 +236,13 @@ function Unit(pos, spr, ide){
     // battle
     this.maxHP = 10;
     this.HP = this.maxHP;
+    this.maxEN = 10;
+    this.EN = this.maxEN;
     this.baseAtk = Math.ceil(Math.random() * 3);
     this.baseDef = Math.ceil(Math.random() * 3);
     this.baseSpd = Math.ceil(Math.random() * 3);
     this.baseSec = Math.ceil(Math.random() * 3);
+
 
     this.getPos = function(){
         return [21 +  ((this.position[1] % 2 * -50) + (this.position[0] * 52 * 2)), 23 +  (this.position[1] * 88)];
@@ -280,17 +287,30 @@ function Unit(pos, spr, ide){
         }
     }
 
+    this.die = function(){
+        units[this.id[0]].splice(this.id[1], 1);
+    }
+
+    this.respawn = function(){
+        this.position = [11,5];
+        this.HP = this.maxHP;
+    }
+
     this.battle = function(targ){
         var first = targ[0];
         var second = targ[1];
         var receive = Math.min(this.getDef() - units[first][second].getAtk(), 0);
         var give = Math.min(units[first][second].getDef() - this.getAtk(), 0);
 
+        units[first][second].EN += give * .5 * Math.max(.2, (units[first][second].HP / units[first][second].maxHP));
+        this.EN += receive * .5 * Math.max(.2, (this.HP / this.maxHP));
         units[first][second].HP += give;
         this.HP += receive;
 
-        if(units[first][second].HP < 1){
-            units[first][second] = new Unit([20,20], "enemyFighter.gif", [first,second])
+        if(units[first][second].HP < 1 && units[first][second].EN > 0){
+            units[first][second].respawn();
+        } else if (units[first][second].HP < 1){
+            units[first][second].die();
         }
     }
 
@@ -298,8 +318,14 @@ function Unit(pos, spr, ide){
         this.addedAtk = 0;
         if(this.id[0] == 0 && this.id[1] == 0){
             var numbEq = 0;
-            if(cols[0] != 0) numbEq = 1;
-            this.addedAtk = (String(cols[0]).match(/1/g) || []).length + (numbEq * 1);
+            if(itemInSlot[1] != -1){
+                 numbEq = items[itemInSlot[1]].power;
+                 if(items[itemInSlot[1]].extension == ".png"){
+                     this.addedAtk = Math.floor(numbEq * 3);
+                 } else {
+                     this.addedAtk = Math.floor(numbEq);
+                 }
+                }
             document.getElementById("atkBonus").innerHTML = this.addedAtk;
             document.getElementById("atkSet").innerHTML = this.baseAtk + this.addedAtk;
         }
@@ -310,8 +336,14 @@ function Unit(pos, spr, ide){
         this.addedDef = 0;
         if(this.id[0] == 0 && this.id[1] == 0){
             var numbEq = 0;
-            if(cols[1] != 0) numbEq = 1;
-            this.addedDef = (String(cols[1]).match(/2/g) || []).length + (numbEq * 1);
+            if(itemInSlot[2] != -1){ 
+                numbEq = items[itemInSlot[2]].power;
+                if(items[itemInSlot[2]].extension == ".jpg"){
+                    this.addedDef = Math.floor(numbEq * 3);
+                } else {
+                    this.addedDef = Math.floor(numbEq);
+                }
+            }
             document.getElementById("defBonus").innerHTML = this.addedDef;
             document.getElementById("defSet").innerHTML = this.baseDef + this.addedDef;
         }
@@ -322,8 +354,14 @@ function Unit(pos, spr, ide){
         this.addedSpd = 0;
         if(this.id[0] == 0 && this.id[1] == 0){
             var numbEq = 0;
-            if(cols[2] != 0) numbEq = 1;
-            this.addedSpd = (String(cols[2]).match(/3/g) || []).length + (numbEq * 1);
+            if(itemInSlot[3] != -1){
+                numbEq = items[itemInSlot[3]].power;
+                if(items[itemInSlot[3]].extension == ".gif"){
+                    this.addedSpd = Math.floor(numbEq * 3);
+                } else {
+                    this.addedSpd = Math.floor(numbEq);
+                }
+            }
             document.getElementById("spdBonus").innerHTML = this.addedSpd;
             document.getElementById("spdSet").innerHTML = this.baseSpd + this.addedSpd;
         }
@@ -334,8 +372,14 @@ function Unit(pos, spr, ide){
         this.addedSec = 0;
         if(this.id[0] == 0 && this.id[1] == 0){
             var numbEq = 0;
-            if(cols[3] != 0) numbEq = 1;
-            this.addedSec = (String(cols[3]).match(/4/g) || []).length + (numbEq * 1);
+            if(itemInSlot[4] != -1){
+                numbEq = items[itemInSlot[4]].power;
+                if(items[itemInSlot[4]].extension == ".tif"){
+                    this.addedSec = Math.floor(numbEq * 3);
+                } else {
+                    this.addedSec = Math.floor(numbEq);
+                }
+            }
             document.getElementById("secBonus").innerHTML = this.addedSec;
             document.getElementById("secSet").innerHTML = this.baseSec + this.addedSec;
         }
@@ -347,7 +391,7 @@ var units = [];
 units[0] = [];
 units[1] = [];
 units[0][0] = new Unit([7,5], "beanFighter.gif", [0,0])
-units[1][0] = new Unit([11,5], "enemyFighter.gif", [1,0])
+units[1][0] = new Unit([8,5], "enemyFighter.gif", [1,0])
 
 function Tile(pos, ide){
     this.position = [];
@@ -378,7 +422,7 @@ function Tile(pos, ide){
         this.attackable = false;
 
         if(this.treasure != 0){
-            this.sprite = "treasures\\" + 0 + ".png";
+            this.sprite = "cyberIcons\\chest.ico";
         }
 
         var tempIDE = [0,0];
@@ -422,13 +466,23 @@ function Tile(pos, ide){
 
             var bar = document.createElement("div");
             bar.className = "bar";
-            bar.style.left = 21 +  ((this.position[1] % 2 * -50) + (this.position[0] * 52 * 2)) + "px";
-            bar.style.top = 85 +  (this.position[1] * 88) + "px";
+            bar.style.left = 19 +  ((this.position[1] % 2 * -50) + (this.position[0] * 52 * 2)) + "px";
+            bar.style.top = 79 +  (this.position[1] * 88) + "px";
             bar.draggable = false;
             bar.id = "bar" + this.id;
             bar.style.width = ((units[tempIDE[0]][tempIDE[1]].HP / units[tempIDE[0]][tempIDE[1]].maxHP) * 64) + "px";
             bar.style.display = "none";
             document.getElementById("hexTable").appendChild(bar);
+
+            var bar2 = document.createElement("div");
+            bar2.className = "bar2";
+            bar2.style.left = 19 +  ((this.position[1] % 2 * -50) + (this.position[0] * 52 * 2)) + "px";
+            bar2.style.top = 86 +  (this.position[1] * 88) + "px";
+            bar2.draggable = false;
+            bar2.id = "2bar" + this.id;
+            bar2.style.width = ((units[tempIDE[0]][tempIDE[1]].EN / units[tempIDE[0]][tempIDE[1]].maxEN) * 64) + "px";
+            bar2.style.display = "none";
+            document.getElementById("hexTable").appendChild(bar2);
             
             document.getElementById("hexTable").appendChild(uni);
         }
@@ -470,7 +524,7 @@ for(var x = 0; x < maxXHex; x++){
         
         hex.onclick = function () {
             var coordHere = this.id.substring(3).split("_");
-            if(coordinates[parseInt(coordHere[0])][parseInt(coordHere[1])].canStep && !(notDownFor <= 2)){
+            if(coordinates[parseInt(coordHere[0])][parseInt(coordHere[1])].canStep && !(notDownFor <= 4)){
                 units[0][0].position[0] = parseInt(coordHere[0]);
                 units[0][0].position[1] = parseInt(coordHere[1]);
                 coordinates[units[0][0].position[0]][units[0][0].position[1]].unitOn = true;
@@ -670,62 +724,102 @@ for (var x = 0; x < maxXHex; x++){
 
 var treaCol = function(trc){
     messages.push("New Item/You've collected a new Item! (" + trc + ")/OK/1")
+    var itemID = items.length;
+    var itemLocations = 0;
 
     var trea = document.createElement("IMG");
     trea.draggable = false;
     trea.src = "treasures\\" + trc + ".png";
     trea.className = "treasure";
-    trea.id = "treasures" + trc;
+    trea.id = "item_" + itemID;
 
     trea.style.bottom =  "20px";
     trea.style.left =  "20px";
 
-    trea.addEventListener('mouseover', function (e) {
-        var idec = this.src.substring(69);
-        idec = parseInt(idec.split(".")[0]);
+    trea.addEventListener('click', function (e) {
+        if(isShift){
+            forDbl(this.id);
+            return;
+        }
 
-        downTr = idec;
-        down = "trea";
+        if(down != "trea"){
+            var idec = this.id;
+            idec = parseInt(idec.split("_")[1]);
+    
+            downTr = idec;
+            down = "trea";
+        } else {
+            down = "";
+        
+            if(downTr != -1){
+                for(var i = 0; i < itemInSlot.length; i++){
+                    if(collision($("#col" + i),$("#item_" + downTr)) && itemInSlot[i] == -1){
+                        itemInSlot[items[downTr].location] = -1;
+                        items[downTr].location = i;
+                        itemInSlot[i] = downTr;
+                    }
+                }
+            }
+        
+            units[0][0].getAtk();
+            units[0][0].getDef();
+            units[0][0].getSpd();
+            units[0][0].getSec();
+        }
     });
 
     var cont = true;
-    for(var i = firstItemSlot; cont && i < firstItemSlot + itemSlots; i++){
-        if(cols[i] == 0){
-            cols[i] = trc;
-            treasuresCol[trc] = i;
+    for(var i = firstInvSlot; cont && i < firstInvSlot + invSlots; i++){
+        if(itemInSlot[i] == -1){
+            itemInSlot[i] = itemID;
+            itemLocations = i;
             cont = false;
         }
     }
     
     document.body.appendChild(trea);
 
-    treasuresCollected.push(trc);
-    treasuresCol.push(trc);
+    var randEx = Math.floor(Math.random() * 4);
+    switch(randEx){
+        case 0: randEx = ".png";
+        case 1: randEx = ".jpg";
+        case 2: randEx = ".gif";
+        default: randEx = ".tif";
+    }
 
-    $("#treasures" + trc).dblclick(function (e) {
-        var idec = this.src.substring(69);
-        idec = parseInt(idec.split(".")[0]);
+    var randPow = Math.ceil(Math.random() * 3);
 
-        var tC = treasuresCol[idec];
-        var cont = true;
-        var adder = 0;
-        if(tC < firstItemSlot) adder = firstItemSlot;
+    items.push(new Item(itemID, trc, itemLocations, randEx, randPow));
 
-        for(var i = adder; i < cols.length && cont; i++){
-            if(cols[i] == 0){
-                cols[i] = idec;
-                treasuresCol[idec] = i;
-                cols[tC] = 0;
-                cont = false;
-            }
-        }
-        units[0][0].getAtk();
-        units[0][0].getDef();
-        units[0][0].getSpd();
-        units[0][0].getSec();
-        down = "";
-    });
+    $("#item_" + itemID).dblclick(forDbl);
 }
+
+var forDbl = function (e) {
+    var idec = this.id;
+    if(typeof e != "object"){
+        idec = e;
+    };
+    idec = parseInt(idec.split("_")[1]);
+
+    var tC = items[idec].location;
+    var cont = true;
+    var adder = 1;
+    if(tC < firstInvSlot) adder = firstInvSlot;
+
+    for(var i = adder; i < itemInSlot.length && cont; i++){
+        if(itemInSlot[i] == -1){
+            itemInSlot[i] = idec;
+            items[idec].location = i;
+            itemInSlot[tC] = -1;
+            cont = false;
+        }
+    }
+    units[0][0].getAtk();
+    units[0][0].getDef();
+    units[0][0].getSpd();
+    units[0][0].getSec();
+    down = "";
+};
 
 treaCol(11);
 treaCol(22);
@@ -755,10 +849,11 @@ var doMov = function(){
 
     $(".unit").remove();
     $(".bar").remove();
+    $(".bar2").remove();
     
     var isEmpty = false;
-    for(var i = firstItemSlot; i < firstItemSlot + itemSlots; i++){
-        if(cols[i] == 0){
+    for(var i = firstInvSlot; i < firstInvSlot + invSlots; i++){
+        if(itemInSlot[i] == -1){
             isEmpty = true;
         }
     }
@@ -770,8 +865,9 @@ var doMov = function(){
     } else if(coordinates[units[0][0].position[0]][units[0][0].position[1]].treasure != 0){
         messages.push("Oops!/You're out of empty slots!!/Oh/1")
     }
+
     for(var i = 0; i < units[1].length; i++){
-        units[1][i].mov();
+        if(typeof units[1][i] == "object") units[1][i].mov();
     }
 
     for(var x = 0; x < maxXHex; x++){
@@ -802,6 +898,7 @@ var doMov = function(){
                 }
                 if((coordinates[x][y].unitOn && (coordinates[x][y].seen || !coordinates[x][y].isEnemy))){
                     document.getElementById("bar" + rep).style.display = "block";
+                    document.getElementById("2bar" + rep).style.display = "block";
                 }
             }
             if(coordinates[x][y].type == 1 && coordinates[x][y].uncovered){
@@ -836,3 +933,16 @@ doMov();
 doMov();
 turnCount--;
 goToMain();
+
+var repeat = function(){
+
+    isShift = false;
+        
+    units[0][0].getAtk();
+    units[0][0].getDef();
+    units[0][0].getSpd();
+    units[0][0].getSec();
+}
+
+
+setInterval(repeat, 1000);
