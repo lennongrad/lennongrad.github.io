@@ -1,0 +1,88 @@
+#moneyCount{
+    background-color: grey;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 160px;
+    height: 60px;
+    border-radius: 9px;
+    text-align: right;
+    padding-right:20px;
+    line-height: 60px;
+    font-size:32px;
+}
+
+#cashIcon{
+    height:55px;
+    width:55px;
+    position: absolute;
+    left: 10px
+}
+
+.icon{
+    position: relative;
+    height:55px;
+    width:55px;
+    left:-20px;
+    top: 3px;
+}
+
+.boxText{
+    position: relative;
+    bottom: 13px;
+}
+
+.ball{
+    background-color: grey;
+    width: 160px;
+    height: 60px;
+    border-radius: 9px;
+    text-align: right;
+    padding-right:20px;
+    font-size:32px;
+    margin-top:10px;
+    margin-left: 20px;
+    display: inline-block;
+}
+
+.ball:hover{
+    background-color: darkgrey;
+}
+
+#ballHole{
+    position: fixed;
+    bottom: 10px;
+    left: 50px;
+    width:500px;
+    height:80px;
+    background-color:#111111;
+}
+
+.pokemonSprite{
+    display:inline-block;
+    width:64px;
+    height:64px;
+}
+
+#shake{
+    width:128px;
+    height:128px;
+    position: absolute;
+    left: 500px;
+    top: 500px;
+}
+
+#pokeHolder{
+    background-color: black;
+    border-radius: 20px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width:256px;
+    height: 266px;
+    padding:10px;
+}
+
+body{
+    background-color: #222222;
+}

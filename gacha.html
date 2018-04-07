@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gacha</title>
+    <link rel="stylesheet" href="gacha.css">
+    <link rel="icon" href="treasures/0.png" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+</head>
+<body>
+
+    <div id="moneyCount"> <image id="cashIcon" src="cash.png"/> <span id="coinsCount">6000</span> </div>
+    <div id="ballHole">
+        <div class="ball" id="commonBall" onclick="catchMon(0)"> <image class="icon" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"/> <span class="boxText">20</span> </div>
+        <div class="ball" id="ultraBall" onclick="catchMon(1)"> <image class="icon" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png"/> <span class="boxText">50</span> </div>
+    </div>
+
+    <div id="pokeHolder"></div>
+
+    <script src="gacha.js"></script>
+</body>
+</html>
