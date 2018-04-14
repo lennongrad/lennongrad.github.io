@@ -1,19 +1,50 @@
    
-    var coins = 18;
-    var holder = new Inventory(4);
+    var coins = 1800;
+
+    var holder = new Inventory(8, 1, "pokeHolder", "H");
+    var box = [];
+    box.push(new Inventory(3, 3, "pokeBox", "0"));
+    var fighting = [];
+    fighting.push(new Inventory(1, 1, "F1", "F1"), new Inventory(1, 1, "F2", "F2"));
+
+    var active = 0;
+    var selected = "";
+    var hover = "";
+
+    //alert("POKEH 0".substring(4).split(" "))
+    function remove(id) {
+        var elem = document.getElementById(id);
+        return elem.parentNode.removeChild(elem);
+    }
 
     if (typeof(Storage) !== "undefined") {
-        if(localStorage.getItem("save") != null){
-            var saveString = localStorage.getItem("save").split(" ");
-            coins = saveString[0];
-            holder.contains = saveString[1].split(",");
+        if(localStorage.getItem("saveCoins") != null){
+            coins = localStorage.getItem("saveCoins");
+        }
+        if(localStorage.getItem("saveHolder") != null){
+            holder.contains = localStorage.getItem("saveHolder").split(",");
+        }
+        if(localStorage.getItem("saveBoxes") != null){
+            var saveString = localStorage.getItem("saveBoxes").split(" ");
+            for(var i = 0; i < saveString.length; i++){
+                box[i].contains = saveString[i].split(",");
+            }
+        }
+        if(localStorage.getItem("saveFighting") != null){
+            var saveString = localStorage.getItem("saveFighting").split(" ");
+            for(var i = 0; i < saveString.length; i++){
+                fighting[i].contains = saveString[i].split(",");
+            }
         }
     } else {
     }
     
     var clearMem = function(){
         if (typeof(Storage) !== "undefined") {
-            localStorage.removeItem("save");
+            localStorage.removeItem("saveCoins");
+            localStorage.removeItem("saveHolder");
+            localStorage.removeItem("saveFighting");
+            localStorage.removeItem("saveBoxes");
             window.location.reload();
         } else {
         }
@@ -21,34 +52,81 @@
     
     var saveGame = function() {
         if (typeof(Storage) !== "undefined") {
-            localStorage.setItem("save", coins + " " + holder.contains);
+            localStorage.setItem("saveCoins", coins);
+            localStorage.setItem("saveHolder", holder.contains)
+            var setString = "";
+            for(var i = 0; i < box.length; i++){
+                setString += box[i].contains;
+                if(i != box.length - 1){
+                    setString += " ";
+                }
+            }
+            localStorage.setItem("saveBoxes", setString);
+            setString = "";
+            for(var i = 0; i < fighting.length; i++){
+                setString += fighting[i].contains;
+                if(i != fighting.length - 1){
+                    setString += " ";
+                }
+            }
+            localStorage.setItem("saveFighting", setString);
         } else {
         }
     }
 
     holder.renderMon();
+    for(var i = 0; i < box.length; i++){
+        box[i].renderMon();
+    }
+    for(var i = 0; i < fighting.length; i++){
+        fighting[i].renderMon();
+    }
 
-    function Inventory(size){
-        this.size = size;
-        this.limit = size * size;
+    function Inventory(width, height, place, prefix){
+        this.width = width;
+        this.height = height;
+        this.limit = this.width * this.height;
+        this.prefix = prefix;
 
         this.contains = [];
 
         this.add = function(pokemon){
             this.contains.push(pokemon)
             console.log(this.contains);
+            this.renderMon();
+        }
+
+        this.remove = function(toGo){
+            this.contains.splice(toGo,1);
+            this.renderMon();
         }
 
         this.renderMon = function(){
-            document.getElementById("pokeHolder").innerHTML = "";
+            document.getElementById(place).innerHTML = "";
 
-            for(var i = 1; i <= this.contains.length; i++){       
+            for(var i = 0; i < this.contains.length; i++){
+                if(this.contains[i] == ""){
+                    this.contains.splice(i,1);
+                }
+            }
+
+            for(var i = 1; i <= this.contains.length; i++){  
+                var contain = document.createElement("div");
+                contain.setAttribute("data-tooltip", pD[this.contains[i -1]].name)
+                contain.id = "POKE" + this.prefix + " " + i;
+                contain.className = "POKEC";
+                contain.style.left = 10 + ((i - 1) % (this.width)) * 64 + "px";
+                contain.style.top = 5 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64 + "px";
+
+                contain.onclick = new Function("selected = " + '"' + contain.id + '"; onAClick()');
+                 
                 var newMon = document.createElement("IMG");
                 newMon.className = "pokemonSprite";
-                newMon.id = "POKE" + i;
                 newMon.src = "https://raw.githubusercontent.com/msikma/pokesprite/master/icons/pokemon/regular/" + pD[this.contains[i - 1]].name.toLowerCase() + ".png";
+
+                contain.appendChild(newMon)
                 //newMon.src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + this.contains[i - 1] + ".png";
-                document.getElementById("pokeHolder").appendChild(newMon);
+                document.getElementById(place).appendChild(contain);
             }
         }
 
@@ -65,11 +143,77 @@
     }
     updateCoins();
 
+    var onAClick = function(){
+        var prep = remove(selected);
+        document.getElementById("TEMP").appendChild(prep);
+    }
 
     var shakeOn = false;
 
+    $(document).mousedown(function(){
+        if(selected != ""){
+            var toMove = 0;
+            
+            switch(selected.substring(4).split(" ")[0].substring(0,1)){
+                case "H": toMove = holder.contains[selected.substring(4).split(" ")[1] - 1]; break;
+                case "F": toMove = fighting[selected.substring(5,6) - 1].contains[0]; break;
+                default: toMove = box[selected.substring(4,5)].contains[selected.substring(4).split(" ")[1] - 1];
+            }
+            
+            if(hover == "H" && holder.willAllowAdd(1)){
+                holder.add(toMove);
+            } else if(hover == "H" && !holder.willAllowAdd(1)){
+                return;
+            }
+
+            if(hover.substring(0,1) == "F" && fighting[hover.substring(1,2) - 1].willAllowAdd(1)){
+                fighting[hover.substring(1,2) - 1].add(toMove);
+            } else if(hover.substring(0,1) == "F"){
+                return;
+            }
+
+            if(hover == "0"){
+                if(box[hover].willAllowAdd(1)){
+                    box[hover].add(toMove);
+                } else if(!box[hover].willAllowAdd(1)){
+                    return;
+                }
+            }
+
+            document.getElementById("TEMP").innerHTML = "";
+
+            switch(selected.substring(4).split(" ")[0].substring(0,1)){
+                case "H": holder.remove(selected.substring(4).split(" ")[1] - 1);  holder.renderMon(); break;
+                case "F": fighting[selected.substring(5,6) - 1].remove(selected.substring(4).split(" ")[1] - 1); fighting[selected.substring(4).split(" ")[1] - 1].renderMon(); break;
+                default: box[selected.substring(4).split(" ")[0]].remove(selected.substring(4).split(" ")[1] - 1); box[selected.substring(4).split(" ")[0]].renderMon(); break;
+            }
+            selected = "";
+        }
+
+        if(fighting[0].contains.length > 0 && fighting[1].contains.length > 0){
+            if(pD[fighting[0].contains[0]].stats[0] > pD[fighting[1].contains[0]].stats[0]){
+                fighting[1].remove(0);
+                alert(pD[fighting[0].contains[0]].name + " WINS!")
+            } else {
+                fighting[0].remove(0);
+                alert(pD[fighting[1].contains[0]].name + " WINS!")
+            }
+        }
+
+        saveGame();
+    })
+
+    var moveCount = 0;
+    setInterval(function(){
+        moveCount++;
+        if(moveCount > 100){
+            moveCount = 0;
+            hover = "";
+        }
+    }, 1)
+
     function shake(image){
-        document.getElementById("POKE" + holder.contains.length).style.display = "none";
+        document.getElementById("POKE" + "H " + holder.contains.length).style.display = "none";
 
         shakeOn = true;
         scale = 20;
@@ -105,22 +249,32 @@
         if(scale > 300){
             document.getElementById("shake").style.display = "none";
             shakeOn = false;
-            document.getElementById("POKE" + (holder.contains.length)).style.display = "inline";
+            document.getElementById("POKE" + "H " + (holder.contains.length)).style.display = "inline";
             document.getElementById("shakeBehind").style.display = "none";
         }
     }, 9)
 
-    var rotated = Math.PI / 2 * 3;
+    $(document).mousemove(function(event){
+        moveCount = 0;
+        if(selected != ""){
+            document.getElementById(selected).style.position = "fixed";
+            document.getElementById(selected).style.pointerEvents = "none";
+            document.getElementById(selected).style.left = event.clientX - 30 + "px";
+            document.getElementById(selected).style.top = event.clientY - 30 + "px";
+        }
+    })
+
+    var rotated = 1;
     var active = 1;
     setInterval(function(){
-        rotated += (Math.PI / 256) * Math.sqrt(holder.contains.length + 1) * active;
+        rotated += 1 * active;
         active *= .9997;
         if(active > 5){
             active = 4;
         }
-        document.getElementById("spinny").style.background = "radial-gradient(circle at " + ((Math.cos(rotated) * 70) + 50) + "px " + (50 + (Math.sin(rotated) * 70)) + "px, white 5%, blue 20%, white 25%)";
-        if(rotated / Math.PI > 1.5){
-            rotated = -Math.PI / 2;
+        document.getElementById("spinny").style.width = rotated + "px";
+        if(rotated > 200){
+            rotated = 1;
             coins -= -2;
             updateCoins();
         }

@@ -22,13 +22,20 @@
 }
 
 #spinny{
+    height:20px;
+    background-color:white;
+    cursor: pointer;
+}
+
+#spinnyHolder{
     position: absolute;
     top:30px;
     left:250px;
-    width:100px;
-    height:100px;
-    border-radius: 100%;
-    background-color:white;
+    width:200px;
+    height:20px;
+    border-radius: 2px;
+    background-color:grey;
+    padding: 5px;
     cursor: pointer;
 }
 
@@ -87,6 +94,7 @@
     width:100%;
     height:80px;
     bottom: -2px;
+    z-index:-3;
     background-color:#333333;
     border:2px ridge black;
 }
@@ -98,6 +106,7 @@
     padding-top:-5px;
     border-radius:100%;
     cursor: pointer;
+    z-index:5;
 }
 
 .pokemonSprite:hover{
@@ -119,25 +128,53 @@
     border-radius: 20px;
     position: fixed;
     bottom: 10px;
-    left: 20px;
-    width:286px;
-    height: 286px;
+    left: 350px;
+    z-index:1;
+    width:534px;
+    height: 86px;
     padding:10px;
+}
+
+.pInv{
+    background-image: url(computerscreen.jpeg);
+    background-size:100% 100%;
 }
 
 #pokeHolder{
-    background-image: url(computerscreen.jpeg);
     border:1px solid black;
-    background-size:100% 100%;
     border-radius: 20px;
     position: fixed;
-    width:266px;
-    height: 266px;
+    z-index:1;
+    width:512px;
+    height: 66px;
     padding:10px;
 }
 
-#pokeHolder:after{
-    border:15px solid black;
+.POKEC{
+    position:absolute;
+}
+
+#pokeBoxOut{
+    background-color: #333333;
+    border:2px solid black;
+    border-radius: 20px;
+    position: fixed;
+    bottom: 10px;
+    left: 20px;
+    z-index:0;
+    width:226px;
+    height: 222px;
+    padding:10px;
+}
+
+#pokeBox{
+    border:1px solid black;
+    border-radius: 20px;
+    position: fixed;
+    width:206px;
+    height: 202px;
+    z-index:0;
+    padding:10px;
 }
 
 #boxSel{

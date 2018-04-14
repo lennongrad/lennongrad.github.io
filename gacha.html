@@ -3,6 +3,7 @@
 <head>
     <title>Gacha</title>
     <link rel="stylesheet" href="gacha.css">
+    <link rel="stylesheet" href="tooltip.css">
     <link rel="icon" href="treasures/0.png" type="image/x-icon">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -10,8 +11,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 </head>
 <body>
+        <div id="TEMP" style="z-index:5"></div>
 
-    <div id="bar"></div>
+        
+        <div id="F1" onmouseover="hover = 'F1';" style="position: absolute; width:70px; height: 70px; top: 400px; left: 500px" class="pInv"></div>
+        <div id="F2" onmouseover="hover = 'F2';" style="position: absolute; width:70px; height: 70px; top: 400px; left: 590px" class="pInv"></div>
+    <div id="bar">    </div>
     <div id="boxSel">
         <form>
                 <fieldset style="border: none; padding:none">
@@ -43,7 +48,7 @@
         </form>
     </div>
 
-    <div id="spinny" onclick="active *= 1.1;"></div>
+    <div id="spinnyHolder"  onclick="active *= 1.1;"><div id="spinny"></div></div>
 
     <div id="resetButton" onclick="clearMem()">Reset Memory</div>
 
@@ -56,7 +61,8 @@
         <div class="ball" id="ultraBall" onclick="catchMon(1)"> <image class="icon" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png"/> <span class="boxText">50</span> </div>
     </div>
 
-    <div id="pokeHolderOut"><div id="pokeHolder"></div></div>
+    <div id="pokeHolderOut"><div id="pokeHolder" class="pInv" onmouseover="hover = 'H'"></div></div>
+    <div id="pokeBoxOut"><div id="pokeBox" class="pInv" onmouseover="hover = '0';"></div></div>
 
     <script src="pokeData.js"></script>
     <script src="gacha.js"></script>
