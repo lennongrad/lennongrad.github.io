@@ -1,4 +1,3 @@
-   
     var coins = 1800;
 
     var RIGHT = 1;
@@ -13,6 +12,7 @@
     var active = 0;
     var selected = "";
     var hover = "";
+    var isMoving = false;
 
     var PID = [];
 
@@ -22,23 +22,66 @@
         return elem.parentNode.removeChild(elem);
     }
 
+    var pokemonFromString = function(inputs){
+        var tempArray = inputs.split(",");
+        var outArray = [];
+        for(var i = 0; i < tempArray.length; i++){
+            var holdDat = tempArray[i].split(";");
+            outArray.push(new Pokemon(holdDat[0],holdDat[1]))
+        }
+        return outArray;
+    };
+
+    var fixName = function(name, lower){
+        var newName;
+        switch(name){
+            case "Nidoran♀": newName = "Nidoran-m"; break;
+            case "Nidoran♂": newName = "Nidoran-f"; break;
+            case "Farfetch'd": newName = "Farfetchd"; break;
+            default: newName =  name;
+        }
+        if(lower){
+            return newName.toLowerCase();
+        }
+        return newName;
+    }
+
+    var blankPokemon = pokemonFromString("")[0];
+
+    function Pokemon(nick, id){
+        this.nick = nick;
+        this.id = id;
+        
+        if(id != undefined){
+            this.hp = pD[id].stats[0] * Math.random();
+        } 
+
+        this.attack = function(opponent){
+
+        }
+
+        this.toString = function(){
+            return this.nick + ";" + this.id;
+        }
+    }
+
     if (typeof(Storage) !== "undefined") {
         if(localStorage.getItem("saveCoins") != null){
             coins = localStorage.getItem("saveCoins");
         }
         if(localStorage.getItem("saveHolder") != null){
-            holder.contains = localStorage.getItem("saveHolder").split(",");
+            holder.contains = pokemonFromString(localStorage.getItem("saveHolder"));
         }
         if(localStorage.getItem("saveBoxes") != null){
             var saveString = localStorage.getItem("saveBoxes").split(" ");
             for(var i = 0; i < saveString.length; i++){
-                box[i].contains = saveString[i].split(",");
+                box[i].contains = pokemonFromString(saveString[i]);
             }
         }
         if(localStorage.getItem("saveFighting") != null){
             var saveString = localStorage.getItem("saveFighting").split(" ");
             for(var i = 0; i < saveString.length; i++){
-                fighting[i].contains = saveString[i].split(",");
+                fighting[i].contains = pokemonFromString(saveString[i]);
             }
         }
     } else {
@@ -79,18 +122,17 @@
         }
     }
 
-    holder.renderMon();
-    for(var i = 0; i < box.length; i++){
-        box[i].renderMon();
-    }
-    for(var i = 0; i < fighting.length; i++){
-        fighting[i].renderMon();
+    var renderAll = function(){
+        holder.renderMon();
+        for(var i = 0; i < box.length; i++){
+            box[i].renderMon();
+        }
+        for(var i = 0; i < fighting.length; i++){
+            fighting[i].renderMon();
+        }
     }
 
-    function Pokemon(nick, id){
-        this.nick = nick;
-        this.id = id;
-    }
+    renderAll();
 
     function Inventory(width, height, place, prefix, direction){
         this.width = width;
@@ -108,7 +150,7 @@
 
         this.add = function(pokemon){
             this.contains.push(pokemon)
-            console.log(this.contains);
+            //console.log(this.contains);
             this.renderMon();
         }
 
@@ -121,27 +163,33 @@
             document.getElementById(place).innerHTML = "";
 
             for(var i = 0; i < this.contains.length; i++){
-                if(this.contains[i] == ""){
+                if(this.contains[i].id === undefined){
                     this.contains.splice(i,1);
                 }
             }
 
+
             for(var i = 1; i <= this.contains.length; i++){  
                 var contain = document.createElement("div");
-                contain.setAttribute("data-tooltip", pD[this.contains[i -1]].name)
+                if(this.contains[i-1].nick != ""){
+                    contain.setAttribute("data-tooltip", this.contains[i - 1].nick)
+                } else {
+                    contain.setAttribute("data-tooltip", fixName(pD[this.contains[i -1].id].name, false));
+                }
                 contain.id = "POKE" + this.prefix + " " + i;
                 contain.className = "POKEC";
                 contain.style.left = 10 + ((i - 1) % (this.width)) * 64 + "px";
                 contain.style.top = 10 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64 + "px";
 
-                contain.onclick = new Function("selected = " + '"' + contain.id + '"; onAClick()');
+                contain.onmouseover = new Function("if(selected == '')\nselected = " + '"' + contain.id + '"; onAClick()');
                  
                 var newMon = document.createElement("IMG");
                 newMon.className = "pokemonSprite";
+                newMon.setAttribute("draggable",false);
                 if(this.direction == RIGHT){
                     newMon.style.transform = "scale(-1,1)"
                 }
-                newMon.src = "https://raw.githubusercontent.com/msikma/pokesprite/master/icons/pokemon/regular/" + pD[this.contains[i - 1]].name.toLowerCase() + ".png";
+                newMon.src = "https://raw.githubusercontent.com/msikma/pokesprite/master/icons/pokemon/regular/" + fixName(pD[this.contains[i - 1].id].name, true) + ".png";
 
                 contain.appendChild(newMon)
                 //newMon.src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + this.contains[i - 1] + ".png";
@@ -163,6 +211,9 @@
     updateCoins();
 
     var onAClick = function(){
+        if(!mouseDown){
+            return
+        }
         var prep = remove(selected);
         document.getElementById("TEMP").appendChild(prep);
     }
@@ -176,14 +227,15 @@
         return [numb - 1, numb];
     }
 
-    $(document).mousedown(function(){
-        if(selected != ""){
+    $(document).mouseup(function(){
+        if(selected != "" && hover != ""){
+            document.getElementById("TEMP").innerHTML = "";
             var toMove = 0;
             
             switch(selected.substring(4).split(" ")[0].substring(0,1)){
                 case "H": toMove = holder.contains[selected.substring(4).split(" ")[1] - 1]; break;
                 case "F": toMove = fighting[selected.substring(5,6) - 1].contains[0]; break;
-                default: toMove = box[selected.substring(4,5)].contains[selected.substring(4).split(" ")[1] - 1];
+                default : toMove = box[selected.substring(4,5)].contains[selected.substring(4).split(" ")[1] - 1];
             }
             
             if(hover == "H" && holder.willAllowAdd(1)){
@@ -194,7 +246,7 @@
 
             if(hover.substring(0,1) == "F" && fighting[hover.substring(1,2) - 1].willAllowAdd(1)){
                 fighting[hover.substring(1,2) - 1].add(toMove);
-                fighting[setPair(selected.substring(6,7) - 1)[0]].bouncey = 00; fighting[setPair(selected.substring(6,7) - 1)[1]].bouncey = 50; 
+                fighting[setPair(hover.substring(1,2) - 1)[0]].bouncey = 0; fighting[setPair(hover.substring(1,2) - 1)[1]].bouncey = 50; 
             } else if(hover.substring(0,1) == "F"){
                 return;
             }
@@ -207,23 +259,22 @@
                 }
             }
 
-            document.getElementById("TEMP").innerHTML = "";
-
             switch(selected.substring(4).split(" ")[0].substring(0,1)){
                 case "H": holder.remove(selected.substring(4).split(" ")[1] - 1);  holder.renderMon(); break;
-                case "F": fighting[selected.substring(5,6) - 1].remove(selected.substring(4).split(" ")[1] - 1); fighting[selected.substring(4).split(" ")[1] - 1].renderMon(); break;
-                default: box[selected.substring(4).split(" ")[0]].remove(selected.substring(4).split(" ")[1] - 1); box[selected.substring(4).split(" ")[0]].renderMon(); break;
+                case "F": fighting[selected.substring(5,6) - 1].remove(selected.substring(4).split(" ")[1] - 1); fighting[selected.substring(5,6) - 1].renderMon(); break;
+                default: box[selected.substring(4).split(" ")[0]].remove(selected.substring(4).split(" ")[1] - 1); box[selected.substring(4).split(" ")[0]].renderMon(); 
             }
+
             selected = "";
         }
 
         if(false && fighting[0].contains.length > 0 && fighting[1].contains.length > 0){
-            if(pD[fighting[0].contains[0]].stats[0] > pD[fighting[1].contains[0]].stats[0]){
+            if(pD[fighting[0].contains[0].id].stats[0] > pD[fighting[1].contains[0].id].stats[0]){
                 fighting[1].remove(0);
-                alert(pD[fighting[0].contains[0]].name + " WINS!")
+                alert(pD[fighting[0].contains[0].id].name + " WINS!")
             } else {
                 fighting[0].remove(0);
-                alert(pD[fighting[1].contains[0]].name + " WINS!")
+                alert(pD[fighting[1].contains[0].id].name + " WINS!")
             }
         }
 
@@ -233,13 +284,18 @@
     var moveCount = 0;
     setInterval(function(){
         moveCount++;
-        if(moveCount > 100){
+        if(moveCount > 50){
             moveCount = 0;
             hover = "";
-        }
+        } 
     }, 1)
 
     setInterval(function(){
+        if(!mouseDown){
+            selected = "";
+            renderAll();
+        }
+
         for(var i = 0; i < fighting.length; i++){
             if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1){
                 fighting[i].bouncey++;
@@ -248,11 +304,16 @@
                 }
                 if(fighting[i].bouncey > 90){
                     document.getElementById("POKE" + fighting[i].prefix + " 1").style.transform = "translate(0, " + (Math.cos(fighting[i].bouncey * 1.5) * 6) + "px)"
+                    fighting[i].contains[0].hp -= 1;
                 } else if (fighting[i].bouncey > 35 && fighting[i].bouncey < 45){
                     document.getElementById("POKE" + fighting[i].prefix + " 1").style.transform = "translate(" + (Math.cos(fighting[i].bouncey * 1.5) * 3) + "px, 0)"
                 } else {
-                    document.getElementById("POKE" + fighting[i].prefix + " 1").style.transform = "translate(0, 0)"
+                    document.getElementById("POKE" + fighting[i].prefix + " 1").style.transform = "translate(0, 0)";
                 }
+            }
+            
+            if(typeof(fighting[i].contains[0]) == "object" && fighting[i].contains[0].id != undefined){
+                document.getElementById("H" + fighting[i].prefix).style.width = Math.max(70 * (fighting[i].contains[0].hp / pD[fighting[i].contains[0].id].stats[0]), 0) + "px";
             }
         }
     }, 30)
@@ -266,7 +327,7 @@
         var topBall = ($(document).height() * Math.random() * .6 + 200);
 
         document.getElementById("shake").src = image;
-        document.getElementById("shakeBehind").src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + holder.contains[holder.contains.length - 1] + ".png";
+        document.getElementById("shakeBehind").src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + holder.contains[holder.contains.length - 1].id + ".png";
 
         $('#shake').css('transform', 'scale(' + (.5 + Math.abs(.5 - (scale / 100))) + ')')
         document.getElementById("shake").style.display = "block";
@@ -299,15 +360,23 @@
         }
     }, 9)
 
-    $(document).mousemove(function(event){
-        moveCount = 0;
-        if(selected != ""){
-            document.getElementById(selected).style.position = "fixed";
-            document.getElementById(selected).style.pointerEvents = "none";
-            document.getElementById(selected).style.left = event.clientX - 30 + "px";
-            document.getElementById(selected).style.top = event.clientY - 30 + "px";
+        var mouseDown = false;
+        document.onmousedown = function() { 
+            mouseDown = true;
         }
-    })
+        document.onmouseup = function() {
+            mouseDown = false;
+        }       
+
+        $(this).mousemove(function(event){
+            moveCount = 0;
+            if(selected != "" && mouseDown > 0){
+                document.getElementById(selected).style.position = "fixed";
+                document.getElementById(selected).style.pointerEvents = "none";
+                document.getElementById(selected).style.left = event.clientX - 30 + "px";
+                document.getElementById(selected).style.top = event.clientY - 30 + "px";
+            }
+        })
 
     var rotated = 1;
     var active = 1;
@@ -326,7 +395,7 @@
             coins -= -2;
             updateCoins();
         }
-    })
+    }, 5)
 
     var focus = "";
     var changeFocus = function(){
@@ -342,7 +411,7 @@
         document.body.style.backgroundImage = "url(frontGrad.png), url(" + newBack + ")";
     }
 
-    function catchMon(ball){
+    function catchMon(ball, set){
         if(shakeOn){
             return;
         }
@@ -375,7 +444,11 @@
             caught = Math.ceil((pD.length - 1) * Math.random());
         }
 
-        holder.add(caught);    
+        if(set != 0){
+            caught = set;
+        }
+
+        holder.add(new Pokemon("", caught));    
         holder.renderMon();
 
         saveGame();

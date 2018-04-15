@@ -3,7 +3,7 @@ function p(id,Name,Type1,Type2,Total,HP,Attack,Defense,SpAtk,SpDef,Speed,Generat
     this.name = Name;
     this.type = [Type1, Type2];
     this.total = Total;
-    this.stats = [Attack, Defense, SpAtk, SpDef, Speed];
+    this.stats = [HP, Attack, Defense, SpAtk, SpDef, Speed];
     this.gen = Generation;
     this.legendary = Legendary;
     this.evolution = Evolved;

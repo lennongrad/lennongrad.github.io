@@ -122,6 +122,7 @@
     transform: scale(0);
 }
 
+
 #pokeHolderOut{
     background-color: #333333;
     border:2px solid black;
@@ -230,7 +231,6 @@
 }
 
 body{
-    background-color: #111111;
-    background-size: cover;
     font-family: cambria;
+    user-select: none;
 }
