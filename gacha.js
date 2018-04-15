@@ -1,15 +1,20 @@
    
     var coins = 1800;
 
-    var holder = new Inventory(8, 1, "pokeHolder", "H");
+    var RIGHT = 1;
+    var LEFT = 0;
+
+    var holder = new Inventory(8, 1, "pokeHolder", "H", LEFT);
     var box = [];
-    box.push(new Inventory(3, 3, "pokeBox", "0"));
+    box.push(new Inventory(3, 3, "pokeBox", "0", RIGHT));
     var fighting = [];
-    fighting.push(new Inventory(1, 1, "F1", "F1"), new Inventory(1, 1, "F2", "F2"));
+    fighting.push(new Inventory(1, 1, "F1", "F1", RIGHT), new Inventory(1, 1, "F2", "F2", LEFT));
 
     var active = 0;
     var selected = "";
     var hover = "";
+
+    var PID = [];
 
     //alert("POKEH 0".substring(4).split(" "))
     function remove(id) {
@@ -82,11 +87,22 @@
         fighting[i].renderMon();
     }
 
-    function Inventory(width, height, place, prefix){
+    function Pokemon(nick, id){
+        this.nick = nick;
+        this.id = id;
+    }
+
+    function Inventory(width, height, place, prefix, direction){
         this.width = width;
         this.height = height;
         this.limit = this.width * this.height;
         this.prefix = prefix;
+        this.direction = direction;
+        
+        this.bouncey = 0;
+        if(prefix.substring(0,1) == "F"){
+            this.bouncey = 50 * prefix.substring(1,2) - 1;
+        }
 
         this.contains = [];
 
@@ -116,12 +132,15 @@
                 contain.id = "POKE" + this.prefix + " " + i;
                 contain.className = "POKEC";
                 contain.style.left = 10 + ((i - 1) % (this.width)) * 64 + "px";
-                contain.style.top = 5 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64 + "px";
+                contain.style.top = 10 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64 + "px";
 
                 contain.onclick = new Function("selected = " + '"' + contain.id + '"; onAClick()');
                  
                 var newMon = document.createElement("IMG");
                 newMon.className = "pokemonSprite";
+                if(this.direction == RIGHT){
+                    newMon.style.transform = "scale(-1,1)"
+                }
                 newMon.src = "https://raw.githubusercontent.com/msikma/pokesprite/master/icons/pokemon/regular/" + pD[this.contains[i - 1]].name.toLowerCase() + ".png";
 
                 contain.appendChild(newMon)
@@ -150,6 +169,13 @@
 
     var shakeOn = false;
 
+    var setPair = function(numb){
+        if(numb % 2 == 0){
+            return [numb, numb + 1]
+        }
+        return [numb - 1, numb];
+    }
+
     $(document).mousedown(function(){
         if(selected != ""){
             var toMove = 0;
@@ -168,6 +194,7 @@
 
             if(hover.substring(0,1) == "F" && fighting[hover.substring(1,2) - 1].willAllowAdd(1)){
                 fighting[hover.substring(1,2) - 1].add(toMove);
+                fighting[setPair(selected.substring(6,7) - 1)[0]].bouncey = 00; fighting[setPair(selected.substring(6,7) - 1)[1]].bouncey = 50; 
             } else if(hover.substring(0,1) == "F"){
                 return;
             }
@@ -190,7 +217,7 @@
             selected = "";
         }
 
-        if(fighting[0].contains.length > 0 && fighting[1].contains.length > 0){
+        if(false && fighting[0].contains.length > 0 && fighting[1].contains.length > 0){
             if(pD[fighting[0].contains[0]].stats[0] > pD[fighting[1].contains[0]].stats[0]){
                 fighting[1].remove(0);
                 alert(pD[fighting[0].contains[0]].name + " WINS!")
@@ -211,6 +238,24 @@
             hover = "";
         }
     }, 1)
+
+    setInterval(function(){
+        for(var i = 0; i < fighting.length; i++){
+            if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1){
+                fighting[i].bouncey++;
+                if(fighting[i].bouncey > 100){
+                    fighting[i].bouncey = 0;
+                }
+                if(fighting[i].bouncey > 90){
+                    document.getElementById("POKE" + fighting[i].prefix + " 1").style.transform = "translate(0, " + (Math.cos(fighting[i].bouncey * 1.5) * 6) + "px)"
+                } else if (fighting[i].bouncey > 35 && fighting[i].bouncey < 45){
+                    document.getElementById("POKE" + fighting[i].prefix + " 1").style.transform = "translate(" + (Math.cos(fighting[i].bouncey * 1.5) * 3) + "px, 0)"
+                } else {
+                    document.getElementById("POKE" + fighting[i].prefix + " 1").style.transform = "translate(0, 0)"
+                }
+            }
+        }
+    }, 30)
 
     function shake(image){
         document.getElementById("POKE" + "H " + holder.contains.length).style.display = "none";
@@ -271,6 +316,9 @@
         active *= .9997;
         if(active > 5){
             active = 4;
+        }
+        if(active < .05){
+            active = .05;
         }
         document.getElementById("spinny").style.width = rotated + "px";
         if(rotated > 200){
