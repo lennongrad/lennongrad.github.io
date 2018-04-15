@@ -11,7 +11,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 </head>
 <body oncontextmenu="return false;">
-    <div id="background" style="position: absolute; left: 0px; top: 0px; width:100%; height:100%; z-index: -5;background-color: #111111;  background-size: cover;">t</div>
+        <div id="background" style="position: absolute; left: 0px; top: 0px; width:100%; height:100%; z-index: -5;background-color: #111111;  background-size: cover;">t</div>
+        <div id="foreground" style=" display: none; align-items: center;position: absolute; left: 0px; top: 0px; width:100%; height:100%; z-index: 15;background-color: #111111;  background-size: cover;">
+            <div style="color: white;  text-align: center; margin-top: 0%; margin-left: auto; margin-right:auto; transform: scale(2)">
+                <h1>HEWWO!!!</h1>
+                </br> We don't currently support mobile browsers. Sorry!
+            </div>
+        </div>
 
         <div id="TEMP" style="z-index:5" ></div>
 
@@ -67,6 +73,8 @@
         <div class="ball" id="commonBall" onclick="catchMon(0, 0)"> <image class="icon" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"/> <span class="boxText">20</span> </div>
         <div class="ball" id="ultraBall" onclick="catchMon(1, 0)"> <image class="icon" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png"/> <span class="boxText">50</span> </div>
     </div>
+
+    <div id="trasher" onclick="deleteHolder()">🗑️</div>
 
     <div id="pokeHolderOut"><div id="pokeHolder" class="pInv" onmouseover="hover = 'H'"></div></div>
     <div id="pokeBoxOut"><div id="pokeBox" class="pInv" onmouseover="hover = '0';"></div></div>
