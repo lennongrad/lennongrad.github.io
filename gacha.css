@@ -99,6 +99,11 @@
     border:2px ridge black;
 }
 
+.row{
+    background-color: #555555;
+    border-radius: 5px;
+}
+
 .pokemonSprite{
     display:inline-block;
     width:64px;

@@ -92,6 +92,13 @@
             }
         }
 
+        this.levelUp = function(){
+            this.level++;
+            for(var i = 0; i < this.stats.length; i++){
+                this.stats[i] += 10;
+            }
+        }
+
         this.toString = function(){
             return this.nick + ";" + this.id;
         }
@@ -250,6 +257,16 @@
         document.getElementById("coinsCount").innerHTML = coins;
     }
     updateCoins();
+    
+    var source = document.getElementById("dexRow").innerHTML;
+    var template = Handlebars.compile(source);
+
+    for(var i = 1; i < pD.length; i++){
+        var newRow = document.createElement("TR");
+        var context = { name: pD[i].name, rarity: pD[i].rarity * 100 + "%" };
+        newRow.innerHTML = template(context);
+        document.getElementById("dexTab").appendChild(newRow);
+    }
 
     var onAClick = function(){
         if(!mouseDown){
@@ -338,6 +355,16 @@
             hover = "";
         } 
     }, 1)
+    
+    var caught = 0;
+        
+    if(fighting[1].contains.length < 1){
+        caught = Math.ceil((pD.length - 1) * Math.random());
+        while(pD[caught].evolution != 0 || !(pD[caught].hasType("Grass") || pD[caught].hasType("Bug"))){
+            caught = Math.ceil((pD.length - 1) * Math.random());
+        }
+        fighting[1].contains.push(new Pokemon("", caught))
+    }
 
     setInterval(function(){
         if(!mouseDown){
@@ -355,10 +382,19 @@
                     document.getElementById("POKE" + fighting[i].prefix + " 1").style.transform = "translate(0, " + (Math.cos(fighting[i].bouncey * 1.5) * 6) + "px)"
                 } else if (fighting[i].bouncey > 35 && fighting[i].bouncey < 45){
                     document.getElementById("POKE" + fighting[i].prefix + " 1").style.transform = "translate(" + (Math.cos(fighting[i].bouncey * 1.5) * 3) + "px, 0)"
-                    fighting[getPair(i, false)].contains[0].defend(fighting[getPair(i, true)].contains[0].attack(fighting[getPair(i, false)].contains[0]));
-                    if(fighting[getPair(i, false)].contains[0].hp <= 0){
-                        fighting[getPair(i, false)].contains.splice(0,1);
+
+                        fighting[getPair(i, false)].contains[0].defend(fighting[getPair(i, true)].contains[0].attack(fighting[getPair(i, false)].contains[0]));
+
+                    if(fighting[1].contains[0].hp <= 0){
+                        fighting[1].contains.splice(0,1);
+                        var caught = Math.ceil((pD.length - 1) * Math.random());
+        
+                        while(pD[caught].evolution != 0 || !(pD[caught].hasType("Grass") || pD[caught].hasType("Bug"))){
+                            caught = Math.ceil((pD.length - 1) * Math.random());
+                        }
+                        fighting[1].contains.push(new Pokemon("", caught))
                     }
+
                 } else {
                     document.getElementById("POKE" + fighting[i].prefix + " 1").style.transform = "translate(0, 0)";
                 }
@@ -449,8 +485,16 @@
         }
     }, 5)
 
+    var rand5 = function(){
+        return Math.floor(Math.sqrt(1 - Math.random()) * 100 / 5) * 5 / 100
+    }
+
     var focus = "";
     var changeFocus = function(){
+        alert("That feature is currently locked! Sorry!")
+        console.warn("Attempted to access Focus change [blocked]")
+        return;
+
         focus = document.getElementById("selType").value;
 
         var newBack = "";
@@ -492,7 +536,7 @@
 
         var caught = Math.ceil((pD.length - 1) * Math.random());
         
-        while(pD[caught].evolution != 0 || (!pD[caught].hasType(focus)  && (Math.random() < focusStrength))){
+        while(pD[caught].evolution != 0 || pD[caught].rarity < rand5()){//|| (!pD[caught].hasType(focus)  && (Math.random() < focusStrength))){
             caught = Math.ceil((pD.length - 1) * Math.random());
         }
 
