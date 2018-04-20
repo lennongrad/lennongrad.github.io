@@ -460,7 +460,7 @@
         var topBall = ($(document).height() * Math.random() * .6 + 200);
 
         document.getElementById("shake").src = image;
-        document.getElementById("shakeBehind").src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + holder.contains[holder.contains.length - 1].id + ".png";
+        document.getElementById("shakeBehind").src = "pokemon/" + holder.contains[holder.contains.length - 1].id + ".png";
 
         $('#shake').css('transform', 'scale(' + (.5 + Math.abs(.5 - (scale / 100))) + ')')
         document.getElementById("shake").style.display = "block";
@@ -567,8 +567,8 @@
         var ballImage = "";
 
         switch(ball){
-            case 0: cost = 20; bonus = 0; ballImage = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dream-world/poke-ball.png"; break;
-            case 1: cost = 30; bouns = .3; ballImage = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dream-world/great-ball.png"; break;
+            case 0: cost = 20; bonus = 0; ballImage = "items/dream-world/poke-ball.png"; break;
+            case 1: cost = 30; bouns = .3; ballImage = "items/dream-world/great-ball.png"; break;
         }
 
         if(coins - cost < 0){

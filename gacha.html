@@ -9,6 +9,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="pokesprite.min.css">
 
     <script id="dexRow" type="text/x-handlebars-template">
         <td class="row"> <div>{{name}}</div> </td>
@@ -79,7 +80,7 @@
     <img id="shake" style="z-index: 15; display:none"/>
     <img id="shakeBehind" style="position: absolute; z-index:14"/>
 
-    <div id="moneyCount"> <image id="cashIcon" src="cash.png"/> <span id="coinsCount">6000</span> </div>
+    <div id="moneyCount"> <image  id="cashIcon" src="cash.png"/> <span id="coinsCount">6000</span> </div>
     <div id="ballHole">
         <div class="ball" id="commonBall" onclick="catchMon(0, 0)"> <image class="icon" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"/> <span class="boxText">20</span> </div>
         <div class="ball" id="ultraBall" onclick="catchMon(1, 0)"> <image class="icon" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png"/> <span class="boxText">30</span> </div>
