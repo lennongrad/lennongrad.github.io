@@ -34,7 +34,7 @@
 
 [data-tooltip]:hover:before,
 [data-tooltip]:hover:after {
-  visibility: visible;
+  visibility: attr(vis);
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
   filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=100);
   opacity: 1;

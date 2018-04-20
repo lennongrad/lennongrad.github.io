@@ -9,11 +9,14 @@ function p(id         ,Name         ,Type1     ,Type2     ,Total ,HP ,Attack,Def
 	this.evolution = Evolved;
 	this.rarity = Rarity;
 
-	this.hasType = function(type){
-		if(this.type[0] == type || this.type[1] == type){
-			return true;
+	this.hasType = function(){
+		var final = false;
+		for(var i = 0; i < arguments.length; i++){
+			if(this.type[0] == arguments[i] || this.type[1] == arguments[i]){
+				final =  true;
+			}
 		}
-		return false;
+		return final;
 	}
 }
 var pD = [0           , new p (
@@ -45,7 +48,7 @@ var pD = [0           , new p (
 	26                ,"Raichu"     ,"Electric","None"    ,485   ,60 ,90    ,55     ,90   ,80   ,110  ,1         ,false    ,25      ,0)      , new p(
 	27                ,"Sandshrew"  ,"Ground"  ,"None"    ,300   ,50 ,75    ,85     ,20   ,30   ,40   ,1         ,false    ,0       ,.5)     , new p(
 	28                ,"Sandslash"  ,"Ground"  ,"None"    ,450   ,75 ,100   ,110    ,45   ,55   ,65   ,1         ,false    ,27      ,0)      , new p(
-	29                ,"Nidoran♀" ,"Poison"  ,"None"    ,275   ,55 ,47    ,52     ,40   ,40   ,41   ,1         ,false    ,0       ,.45)    , new p(
+	29                ,"Nidoran♀"   ,"Poison"  ,"None"    ,275   ,55 ,47    ,52     ,40   ,40   ,41   ,1         ,false    ,0       ,.45)    , new p(
 	30                ,"Nidorina"   ,"Poison"  ,"None"    ,365   ,70 ,62    ,67     ,55   ,55   ,56   ,1         ,false    ,29      ,0)      , new p(
 	31                ,"Nidoqueen"  ,"Poison"  ,"Ground"  ,505   ,90 ,92    ,87     ,75   ,85   ,76   ,1         ,false    ,30      ,0)      , new p(
 	32                ,"Nidoran♂" ,"Poison"  ,"None"    ,273   ,46 ,57    ,40     ,40   ,40   ,50   ,1         ,false    ,0       ,.45)    , new p(

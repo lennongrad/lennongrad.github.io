@@ -1,4 +1,4 @@
-    var coins = 1800;
+    var coins = 50;
 
     var RIGHT = 1;
     var LEFT = 0;
@@ -62,11 +62,23 @@
         this.nick = nick;
         this.id = id;
         this.level = 1;
+        this.find = "";
         
         if(id != undefined){
             this.stats = pD[id].stats;
             this.hp = this.stats[0];
         } 
+
+        this.deadness = 1;
+
+        this.dead = function(){
+            if(this.hp <= 0 && this.deadness > 0){
+                this.deadness -= .01;
+            } else if(this.hp > 0 && this.deadness < 1) {
+                this.deadness += .01;
+            }
+            return 1 - this.deadness;
+        }
 
         this.attack = function(opponent){
             var modifier = 1;
@@ -78,10 +90,11 @@
             modifier = 1; //STAB
             modifier = 1; //type
             modifier = 1; //status
-            modifier = .2; //other
+            modifier = 1; //other
             var power = 1;
 
-            var damage = (2 + (((this.level * 2 / 5) + 2) * power * (this.stats[1] / opponent.stats[2])) / 50) * modifier;
+            //var damage = (2 + (((this.level * 2 / 5) + 2) * power * (this.stats[1] / opponent.stats[2])) / 50) * modifier;
+            var damage = (this.stats[1] / opponent.stats[2]);
             return damage;
         }
 
@@ -90,6 +103,7 @@
             if(this.hp < 0 || damage < 0){
                 this.hp = 0;
             }
+            return damage;
         }
 
         this.levelUp = function(){
@@ -162,7 +176,9 @@
     }
 
     var renderAll = function(){
-        if(!shakeOn){
+        
+        document.getElementById("TEMP").innerHTML = "";
+        if(true || !shakeOn){
             holder.renderMon();
         }
         for(var i = 0; i < box.length; i++){
@@ -181,6 +197,13 @@
         this.limit = this.width * this.height;
         this.prefix = prefix;
         this.direction = direction;
+        this.place = place;
+
+        this.allowHover = true;
+
+        this.dmg = 0;
+        this.dmgFly = 0;
+        this.colour = "white";
         
         this.bouncey = 0;
         if(prefix.substring(0,1) == "F"){
@@ -201,28 +224,34 @@
         }
 
         this.renderMon = function(){
-            document.getElementById(place).innerHTML = "";
-
             for(var i = 0; i < this.contains.length; i++){
                 if(this.contains[i].id === undefined){
                     this.contains.splice(i,1);
                 }
             }
 
-
-            for(var i = 1; i <= this.contains.length; i++){  
+            for(var i = 1; i <= this.contains.length - (shakeOn && this.prefix == "H"); i++){  
                 var contain = document.createElement("div");
-                if(this.contains[i-1].nick != ""){
-                    contain.setAttribute("data-tooltip", this.contains[i - 1].nick)
-                } else {
-                    contain.setAttribute("data-tooltip", fixName(pD[this.contains[i -1].id].name, false));
-                }
                 contain.id = "POKE" + this.prefix + " " + i;
                 contain.className = "POKEC";
-                contain.style.left = 10 + ((i - 1) % (this.width)) * 64 + "px";
-                contain.style.top = 10 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64 + "px";
+                contain.style.left = document.getElementById(this.place).getBoundingClientRect().left + 10 + ((i - 1) % (this.width)) * 64 + "px";
+                contain.style.top = document.getElementById(this.place).getBoundingClientRect().top + 10 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64 + "px";
 
-                contain.onmouseover = new Function("if(selected == '')\nselected = " + '"' + contain.id + '"; onAClick()');
+                if(this.allowHover){
+                    contain.onmouseover = new Function("if(selected == ''){selected = " + '"' + contain.id + '";}');
+                }
+
+                if(this.prefix.substring(0,1) == "F"){
+                    this.dmgFly++;
+                    var newNumber = document.createElement("DIV");
+                    newNumber.style.setProperty("--backColour", this.colour)
+                    newNumber.className = "number";
+                    newNumber.innerHTML = "-" + Math.ceil(this.dmg);
+                    newNumber.style.bottom = 20 + this.dmgFly + "px";
+                    newNumber.style.right = (50 - (50 * this.direction)) + "px";
+                    newNumber.style.opacity = 1 - (this.dmgFly / 40)
+                    contain.appendChild(newNumber);
+                }
                  
                 var newMon = document.createElement("IMG");
                 newMon.className = "pokemonSprite";
@@ -232,9 +261,11 @@
                 }
                 newMon.src = "https://raw.githubusercontent.com/msikma/pokesprite/master/icons/pokemon/regular/" + fixName(pD[this.contains[i - 1].id].name, true) + ".png";
 
+                this.contains[i - 1].find = contain.id;
+
                 contain.appendChild(newMon)
                 //newMon.src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + this.contains[i - 1] + ".png";
-                document.getElementById(place).appendChild(contain);
+                document.getElementById("TEMP").appendChild(contain);
             }
         }
 
@@ -266,14 +297,6 @@
         var context = { name: pD[i].name, rarity: pD[i].rarity * 100 + "%" };
         newRow.innerHTML = template(context);
         document.getElementById("dexTab").appendChild(newRow);
-    }
-
-    var onAClick = function(){
-        if(!mouseDown){
-            return
-        }
-        var prep = remove(selected);
-        document.getElementById("TEMP").appendChild(prep);
     }
 
     var shakeOn = false;
@@ -373,30 +396,48 @@
         }
 
         for(var i = 0; i < fighting.length; i++){
-            if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1){
+            if(i % 2 == 1){
+                fighting[i].allowHover = false;
+            }
+            if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1 && fighting[setPair(i)[0]].contains[0].hp > 0){
                 fighting[i].bouncey++;
                 if(fighting[i].bouncey > 100){
                     fighting[i].bouncey = 0;
                 }
                 if(fighting[i].bouncey > 90){
-                    document.getElementById("POKE" + fighting[i].prefix + " 1").style.transform = "translate(0, " + (Math.cos(fighting[i].bouncey * 1.5) * 6) + "px)"
+                    document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[1].style.transform += "translate(0, " + (Math.cos(fighting[i].bouncey * 1.5) * 6) + "px)";
                 } else if (fighting[i].bouncey > 35 && fighting[i].bouncey < 45){
-                    document.getElementById("POKE" + fighting[i].prefix + " 1").style.transform = "translate(" + (Math.cos(fighting[i].bouncey * 1.5) * 3) + "px, 0)"
+                    document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[1].style.transform += "translate(" + (Math.cos(fighting[i].bouncey * 1.5) * 3) + "px, 0)"
 
-                        fighting[getPair(i, false)].contains[0].defend(fighting[getPair(i, true)].contains[0].attack(fighting[getPair(i, false)].contains[0]));
+                        fighting[getPair(i, false)].dmg = fighting[getPair(i, false)].contains[0].defend(fighting[getPair(i, true)].contains[0].attack(fighting[getPair(i, false)].contains[0]));
+                        fighting[getPair(i, false)].dmgFly = 0;
+                        fighting[getPair(i, false)].colour = "white";
 
-                    if(fighting[1].contains[0].hp <= 0){
-                        fighting[1].contains.splice(0,1);
-                        var caught = Math.ceil((pD.length - 1) * Math.random());
-        
-                        while(pD[caught].evolution != 0 || !(pD[caught].hasType("Grass") || pD[caught].hasType("Bug"))){
-                            caught = Math.ceil((pD.length - 1) * Math.random());
+                        if(fighting[setPair(i)[1]].contains[0].hp <= 0){
+                            coins += 10;
+                            fighting[getPair(i, true)].dmgFly = 0;
+                            fighting[getPair(i, true)].dmg = "10";
+                            fighting[getPair(i, true)].colour = "yellow";
+                            fighting[setPair(i)[1]].contains.splice(0,1);
+                            var caught = Math.ceil((pD.length - 1) * Math.random());
+            
+                            while(pD[caught].evolution != 0 || !pD[caught].hasType("Grass", "Bug")){
+                                caught = Math.ceil((pD.length - 1) * Math.random());
+                            }
+                            fighting[setPair(i)[1]].contains.push(new Pokemon("", caught))
                         }
-                        fighting[1].contains.push(new Pokemon("", caught))
-                    }
 
                 } else {
-                    document.getElementById("POKE" + fighting[i].prefix + " 1").style.transform = "translate(0, 0)";
+                    document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[1].style.transform += "translate(0, 0)";
+                }
+            }
+
+            if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1){
+                document.getElementById("dead" + Math.ceil((i + 1) / 2)).style.opacity = fighting[setPair(i)[0]].contains[0].dead();
+                if(fighting[setPair(i)[0]].contains[0].hp <= 0){
+                    document.getElementById("dead" + Math.ceil((i + 1) / 2)).style.pointerEvents = "auto"
+                } else {
+                    document.getElementById("dead" + Math.ceil((i + 1) / 2)).style.pointerEvents = "none"
                 }
             }
             
@@ -405,6 +446,10 @@
             }
         }
     }, 30)
+
+    var revive = function(reviving){
+        fighting[setPair(reviving)[0]].contains[0].hp = fighting[setPair(reviving)[0]].contains[0].stats[0] * .8;
+    }
 
     function shake(image){
         document.getElementById("POKE" + "H " + holder.contains.length).style.display = "none";
@@ -467,12 +512,12 @@
         })
 
     var rotated = 1;
-    var active = 1;
+    var active = .5;
     setInterval(function(){
         rotated += 1 * active;
         active *= .9997;
-        if(active > 5){
-            active = 4;
+        if(active > 2){
+            active = 1.5;
         }
         if(active < .05){
             active = .05;
@@ -480,13 +525,13 @@
         document.getElementById("spinny").style.width = rotated + "px";
         if(rotated > 200){
             rotated = 1;
-            coins -= -2;
+            coins -= -1;
             updateCoins();
         }
     }, 5)
 
     var rand5 = function(){
-        return Math.floor(Math.sqrt(1 - Math.random()) * 100 / 5) * 5 / 100
+        return Math.floor(Math.sqrt(1 - Math.random()) * 20) * 20
     }
 
     var focus = "";
@@ -518,12 +563,12 @@
         }
 
         var cost = 0;
-        var focusStrength = 0;
+        var bonus = 0;
         var ballImage = "";
 
         switch(ball){
-            case 0: cost = 20; focusStrength = .92; ballImage = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dream-world/poke-ball.png"; break;
-            case 1: cost = 50; focusStrength = .98; ballImage = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dream-world/great-ball.png"; break;
+            case 0: cost = 20; bonus = 0; ballImage = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dream-world/poke-ball.png"; break;
+            case 1: cost = 30; bouns = .3; ballImage = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dream-world/great-ball.png"; break;
         }
 
         if(coins - cost < 0){
@@ -536,7 +581,7 @@
 
         var caught = Math.ceil((pD.length - 1) * Math.random());
         
-        while(pD[caught].evolution != 0 || pD[caught].rarity < rand5()){//|| (!pD[caught].hasType(focus)  && (Math.random() < focusStrength))){
+        while(pD[caught].evolution != 0 || pD[caught].rarity < (rand5() - bonus)){//|| (!pD[caught].hasType(focus)  && (Math.random() < focusStrength))){
             caught = Math.ceil((pD.length - 1) * Math.random());
         }
 
