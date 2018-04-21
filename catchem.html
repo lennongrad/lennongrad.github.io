@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pokémon: Catch 'Em!</title>
+    <meta name="description" content="A fun game!">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@brockdilley" />
+    <meta name="twitter:title" content="Pokémon: Catch Em" />
+    <meta name="twitter:description" content="Catch Pokémon and have them battle automaticall! Catch Em All!" />
+    <meta name="twitter:image" content="preview.png" />
+    <link rel="stylesheet" href="gacha.css">
+    <link rel="stylesheet" href="tooltip.css">
+    <link rel="icon" href="catchem.ico" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script id="dexRow" type="text/x-handlebars-template">
+        <td class="row"> <div>{{name}}</div> </td>
+        <td class="row"> <div>{{rarity}}</div> </td>
+    </script>
+</head>
+<body oncontextmenu="return true;">
+        <div id="foreground" style=" display: none; align-items: center;position: absolute; left: 0px; top: 0px; width:100%; height:100%; z-index: 15;background-color: #111111;  background-size: cover;">
+            <div style="color: white;  text-align: center; margin-top: 0%; margin-left: auto; margin-right:auto; transform: scale(2)">
+                <img src="https://i.ytimg.com/vi/blRyUbnfc60/hqdefault.jpg"/>
+                <h1>HEWWO!!!</h1>
+                </br> We don't currently support mobile browsers. Sorry!
+            </div>
+        </div>
+
+        <img id="shake" style="z-index: 15; display:none"/>
+        <img id="shakeBehind" style="position: absolute; z-index:14"/>
+        <div id="TEMP" style="z-index:4; position: fixed; top: 0; left: 0;"></div>
+
+        <table cellspacing=0 style="position: absolute; top: 0; left:0; width: 100%; height:100%; background-color:black;">
+                <tr>
+                        <td id="first" style="height:1%; width: 93%; background-color: #333333">
+                            
+                        </td>
+                        <td style="background-color: #333333">
+                            
+                        </td>
+                </tr>
+                <tr>
+                        <td style="background-color: #111111">        
+                            <div class="pInv battle" >
+                                <div id="dead1" class="dead" style="pointer-events:none; opacity: 0">
+                                       <div>Your Pokémon has Fainted!</div><image onclick="revive(1)" class="revive icon" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dream-world/revive.png"/>
+                                </div>
+                                <div id="F1" onmouseover="hover = 'F1';" style="position: absolute; background-image: url(backBattle.png); width:84px; height: 84px; top: 20px; left: 20px" class="pInv"></div>
+                                <div id="F2" onmouseover="hover = '';" style="position: absolute; background-image: url(backBattle.png); width:84px; height: 84px; top: 20px; left: 124px" class="pInv"></div>
+                                <div style="opacity:.5; position: absolute; padding:3px; height:14px; width: 70px; left: 27px; top:17px; background-color:black; border-radius:5px">
+                                    <div id="HF1" style="transition: width 1s; height:14px; width: 70px; background-color:green; border-radius:3px"></div></div>
+                                <div style="opacity: .5; position: absolute; padding:3px; height:14px; width: 70px; left: 131px; top:17px; background-color:black; border-radius:5px">
+                                    <div id="HF2" style="transition: width 1s; height:14px; width: 70px; background-color:green; border-radius:3px"></div></div>
+                            </div>
+                            
+                        </td>
+                        <td style="min-width: 90px; background-color: #2A2A2A; text-align: center; overflow-y: scroll">
+                            <div class="item" id="item0" onclick="catchMon(0, 0)"><image class="icon" id="commonBall" src="items/dream-world/poke-ball.png"/></div>
+                            <div class="item" id="item1" onclick="catchMon(1, 0)"><image class="icon" id="ultraBall" src="items/dream-world/great-ball.png"/></div>
+                        </td>
+                </tr>
+                <tr> 
+                        <td class="pInv" onmouseover="hover = 'H'" id="pokeHolder" style="background-color: #111111">
+                            </td>
+                        <td>
+                            <div id="moneyCount"> <span id="coinsCount">6000</span> </div>
+                            <div id="resetButton" onclick="clearMem()"><br>Reset<br>Memory</div>
+                        </td>
+                </tr>
+                <tr>
+                    <td colspan=2 style="height:17px; font-size:15px; color:white; text-align: right; padding-right: 15px">
+                        Version α
+                    </td>
+                </tr>
+        </table>
+        
+    <div id="pokeBoxOut"><div id="pokeBox" class="pInv" onmouseover="hover = '0';"></div></div>
+
+    <script src="pokeData.js"></script>
+    <script src="gacha.js"></script>
+</body>
+</html>

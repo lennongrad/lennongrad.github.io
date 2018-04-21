@@ -13,7 +13,18 @@
         document.getElementById("foreground").style.display = 'flex';
     }
 
-    var holder = new Inventory(8, 1, "pokeHolder", "H", LEFT);
+    $(window).resize(function(){
+        fixItems();
+    })
+
+    var fixItems = function(){
+        for(var i = 0; i < $(".item").length; i++){
+            document.getElementById("item" + i).style.height = document.getElementById("item" + i).offsetWidth + "px";
+        }
+    }
+    fixItems();
+
+    var holder = new Inventory(10, 1, "pokeHolder", "H", LEFT);
     var box = [];
     box.push(new Inventory(3, 3, "pokeBox", "0", RIGHT));
     var fighting = [];
@@ -230,7 +241,15 @@
                 }
             }
 
+            var limit = 0;
+            if(this.prefix == "H"){
+                limit = Math.floor(document.getElementById(this.place).offsetWidth / 64);
+            }
+
             for(var i = 1; i <= this.contains.length - (shakeOn && this.prefix == "H"); i++){  
+                if(limit != 0 && i > limit){
+                    //continue;
+                }
                 var contain = document.createElement("div");
                 contain.id = "POKE" + this.prefix + " " + i;
                 contain.className = "POKEC";
@@ -285,10 +304,14 @@
     }
 
     function updateCoins(){
+        if(coins > 9999){
+            coins = 9999;
+        }
         document.getElementById("coinsCount").innerHTML = coins;
     }
     updateCoins();
     
+    /*
     var source = document.getElementById("dexRow").innerHTML;
     var template = Handlebars.compile(source);
 
@@ -298,6 +321,7 @@
         newRow.innerHTML = template(context);
         document.getElementById("dexTab").appendChild(newRow);
     }
+    */
 
     var shakeOn = false;
 
@@ -510,25 +534,6 @@
                 document.getElementById(selected).style.top = event.clientY - 30 + "px";
             }
         })
-
-    var rotated = 1;
-    var active = .5;
-    setInterval(function(){
-        rotated += 1 * active;
-        active *= .9997;
-        if(active > 2){
-            active = 1.5;
-        }
-        if(active < .05){
-            active = .05;
-        }
-        document.getElementById("spinny").style.width = rotated + "px";
-        if(rotated > 200){
-            rotated = 1;
-            coins -= -1;
-            updateCoins();
-        }
-    }, 5)
 
     var rand5 = function(){
         return Math.floor(Math.sqrt(1 - Math.random()) * 20) * 20
