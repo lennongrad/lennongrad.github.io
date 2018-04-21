@@ -438,7 +438,9 @@
                         fighting[getPair(i, false)].colour = "white";
 
                         if(fighting[setPair(i)[1]].contains[0].hp <= 0){
-                            coins += 10;
+                            coins -= -10;
+                            updateCoins();
+                            saveGame();
                             fighting[getPair(i, true)].dmgFly = 0;
                             fighting[getPair(i, true)].dmg = "10";
                             fighting[getPair(i, true)].colour = "yellow";
