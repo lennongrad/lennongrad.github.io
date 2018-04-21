@@ -31,19 +31,27 @@
         </div>
 
         <img id="shake" style="z-index: 15; display:none"/>
-        <img id="shakeBehind" style="position: absolute; z-index:14"/>
+        <img id="shakeBehind" style="opacity:0; position: absolute; z-index:14"/>
         <div id="TEMP" style="z-index:4; position: fixed; top: 0; left: 0;"></div>
 
         <table cellspacing=0 style="position: absolute; top: 0; left:0; width: 100%; height:100%; background-color:black;">
                 <tr>
-                        <td id="first" style="height:1%; width: 93%; background-color: #333333">
-                            
+                        <td id="first" style="width: 15%; height:1%; background-color: #333333">
                         </td>
+
+                        <td style=" width: 78%; background-color: #333333">
+
+                        </td>
+
                         <td style="background-color: #333333">
                             
                         </td>
                 </tr>
                 <tr>
+                    <td style="background-color: #2A2A2A; text-align: center; color:white; font-family:Arial">
+                            <div id="nickShow" style="font-weight:bold"></div>
+                            <div id="statsShow"></div>
+                    </td>
                         <td style="background-color: #111111">        
                             <div class="pInv battle" >
                                 <div id="dead1" class="dead" style="pointer-events:none; opacity: 0">
@@ -64,15 +72,15 @@
                         </td>
                 </tr>
                 <tr> 
-                        <td class="pInv" onmouseover="hover = 'H'" id="pokeHolder" style="background-color: #111111">
+                        <td colspan=2 class="pInv" onmouseover="hover = 'H'" id="pokeHolder" style="background-color: #333333">
                             </td>
-                        <td>
+                        <td style="background-color: #333333">
                             <div id="moneyCount"> <span id="coinsCount">6000</span> </div>
                             <div id="resetButton" onclick="clearMem()"><br>Reset<br>Memory</div>
                         </td>
                 </tr>
                 <tr>
-                    <td colspan=2 style="height:17px; font-size:15px; color:white; text-align: right; padding-right: 15px">
+                    <td colspan=2 style="height:17px; font-size:15px; color:white;  text-align: right; padding-right: 15px">
                         Version α
                     </td>
                 </tr>

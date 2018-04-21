@@ -1,4 +1,4 @@
-    var coins = 50;
+    var coins = 500;
 
     var RIGHT = 1;
     var LEFT = 0;
@@ -32,8 +32,11 @@
 
     var active = 0;
     var selected = "";
+    var lastSelected = "";
     var hover = "";
     var isMoving = false;
+
+    var statNames = ["HP", "ATK", "DEF", "SPATK", "SPDEF", "SPD"]
 
     var PID = [];
 
@@ -58,6 +61,7 @@
         switch(name){
             case "Nidoran♀": newName = "Nidoran-m"; break;
             case "Nidoran♂": newName = "Nidoran-f"; break;
+            case "Mr. Mime": newName = "Nidoran-f"; break;
             case "Farfetch'd": newName = "Farfetchd"; break;
             default: newName =  name;
         }
@@ -76,7 +80,7 @@
         this.find = "";
         
         if(id != undefined){
-            this.stats = pD[id].stats;
+            this.stats = pD[id].stats.map(x => x * 1);
             this.hp = this.stats[0];
         } 
 
@@ -104,8 +108,7 @@
             modifier = 1; //other
             var power = 1;
 
-            //var damage = (2 + (((this.level * 2 / 5) + 2) * power * (this.stats[1] / opponent.stats[2])) / 50) * modifier;
-            var damage = (this.stats[1] / opponent.stats[2]);
+            var damage = (2 + (((this.level * 2 / 5) + 2) * power * (this.stats[1] / opponent.stats[2])) / 50) * modifier;
             return damage;
         }
 
@@ -152,6 +155,9 @@
     }
     
     var clearMem = function(){
+        if(!confirm("Are you sure you want to delete your memory, including all of your Pokémon?")){
+            return;
+        }
         if (typeof(Storage) !== "undefined") {
             localStorage.removeItem("saveCoins");
             localStorage.removeItem("saveHolder");
@@ -197,6 +203,19 @@
         }
         for(var i = 0; i < fighting.length; i++){
             fighting[i].renderMon();
+        }
+
+        if(lastSelected != ""){
+            document.getElementById("nickShow").innerHTML = returnFromSelect(lastSelected).nick;
+            document.getElementById("statsShow").innerHTML = "HP: " + returnFromSelect(lastSelected).stats.reduce((z,y,f) => String(z) + "<br>" + statNames[f] + ": " + String(y));
+        }
+    }
+
+    var returnFromSelect = function(select){            
+        switch(select.substring(4).split(" ")[0].substring(0,1)){
+            case "H": return holder.contains[select.substring(4).split(" ")[1] - 1]; break;
+            case "F": return fighting[select.substring(5,6) - 1].contains[0]; break;
+            default : return box[select.substring(4,5)].contains[select.substring(4).split(" ")[1] - 1];
         }
     }
 
@@ -414,6 +433,10 @@
     }
 
     setInterval(function(){
+        if(selected != ""){
+            lastSelected = selected;
+        }
+
         if(!mouseDown){
             selected = "";
             renderAll();
@@ -468,7 +491,7 @@
             }
             
             if(typeof(fighting[i].contains[0]) == "object" && fighting[i].contains[0].id != undefined){
-                document.getElementById("H" + fighting[i].prefix).style.width = Math.max(70 * (fighting[i].contains[0].hp / pD[fighting[i].contains[0].id].stats[0]), 0) + "px";
+                document.getElementById("H" + fighting[i].prefix).style.width = Math.max(70 * (fighting[i].contains[0].hp / fighting[i].contains[0].stats[0]), 0) + "px";
             }
         }
     }, 30)
@@ -477,7 +500,7 @@
         fighting[setPair(reviving)[0]].contains[0].hp = fighting[setPair(reviving)[0]].contains[0].stats[0] * .8;
     }
 
-    function shake(image){
+    var shake = function(image){
         document.getElementById("POKE" + "H " + holder.contains.length).style.display = "none";
 
         shakeOn = true;
@@ -486,7 +509,7 @@
         var topBall = ($(document).height() * Math.random() * .6 + 200);
 
         document.getElementById("shake").src = image;
-        document.getElementById("shakeBehind").src = "pokemon/" + holder.contains[holder.contains.length - 1].id + ".png";
+        document.getElementById("shakeBehind").src = "pokemon/other-sprites/official-artwork/" + holder.contains[holder.contains.length - 1].id + ".png";
 
         $('#shake').css('transform', 'scale(' + (.5 + Math.abs(.5 - (scale / 100))) + ')')
         document.getElementById("shake").style.display = "block";
@@ -508,13 +531,15 @@
         $('#shake').css('transform', 'scale(' + (.15 + Math.abs(.5 - (scale / 100))) + ')')
         document.getElementById("shake").style.opacity = 2 - (scale / 100);
 
-        $('#shakeBehind').css('transform', 'scale(' + (.15 + Math.abs(.5 - (scale / 100))) + ')')
+        $('#shakeBehind').css('transform', 'scale(' + (.15 + Math.abs(.5 - (scale / 100))) / 1.35 + ')')
         document.getElementById("shakeBehind").style.opacity = 3 - (scale / 100);
 
-        if(scale > 300){
+        if(scale > 301){
             document.getElementById("shake").style.display = "none";
             shakeOn = false;
-            document.getElementById("POKE" + "H " + (holder.contains.length)).style.display = "inline";
+            if((document.getElementById("POKE" + "H " + (holder.contains.length))) != null){
+                document.getElementById("POKE" + "H " + (holder.contains.length)).style.display = "inline";
+            }
             document.getElementById("shakeBehind").style.display = "none";
         }
     }, 9)
@@ -596,7 +621,7 @@
             caught = set;
         }
 
-        holder.add(new Pokemon("", caught));    
+        holder.add(new Pokemon(pD[caught].name, caught));    
         holder.renderMon();
 
         saveGame();

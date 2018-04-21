@@ -1,6 +1,5 @@
 #moneyCount{
-    background-color: #111111;
-    background: no-repeat 10px 10px/35px 35px  url("items/dream-world/electric-gem.png"), #111111;
+    background: no-repeat 10px 10px/35px 35px  url("items/dream-world/electric-gem.png"), #333333;
     color:white;
     width: 99%;
     height: 50%;
@@ -8,6 +7,7 @@
     line-height: 60px;
     font-size:32px;
     text-align: center;
+    border: none;
 }
 
 #coinsCount{
@@ -171,6 +171,11 @@
     transform: scale(0);
 }
 
+#shakeBehind{
+    width:96px;
+    height:96px;
+}
+
 .pInv{
     background-size:100% 100%;
 }
@@ -190,7 +195,7 @@
 }
 
 #pokeHolder{
-    background: linear-gradient(#222222, #2A2A2A,#222222);
+    background-color: #333333;
     z-index:1;
     height: 66px;
     padding:10px;
@@ -248,17 +253,19 @@
 }
 
 #resetButton{
-    background-color: #111111;
+    background-color: #333333;
     color:white;
     width: 99%;
     height: 49%;
     line-height: 100%;
     font-size:16px;
+    border-top-left-radius: 50px;
     text-align: center;
+    transition: background-color .25s;
 }
 
 #resetButton:hover{
-    background-color:#444444;
+    background-color: #444444;
 }
 
 body{
