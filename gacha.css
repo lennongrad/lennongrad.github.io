@@ -1,10 +1,10 @@
 #moneyCount{
-    background: no-repeat 10px 10px/35px 35px  url("items/dream-world/electric-gem.png"), #333333;
+    background: no-repeat 10px 0px/25px 25px  url("items/dream-world/electric-gem.png"), #333333;
     color:white;
     width: 99%;
-    height: 50%;
+    height: 25px;
     text-align: right;
-    line-height: 60px;
+    line-height: 20px;
     font-size:32px;
     text-align: center;
     border: none;
@@ -66,31 +66,13 @@
 .dead{
     position: absolute; 
     text-align:center;
-    border-radius: 20px; 
-    width:228px; 
-    height:124px; 
-    opacity: 1; 
+    border-radius: 10px; 
+    width:104px; 
+    height: 104px; 
+    opacity: .2; 
     z-index:10; 
-    border:4px outset grey; 
-    margin-left:-4px;
-    margin-top:-4px;
-    background-image: url(steelback.jpg);
-}
-
-.dead div{
-    width:120px; 
-    text-align:center;
-    font-weight:600;
-    font-family: Helvetica;
-    font-size:15px;
-    border-radius:10px; 
-    height:25px; 
-    width:208px; 
-    line-height:25px; 
-    margin-top: 5px; 
-    margin-left: 5px;
-    color: white;
-    text-shadow: 0px 0px 20px black
+    margin-left:16px;
+    margin-top:32px;
 }
 
 .revive{
@@ -99,7 +81,7 @@
     height: 64px; 
     margin-left: auto;
     margin-right: auto;
-    margin-top:10px;
+    margin-top:15px;
 }
 
 .revive:hover{
@@ -107,36 +89,92 @@
 }
 
 .number{
-    --backColour : white;
     position: absolute;
     font-size: 17px;
     right: 20px;
     color: black;
     bottom: -25px;
+    --backColour : white;
     text-shadow: 0px 0px 3px var(--backColour), 0px 0px 6px var(--backColour), 0px 0px 9px var(--backColour), 0px 0px 12px var(--backColour), 0px 0px 15px var(--backColour);
     font-weight: 900;
-}
-
-#bar{
-    position: fixed;
-    left: 0px;
-    width:100%;
-    height:80px;
-    bottom: -2px;
-    z-index:-3;
-    background-color:#333333;
-    border:2px ridge black;
 }
 
 .row{
     background-color: #555555;
     border-radius: 1px;
+    border: 1px solid black;
+    height:15px;
+}
+
+.barHold{
+    opacity: .55; 
+    position: absolute; 
+    padding:3px; 
+    height:14px; 
+    width: 70px;  
+    top:27px; 
+    background-color:black; 
+    border-radius:5px
+}
+
+.healthBar{
+    transition: width 1s; 
+    height:7px; 
+    width: 70px; 
+    background-color:green; 
+    border-top-left-radius:3px;
+    border-top-right-radius:3px
+}
+
+.typeBar{
+    transition: width 1s; 
+    height:7px; 
+    width: 70px; 
+    background-color:blue; 
+    border-bottom-left-radius:3px;
+    border-bottom-right-radius:3px
+}
+
+.top{
+    position: absolute;
+    top:-2px;
+    width:70px;
+    text-align: center;
+}
+
+.top :first-child{
+    position: auto;
+    color: black;
+    font-weight: bold;
+    font-size: 15px;
+    font-family: Arial;
+}
+
+.top :nth-child(2){
+    position: auto;
+    margin-top:-3px;
+    color: black;
+    font-weight: bold;
+    font-size: 12px;
+    font-family: Helvetica;
 }
 
 .pokemonSprite{
     display:inline-block;
-    width:64px;
-    height:64px;
+    image-rendering: pixelated;
+    width:80px;
+    height:60px;
+    padding-top:-5px;
+    border-radius:100%;
+    cursor: pointer;
+    z-index:5;
+}
+
+.battleSprite{
+    display:inline-block;
+    image-rendering: pixelated;
+    width:96px;
+    height:96px;
     padding-top:-5px;
     border-radius:100%;
     cursor: pointer;
@@ -171,6 +209,16 @@
     transform: scale(0);
 }
 
+.shiny::after{
+    position: relative;
+    left:45px;
+    bottom:20px;
+    content: "★";
+    color:yellow;
+    --backColour : yellow;
+    text-shadow: 0px 0px 3px var(--backColour), 0px 0px 6px var(--backColour), 0px 0px 9px var(--backColour);
+}
+
 #shakeBehind{
     width:96px;
     height:96px;
@@ -181,24 +229,80 @@
 }
 
 .battle{
-    border-radius: 20px; 
-    top: 35%; 
-    width:228px; 
-    height: 124px; 
-    border:4px outset #222222;
-    background-image: url(grassBattle.PNG); 
-    position:absolute;
+    position: relative;
+    border-radius: 2px; 
+    width:99%; 
+    height: 144px; 
     left: 0;
-    right: 0;
-    margin-right:auto;
-    margin-left:auto;
+    border:2px outset #222222;
+    text-align: center;
+    background-image: url(grassBattle.PNG); 
+}
+
+.normal{
+    background-image: url(normalBattle.PNG); 
+}
+
+.water{
+    background-image: url(waterBattle.PNG); 
+}
+
+.rock{
+    background-image: url(rockBattle.PNG); 
+}
+
+.wrapper{
+    position: relative;
+    display: inline-block;
+    width:272px; 
+    height: 144px; 
+}
+
+.fBox{
+    position: absolute; 
+    background-image: url(backBattle.png); 
+    width:104px; 
+    height: 104px; 
+    top: 30px; 
+    margin: 0;
+}
+
+.Grass{
+    background-image: url(backBattleGrass.png); 
+}
+
+.Water{
+    background-image: url(backBattleWater.png); 
+}
+
+.Normal{
+    background-image: url(backBattleNormal.png); 
+}
+
+.Rock{
+    background-image: url(backBattleRock.png); 
 }
 
 #pokeHolder{
     background-color: #333333;
     z-index:1;
-    height: 66px;
+    height: 60px;
     padding:10px;
+}
+
+#dexTab{
+    position:relative;
+    left: 0;
+    top: 0;
+    width: 100%;
+}
+
+#main{
+    overflow-y: auto;
+    scroll-snap-type: mandatory;
+    scroll-snap-points-y: repeat(144px);
+    min-width:850px;
+    height:97%;
 }
 
 .POKEC{
@@ -256,8 +360,8 @@
     background-color: #333333;
     color:white;
     width: 99%;
-    height: 49%;
-    line-height: 100%;
+    height: 35px;
+    line-height: 14px;
     font-size:16px;
     border-top-left-radius: 50px;
     text-align: center;

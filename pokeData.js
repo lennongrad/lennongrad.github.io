@@ -11,7 +11,13 @@ function p(id         ,Name         ,Type1     ,Type2     ,Total ,HP ,Attack,Def
 
 	this.hasType = function(){
 		var final = false;
+		if(arguments[0] == "" || arguments[1] == ""){
+			return true;
+		}
 		for(var i = 0; i < arguments.length; i++){
+			if(arguments[i] == ""){
+				continue;
+			}
 			if(this.type[0] == arguments[i] || this.type[1] == arguments[i]){
 				final =  true;
 			}
@@ -19,6 +25,32 @@ function p(id         ,Name         ,Type1     ,Type2     ,Total ,HP ,Attack,Def
 		return final;
 	}
 }
+
+var T = {
+	"Normal": 0, 0: "Normal",
+	"Fire": 1, 1: "Fire",
+	"Fighting": 2, 2: "Fighting",
+	"Water": 3, 3: "Water",
+	"Flying": 4, 4: "Flying",
+	"Grass": 5, 5: "Grass",
+	"Poison": 6, 6: "Poison",
+	"Electric": 7, 7: "Electric",
+	"Ground": 8, 8: "Ground",
+	"Psychic": 9, 9: "Psychic",
+	"Rock": 10, 10: "Rock",
+	"Ice": 11, 11: "Ice",
+	"Bug": 12, 12: "Bug",
+	"Dragon": 13, 13: "Dragon",
+	"Ghost": 14, 14: "Ghost",
+	"Dark": 15, 15: "Dark",
+	"Steel": 16, 16: "Steel",
+	"Fairy": 17, 17: "Fairy"
+};
+var types = [{
+		title: "Normal", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], from: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},{
+		
+	}]
+
 var pD = [0           , new p (
 	1                 ,"Bulbasaur"  ,"Grass"   ,"Poison"  ,318   ,45 ,49    ,49     ,65   ,65   ,45   ,1         ,false    ,0       ,.05)    , new p(
 	2                 ,"Ivysaur"    ,"Grass"   ,"Poison"  ,405   ,60 ,62    ,63     ,80   ,80   ,60   ,1         ,false    ,1       ,0)      , new p(
@@ -157,11 +189,11 @@ var pD = [0           , new p (
 	135               ,"Jolteon"    ,"Electric","None"    ,525   ,65 ,65    ,60     ,110  ,95   ,130  ,1         ,false    ,134     ,0)      , new p(
 	136               ,"Flareon"    ,"Fire"    ,"None"    ,525   ,65 ,130   ,60     ,95   ,110  ,65   ,1         ,false    ,134     ,0)      , new p(
 	137               ,"Porygon"    ,"Normal"  ,"None"    ,395   ,65 ,60    ,70     ,85   ,75   ,40   ,1         ,false    ,0       ,.05)    , new p(
-	138               ,"Omanyte"    ,"Rock"    ,"Water"   ,355   ,35 ,40    ,100    ,90   ,55   ,35   ,1         ,false    ,0       ,.1)     , new p(
+	138               ,"Omanyte"    ,"Rock"    ,"Water"   ,355   ,35 ,40    ,100    ,90   ,55   ,35   ,1         ,false    ,1       ,.1)     , new p(
 	139               ,"Omastar"    ,"Rock"    ,"Water"   ,495   ,70 ,60    ,125    ,115  ,70   ,55   ,1         ,false    ,138     ,0)      , new p(
-	140               ,"Kabuto"     ,"Rock"    ,"Water"   ,355   ,30 ,80    ,90     ,55   ,45   ,55   ,1         ,false    ,0       ,.1)     , new p(
+	140               ,"Kabuto"     ,"Rock"    ,"Water"   ,355   ,30 ,80    ,90     ,55   ,45   ,55   ,1         ,false    ,1       ,.1)     , new p(
 	141               ,"Kabutops"   ,"Rock"    ,"Water"   ,495   ,60 ,115   ,105    ,65   ,70   ,80   ,1         ,false    ,140     ,0)      , new p(
-	142               ,"Aerodactyl" ,"Rock"    ,"Flying"  ,515   ,80 ,105   ,65     ,60   ,75   ,130  ,1         ,false    ,0       ,.1)     , new p(
+	142               ,"Aerodactyl" ,"Rock"    ,"Flying"  ,515   ,80 ,105   ,65     ,60   ,75   ,130  ,1         ,false    ,1       ,.1)     , new p(
 	143               ,"Snorlax"    ,"Normal"  ,"None"    ,540   ,160,110   ,65     ,65   ,110  ,30   ,1         ,false    ,/*446*/0,0)      , new p(
 	144               ,"Articuno"   ,"Ice"     ,"Flying"  ,580   ,90 ,85    ,100    ,95   ,125  ,85   ,1         ,true     ,0       ,.05)    , new p(
 	145               ,"Zapdos"     ,"Electric","Flying"  ,580   ,90 ,90    ,85     ,125  ,90   ,100  ,1         ,true     ,0       ,.05)    , new p(
