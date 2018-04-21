@@ -66,7 +66,7 @@
         return final;
     }
 
-    var holder = new Inventory(10, 1, "pokeHolder", "H", LEFT, 1, []);
+    var holder = new Inventory(20, 1, "pokeHolder", "H", LEFT, 1, []);
     var box = [];
     box.push(new Inventory(3, 3, "pokeBox", "0", RIGHT, 1, []));
     var fighting = [];
@@ -185,7 +185,7 @@
             var power = 20 + (1 - pD[this.id].rarity) * 100;
 
             var use = 1;
-            if(this.stats[1] > this.stats[3]){
+            if(this.stats[1] < this.stats[3]){
                 use = 3;
             }
 
@@ -404,7 +404,7 @@
                     var newNumber = document.createElement("DIV");
                     newNumber.style.setProperty("--backColour", this.colour)
                     newNumber.className = "number";
-                    newNumber.innerHTML = "-" + Math.ceil(this.dmg);
+                    newNumber.innerHTML = Math.ceil(this.dmg);
                     newNumber.style.bottom = 30 + this.dmgFly + "px";
                     newNumber.style.right = (75 - (75 * this.direction)) + "px";
                     newNumber.style.opacity = 1 - (this.dmgFly / 40)
@@ -501,6 +501,8 @@
             if(hover.substring(0,1) == "F" && fighting[hover.substring(1) - 1].willAllowAdd(1)){
                 fighting[hover.substring(1) - 1].add(toMove);
                 fighting[setPair(hover.substring(1) - 1)[0]].bouncey = 0; fighting[setPair(hover.substring(1) - 1)[1]].bouncey = 50; 
+                fighting[setPair(hover.substring(1) - 1)[0]].contains[0].hp = fighting[setPair(hover.substring(1) - 1)[0]].contains[0].stats[0]; 
+                fighting[setPair(hover.substring(1) - 1)[1]].contains[0].hp = fighting[setPair(hover.substring(1) - 1)[1]].contains[0].stats[0]; 
             } else if(hover.substring(0,1) == "F"){
                 return;
             }
@@ -572,7 +574,7 @@
 
                     if(fighting[i].bouncey == 40){
                         var damaged = fighting[getPair(i, true)].contains[0].attack(fighting[getPair(i, false)].contains[0]);
-                        fighting[getPair(i, false)].dmg = fighting[getPair(i, false)].contains[0].defend(damaged[0]);
+                        fighting[getPair(i, false)].dmg = "-" + fighting[getPair(i, false)].contains[0].defend(damaged[0]);
                         fighting[getPair(i, false)].dmgFly = 0;
                         fighting[getPair(i, false)].colour = "white";
                         if(damaged[2]){
@@ -605,6 +607,8 @@
                 }
             } else if (fighting[setPair(i)[1]].contains.length == 1){
                 document.getElementById("POKE" + fighting[setPair(i)[1]].prefix + " 1").childNodes[1].style.opacity = ".5";
+                fighting[setPair(i)[1]].contains[0].hp = fighting[setPair(i)[1]].contains[0].stats[0];
+                document.getElementById("H" + fighting[setPair(i)[0]].prefix).style.width = "70px";
             }
 
             if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1){
@@ -628,7 +632,8 @@
     }, 30)
 
     var revive = function(reviving){
-        fighting[setPair(reviving)[0]].contains[0].hp = fighting[setPair(reviving)[0]].contains[0].stats[0] * .8;
+        fighting[setPair(reviving)[0]].contains[0].hp = fighting[setPair(reviving)[0]].contains[0].stats[0];
+        fighting[setPair(reviving)[1]].contains[0].hp = fighting[setPair(reviving)[1]].contains[0].stats[0];
     }
 
     var shake = function(image){
