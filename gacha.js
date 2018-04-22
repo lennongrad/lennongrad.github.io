@@ -1,9 +1,11 @@
-    var coins = 10000;
+    var coins = 50;
 
     var RIGHT = 1;
     var LEFT = 0;
 
     var version = "B3";
+
+    document.getElementById("version").innerHTML = "Version " + version;
     
     window.mobilecheck = function() {
         var check = false;
