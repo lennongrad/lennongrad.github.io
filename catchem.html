@@ -61,18 +61,18 @@
                         </td>
                 </tr>
                 <tr>
-                    <td style="width: 15%; background-color: #2A2A2A; text-align: center; color:white; font-family:Arial">
+                    <td id="info">
                             <div id="nickShow" style="font-weight:bold"></div>
                             <div id="statsShow"></div>
                     </td>
                         <td style="overflow-y: hidden; width: 78%;  text-align: center; background-color: #111111">        
                             <div id="main">
                             </div>
-                            <span id="buyField" style="height: 40px; color:white; width: 50px; border: 2px solid white; padding: 3px;" onclick="buyField()">15</span>
+                            <span id="buyField" style="height: 40px; cursor: pointer; color:white; width: 50px; border: 2px solid white; padding: 3px;" onclick="buyField()">15</span>
                         </td>
                         <td style="min-width: 90px; background-color: #2A2A2A; text-align: center; overflow-y: scroll">
-                            <div class="item" id="item0" onclick="catchMon(0, 0)"><image class="icon" id="commonBall" src="items/dream-world/poke-ball.png"/></div>
-                            <div class="item" id="item1" onclick="catchMon(1, 0)"><image class="icon" id="ultraBall" src="items/dream-world/great-ball.png"/></div>
+                            <div class="item" id="item0" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 0"><image draggable="false" class="icon" id="commonBall" src="items/dream-world/poke-ball.png"/></div>
+                            <div class="item" id="item1" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 1"><image draggable="false" class="icon" id="ultraBall" src="items/dream-world/great-ball.png"/></div>
                         </td>
                 </tr>
                 <tr> 
@@ -84,8 +84,8 @@
                         </td>
                 </tr>
                 <tr>
-                    <td colspan=2 style="height:17px; font-size:15px; color:white;  text-align: right; padding-right: 15px">
-                        Version β
+                    <td colspan=3 style="height:17px; font-size:15px; color:white;  text-align: right; padding-right: 15px">
+                        Version β2
                     </td>
                 </tr>
         </table>

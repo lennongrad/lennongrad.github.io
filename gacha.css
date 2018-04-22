@@ -32,6 +32,14 @@
     cursor: pointer;
 }
 
+#shake{
+    pointer-events: none;
+}
+
+#shakeBehind{
+    pointer-events: none;
+}
+
 .icon{
     position: relative;
     height:55px;
@@ -129,10 +137,18 @@
 .typeBar{
     transition: width 1s; 
     height:7px; 
-    width: 70px; 
-    background-color:blue; 
+    width: 0px; 
+    background-color:#0081af; 
     border-bottom-left-radius:3px;
     border-bottom-right-radius:3px
+}
+
+#info{
+    width:15%;
+    background-color: #2A2A2A; 
+    text-align: center; 
+    color:white; 
+    font-family:Arial;
 }
 
 .top{
@@ -251,6 +267,10 @@
     background-image: url(rockBattle.PNG); 
 }
 
+.ice{
+    background-image: url(iceBattle.PNG); 
+}
+
 .wrapper{
     position: relative;
     display: inline-block;
@@ -281,6 +301,10 @@
 
 .Rock{
     background-image: url(backBattleRock.png); 
+}
+
+.Rock{
+    background-image: url(backBattleIce.png); 
 }
 
 #pokeHolder{

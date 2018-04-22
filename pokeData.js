@@ -29,26 +29,45 @@ function p(id         ,Name         ,Type1     ,Type2     ,Total ,HP ,Attack,Def
 var T = {
 	"Normal": 0, 0: "Normal",
 	"Fire": 1, 1: "Fire",
-	"Fighting": 2, 2: "Fighting",
-	"Water": 3, 3: "Water",
-	"Flying": 4, 4: "Flying",
-	"Grass": 5, 5: "Grass",
-	"Poison": 6, 6: "Poison",
-	"Electric": 7, 7: "Electric",
+	"Water": 2, 2: "Water",
+	"Electric": 3, 3: "Electric",
+	"Grass": 4, 4: "Grass",
+	"Ice": 5, 5: "Ice",
+	"Fighting": 6, 6: "Fighting",
+	"Poison": 7, 7: "Poison",
 	"Ground": 8, 8: "Ground",
-	"Psychic": 9, 9: "Psychic",
-	"Rock": 10, 10: "Rock",
-	"Ice": 11, 11: "Ice",
-	"Bug": 12, 12: "Bug",
-	"Dragon": 13, 13: "Dragon",
-	"Ghost": 14, 14: "Ghost",
+	"Flying": 8, 8: "Flying",
+	"Psychic": 10, 10: "Psychic",
+	"Bug": 11, 11: "Bug",
+	"Rock": 12, 12: "Rock",
+	"Ghost": 13, 13: "Ghost",
+	"Dragon": 14, 14: "Dragon",
 	"Dark": 15, 15: "Dark",
 	"Steel": 16, 16: "Steel",
-	"Fairy": 17, 17: "Fairy"
+	"Fairy": 17, 17: "Fairy",
+	"None": 18, 18: "None"
 };
+
 var types = [{
-		title: "Normal", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], from: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},{
-		
+	title: "Normal", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,1,1,1,1,1,1,1,1,1,1,1,0.5,0,1,1,0.5,1,1]},{
+	title: "Fire", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,0.5,0.5,1,2,2,1,1,1,1,1,2,0.5,1,0.5,1,2,1,1]},{
+	title: "Water", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,2,0.5,1,0.5,1,1,1,2,1,1,1,2,1,0.5,1,1,1,1]},{
+	title: "Electric", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,1,2,0.5,0.5,1,1,1,0,2,1,1,1,1,0.5,1,1,1,1]},{
+	title: "Grass", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,0.5,2,1,0.5,1,1,0.5,2,0.5,1,0.5,2,1,0.5,1,0.5,1,1]},{
+	title: "Ice", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,0.5,0.5,1,2,0.5,1,1,2,2,1,1,1,1,2,1,0.5,1,1]},{
+	title: "Fighting", color1: "#111111", color2: "#111111", color3: "#111111", against: [2,1,1,1,1,2,1,0.5,1,0.5,0.5,0.5,2,0,1,2,2,0.5,1]},{
+	title: "Poison", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,1,1,1,2,1,1,0.5,0.5,1,1,1,0.5,0.5,1,1,0,2,1]},{
+	title: "Ground", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,2,1,2,0.5,1,1,2,1,0,1,0.5,2,1,1,1,2,1,1]},{
+	title: "Flying", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,1,1,0.5,2,1,2,1,1,1,1,2,0.5,1,1,1,0.5,1,1]},{
+	title: "Psychic", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,1,1,1,1,1,2,2,1,1,0.5,1,1,1,1,0,0.5,1,1]},{
+	title: "Bug", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,0.5,1,1,2,1,0.5,0.5,1,0.5,2,1,1,0.5,1,2,0.5,0.5,1]},{
+	title: "Rock", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,2,1,1,1,2,0.5,1,0.5,2,1,2,1,1,1,1,0.5,1,1]},{
+	title: "Ghost", color1: "#111111", color2: "#111111", color3: "#111111", against: [0,1,1,1,1,1,1,1,1,1,2,1,1,2,1,0.5,1,1,1]},{
+	title: "Dragon", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,0.5,0,1]},{
+	title: "Dark", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,1,1,1,1,1,0.5,1,1,1,2,1,1,2,1,0.5,1,0.5,1]},{
+	title: "Steel", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,0.5,0.5,0.5,1,2,1,1,1,1,1,1,2,1,1,1,0.5,2,1]},{
+	title: "Fairy", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,0.5,1,1,1,1,2,0.5,1,1,1,1,1,1,2,2,0.5,1,1]},{
+	title: "None", color1: "#111111", color2: "#111111", color3: "#111111", against: [1,1,1,1,1,1,1,1.1,1,1,1,1,1,1,1,1,1,1,1]
 	}]
 
 var pD = [0           , new p (
@@ -83,7 +102,7 @@ var pD = [0           , new p (
 	29                ,"Nidoran♀"   ,"Poison"  ,"None"    ,275   ,55 ,47    ,52     ,40   ,40   ,41   ,1         ,false    ,0       ,.45)    , new p(
 	30                ,"Nidorina"   ,"Poison"  ,"None"    ,365   ,70 ,62    ,67     ,55   ,55   ,56   ,1         ,false    ,29      ,0)      , new p(
 	31                ,"Nidoqueen"  ,"Poison"  ,"Ground"  ,505   ,90 ,92    ,87     ,75   ,85   ,76   ,1         ,false    ,30      ,0)      , new p(
-	32                ,"Nidoran♂" ,"Poison"  ,"None"    ,273   ,46 ,57    ,40     ,40   ,40   ,50   ,1         ,false    ,0       ,.45)    , new p(
+	32                ,"Nidoran♂"   ,"Poison"  ,"None"    ,273   ,46 ,57    ,40     ,40   ,40   ,50   ,1         ,false    ,0       ,.45)    , new p(
 	33                ,"Nidorino"   ,"Poison"  ,"None"    ,365   ,61 ,72    ,57     ,55   ,55   ,65   ,1         ,false    ,32      ,0)      , new p(
 	34                ,"Nidoking"   ,"Poison"  ,"Ground"  ,505   ,81 ,102   ,77     ,85   ,75   ,85   ,1         ,false    ,33      ,0)      , new p(
 	35                ,"Clefairy"   ,"Fairy"   ,"None"    ,323   ,70 ,45    ,48     ,60   ,65   ,35   ,1         ,false    ,/*173*/0,0)      , new p(
@@ -95,7 +114,7 @@ var pD = [0           , new p (
 	41                ,"Zubat"      ,"Poison"  ,"Flying"  ,245   ,40 ,45    ,35     ,30   ,40   ,55   ,1         ,false    ,0       ,.85)    , new p(
 	42                ,"Golbat"     ,"Poison"  ,"Flying"  ,455   ,75 ,80    ,70     ,65   ,75   ,90   ,1         ,false    ,41      ,0)      , new p(
 	43                ,"Oddish"     ,"Grass"   ,"Poison"  ,320   ,45 ,50    ,55     ,75   ,65   ,30   ,1         ,false    ,0       ,.7)     , new p(
-	44                ,"Gloom"      ,"Grass"   ,"Poison"  ,395   ,60 ,65    ,70     ,85   ,75   ,40   ,1         ,false    ,44      ,0)      , new p(
+	44                ,"Gloom"      ,"Grass"   ,"Poison"  ,395   ,60 ,65    ,70     ,85   ,75   ,40   ,1         ,false    ,43      ,0)      , new p(
 	45                ,"Vileplume"  ,"Grass"   ,"Poison"  ,490   ,75 ,80    ,85     ,110  ,90   ,50   ,1         ,false    ,44      ,0)      , new p(
 	46                ,"Paras"      ,"Bug"     ,"Grass"   ,285   ,35 ,70    ,55     ,45   ,55   ,25   ,1         ,false    ,0       ,.5)     , new p(
 	47                ,"Parasect"   ,"Bug"     ,"Grass"   ,405   ,60 ,95    ,80     ,60   ,80   ,30   ,1         ,false    ,46      ,0)      , new p(
@@ -189,11 +208,11 @@ var pD = [0           , new p (
 	135               ,"Jolteon"    ,"Electric","None"    ,525   ,65 ,65    ,60     ,110  ,95   ,130  ,1         ,false    ,134     ,0)      , new p(
 	136               ,"Flareon"    ,"Fire"    ,"None"    ,525   ,65 ,130   ,60     ,95   ,110  ,65   ,1         ,false    ,134     ,0)      , new p(
 	137               ,"Porygon"    ,"Normal"  ,"None"    ,395   ,65 ,60    ,70     ,85   ,75   ,40   ,1         ,false    ,0       ,.05)    , new p(
-	138               ,"Omanyte"    ,"Rock"    ,"Water"   ,355   ,35 ,40    ,100    ,90   ,55   ,35   ,1         ,false    ,1       ,.1)     , new p(
+	138               ,"Omanyte"    ,"Rock"    ,"Water"   ,355   ,35 ,40    ,100    ,90   ,55   ,35   ,1         ,false    ,-1       ,.1)     , new p(
 	139               ,"Omastar"    ,"Rock"    ,"Water"   ,495   ,70 ,60    ,125    ,115  ,70   ,55   ,1         ,false    ,138     ,0)      , new p(
-	140               ,"Kabuto"     ,"Rock"    ,"Water"   ,355   ,30 ,80    ,90     ,55   ,45   ,55   ,1         ,false    ,1       ,.1)     , new p(
+	140               ,"Kabuto"     ,"Rock"    ,"Water"   ,355   ,30 ,80    ,90     ,55   ,45   ,55   ,1         ,false    ,-1       ,.1)     , new p(
 	141               ,"Kabutops"   ,"Rock"    ,"Water"   ,495   ,60 ,115   ,105    ,65   ,70   ,80   ,1         ,false    ,140     ,0)      , new p(
-	142               ,"Aerodactyl" ,"Rock"    ,"Flying"  ,515   ,80 ,105   ,65     ,60   ,75   ,130  ,1         ,false    ,1       ,.1)     , new p(
+	142               ,"Aerodactyl" ,"Rock"    ,"Flying"  ,515   ,80 ,105   ,65     ,60   ,75   ,130  ,1         ,false    ,-1       ,.1)     , new p(
 	143               ,"Snorlax"    ,"Normal"  ,"None"    ,540   ,160,110   ,65     ,65   ,110  ,30   ,1         ,false    ,/*446*/0,0)      , new p(
 	144               ,"Articuno"   ,"Ice"     ,"Flying"  ,580   ,90 ,85    ,100    ,95   ,125  ,85   ,1         ,true     ,0       ,.05)    , new p(
 	145               ,"Zapdos"     ,"Electric","Flying"  ,580   ,90 ,90    ,85     ,125  ,90   ,100  ,1         ,true     ,0       ,.05)    , new p(

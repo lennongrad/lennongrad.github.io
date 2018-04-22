@@ -1,9 +1,9 @@
-    var coins = 500;
+    var coins = 10000;
 
     var RIGHT = 1;
     var LEFT = 0;
 
-    var version = "B";
+    var version = "B2";
     
     window.mobilecheck = function() {
         var check = false;
@@ -26,6 +26,10 @@
     }
     fixItems();
 
+    var rand5 = function(){
+        return (Math.random() + Math.random()) / 2
+    }
+
     var toBool = function(take){
         switch(take){
             case "false": return false;
@@ -43,6 +47,13 @@
         newF.className = "pInv battle " + catchable[0].toLowerCase();
         newF.id = "battle" + currentField;
         newF.style.display = "none";
+        newF.onmouseup = function(){
+            if(catchMode){
+                catchLocation = this.id.substring(6);
+                catchMon();
+                catchMode = false;
+            }   
+        };
 
         levelBase = 1;
         for(var i = (currentField * 3) - 2; i < 1 + (currentField * 3); i++){
@@ -52,8 +63,8 @@
             wrapper.id = "wrap" + i;
             wrapper.style.display = "none";
             newF.appendChild(wrapper);
-            fighting.push(new Inventory(1, 1, "F" + toPlace(((i * 2) - 1),2), "F" + toPlace(((i * 2) - 1),2), RIGHT, levelBase + (i * 2), catchable), 
-            new Inventory(1, 1, "F" + toPlace(i * 2,2), "F" + toPlace(i * 2,2), LEFT, levelBase + (i * 2), catchable))
+            fighting.push(new Inventory(1, 1, "F" + toPlace(((i * 2) - 1),2), "F" + toPlace(((i * 2) - 1),2), RIGHT, levelBase + ((i - 1) * 2), catchable), 
+            new Inventory(1, 1, "F" + toPlace(i * 2,2), "F" + toPlace(i * 2,2), LEFT, levelBase + ((i - 1) * 2), catchable))
         }
         document.getElementById("main").appendChild(newF);
     }
@@ -71,9 +82,10 @@
     box.push(new Inventory(3, 3, "pokeBox", "0", RIGHT, 1, []));
     var fighting = [];
     newField(["Grass", "Bug"]);
-    newField(["Normal", "Psychic"]);
+    newField(["Normal", "Fighting"]);
     newField(["Water", "Dragon"]);
     newField(["Rock", "Ghost"]);
+    newField(["Ice", "Psychic"]);
 
     unlockedField = 0;
     var unlockField = function(){
@@ -86,16 +98,16 @@
     unlockField();
 
     var buyField = function(){
-        if(unlockedField > 1 + fighting.length / 2){
+        if(unlockedField > 30){
             return;
         }
-        console.log(coins);
         if(coins >= curCost){
             coins -= curCost;
             curCost = Math.floor(curCost * 1.5);
             unlockField();
         }
         updateCoins();
+        saveGame();
     }
 
     var active = 0;
@@ -103,6 +115,10 @@
     var lastSelected = "";
     var hover = "";
     var isMoving = false;
+
+    var catchMode = false;
+    var catchBall = 0;
+    var catchLocation = 0; 
 
     var statNames = ["HP", "ATK", "DEF", "SPATK", "SPDEF", "SPD"]
 
@@ -119,7 +135,7 @@
         var outArray = [];
         for(var i = 0; i < tempArray.length; i++){
             var holdDat = tempArray[i].split(";");
-            outArray.push(new Pokemon(holdDat[0],holdDat[1],toBool(holdDat[2]),holdDat[3]))
+            outArray.push(new Pokemon(holdDat[0],holdDat[1],toBool(holdDat[2]),holdDat[3], holdDat[4]))
         }
         return outArray;
     };
@@ -141,7 +157,7 @@
 
     var blankPokemon = pokemonFromString("")[0];
 
-    function Pokemon(nick, id, shinys, level){
+    function Pokemon(nick, id, shinys, level, player){
         if(nick != ""){
             this.nick = nick;
         } else if(id != undefined){
@@ -151,6 +167,8 @@
         this.level = level;
         this.exp = 0;
         this.find = "";
+        this.tCharge = 0;
+        this.player = player;
 
         this.shiny = shinys;
         
@@ -171,6 +189,19 @@
         }
 
         this.attack = function(opponent){
+            var power = 20 + (1 - pD[this.id].rarity) * 100;
+            var moveType = pD[this.id].type[0];
+
+            var use = 1;
+            if(this.stats[1] < this.stats[3]){
+                use = 3;
+            }
+
+            var useType = false;
+            if(this.tCharge >= 100){
+                this.tCharge = 0;
+                useType = true;
+            }
             var modifier = 1;
             modifier *= 1; //targets
             modifier *= 1; //weather
@@ -179,18 +210,25 @@
             var crit = (.9 < Math.random());
             modifier *= 1 + (1.5 * crit); //critical
             modifier *= 1; //STAB
-            modifier *= 1; //type
+            if(useType){
+                modifier *= types[T[moveType]].against[T[pD[opponent.id].type[0]]] * types[T[moveType]].against[T[pD[opponent.id].type[1]]]; //type
+                modifier *= 1.5;
+            }
             modifier *= 1; //status
             modifier *= 1; //other
-            var power = 20 + (1 - pD[this.id].rarity) * 100;
-
-            var use = 1;
-            if(this.stats[1] < this.stats[3]){
-                use = 3;
+            if(this.player){
+                modifier *= 1.3;
             }
 
             var damage = (2 + (((this.level * 2 / 5) + 2) * power * (this.stats[use] / opponent.stats[use + 1])) / 50) * modifier;
-            return [damage, crit, use == 3];
+            
+            if(!useType){
+                this.tCharge += Math.max(25, 25 + this.stats[5] - opponent.stats[5])
+            }
+            if(this.tCharge >= 100){
+                this.tCharge = 100;
+            }
+            return [damage, crit, use == 3, useType];
         }
 
         this.defend = function(damage){
@@ -206,15 +244,50 @@
             if(this.exp >= Math.min(10, Math.floor(1 + 2 * Math.log(this.level)))){
                 this.level++;
                 this.hp += Math.max(0, ((this.stats[0] - this.hp) * .8))
-                for(var i = 0; i < this.stats.length; i++){
-                    this.stats[i] += 10;
-                }
                 this.exp = 0;
+                if(this.level % 5 == 0){
+                    this.evolve();
+                }
             }
+            this.calcLevel();
+        }
+
+        this.calcLevel = function(){
+            if(this.stats == undefined){
+                return;
+            }
+            for(var i = 0; i < this.stats.length; i++){
+                this.stats[i] = pD[this.id].stats[i] + Math.ceil((1/25) * this.level * pD[this.id].stats[i]);
+            }
+        }
+        this.calcLevel();
+
+        this.evolve = function(){
+            var newID = this.id;
+            var chances = [];
+
+            for(var i = 1; i < pD.length; i++){
+                if(pD[i].evolution == this.id){
+                    chances.push(i);
+                }
+            }
+
+            if(chances.length != 0){
+                newID = chances[Math.floor(Math.random() * chances.length)];
+            }
+
+            if(newID != this.id && this.nick == pD[this.id].name){
+                this.nick = pD[newID].name;
+            }
+
+            this.id = newID;
+            this.calcLevel();
+
+            return chances.length != 0;
         }
 
         this.toString = function(){
-            return this.nick + ";" + this.id + ";" + this.shiny + ";" + this.level;
+            return this.nick + ";" + this.id + ";" + this.shiny + ";" + this.level + ";" + this.player;
         }
     }
 
@@ -294,8 +367,9 @@
         }
 
         if(lastSelected != "" && returnFromSelect(lastSelected) != undefined){
-            document.getElementById("nickShow").innerHTML = returnFromSelect(lastSelected).nick;
-            document.getElementById("statsShow").innerHTML = "HP: " + returnFromSelect(lastSelected).stats.reduce((z,y,f) => String(z) + "<br>" + statNames[f] + ": " + String(y));
+            var cur = returnFromSelect(lastSelected);
+            document.getElementById("nickShow").innerHTML = cur.nick;
+            document.getElementById("statsShow").innerHTML = "Level: " + cur.level + "<br>HP: " + cur.stats.reduce((z,y,f) => String(z) + "<br>" + statNames[f] + ": " + String(y) + " (+" + String(y - pD[cur.id].stats[f]) + ")");
         }
     }
 
@@ -308,6 +382,16 @@
     }
 
     renderAll();
+
+    function Ball(cost, image, bonus){
+        this.cost = cost;
+        this.image = image;
+        this.bonus = bonus;
+    }
+
+    var balls = [];
+    balls.push(new Ball(20, "items/dream-world/poke-ball.png", 1));
+    balls.push(new Ball(30, "items/dream-world/great-ball.png", .8));
 
     function Inventory(width, height, place, prefix, direction, levelBase, catchable){
         this.width = width;
@@ -372,7 +456,7 @@
                 var topS = document.getElementById(this.place).getBoundingClientRect().top + 10 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64;
 
                 if(this.allowHover){
-                    contain.onmouseover = new Function("if(selected == ''){selected = " + '"' + contain.id + '";}');
+                    contain.onmouseover = new Function("if(selected == '' && !catchMode){selected = " + '"' + contain.id + '";}');
                 }
                  
                 var newMon = document.createElement("IMG");
@@ -534,17 +618,27 @@
             moveCount = 0;
             hover = "";
         } 
+
+        if(catchMode){
+            $(".battle").css({"cursor":"pointer"})
+        } else {
+            $(".battle").css({"cursor":"auto"})
+        }
     }, 1)
-    
-    var caught = 0;
+
+    var getMon = function(catchable, levelBase, variation, chance){
+        var caught = Math.ceil((pD.length - 1) * Math.random());
+        while(pD[caught].evolution != 0 || pD[caught].rarity < (rand5() * chance) || !(pD[caught].hasType(catchable[0]) || pD[caught].hasType(catchable[1]))){
+            caught = Math.ceil((pD.length - 1) * Math.random());
+        }
+        var level = levelBase + Math.floor(Math.random() * variation);
+        return [caught, level]
+    }
         
     for(var i = 1; i < fighting.length; i += 2){
         if(fighting[i].contains.length < 1){
-            caught = Math.ceil((pD.length - 1) * Math.random());
-            while(pD[caught].evolution != 0 || !(pD[caught].hasType(fighting[i].catchable[0]) || pD[caught].hasType(fighting[i].catchable[1]))){
-                caught = Math.ceil((pD.length - 1) * Math.random());
-            }
-            fighting[i].contains.push(new Pokemon("", caught, false, fighting[i].levelBase + Math.floor(Math.random() * 4)))
+            var found = getMon(fighting[i].catchable, fighting[i].levelBase, 0, 1);
+            fighting[i].contains.push(new Pokemon("", found[0], false, found[1], false))
         }
     }
 
@@ -555,7 +649,28 @@
 
         if(!mouseDown){
             selected = "";
+            catchMode = false;
             renderAll();
+        }
+
+    	//if(lastSelected == "" || false){
+            //document.getElementById("info").style.width = "99px";
+        //} else {
+            //document.getElementById("info").style.width = (.1 * $(window).width()) + "px";
+        //}
+        fixItems();
+        
+        if(catchMode){
+            document.getElementById("shake").style.display = "block";
+            document.getElementById("shake").style.opacity = ".9";
+            document.getElementById("shake").style.transform = "scale(.3)";
+            document.getElementById("shake").src = balls[catchBall].image;
+
+            
+            document.getElementById("item" + catchBall).childNodes[0].style.opacity = "0";
+        } else if(!shakeOn){
+            document.getElementById("shake").style.opacity = "0";
+            document.getElementById("item" + catchBall).childNodes[0].style.opacity = "1";
         }
 
         for(var i = 0; i < fighting.length; i++){
@@ -578,27 +693,30 @@
                         fighting[getPair(i, false)].dmgFly = 0;
                         fighting[getPair(i, false)].colour = "white";
                         if(damaged[2]){
-                            fighting[getPair(i, false)].colour = "green";
+                            fighting[getPair(i, false)].colour = "lawngreen";
+                        }
+                        if(damaged[3]){
+                            fighting[getPair(i, false)].colour = "LightSkyBlue";
                         }
                         if(damaged[1]){
-                            fighting[getPair(i, false)].colour = "red";
+                            fighting[getPair(i, false)].colour = "lightCoral";
+                        }
+                        if(damaged[1] && damaged[3]){
+                            fighting[getPair(i, false)].colour = "plum";
                         }
 
                         if(fighting[setPair(i)[1]].contains[0].hp <= 0){
-                            coins -= -10;
+                            coins -= -10 * fighting[setPair(i)[1]].contains[0].level;
                             updateCoins();
                             saveGame();
                             fighting[getPair(i, true)].contains[0].levelUp(fighting[getPair(i, true)].contains[0].level < fighting[getPair(i, false)].contains[0].level + 3);
                             fighting[getPair(i, true)].dmgFly = 0;
-                            fighting[getPair(i, true)].dmg = "10";
+                            fighting[getPair(i, true)].dmg = String(fighting[setPair(i)[1]].contains[0].level * 10);
                             fighting[getPair(i, true)].colour = "yellow";
                             fighting[setPair(i)[1]].contains.splice(0,1);
-                            var caught = Math.ceil((pD.length - 1) * Math.random());
-            
-                            while(pD[caught].evolution != 0 || !pD[caught].hasType(fighting[setPair(i)[1]].catchable[0], fighting[setPair(i)[1]].catchable[1])){
-                                caught = Math.ceil((pD.length - 1) * Math.random());
-                            }
-                            fighting[setPair(i)[1]].contains.push(new Pokemon("", caught, false, fighting[setPair(i)[1]].levelBase + Math.floor(Math.random() * 4)))
+                            
+                            var found = getMon(fighting[setPair(i)[1]].catchable, fighting[setPair(i)[1]].levelBase, 1, 1);
+                            fighting[setPair(i)[1]].contains.push(new Pokemon("", found[0], (.0001 > Math.random()), found[1], false))
                         }
                     }
 
@@ -609,6 +727,8 @@
                 document.getElementById("POKE" + fighting[setPair(i)[1]].prefix + " 1").childNodes[1].style.opacity = ".5";
                 fighting[setPair(i)[1]].contains[0].hp = fighting[setPair(i)[1]].contains[0].stats[0];
                 document.getElementById("H" + fighting[setPair(i)[0]].prefix).style.width = "70px";
+                document.getElementById("T" + fighting[setPair(i)[0]].prefix).style.width = "00px";
+                document.getElementById("H" + fighting[setPair(i)[0]].prefix).style.backgroundColor = "green";
             }
 
             if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1){
@@ -623,7 +743,16 @@
             
             if(typeof(fighting[i].contains[0]) == "object" && fighting[i].contains[0].id != undefined){
                 document.getElementById("H" + fighting[i].prefix).style.width = Math.max(70 * (fighting[i].contains[0].hp / fighting[i].contains[0].stats[0]), 0) + "px";
+                document.getElementById("T" + fighting[i].prefix).style.width = Math.max(70 * (fighting[i].contains[0].tCharge / 100), 0) + "px";
+                if(fighting[i].contains[0].hp / fighting[i].contains[0].stats[0] > .5){
+                    document.getElementById("H" + fighting[i].prefix).style.backgroundColor = "green";
+                } else if (fighting[i].contains[0].hp / fighting[i].contains[0].stats[0] > .2){
+                    document.getElementById("H" + fighting[i].prefix).style.backgroundColor = "yellow";
+                } else {
+                    document.getElementById("H" + fighting[i].prefix).style.backgroundColor = "red";
+                }
                 document.getElementById("H" + fighting[i].prefix).style.borderTopRightRadius = Math.min(3, Math.max(0, 2 * (fighting[i].contains[0].hp - (.9 * fighting[i].contains[0].stats[0])))) + "px";
+                document.getElementById("T" + fighting[i].prefix).style.borderTopLeftRadius = Math.min(3, Math.max(0, 2 * (fighting[i].contains[0].tCharge - (50)))) + "px";
 
                 document.getElementById("nick" + toPlace(i + 1,2)).innerHTML = fighting[i].contains[0].nick;
                 document.getElementById("level" + toPlace(i + 1,2)).innerHTML = " LVL. " + fighting[i].contains[0].level;
@@ -636,25 +765,17 @@
         fighting[setPair(reviving)[1]].contains[0].hp = fighting[setPair(reviving)[1]].contains[0].stats[0];
     }
 
-    var shake = function(image){
+    var shake = function(){
         document.getElementById("POKE" + "H " + holder.contains.length).style.display = "none";
 
         shakeOn = true;
         scale = 20;
-        var leftBall = ($(document).width() * Math.random() * .6 + 200);
-        var topBall = ($(document).height() * Math.random() * .6 + 200);
 
-        document.getElementById("shake").src = image;
+        document.getElementById("shake").src = balls[catchBall].image;
         document.getElementById("shakeBehind").src = "pokemon/other-sprites/official-artwork/" + holder.contains[holder.contains.length - 1].id + ".png";
 
         $('#shake').css('transform', 'scale(' + (.5 + Math.abs(.5 - (scale / 100))) + ')')
         document.getElementById("shake").style.display = "block";
-
-        document.getElementById("shake").style.left = leftBall + "px";
-        document.getElementById("shake").style.top = topBall + "px";
-        
-        document.getElementById("shakeBehind").style.left = (leftBall + 16) + "px";
-        document.getElementById("shakeBehind").style.top = (topBall + 16) + "px";
         document.getElementById("shakeBehind").style.display = "block";
 } 
 
@@ -690,6 +811,12 @@
 
         $(this).mousemove(function(event){
             moveCount = 0;
+            if(!shakeOn){
+                document.getElementById("shake").style.left = event.clientX - 60 + "px";
+                document.getElementById("shake").style.top = event.clientY - 60 + "px";
+                document.getElementById("shakeBehind").style.left = (event.clientX - 44) + "px";
+                document.getElementById("shakeBehind").style.top = (event.clientY - 44) + "px";
+            }
             if(selected != "" && mouseDown > 0){
                 document.getElementById(selected).style.position = "fixed";
                 document.getElementById(selected).style.pointerEvents = "none";
@@ -698,11 +825,7 @@
             }
         })
 
-    var rand5 = function(){
-        return (Math.random() + Math.random()) / 2
-    }
-
-    function catchMon(ball, set){
+    function catchMon(){
         if(shakeOn){
             return;
         }
@@ -714,34 +837,20 @@
 
         var cost = 0;
         var bonus = 0;
-        var ballImage = "";
 
-        switch(ball){
-            case 0: cost = 20; bonus = 1; ballImage = "items/dream-world/poke-ball.png"; break;
-            case 1: cost = 30; bonus = .8; ballImage = "items/dream-world/great-ball.png"; break;
-        }
-
-        if(coins - cost < 0){
+        if(coins - balls[catchBall].cost < 0){
             alert("You don't have enough Coins!");
             return;
         }
 
-        coins -= cost;
+        coins -= balls[catchBall].cost;
         updateCoins();
 
-        var caught = Math.ceil((pD.length - 1) * Math.random());
-        
-        while(pD[caught].evolution != 0 || pD[caught].rarity < (rand5() * bonus)){//|| (!pD[caught].hasType(focus)  && (Math.random() < focusStrength))){
-            caught = Math.ceil((pD.length - 1) * Math.random());
-        }
+        var found = getMon(fighting[catchLocation * 6 - 1].catchable, 1, 0, balls[catchBall].bonus);
 
-        if(set != 0){
-            caught = set;
-        }
-
-        holder.add(new Pokemon(pD[caught].name, caught, (Math.random() < .05), 1));    
+        holder.add(new Pokemon(pD[found[0]].name, found[0], (Math.random() < .05), 1, true));    
         holder.renderMon();
 
         saveGame();
-        shake(ballImage);
+        shake();
     }
