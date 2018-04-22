@@ -3,7 +3,7 @@
     var RIGHT = 1;
     var LEFT = 0;
 
-    var version = "B2";
+    var version = "B3";
     
     window.mobilecheck = function() {
         var check = false;
@@ -38,6 +38,11 @@
             case false: return false;
         }
         return true;
+    }
+
+    var data = [];
+    for(var i = 0; i < pD.length; i++){
+        data.push(0);
     }
 
     var currentField = 0;
@@ -93,6 +98,7 @@
         unlockedField++;
         document.getElementById("battle" + Math.ceil((unlockedField) / 3)).style.display = "inline-block";
         document.getElementById("wrap" + unlockedField).style.display = "inline-block";
+        document.getElementById("wrap" + unlockedField).childNodes[5].style.display = "inline-block";
     }
     var curCost = 15;
     unlockField();
@@ -118,7 +124,7 @@
 
     var catchMode = false;
     var catchBall = 0;
-    var catchLocation = 0; 
+    var catchLocation = 0;
 
     var statNames = ["HP", "ATK", "DEF", "SPATK", "SPDEF", "SPD"]
 
@@ -135,7 +141,7 @@
         var outArray = [];
         for(var i = 0; i < tempArray.length; i++){
             var holdDat = tempArray[i].split(";");
-            outArray.push(new Pokemon(holdDat[0],holdDat[1],toBool(holdDat[2]),holdDat[3], holdDat[4]))
+            outArray.push(new Pokemon(holdDat[0],holdDat[1],toBool(holdDat[2]),holdDat[3], toBool(holdDat[4])))
         }
         return outArray;
     };
@@ -288,6 +294,8 @@
         }
     }
 
+    var hasUsedPremier = false; 
+
     if (typeof(Storage) !== "undefined") {
         if(localStorage.getItem("version") != version){
             localStorage.clear();
@@ -305,6 +313,9 @@
         }
         if(localStorage.getItem("saveCoins") != null){
             coins = localStorage.getItem("saveCoins");
+        }
+        if(localStorage.getItem("savePremier") != null){
+            hasUsedPremier = localStorage.getItem("savePremier");
         }
         if(localStorage.getItem("saveHolder") != null){
             holder.contains = pokemonFromString(localStorage.getItem("saveHolder"));
@@ -327,6 +338,7 @@
     var saveGame = function() {
         if (typeof(Storage) !== "undefined") {
             localStorage.setItem("saveCoins", coins);
+            localStorage.setItem("savePremier", hasUsedPremier);
             localStorage.setItem("saveCost", curCost);
             localStorage.setItem("saveUnlocks", unlockedField);
             localStorage.setItem("saveHolder", holder.contains)
@@ -368,6 +380,20 @@
             document.getElementById("nickShow").innerHTML = cur.nick;
             document.getElementById("statsShow").innerHTML = "Level: " + cur.level + "<br>HP: " + cur.stats.reduce((z,y,f) => String(z) + "<br>" + statNames[f] + ": " + String(y) + " (+" + String(y - pD[cur.id].stats[f]) + ")");
         }
+
+        for(var i = 1; i < pD.length; i++){
+            if(data[i] == 2){
+                document.getElementById("data" + i).style.display = "table-row";
+                document.getElementById("fake" + i).style.display = "none";
+            } else if(data[i] == 1){
+                document.getElementById("data" + i).style.display = "none";
+                document.getElementById("fake" + i).style.display = "table-row";
+            }
+        }
+        
+        if(hasUsedPremier){
+            document.getElementById("item2").style.display = "none";
+        }
     }
 
     var returnFromSelect = function(select){            
@@ -378,7 +404,6 @@
         }
     }
 
-    renderAll();
 
     function Ball(cost, image, bonus){
         this.cost = cost;
@@ -389,6 +414,7 @@
     var balls = [];
     balls.push(new Ball(20, "items/dream-world/poke-ball.png", 1));
     balls.push(new Ball(30, "items/dream-world/great-ball.png", .8));
+    balls.push(new Ball(0, "items/dream-world/premier-ball.png", 1));
 
     function Inventory(width, height, place, prefix, direction, levelBase, catchable){
         this.width = width;
@@ -436,10 +462,6 @@
                 }
             }
 
-            if((!isNaN(Number(this.prefix)) && current != 2) || (this.prefix.substring(0,1) == "F" && current != 0)){
-                return;
-            }
-
             var limit = 0;
             if(this.prefix == "H"){
                 limit = Math.floor(document.getElementById(this.place).offsetWidth / 64);
@@ -452,6 +474,7 @@
                 var contain = document.createElement("div");
                 contain.id = "POKE" + this.prefix + " " + i;
                 contain.className = "POKEC";
+                contain.setAttribute("draggable",false);
 
                 var leftS = document.getElementById(this.place).getBoundingClientRect().left + 10 + ((i - 1) % (this.width)) * 48;
                 var topS = document.getElementById(this.place).getBoundingClientRect().top + 10 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64;
@@ -500,11 +523,26 @@
                     newMon.style.display = "none";
                 }
 
+                if(this.contains[i - 1].player){
+                }
+
+                if(this.prefix.substring(0,1) != "F" || (document.getElementById(this.place).style.display != "" && document.getElementById(this.place).style.display != "none")){
+                    if(this.contains[i - 1].player){
+                        data[this.contains[i - 1].id] = 2;
+                    } else if(data[this.contains[i - 1].id] != 2){
+                        data[this.contains[i - 1].id] = 1;
+                    }
+                }
+
                 this.contains[i - 1].find = contain.id;
                 
                 contain.style.left = leftS + "px";
                 contain.style.top = topS + "px";
-                contain.appendChild(newMon)
+                contain.appendChild(newMon);
+
+                if((!isNaN(Number(this.prefix)) && current != 2) || (this.prefix.substring(0,1) == "F" && current != 0)){
+                    contain.style.display = "none";
+                }
 
                 //newMon.src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + this.contains[i - 1] + ".png";
                 document.getElementById("TEMP").appendChild(contain);
@@ -537,14 +575,19 @@
     var dexTab = document.createElement("TABLE");
     dexTab.id = "dexTab";
     dexTab.setAttribute("cellSpacing", 0);
-    var source = document.getElementById("dexRow").innerHTML;
-    var template = Handlebars.compile(source);
 
-    for(var i = 1; i < pD.length / 2; i++){
+    for(var i = 1; i < pD.length; i++){
         var newRow = document.createElement("TR");
-        var context = { name: pD[i].name, rarity: pD[i].rarity * 100 + "%" };
-        newRow.innerHTML = template(context);
+        var fakeRow = document.createElement("TR");
+        var context = { name: pD[i].name, rarity: pD[i].rarity * 100 + "%", src: "pokesprite-master/icons/pokemon/regular/" + fixName(pD[i].name, true) + ".png"};
+        newRow.innerHTML = Handlebars.compile(document.getElementById("dexRow").innerHTML)(context);
+        fakeRow.innerHTML = Handlebars.compile(document.getElementById("fakeRow").innerHTML)(context);
+        newRow.style.display = "none";
+        fakeRow.style.display = "none";
+        newRow.id = "data" + i;
+        fakeRow.id = "fake" + i;
         dexTab.appendChild(newRow);
+        dexTab.appendChild(fakeRow);
     }
 
     document.getElementById("main1").appendChild(dexTab);
@@ -860,9 +903,16 @@
 
         var found = getMon(fighting[catchLocation * 6 - 1].catchable, 1, 0, balls[catchBall].bonus);
 
+        if(catchBall == 2){
+            found = [Math.floor(Math.random() * 3) * 3 + 1, false];
+            hasUsedPremier = true;
+        }
+
         holder.add(new Pokemon(pD[found[0]].name, found[0], (Math.random() < .05), 1, true));    
         holder.renderMon();
 
         saveGame();
         shake();
     }
+
+    renderAll();

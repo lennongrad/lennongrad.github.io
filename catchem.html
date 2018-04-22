@@ -16,8 +16,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
     <script id="dexRow" type="text/x-handlebars-template">
+        <td class="row box"> <div><img src="{{src}}"/></div> </td>
         <td class="row"> <div>{{name}}</div> </td>
         <td class="row"> <div>{{rarity}}</div> </td>
+    </script>
+
+    <script id="fakeRow" type="text/x-handlebars-template">
+        <td class="row box"> <div><img src="{{src}}"/></div> </td>
+        <td class="row"> <div>{{name}}</div> </td>
+        <td class="row"> <div>???</div> </td>
     </script>
 
     <script id="wrap" type="text/x-handlebars-template">
@@ -87,6 +94,7 @@
 
                             <div class="item" id="item0" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 0"><image draggable="false" class="icon" id="commonBall" src="items/dream-world/poke-ball.png"/></div>
                             <div class="item" id="item1" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 1"><image draggable="false" class="icon" id="ultraBall" src="items/dream-world/great-ball.png"/></div>
+                            <div class="item" id="item2" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 2"><image draggable="false" class="icon" id="ultraBall" src="items/dream-world/premier-ball.png"/></div>
                         </td>
                 </tr>
                 <tr> 

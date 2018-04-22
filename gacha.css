@@ -416,8 +416,14 @@
     background-color: #444444;
 }
 
+.box{
+    width:40px;
+    height:30px;
+}
+
 body{
     font-family: cambria;
     user-select: none; 
     overflow: hidden;
+    -moz-user-select: none;
 }
