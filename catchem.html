@@ -22,7 +22,7 @@
 
     <script id="wrap" type="text/x-handlebars-template">
                 <div id="dead{{3}}" class="dead" style="pointer-events:none; opacity: 0">
-                       <image onclick="revive({{1}})" class="revive icon" src="items/dream-world/revive.png"/>
+                       <image draggable=false onclick="revive({{1}})" class="revive icon" src="items/dream-world/revive.png"/>
                 </div>
                 <div id="F{{1}}" class="fBox pInv {{4}}" onmouseover="hover = 'F{{1}}';" style="left: 20px"></div>
                 <div id="F{{2}}" class="fBox pInv {{4}}" onmouseover="hover = '';"   style="left: 144px"></div>
@@ -52,8 +52,17 @@
 
         <table cellspacing=0 style="position: absolute; top: 0; left:0; width: 100%; height:100%; background-color:black;">
                 <tr>
-                        <td colspan=2 id="first" style=" height:5%; text-align: left; background-color: #333333">
-                                    <img src="catchem_logo.png" style=" height:50px;">
+                        <td colspan=1 id="first" style=" height:5%; text-align: left; background-color: #333333">
+                        </td>
+
+                        <td style="background-color:#333333">
+                            <img src="catchem_logo.png" style="display:inline-block; height:50px;">
+                        </td>
+
+                        <td style="background-color:#333333">
+                            <div class="setCurrent" id="setCurrent0" onclick="current = 0">Fields</div>
+                            <div class="setCurrent" id="setCurrent1" onclick="current = 1">Pokédex</div>
+                            <div class="setCurrent" id="setCurrent2" onclick="current = 2">Box</div>
                         </td>
 
                         <td style="background-color: #333333">
@@ -65,20 +74,25 @@
                             <div id="nickShow" style="font-weight:bold"></div>
                             <div id="statsShow"></div>
                     </td>
-                        <td style="overflow-y: hidden; width: 78%;  text-align: center; background-color: #111111">        
-                            <div id="main">
+                        <td colspan =2 style="overflow-y: hidden; width: 78%;  text-align: center; background-color: #111111">        
+                            <div id="main0" class="main" style="overflow-y: scroll;display: block">
                             </div>
-                            <span id="buyField" style="height: 40px; cursor: pointer; color:white; width: 50px; border: 2px solid white; padding: 3px;" onclick="buyField()">15</span>
+                            <div id="main1" class="main" style="overflow-y: scroll;display: none">
+                            </div>
+                            <div id="main2" onmouseover="hover = '0'" class="main" style="overflow-y: hidden; display: none">
+                            </div>
                         </td>
-                        <td style="min-width: 90px; background-color: #2A2A2A; text-align: center; overflow-y: scroll">
+                        <td style="min-width: 90px; background-color: #2A2A2A; text-align: center; overflow-x: hidden; overflow-y: visible">
+                            <div id="buyField" style="height: 40px; margin-bottom: 150px;  cursor: pointer; color:white; width: 100%; border: 2px solid white; padding: 3px;" onclick="buyField()">15</div>
+
                             <div class="item" id="item0" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 0"><image draggable="false" class="icon" id="commonBall" src="items/dream-world/poke-ball.png"/></div>
                             <div class="item" id="item1" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 1"><image draggable="false" class="icon" id="ultraBall" src="items/dream-world/great-ball.png"/></div>
                         </td>
                 </tr>
                 <tr> 
-                        <td colspan=2 class="pInv" onmouseover="hover = 'H'" id="pokeHolder" style="background-color: #333333">
+                        <td colspan=3 class="pInv" onmouseover="hover = 'H'" id="pokeHolder" style="background-color: #333333">
                             </td>
-                        <td style="background-color: #333333">
+                        <td style="width: 100px; background-color: #333333">
                             <div id="moneyCount"> <span id="coinsCount">6000</span> </div>
                             <div id="resetButton" onclick="if(confirm('Are you sure you want to delete your memory, including all of your Pokémon?')){localStorage.clear(); window.location.reload()}"><br>Reset<br>Memory</div>
                         </td>

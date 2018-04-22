@@ -59,14 +59,14 @@
         for(var i = (currentField * 3) - 2; i < 1 + (currentField * 3); i++){
             var wrapper = document.createElement("DIV");
             wrapper.className = "wrapper";
-            wrapper.innerHTML = Handlebars.compile(document.getElementById("wrap").innerHTML)({ 1: toPlace((i * 2) - 1,2), 2: toPlace(i * 2,2), 3: i, 4: catchable[0]});
+            wrapper.innerHTML = Handlebars.compile(document.getElementById("wrap").innerHTML)({ 1: toPlace((i * 2) - 1,2), 2: toPlace(i * 2,2), 3: i, 4: catchable[0] + "Back"});
             wrapper.id = "wrap" + i;
             wrapper.style.display = "none";
             newF.appendChild(wrapper);
             fighting.push(new Inventory(1, 1, "F" + toPlace(((i * 2) - 1),2), "F" + toPlace(((i * 2) - 1),2), RIGHT, levelBase + ((i - 1) * 2), catchable), 
             new Inventory(1, 1, "F" + toPlace(i * 2,2), "F" + toPlace(i * 2,2), LEFT, levelBase + ((i - 1) * 2), catchable))
         }
-        document.getElementById("main").appendChild(newF);
+        document.getElementById("main0").appendChild(newF);
     }
 
     var toPlace = function(conv, place){
@@ -79,7 +79,7 @@
 
     var holder = new Inventory(20, 1, "pokeHolder", "H", LEFT, 1, []);
     var box = [];
-    box.push(new Inventory(3, 3, "pokeBox", "0", RIGHT, 1, []));
+    box.push(new Inventory(16, 16, "main2", "0", RIGHT, 1, []));
     var fighting = [];
     newField(["Grass", "Bug"]);
     newField(["Normal", "Fighting"]);
@@ -199,7 +199,7 @@
 
             var useType = false;
             if(this.tCharge >= 100){
-                this.tCharge = 0;
+                this.tCharge -= 100;
                 useType = true;
             }
             var modifier = 1;
@@ -224,9 +224,6 @@
             
             if(!useType){
                 this.tCharge += Math.max(25, 25 + this.stats[5] - opponent.stats[5])
-            }
-            if(this.tCharge >= 100){
-                this.tCharge = 100;
             }
             return [damage, crit, use == 3, useType];
         }
@@ -439,6 +436,10 @@
                 }
             }
 
+            if((!isNaN(Number(this.prefix)) && current != 2) || (this.prefix.substring(0,1) == "F" && current != 0)){
+                return;
+            }
+
             var limit = 0;
             if(this.prefix == "H"){
                 limit = Math.floor(document.getElementById(this.place).offsetWidth / 64);
@@ -493,10 +494,10 @@
                     newNumber.style.right = (75 - (75 * this.direction)) + "px";
                     newNumber.style.opacity = 1 - (this.dmgFly / 40)
                     contain.appendChild(newNumber);
+                }
 
-                    if(!(topS > $(window).height() * .02 && topS < $(window).height() - (60 + 108))){
-                        newMon.style.display = "none";
-                    }
+                if((this.prefix.substring(0,1) == "F" || this.prefix == "0") && !(topS > $(window).height() * .02 && topS < $(window).height() - (60 + 108))){
+                    newMon.style.display = "none";
                 }
 
                 this.contains[i - 1].find = contain.id;
@@ -546,7 +547,10 @@
         dexTab.appendChild(newRow);
     }
 
-    //document.getElementById("main").appendChild(dexTab);
+    document.getElementById("main1").appendChild(dexTab);
+
+    var current = 0;
+    var amt = 3;
 
     var shakeOn = false;
 
@@ -623,6 +627,14 @@
             $(".battle").css({"cursor":"pointer"})
         } else {
             $(".battle").css({"cursor":"auto"})
+        }
+
+        for(var i = 0; i < amt; i++){
+            if(current == i){
+                document.getElementById("main" + i).style.display = "block";
+            } else {
+                document.getElementById("main" + i).style.display = "none";
+            }
         }
     }, 1)
 
@@ -743,7 +755,7 @@
             
             if(typeof(fighting[i].contains[0]) == "object" && fighting[i].contains[0].id != undefined){
                 document.getElementById("H" + fighting[i].prefix).style.width = Math.max(70 * (fighting[i].contains[0].hp / fighting[i].contains[0].stats[0]), 0) + "px";
-                document.getElementById("T" + fighting[i].prefix).style.width = Math.max(70 * (fighting[i].contains[0].tCharge / 100), 0) + "px";
+                document.getElementById("T" + fighting[i].prefix).style.width = Math.max(70 * (Math.min(100, (fighting[i].contains[0].tCharge)) / 100), 0) + "px";
                 if(fighting[i].contains[0].hp / fighting[i].contains[0].stats[0] > .5){
                     document.getElementById("H" + fighting[i].prefix).style.backgroundColor = "green";
                 } else if (fighting[i].contains[0].hp / fighting[i].contains[0].stats[0] > .2){

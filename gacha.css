@@ -287,23 +287,23 @@
     margin: 0;
 }
 
-.Grass{
+.GrassBack{
     background-image: url(backBattleGrass.png); 
 }
 
-.Water{
+.WaterBack{
     background-image: url(backBattleWater.png); 
 }
 
-.Normal{
+.NormalBack{
     background-image: url(backBattleNormal.png); 
 }
 
-.Rock{
+.RockBack{
     background-image: url(backBattleRock.png); 
 }
 
-.Rock{
+.IceBack{
     background-image: url(backBattleIce.png); 
 }
 
@@ -314,6 +314,25 @@
     padding:10px;
 }
 
+.setCurrent{
+    display: inline-block;
+    margin: 0;
+    cursor: pointer;
+    height: 40px;
+    width: 120px;
+    background-color: darkgrey;
+    line-height:40px;
+    text-align: center;
+    font-size: 19px;
+    font-family: Arial;
+    color: black;
+    border: 2px solid black;
+}
+
+.setCurrent:hover{
+    background-color: grey;
+}
+
 #dexTab{
     position:relative;
     left: 0;
@@ -321,12 +340,13 @@
     width: 100%;
 }
 
-#main{
+.main{
     overflow-y: auto;
     scroll-snap-type: mandatory;
     scroll-snap-points-y: repeat(144px);
     min-width:850px;
-    height:97%;
+    height:100%;
+    background-color: #111111;
 }
 
 .POKEC{
