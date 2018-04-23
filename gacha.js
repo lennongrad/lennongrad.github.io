@@ -3,7 +3,7 @@
     var RIGHT = 1;
     var LEFT = 0;
 
-    var version = "B3";
+    var version = "B4";
 
     document.getElementById("version").innerHTML = "Version " + version;
     
@@ -316,6 +316,12 @@
         if(localStorage.getItem("saveCoins") != null){
             coins = localStorage.getItem("saveCoins");
         }
+        if(localStorage.getItem("saveData") != null){
+            var tempo = localStorage.getItem("saveData").split(",");
+            for(var i = 0; i < tempo.length; i++){
+                data[i] = tempo[i];
+            }
+        }
         if(localStorage.getItem("savePremier") != null){
             hasUsedPremier = localStorage.getItem("savePremier");
         }
@@ -341,6 +347,7 @@
         if (typeof(Storage) !== "undefined") {
             localStorage.setItem("saveCoins", coins);
             localStorage.setItem("savePremier", hasUsedPremier);
+            localStorage.setItem("saveData", String(data));
             localStorage.setItem("saveCost", curCost);
             localStorage.setItem("saveUnlocks", unlockedField);
             localStorage.setItem("saveHolder", holder.contains)
@@ -380,20 +387,31 @@
         if(lastSelected != "" && returnFromSelect(lastSelected) != undefined){
             var cur = returnFromSelect(lastSelected);
             document.getElementById("nickShow").innerHTML = cur.nick;
-            document.getElementById("statsShow").innerHTML = "Level: " + cur.level + "<br>HP: " + cur.stats.reduce((z,y,f) => String(z) + "<br>" + statNames[f] + ": " + String(y) + " (+" + String(y - pD[cur.id].stats[f]) + ")");
+            document.getElementById("statsShow").innerHTML = "Level: " + cur.level + "<br>Types: " + pD[cur.id].type[0];
+            if(pD[cur.id].type[1] != "None"){
+                document.getElementById("statsShow").innerHTML += ", " + pD[cur.id].type[1];
+            }
+            document.getElementById("statsShow").innerHTML += "<br>HP: " + cur.stats.reduce((z,y,f) => String(z) + "<br>" + statNames[f] + ": " + String(y) + " (+" + String(y - pD[cur.id].stats[f]) + ")");
         }
 
         for(var i = 1; i < pD.length; i++){
             if(data[i] == 2){
                 document.getElementById("data" + i).style.display = "table-row";
                 document.getElementById("fake" + i).style.display = "none";
+                document.getElementById("dumb" + i).style.display = "none";
             } else if(data[i] == 1){
                 document.getElementById("data" + i).style.display = "none";
                 document.getElementById("fake" + i).style.display = "table-row";
+                document.getElementById("dumb" + i).style.display = "none";
+            } else if(data[i] == 0){
+                document.getElementById("data" + i).style.display = "none";
+                document.getElementById("fake" + i).style.display = "none";
+                document.getElementById("dumb" + i).style.display = "table-row";
             }
         }
         
-        if(hasUsedPremier){
+        if(toBool(hasUsedPremier)){
+            console.log("HI");
             document.getElementById("item2").style.display = "none";
         }
     }
@@ -573,26 +591,25 @@
         document.getElementById("coinsCount").innerHTML = coins;
     }
     updateCoins();
-    
-    var dexTab = document.createElement("TABLE");
-    dexTab.id = "dexTab";
-    dexTab.setAttribute("cellSpacing", 0);
 
     for(var i = 1; i < pD.length; i++){
         var newRow = document.createElement("TR");
         var fakeRow = document.createElement("TR");
-        var context = { name: pD[i].name, rarity: pD[i].rarity * 100 + "%", src: "pokesprite-master/icons/pokemon/regular/" + fixName(pD[i].name, true) + ".png"};
-        newRow.innerHTML = Handlebars.compile(document.getElementById("dexRow").innerHTML)(context);
+        var dumbRow = document.createElement("TR");
+        var context = { name: pD[i].name, type1: pD[i].type[0], type2: pD[i].type[1], type1color: types[T[pD[i].type[0]]].color1, type2color: types[T[pD[i].type[1]]].color1, rarity: pD[i].rarity * 100 + "%", src: "pokesprite-master/icons/pokemon/regular/" + fixName(pD[i].name, true) + ".png", 1: pD[i].stats[0], 2: pD[i].stats[1], 3: pD[i].stats[2], 4: pD[i].stats[3], 5: pD[i].stats[4], 6: pD[6].stats[5]};
+        newRow.innerHTML = Handlebars.compile(document.getElementById("dexRow" + ((pD[i].type[1] == "None")- 0)).innerHTML)(context);
         fakeRow.innerHTML = Handlebars.compile(document.getElementById("fakeRow").innerHTML)(context);
+        dumbRow.innerHTML = Handlebars.compile(document.getElementById("dumbRow").innerHTML)(context);
         newRow.style.display = "none";
         fakeRow.style.display = "none";
+        dumbRow.style.display = "table-row";
         newRow.id = "data" + i;
         fakeRow.id = "fake" + i;
-        dexTab.appendChild(newRow);
-        dexTab.appendChild(fakeRow);
+        dumbRow.id = "dumb" + i;
+        document.getElementById("dexTab").appendChild(newRow);
+        document.getElementById("dexTab").appendChild(fakeRow);
+        document.getElementById("dexTab").appendChild(dumbRow);
     }
-
-    document.getElementById("main1").appendChild(dexTab);
 
     var current = 0;
     var amt = 3;

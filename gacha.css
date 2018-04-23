@@ -107,13 +107,6 @@
     font-weight: 900;
 }
 
-.row{
-    background-color: #555555;
-    border-radius: 1px;
-    border: 1px solid black;
-    height:15px;
-}
-
 .barHold{
     opacity: .55; 
     position: absolute; 
@@ -256,19 +249,19 @@
 }
 
 .normal{
-    background-image: url(normalBattle.PNG); 
+    background-image: url(normalBattle.png); 
 }
 
 .water{
-    background-image: url(waterBattle.PNG); 
+    background-image: url(waterBattle.png); 
 }
 
 .rock{
-    background-image: url(rockBattle.PNG); 
+    background-image: url(rockBattle.png); 
 }
 
 .ice{
-    background-image: url(iceBattle.PNG); 
+    background-image: url(iceBattle.png); 
 }
 
 .wrapper{
@@ -331,6 +324,13 @@
 
 .setCurrent:hover{
     background-color: grey;
+}
+
+#dexTab td{
+    background-color: #555555;
+    border-radius: 1px;
+    border: 1px solid black;
+    height:15px;
 }
 
 #dexTab{

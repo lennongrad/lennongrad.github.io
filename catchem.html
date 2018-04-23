@@ -15,15 +15,58 @@
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
-    <script id="dexRow" type="text/x-handlebars-template">
+    <script id="dexRow0" type="text/x-handlebars-template">
         <td class="row box"> <div><img src="{{src}}"/></div> </td>
+        <td class="row" style="width:100px; background-color:{{type1color}}"> <div>{{type1}}</div> </td>
+        <td class="row" style="width:100px; background-color:{{type2color}}"> <div>{{type2}}</div> </td>
         <td class="row"> <div>{{name}}</div> </td>
+        <td class="row"> <div>{{1}}</div> </td>
+        <td class="row"> <div>{{2}}</div> </td>
+        <td class="row"> <div>{{3}}</div> </td>
+        <td class="row"> <div>{{4}}</div> </td>
+        <td class="row"> <div>{{5}}</div> </td>
+        <td class="row"> <div>{{6}}</div> </td>
+        <td class="row"> <div>{{rarity}}</div> </td>
+    </script>
+
+    <script id="dexRow1" type="text/x-handlebars-template">
+        <td class="row box"> <div><img src="{{src}}"/></div> </td>
+        <td class="row" colspan=2 style="background-color:{{type1color}}"> <div>{{type1}}</div> </td>
+        <td class="row"> <div>{{name}}</div> </td>
+        <td class="row"> <div>{{1}}</div> </td>
+        <td class="row"> <div>{{2}}</div> </td>
+        <td class="row"> <div>{{3}}</div> </td>
+        <td class="row"> <div>{{4}}</div> </td>
+        <td class="row"> <div>{{5}}</div> </td>
+        <td class="row"> <div>{{6}}</div> </td>
         <td class="row"> <div>{{rarity}}</div> </td>
     </script>
 
     <script id="fakeRow" type="text/x-handlebars-template">
         <td class="row box"> <div><img src="{{src}}"/></div> </td>
+        <td class="row"> <div>???</div> </td>
+        <td class="row"> <div>???</div> </td>
         <td class="row"> <div>{{name}}</div> </td>
+        <td class="row"> <div>???</div> </td>
+        <td class="row"> <div>???</div> </td>
+        <td class="row"> <div>???</div> </td>
+        <td class="row"> <div>???</div> </td>
+        <td class="row"> <div>???</div> </td>
+        <td class="row"> <div>???</div> </td>
+        <td class="row"> <div>???</div> </td>
+    </script>
+
+    <script id="dumbRow" type="text/x-handlebars-template">
+        <td class="row box"> <div><img src="pokesprite-master/icons/pokemon/unknown.PNG"/></div> </td>
+        <td class="row" class="width:100px"> <div>???</div> </td>
+        <td class="row" class="width:100px"> <div>???</div> </td>
+        <td class="row"> <div>???</div> </td>
+        <td class="row"> <div>???</div> </td>
+        <td class="row"> <div>???</div> </td>
+        <td class="row"> <div>???</div> </td>
+        <td class="row"> <div>???</div> </td>
+        <td class="row"> <div>???</div> </td>
+        <td class="row"> <div>???</div> </td>
         <td class="row"> <div>???</div> </td>
     </script>
 
@@ -85,6 +128,19 @@
                             <div id="main0" class="main" style="overflow-y: scroll;display: block">
                             </div>
                             <div id="main1" class="main" style="overflow-y: scroll;display: none">
+                                <table cellspacing=0 id="dexTab">
+                                    <tr>
+                                        <td></td>
+                                        <td colspan=2>Typing</td>
+                                        <td>Name</td>
+                                        <td style="width:55px">HP</td>
+                                        <td style="width:55px">Atk</td>
+                                        <td style="width:55px">Def</td>
+                                        <td style="width:55px">Sp. Atk</td>
+                                        <td style="width:55px">Sp. Def</td>
+                                        <td style="width:55px">Speed</td>
+                                        <td>Rarity</td></tr>
+                                </table>
                             </div>
                             <div id="main2" onmouseover="hover = '0'" class="main" style="overflow-y: hidden; display: none">
                             </div>
