@@ -1,9 +1,11 @@
-    var coins = 50;
+    var coins = 5000;
 
     var RIGHT = 1;
     var LEFT = 0;
 
-    var version = "B4";
+    var version = "B5";
+
+    var recent = 0;
 
     document.getElementById("version").innerHTML = "Version " + version;
     
@@ -47,35 +49,6 @@
         data.push(0);
     }
 
-    var currentField = 0;
-    var newField = function(catchable){
-        currentField++;
-        var newF = document.createElement("DIV");
-        newF.className = "pInv battle " + catchable[0].toLowerCase();
-        newF.id = "battle" + currentField;
-        newF.style.display = "none";
-        newF.onmouseup = function(){
-            if(catchMode){
-                catchLocation = this.id.substring(6);
-                catchMon();
-                catchMode = false;
-            }   
-        };
-
-        levelBase = 1;
-        for(var i = (currentField * 3) - 2; i < 1 + (currentField * 3); i++){
-            var wrapper = document.createElement("DIV");
-            wrapper.className = "wrapper";
-            wrapper.innerHTML = Handlebars.compile(document.getElementById("wrap").innerHTML)({ 1: toPlace((i * 2) - 1,2), 2: toPlace(i * 2,2), 3: i, 4: catchable[0] + "Back"});
-            wrapper.id = "wrap" + i;
-            wrapper.style.display = "none";
-            newF.appendChild(wrapper);
-            fighting.push(new Inventory(1, 1, "F" + toPlace(((i * 2) - 1),2), "F" + toPlace(((i * 2) - 1),2), RIGHT, levelBase + ((i - 1) * 2), catchable), 
-            new Inventory(1, 1, "F" + toPlace(i * 2,2), "F" + toPlace(i * 2,2), LEFT, levelBase + ((i - 1) * 2), catchable))
-        }
-        document.getElementById("main0").appendChild(newF);
-    }
-
     var toPlace = function(conv, place){
         var final = String(conv);
         while(final.length < place){
@@ -84,29 +57,55 @@
         return final;
     }
 
+    var newF = document.createElement("DIV");
+    newF.className = "pInv battle";
+
     var holder = new Inventory(20, 1, "pokeHolder", "H", LEFT, 1, []);
     var box = [];
     box.push(new Inventory(16, 16, "main2", "0", RIGHT, 1, []));
     var fighting = [];
-    newField(["Grass", "Bug"]);
-    newField(["Normal", "Fighting"]);
-    newField(["Water", "Dragon"]);
-    newField(["Rock", "Ghost"]);
-    newField(["Ice", "Psychic"]);
+    
+    var fieldTypes = ["Grass Bug", "Normal", "Water Dragon", "Ice Fairy", "Rock"];
+
+    var levelBase = 1;
+    for(var i = 0; i < fieldTypes.length; i++){
+        levelBase += 2;
+        var wrapper = document.createElement("DIV");
+        wrapper.className = "wrapper "  + fieldTypes[i].split(" ")[0].toLowerCase();
+        wrapper.innerHTML = Handlebars.compile(document.getElementById("wrap").innerHTML)({ 1: toPlace((i * 2) + 1,2), 2: toPlace((i * 2) + 2,2), 3: i + 1, 4: fieldTypes[i].split(" ")[0] + "Back"});
+        wrapper.id = "wrap" + (i + 1);
+        wrapper.style.display = "none";
+        wrapper.onmouseup = function(){
+            if(catchMode){
+                catchLocation = this.id.substring(4);
+                catchMon();
+                catchMode = false;
+            }   
+        };
+        newF.appendChild(wrapper);
+        fighting.push(new Inventory(1, 1, "F" + toPlace((i * 2) + 1,2), "F" + toPlace((i * 2) + 1,2), RIGHT, levelBase + ((i - 1) * 3), fieldTypes[i].split(" ")), 
+        new Inventory(1, 1, "F" + toPlace((i * 2) + 2,2), "F" + toPlace((i * 2) + 2,2), LEFT, levelBase + ((i - 1) * 2), fieldTypes[i].split(" ")))
+    }
+    document.getElementById("main0").appendChild(newF);
 
     unlockedField = 0;
     var unlockField = function(){
-        document.getElementById("buyField").innerHTML = "Buy a new field: " + curCost;
+        document.getElementById("buyField").innerHTML = "Buy a new field for " + curCost + " coins";
         unlockedField++;
-        document.getElementById("battle" + Math.ceil((unlockedField) / 3)).style.display = "inline-block";
         document.getElementById("wrap" + unlockedField).style.display = "inline-block";
         document.getElementById("wrap" + unlockedField).childNodes[5].style.display = "inline-block";
+        if(unlockedField < fighting.length / 2){
+            document.getElementById("wrap" + (unlockedField + 1)).style.display = "inline-block";
+            document.getElementById("wrap" + (unlockedField + 1)).childNodes[5].style.display = "inline-block";
+        } else {
+            document.getElementById("buyField").style.display = "none";
+        }
     }
     var curCost = 15;
     unlockField();
 
     var buyField = function(){
-        if(unlockedField > 30){
+        if(unlockedField >= fighting.length / 2){
             return;
         }
         if(coins >= curCost){
@@ -153,7 +152,7 @@
         switch(name){
             case "Nidoran♀": newName = "Nidoran-m"; break;
             case "Nidoran♂": newName = "Nidoran-f"; break;
-            case "Mr. Mime": newName = "Nidoran-f"; break;
+            case "Mr. Mime": newName = "Mr-Mime"; break;
             case "Farfetch'd": newName = "Farfetchd"; break;
             default: newName =  name;
         }
@@ -189,9 +188,9 @@
 
         this.dead = function(){
             if(this.hp <= 0 && this.deadness > 0){
-                this.deadness -= .01;
+                this.deadness -= .02;
             } else if(this.hp > 0 && this.deadness < 1) {
-                this.deadness += .01;
+                this.deadness += .02;
             }
             return 1 - this.deadness;
         }
@@ -311,7 +310,7 @@
         }
         if(localStorage.getItem("saveCost") != null){
             curCost = localStorage.getItem("saveCost") - 0;
-            document.getElementById("buyField").innerHTML = "Buy a new field: " + curCost;
+            document.getElementById("buyField").innerHTML = "Buy a new field for " + curCost + " coins";
         }
         if(localStorage.getItem("saveCoins") != null){
             coins = localStorage.getItem("saveCoins");
@@ -392,26 +391,13 @@
                 document.getElementById("statsShow").innerHTML += ", " + pD[cur.id].type[1];
             }
             document.getElementById("statsShow").innerHTML += "<br>HP: " + cur.stats.reduce((z,y,f) => String(z) + "<br>" + statNames[f] + ": " + String(y) + " (+" + String(y - pD[cur.id].stats[f]) + ")");
-        }
-
-        for(var i = 1; i < pD.length; i++){
-            if(data[i] == 2){
-                document.getElementById("data" + i).style.display = "table-row";
-                document.getElementById("fake" + i).style.display = "none";
-                document.getElementById("dumb" + i).style.display = "none";
-            } else if(data[i] == 1){
-                document.getElementById("data" + i).style.display = "none";
-                document.getElementById("fake" + i).style.display = "table-row";
-                document.getElementById("dumb" + i).style.display = "none";
-            } else if(data[i] == 0){
-                document.getElementById("data" + i).style.display = "none";
-                document.getElementById("fake" + i).style.display = "none";
-                document.getElementById("dumb" + i).style.display = "table-row";
-            }
+            document.getElementById("info").style.display = "block" ;
+        } else {
+            document.getElementById("nickShow").innerHTML = "";
+            document.getElementById("info").style.display = "none" ;
         }
         
         if(toBool(hasUsedPremier)){
-            console.log("HI");
             document.getElementById("item2").style.display = "none";
         }
     }
@@ -476,6 +462,7 @@
         }
 
         this.renderMon = function(){
+
             for(var i = 0; i < this.contains.length; i++){
                 if(this.contains[i].id === undefined){
                     this.contains.splice(i,1);
@@ -487,7 +474,7 @@
                 limit = Math.floor(document.getElementById(this.place).offsetWidth / 64);
             }
 
-            for(var i = 1; i <= this.contains.length - (shakeOn && this.prefix == "H"); i++){  
+            for(var i = 1; i <= this.contains.length; i++){  
                 if(limit != 0 && i > limit){
                     //continue;
                 }
@@ -500,8 +487,9 @@
                 var topS = document.getElementById(this.place).getBoundingClientRect().top + 10 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64;
 
                 if(this.allowHover){
-                    contain.onmouseover = new Function("if(selected == '' && !catchMode){selected = " + '"' + contain.id + '";}');
+                    contain.onmousedown = new Function("if(selected == '' && !catchMode){selected = " + '"' + contain.id + '";}');
                 }
+                contain.oncontextmenu = new Function('lastSelected = "' + contain.id + '"; return false');
                  
                 var newMon = document.createElement("IMG");
                 newMon.className = "pokemonSprite";
@@ -539,7 +527,7 @@
                     contain.appendChild(newNumber);
                 }
 
-                if((this.prefix.substring(0,1) == "F" || this.prefix == "0") && !(topS > $(window).height() * .02 && topS < $(window).height() - (60 + 108))){
+                if(((this.prefix.substring(0,1) == "F" || this.prefix == "0") && !(topS > $(window).height() * .02 && topS < $(window).height() - (60 + 108)))){
                     newMon.style.display = "none";
                 }
 
@@ -560,7 +548,7 @@
                 contain.style.top = topS + "px";
                 contain.appendChild(newMon);
 
-                if((!isNaN(Number(this.prefix)) && current != 2) || (this.prefix.substring(0,1) == "F" && current != 0)){
+                if((!isNaN(Number(this.prefix)) && current != 2) || (this.prefix.substring(0,1) == "F" && current != 0) && document.getElementById(this.place).style.display != "none"){
                     contain.style.display = "none";
                 }
 
@@ -633,6 +621,9 @@
 
     $(document).mouseup(function(){
         if(selected != "" && hover != ""){
+            if(hover == selected.substring(4,5)){
+                return;
+            }
             document.getElementById("TEMP").innerHTML = "";
             var toMove = 0;
             
@@ -702,7 +693,7 @@
 
     var getMon = function(catchable, levelBase, variation, chance){
         var caught = Math.ceil((pD.length - 1) * Math.random());
-        while(pD[caught].evolution != 0 || pD[caught].rarity < (rand5() * chance) || !(pD[caught].hasType(catchable[0]) || pD[caught].hasType(catchable[1]))){
+        while(pD[caught].rarity < (rand5() * chance) || !pD[caught].hasType(catchable[0], catchable[1])){
             caught = Math.ceil((pD.length - 1) * Math.random());
         }
         var level = levelBase + Math.floor(Math.random() * variation);
@@ -717,9 +708,6 @@
     }
 
     setInterval(function(){
-        if(selected != ""){
-            lastSelected = selected;
-        }
 
         if(!mouseDown){
             selected = "";
@@ -733,6 +721,11 @@
             //document.getElementById("info").style.width = (.1 * $(window).width()) + "px";
         //}
         fixItems();
+
+        if(!(unlockedField >= fighting.length / 2)){
+            document.getElementById("buyField").style.left = document.getElementById("wrap" + (unlockedField + 1)).getBoundingClientRect().left + "px";
+            document.getElementById("buyField").style.top = document.getElementById("wrap" + (unlockedField + 1)).getBoundingClientRect().top + "px";
+        }
         
         if(catchMode){
             document.getElementById("shake").style.display = "block";
@@ -752,7 +745,7 @@
                 fighting[i].allowHover = false;
             }
             if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1 && fighting[setPair(i)[0]].contains[0].hp > 0){
-                fighting[i].bouncey++;
+                fighting[i].bouncey+=1.25;
                 if(fighting[i].bouncey > 100){
                     fighting[i].bouncey = 0;
                 }
@@ -832,7 +825,7 @@
                 document.getElementById("level" + toPlace(i + 1,2)).innerHTML = " LVL. " + fighting[i].contains[0].level;
             }
         }
-    }, 30)
+    }, 50)
 
     var revive = function(reviving){
         fighting[setPair(reviving)[0]].contains[0].hp = fighting[setPair(reviving)[0]].contains[0].stats[0];
@@ -840,25 +833,23 @@
     }
 
     var shake = function(){
-        document.getElementById("POKE" + "H " + holder.contains.length).style.display = "none";
-
         shakeOn = true;
         scale = 20;
 
         document.getElementById("shake").src = balls[catchBall].image;
-        document.getElementById("shakeBehind").src = "pokemon/other-sprites/official-artwork/" + holder.contains[holder.contains.length - 1].id + ".png";
+        document.getElementById("shakeBehind").src = "pokemon/other-sprites/official-artwork/" + recent.id + ".png";
 
         $('#shake').css('transform', 'scale(' + (.5 + Math.abs(.5 - (scale / 100))) + ')')
         document.getElementById("shake").style.display = "block";
         document.getElementById("shakeBehind").style.display = "block";
-} 
+    } 
 
     var scale = 1;
     setInterval(function(){
         if(!shakeOn){
             return
         }
-        scale = scale + 1;
+        scale = scale + 7;
         $('#shake').css('transform', 'scale(' + (.15 + Math.abs(.5 - (scale / 100))) + ')')
         document.getElementById("shake").style.opacity = 2 - (scale / 100);
 
@@ -867,13 +858,32 @@
 
         if(scale > 301){
             document.getElementById("shake").style.display = "none";
+            holder.add(recent);
             shakeOn = false;
             if((document.getElementById("POKE" + "H " + (holder.contains.length))) != null){
                 document.getElementById("POKE" + "H " + (holder.contains.length)).style.display = "inline";
             }
             document.getElementById("shakeBehind").style.display = "none";
         }
-    }, 9)
+    }, 30)
+
+    setInterval(function(){
+        for(var i = 1; i < pD.length; i++){
+            if(data[i] == 2){
+                document.getElementById("data" + i).style.display = "table-row";
+                document.getElementById("fake" + i).style.display = "none";
+                document.getElementById("dumb" + i).style.display = "none";
+            } else if(data[i] == 1){
+                document.getElementById("data" + i).style.display = "none";
+                document.getElementById("fake" + i).style.display = "table-row";
+                document.getElementById("dumb" + i).style.display = "none";
+            } else if(data[i] == 0){
+                document.getElementById("data" + i).style.display = "none";
+                document.getElementById("fake" + i).style.display = "none";
+                document.getElementById("dumb" + i).style.display = "table-row";
+            }
+        }
+    }, 15)
 
         var mouseDown = false;
         document.onmousedown = function() { 
@@ -920,15 +930,14 @@
         coins -= balls[catchBall].cost;
         updateCoins();
 
-        var found = getMon(fighting[catchLocation * 6 - 1].catchable, 1, 0, balls[catchBall].bonus);
+        var found = getMon(fieldTypes[catchLocation - 1].split(" "), 1, 0, balls[catchBall].bonus);
 
         if(catchBall == 2){
             found = [Math.floor(Math.random() * 3) * 3 + 1, false];
             hasUsedPremier = true;
         }
 
-        holder.add(new Pokemon(pD[found[0]].name, found[0], (Math.random() < .05), 1, true));    
-        holder.renderMon();
+        recent = new Pokemon(pD[found[0]].name, found[0], (Math.random() < .05), 1, true);    
 
         saveGame();
         shake();

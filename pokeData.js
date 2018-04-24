@@ -95,7 +95,7 @@ var pD = [0           , new p (
 	22                ,"Fearow"          ,"Normal"          ,"Flying"          ,442         ,65 ,90    ,65     ,61   ,61   ,100  ,1         ,false    ,21      ,0)      , new p(
 	23                ,"Ekans"           ,"Poison"          ,"None"            ,288         ,35 ,60    ,44     ,40   ,54   ,55   ,1         ,false    ,0       ,.5)     , new p(
 	24                ,"Arbok"           ,"Poison"          ,"None"            ,438         ,60 ,85    ,69     ,65   ,79   ,80   ,1         ,false    ,23      ,0)      , new p(
-	25                ,"Pikachu"         ,"Electric"        ,"None"            ,320         ,35 ,55    ,40     ,50   ,50   ,90   ,1         ,false    ,/*172*/0,0)      , new p(
+	25                ,"Pikachu"         ,"Electric"        ,"None"            ,320         ,35 ,55    ,40     ,50   ,50   ,90   ,1         ,false    ,/*172*/0,.1)      , new p(
 	26                ,"Raichu"          ,"Electric"        ,"None"            ,485         ,60 ,90    ,55     ,90   ,80   ,110  ,1         ,false    ,25      ,0)      , new p(
 	27                ,"Sandshrew"       ,"Ground"          ,"None"            ,300         ,50 ,75    ,85     ,20   ,30   ,40   ,1         ,false    ,0       ,.5)     , new p(
 	28                ,"Sandslash"       ,"Ground"          ,"None"            ,450         ,75 ,100   ,110    ,45   ,55   ,65   ,1         ,false    ,27      ,0)      , new p(
@@ -105,11 +105,11 @@ var pD = [0           , new p (
 	32                ,"Nidoran♂"        ,"Poison"          ,"None"            ,273         ,46 ,57    ,40     ,40   ,40   ,50   ,1         ,false    ,0       ,.45)    , new p(
 	33                ,"Nidorino"        ,"Poison"          ,"None"            ,365         ,61 ,72    ,57     ,55   ,55   ,65   ,1         ,false    ,32      ,0)      , new p(
 	34                ,"Nidoking"        ,"Poison"          ,"Ground"          ,505         ,81 ,102   ,77     ,85   ,75   ,85   ,1         ,false    ,33      ,0)      , new p(
-	35                ,"Clefairy"        ,"Fairy"           ,"None"            ,323         ,70 ,45    ,48     ,60   ,65   ,35   ,1         ,false    ,/*173*/0,0)      , new p(
+	35                ,"Clefairy"        ,"Fairy"           ,"None"            ,323         ,70 ,45    ,48     ,60   ,65   ,35   ,1         ,false    ,/*173*/0,.1)      , new p(
 	36                ,"Clefable"        ,"Fairy"           ,"None"            ,483         ,95 ,70    ,73     ,95   ,90   ,60   ,1         ,false    ,35      ,0)      , new p(
 	37                ,"Vulpix"          ,"Fire"            ,"None"            ,299         ,38 ,41    ,40     ,50   ,65   ,65   ,1         ,false    ,0       ,.3)     , new p(
 	38                ,"Ninetales"       ,"Fire"            ,"None"            ,505         ,73 ,76    ,75     ,81   ,100  ,100  ,1         ,false    ,37      ,0)      , new p(
-	39                ,"Jigglypuff"      ,"Normal"          ,"Fairy"           ,270         ,115,45    ,20     ,45   ,25   ,20   ,1         ,false    ,/*174*/0,0)      , new p(
+	39                ,"Jigglypuff"      ,"Normal"          ,"Fairy"           ,270         ,115,45    ,20     ,45   ,25   ,20   ,1         ,false    ,/*174*/0,.1)      , new p(
 	40                ,"Wigglytuff"      ,"Normal"          ,"Fairy"           ,435         ,140,70    ,45     ,85   ,50   ,45   ,1         ,false    ,39      ,0)      , new p(
 	41                ,"Zubat"           ,"Poison"          ,"Flying"          ,245         ,40 ,45    ,35     ,30   ,40   ,55   ,1         ,false    ,0       ,.85)    , new p(
 	42                ,"Golbat"          ,"Poison"          ,"Flying"          ,455         ,75 ,80    ,70     ,65   ,75   ,90   ,1         ,false    ,41      ,0)      , new p(
@@ -176,14 +176,14 @@ var pD = [0           , new p (
 	103               ,"Exeggutor"       ,"Grass"           ,"Psychic"         ,520         ,95 ,95    ,85     ,125  ,65   ,55   ,1         ,false    ,102     ,0)      , new p(
 	104               ,"Cubone"          ,"Ground"          ,"None"            ,320         ,50 ,50    ,95     ,40   ,50   ,35   ,1         ,false    ,0       ,.3)     , new p(
 	105               ,"Marowak"         ,"Ground"          ,"None"            ,425         ,60 ,80    ,110    ,50   ,80   ,45   ,1         ,false    ,104     ,0)      , new p(
-	106               ,"Hitmonlee"       ,"Fighting"        ,"None"            ,455         ,50 ,120   ,53     ,35   ,110  ,87   ,1         ,false    ,/*236*/0,0)      , new p(
-	107               ,"Hitmonchan"      ,"Fighting"        ,"None"            ,455         ,50 ,105   ,79     ,35   ,110  ,76   ,1         ,false    ,/*236*/0,0)      , new p(
+	106               ,"Hitmonlee"       ,"Fighting"        ,"None"            ,455         ,50 ,120   ,53     ,35   ,110  ,87   ,1         ,false    ,/*236*/0,.1)      , new p(
+	107               ,"Hitmonchan"      ,"Fighting"        ,"None"            ,455         ,50 ,105   ,79     ,35   ,110  ,76   ,1         ,false    ,/*236*/0,.1)      , new p(
 	108               ,"Lickitung"       ,"Normal"          ,"None"            ,385         ,90 ,55    ,75     ,60   ,75   ,30   ,1         ,false    ,0       ,.4)     , new p(
 	109               ,"Koffing"         ,"Poison"          ,"None"            ,340         ,40 ,65    ,95     ,60   ,45   ,35   ,1         ,false    ,0       ,.5)     , new p(
 	110               ,"Weezing"         ,"Poison"          ,"None"            ,490         ,65 ,90    ,120    ,85   ,70   ,60   ,1         ,false    ,109     ,0)      , new p(
 	111               ,"Rhyhorn"         ,"Ground"          ,"Rock"            ,345         ,80 ,85    ,95     ,30   ,30   ,25   ,1         ,false    ,0       ,.4)     , new p(
 	112               ,"Rhydon"          ,"Ground"          ,"Rock"            ,485         ,105,130   ,120    ,45   ,45   ,40   ,1         ,false    ,112     ,0)      , new p(
-	113               ,"Chansey"         ,"Normal"          ,"None"            ,450         ,250,5     ,5      ,35   ,105  ,50   ,1         ,false    ,/*440*/0,0)      , new p(
+	113               ,"Chansey"         ,"Normal"          ,"None"            ,450         ,250,5     ,5      ,35   ,105  ,50   ,1         ,false    ,/*440*/0,.1)      , new p(
 	114               ,"Tangela"         ,"Grass"           ,"None"            ,435         ,65 ,55    ,115    ,100  ,40   ,60   ,1         ,false    ,0       ,.6)     , new p(
 	115               ,"Kangaskhan"      ,"Normal"          ,"None"            ,490         ,105,95    ,80     ,40   ,80   ,90   ,1         ,false    ,0       ,.4)     , new p(
 	116               ,"Horsea"          ,"Water"           ,"None"            ,295         ,30 ,40    ,70     ,70   ,25   ,60   ,1         ,false    ,0       ,.4)     , new p(
@@ -192,16 +192,16 @@ var pD = [0           , new p (
 	119               ,"Seaking"         ,"Water"           ,"None"            ,450         ,80 ,92    ,65     ,65   ,80   ,68   ,1         ,false    ,118     ,0)      , new p(
 	120               ,"Staryu"          ,"Water"           ,"None"            ,340         ,30 ,45    ,55     ,70   ,55   ,85   ,1         ,false    ,0       ,.5)     , new p(
 	121               ,"Starmie"         ,"Water"           ,"Psychic"         ,520         ,60 ,75    ,85     ,100  ,85   ,115  ,1         ,false    ,120     ,0)      , new p(
-	122               ,"Mr. Mime"        ,"Psychic"         ,"Fairy"           ,460         ,40 ,45    ,65     ,100  ,120  ,90   ,1         ,false    ,/*439*/0,0)      , new p(
+	122               ,"Mr. Mime"        ,"Psychic"         ,"Fairy"           ,460         ,40 ,45    ,65     ,100  ,120  ,90   ,1         ,false    ,/*439*/0,.1)      , new p(
 	123               ,"Scyther"         ,"Bug"             ,"Flying"          ,500         ,70 ,110   ,80     ,55   ,80   ,105  ,1         ,false    ,0       ,.5)     , new p(
-	124               ,"Jynx"            ,"Ice"             ,"Psychic"         ,455         ,65 ,50    ,35     ,115  ,95   ,95   ,1         ,false    ,/*238*/0,0)      , new p(
-	125               ,"Electabuzz"      ,"Electric"        ,"None"            ,490         ,65 ,83    ,57     ,95   ,85   ,105  ,1         ,false    ,/*239*/0,0)      , new p(
-	126               ,"Magmar"          ,"Fire"            ,"None"            ,495         ,65 ,95    ,57     ,100  ,85   ,93   ,1         ,false    ,/*240*/0,0)      , new p(
+	124               ,"Jynx"            ,"Ice"             ,"Psychic"         ,455         ,65 ,50    ,35     ,115  ,95   ,95   ,1         ,false    ,/*238*/0,.1)      , new p(
+	125               ,"Electabuzz"      ,"Electric"        ,"None"            ,490         ,65 ,83    ,57     ,95   ,85   ,105  ,1         ,false    ,/*239*/0,.1)      , new p(
+	126               ,"Magmar"          ,"Fire"            ,"None"            ,495         ,65 ,95    ,57     ,100  ,85   ,93   ,1         ,false    ,/*240*/0,.1)      , new p(
 	127               ,"Pinsir"          ,"Bug"             ,"None"            ,500         ,65 ,125   ,100    ,55   ,70   ,85   ,1         ,false    ,0       ,.3)     , new p(
 	128               ,"Tauros"          ,"Normal"          ,"None"            ,490         ,75 ,100   ,95     ,40   ,70   ,110  ,1         ,false    ,0       ,.4)     , new p(
 	129               ,"Magikarp"        ,"Water"           ,"None"            ,200         ,20 ,10    ,55     ,15   ,20   ,80   ,1         ,false    ,0       ,.9)     , new p(
 	130               ,"Gyarados"        ,"Water"           ,"Flying"          ,540         ,95 ,125   ,79     ,60   ,100  ,81   ,1         ,false    ,129     ,0)      , new p(
-	131               ,"Lapras"          ,"Water"           ,"Ice"             ,535         ,130,85    ,80     ,85   ,95   ,60   ,1         ,false    ,0       ,.2)     , new p(
+	131               ,"Lapras"          ,"Water"           ,"Ice"             ,535         ,130,85    ,80     ,85   ,95   ,60   ,1         ,false    ,0       ,.1)     , new p(
 	132               ,"Ditto"           ,"Normal"          ,"None"            ,288         ,48 ,48    ,48     ,48   ,48   ,48   ,1         ,false    ,0       ,.05)    , new p(
 	133               ,"Eevee"           ,"Normal"          ,"None"            ,325         ,55 ,55    ,50     ,45   ,65   ,55   ,1         ,false    ,0       ,.3)     , new p(
 	134               ,"Vaporeon"        ,"Water"           ,"None"            ,525         ,130,65    ,60     ,110  ,95   ,65   ,1         ,false    ,134     ,0)      , new p(
@@ -213,7 +213,7 @@ var pD = [0           , new p (
 	140               ,"Kabuto"          ,"Rock"            ,"Water"           ,355         ,30 ,80    ,90     ,55   ,45   ,55   ,1         ,false    ,-1      ,.1)     , new p(
 	141               ,"Kabutops"        ,"Rock"            ,"Water"           ,495         ,60 ,115   ,105    ,65   ,70   ,80   ,1         ,false    ,140     ,0)      , new p(
 	142               ,"Aerodactyl"      ,"Rock"            ,"Flying"          ,515         ,80 ,105   ,65     ,60   ,75   ,130  ,1         ,false    ,-1      ,.1)     , new p(
-	143               ,"Snorlax"         ,"Normal"          ,"None"            ,540         ,160,110   ,65     ,65   ,110  ,30   ,1         ,false    ,/*446*/0,0)      , new p(
+	143               ,"Snorlax"         ,"Normal"          ,"None"            ,540         ,160,110   ,65     ,65   ,110  ,30   ,1         ,false    ,/*446*/0,.1)      , new p(
 	144               ,"Articuno"        ,"Ice"             ,"Flying"          ,580         ,90 ,85    ,100    ,95   ,125  ,85   ,1         ,true     ,0       ,.05)    , new p(
 	145               ,"Zapdos"          ,"Electric"        ,"Flying"          ,580         ,90 ,90    ,85     ,125  ,90   ,100  ,1         ,true     ,0       ,.05)    , new p(
 	146               ,"Moltres"         ,"Fire"            ,"Flying"          ,580         ,90 ,100   ,90     ,125  ,85   ,90   ,1         ,true     ,0       ,.05)    , new p(

@@ -87,7 +87,7 @@
                 </div>
     </script>
 </head>
-<body oncontextmenu="return true;">
+<body>
         <div id="foreground" style=" display: none; align-items: center;position: absolute; left: 0px; top: 0px; width:100%; height:100%; z-index: 15;background-color: #111111;  background-size: cover;">
             <div style="color: white;  text-align: center; margin-top: 0%; margin-left: auto; margin-right:auto; transform: scale(2)">
                 <img src="https://i.ytimg.com/vi/blRyUbnfc60/hqdefault.jpg"/>
@@ -100,12 +100,9 @@
         <img id="shakeBehind" style="opacity:0; position: absolute; z-index:14"/>
         <div id="TEMP" style="z-index:4; position: fixed; top: 0; left: 0;"></div>
 
-        <table cellspacing=0 style="position: absolute; top: 0; left:0; width: 100%; height:100%; background-color:black;">
+        <table  oncontextmenu="lastSelected = ''; return false;" cellspacing=0 style="position: absolute; top: 0; left:0; width: 100%; height:100%; background-color:black;">
                 <tr>
-                        <td colspan=1 id="first" style=" height:5%; text-align: left; background-color: #333333">
-                        </td>
-
-                        <td style="background-color:#333333">
+                        <td style="height: 10px; background-color:#333333">
                             <img src="catchem_logo.png" style="display:inline-block; height:50px;">
                         </td>
 
@@ -120,12 +117,9 @@
                         </td>
                 </tr>
                 <tr>
-                    <td id="info">
-                            <div id="nickShow" style="font-weight:bold"></div>
-                            <div id="statsShow"></div>
-                    </td>
-                        <td colspan =2 style="overflow-y: hidden; width: 78%;  text-align: center; background-color: #111111">        
-                            <div id="main0" class="main" style="overflow-y: scroll;display: block">
+                        <td colspan=2  style="overflow-y: hidden; width: 78%;  text-align: center; background-color: #111111">   
+                            <div id="buyField" onclick="buyField()">15</div>         
+                            <div id="main0" class="main" style="overflow-y: hidden;display: block">
                             </div>
                             <div id="main1" class="main" style="overflow-y: scroll;display: none">
                                 <table cellspacing=0 id="dexTab">
@@ -145,18 +139,16 @@
                             <div id="main2" onmouseover="hover = '0'" class="main" style="overflow-y: hidden; display: none">
                             </div>
                         </td>
-                        <td style="min-width: 90px; background-color: #2A2A2A; text-align: center; overflow-x: hidden; overflow-y: visible">
-                            <div id="buyField" style="height: 40px; margin-bottom: 150px;  cursor: pointer; color:white; width: 80%; margin-left:15px; border: 2px solid white; padding: 3px;" onclick="buyField()">15</div>
-
+                        <td style="background-color: #2A2A2A; text-align: center; width: 5%; overflow-x: hidden; overflow-y: visible">
                             <div class="item" id="item0" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 0"><image draggable="false" class="icon" id="commonBall" src="items/dream-world/poke-ball.png"/></div>
                             <div class="item" id="item1" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 1"><image draggable="false" class="icon" id="ultraBall" src="items/dream-world/great-ball.png"/></div>
                             <div class="item" id="item2" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 2"><image draggable="false" class="icon" id="ultraBall" src="items/dream-world/premier-ball.png"/></div>
                         </td>
                 </tr>
                 <tr> 
-                        <td colspan=3 class="pInv" onmouseover="hover = 'H'" id="pokeHolder" style="background-color: #333333">
+                        <td colspan=2 class="pInv" onmouseover="hover = 'H'" id="pokeHolder" style="background-color: #333333">
                             </td>
-                        <td style="width: 100px; background-color: #333333">
+                        <td style="overflow-x: auto; background-color: #333333">
                             <div id="moneyCount"> <span id="coinsCount">6000</span> </div>
                             <div id="resetButton" onclick="if(confirm('Are you sure you want to delete your memory, including all of your Pokémon?')){localStorage.clear(); window.location.reload()}"><br>Reset<br>Memory</div>
                         </td>
@@ -167,8 +159,11 @@
                     </td>
                 </tr>
         </table>
-        
-    <div id="pokeBoxOut"><div id="pokeBox" class="pInv" onmouseover="hover = '0';"></div></div>
+
+    <div oncontextmenu="lastSelected = ''; return false;" id="info">
+            <div id="nickShow" style="font-weight:bold"></div>
+            <div id="statsShow"></div>
+    </div>
 
     <script src="pokeData.js"></script>
     <script src="gacha.js"></script>
