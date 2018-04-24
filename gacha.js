@@ -527,7 +527,7 @@
                     contain.appendChild(newNumber);
                 }
 
-                if(((this.prefix.substring(0,1) == "F" || this.prefix == "0") && !(topS > $(window).height() * .02 && topS < $(window).height() - (60 + 108)))){
+                if(document.getElementById(this.place).style.display == "" || ((this.prefix.substring(0,1) == "F" || this.prefix == "0") && !(topS > $(window).height() * .02 && topS < $(window).height() - (60 + 108)))){
                     newMon.style.display = "none";
                 }
 
