@@ -74,7 +74,7 @@
                 <div id="dead{{3}}" class="dead" style="pointer-events:none; opacity: 0">
                        <image draggable=false onclick="revive({{1}})" class="revive icon" src="items/dream-world/revive.png"/>
                 </div>
-                <div id="F{{1}}" class="fBox pInv {{4}}" onmouseover="hover = 'F{{1}}';" style="left: 20px"></div>
+                <div id="F{{1}}" class="fBox pInv {{4}}" onmouseover="hover = 'F{{1}}';" style="display: block; left: 20px"></div>
                 <div id="F{{2}}" class="fBox pInv {{4}}" onmouseover="hover = '';"   style="left: 144px"></div>
                 <div class="top" style="left: 33px;"><span id="nick{{1}}"></span><div id="level{{1}}"></div></div>
                 <div class="top" style="left: 157px;"><span id="nick{{2}}"></span><div id="level{{2}}"></div></div>
@@ -118,7 +118,7 @@
                 </tr>
                 <tr>
                         <td colspan=2  style="overflow-y: hidden; width: 78%;  text-align: center; background-color: #111111">   
-                            <div id="buyField" onclick="buyField()">15</div>         
+                            <div id="buyField" style="display: none" onclick="buyField()">15</div>         
                             <div id="main0" class="main" style="overflow-y: hidden;display: block">
                             </div>
                             <div id="main1" class="main" style="overflow-y: scroll;display: none">
@@ -146,7 +146,7 @@
                         </td>
                 </tr>
                 <tr> 
-                        <td colspan=2 class="pInv" onmouseover="hover = 'H'" id="pokeHolder" style="background-color: #333333">
+                        <td colspan=2 class="pInv" onmouseover="hover = 'H'" id="pokeHolder" style="display: table-cell; background-color: #333333">
                             </td>
                         <td style="overflow-x: auto; background-color: #333333">
                             <div id="moneyCount"> <span id="coinsCount">6000</span> </div>
