@@ -726,6 +726,12 @@
             document.getElementById("buyField").style.left = document.getElementById("wrap" + (unlockedField + 1)).getBoundingClientRect().left + "px";
             document.getElementById("buyField").style.top = document.getElementById("wrap" + (unlockedField + 1)).getBoundingClientRect().top + "px";
         }
+
+        if(current != 0){
+            document.getElementById("buyField").style.display = "none";
+        } else {
+            document.getElementById("buyField").style.display = "block";
+        }
         
         if(catchMode){
             document.getElementById("shake").style.display = "block";
