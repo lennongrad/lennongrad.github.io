@@ -74,8 +74,8 @@
                 <div id="dead{{3}}" class="dead" style="pointer-events:none; opacity: 0">
                        <image draggable=false onclick="revive({{1}})" class="revive icon" src="items/dream-world/revive.png"/>
                 </div>
-                <div id="F{{1}}" class="fBox pInv {{4}}" onmouseover="hover = 'F{{1}}';" style="display: block; left: 20px"></div>
-                <div id="F{{2}}" class="fBox pInv {{4}}" onmouseover="hover = '';"   style="left: 144px"></div>
+                <div id="F{{1}}" class="fBox pInv" onmouseover="hover = 'F{{1}}';" style="background-image: url(backBattle{{4}}.png);display: block; left: 20px"></div>
+                <div id="F{{2}}" class="fBox pInv" onmouseover="hover = '';"  style="background-image: url(backBattle{{4}}.png); left: 144px"></div>
                 <div class="top" style="left: 33px;"><span id="nick{{1}}"></span><div id="level{{1}}"></div></div>
                 <div class="top" style="left: 157px;"><span id="nick{{2}}"></span><div id="level{{2}}"></div></div>
                 <div class="barHold" style="left: 33px;">
@@ -85,6 +85,10 @@
                         <div id="HF{{2}}" class="healthBar"></div>
                         <div id="TF{{2}}" class="typeBar"></div>
                 </div>
+                <div id="N{{1}}" class="number"></div>
+                <div id="N{{2}}" class="number"></div>
+                <img id="I{{1}}" class="itemAppear"/>
+                <img id="I{{2}}" class="itemAppear"/>
     </script>
 </head>
 <body>

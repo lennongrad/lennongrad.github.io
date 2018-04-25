@@ -107,6 +107,16 @@
     font-weight: 900;
 }
 
+.itemAppear{
+    position: absolute;
+    font-size: 17px;
+    right: 20px;
+    color: black;
+    bottom: -25px;
+    --backColour : white;
+    text-shadow: 0px 0px 3px var(--backColour), 0px 0px 6px var(--backColour), 0px 0px 9px var(--backColour), 0px 0px 12px var(--backColour), 0px 0px 15px var(--backColour);
+}
+
 .barHold{
     opacity: .55; 
     position: absolute; 

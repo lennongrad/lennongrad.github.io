@@ -1,13 +1,9 @@
-var coins = 5000;
 
-var RIGHT = 1;
-var LEFT = 0;
-
-var version = "B5";
-
-var recent = 0;
-
+var version = "B6";
 document.getElementById("version").innerHTML = "Version " + version;
+var LEFT = 0;
+var RIGHT = 1;
+var BERRY = 0;
 
 window.mobilecheck = function() {
     var check = false;
@@ -23,6 +19,30 @@ $(window).resize(function(){
     fixItems();
 })
 
+var mouseDown = false;
+document.onmousedown = function() { 
+    mouseDown = true;
+}
+document.onmouseup = function() {
+    mouseDown = false;
+}     
+
+$(this).mousemove(function(event){
+    moveCount = 0;
+    if(!shakeOn){
+        document.getElementById("shake").style.left = event.clientX - 60 + "px";
+        document.getElementById("shake").style.top = event.clientY - 60 + "px";
+        document.getElementById("shakeBehind").style.left = (event.clientX - 44) + "px";
+        document.getElementById("shakeBehind").style.top = (event.clientY - 44) + "px";
+    }
+    if(selected != "" && mouseDown > 0){
+        document.getElementById(selected).style.position = "fixed";
+        document.getElementById(selected).style.pointerEvents = "none";
+        document.getElementById(selected).style.left = event.clientX - 30 + "px";
+        document.getElementById(selected).style.top = event.clientY - 30 + "px";
+    }
+})
+
 var fixItems = function(){
     for(var i = 0; i < $(".item").length; i++){
         document.getElementById("item" + i).style.height = document.getElementById("item" + i).offsetWidth + "px";
@@ -30,107 +50,16 @@ var fixItems = function(){
 }
 fixItems();
 
-var rand5 = function(){
-    return (Math.random() + Math.random()) / 2
-}
-
-var toBool = function(take){
-    switch(take){
-        case "false": return false;
-        case "0": return false;
-        case 0: return false;
-        case false: return false;
+var getMon = function(catchable, levelBase, variation, chance){
+    var caught = Math.ceil((pD.length - 1) * Math.random());
+    while(pD[caught].rarity < (rand5() * chance) || !pD[caught].hasType(catchable[0], catchable[1])){
+        caught = Math.ceil((pD.length - 1) * Math.random());
     }
-    return true;
+    var level = levelBase + Math.floor(Math.random() * variation);
+    return [caught, level]
 }
 
-var data = [];
-for(var i = 0; i < pD.length; i++){
-    data.push(0);
-}
-
-var toPlace = function(conv, place){
-    var final = String(conv);
-    while(final.length < place){
-        final = "0" + final;
-    }
-    return final;
-}
-
-var newF = document.createElement("DIV");
-newF.className = "pInv battle";
-
-var holder = new Inventory(20, 1, "pokeHolder", "H", LEFT, 1, []);
-var box = [];
-box.push(new Inventory(16, 16, "main2", "0", RIGHT, 1, []));
-var fighting = [];
-
-var fieldTypes = ["Grass Bug", "Normal", "Water Dragon", "Ice Fairy", "Rock"];
-
-var levelBase = 1;
-for(var i = 0; i < fieldTypes.length; i++){
-    levelBase += 2;
-    var wrapper = document.createElement("DIV");
-    wrapper.className = "wrapper "  + fieldTypes[i].split(" ")[0].toLowerCase();
-    wrapper.innerHTML = Handlebars.compile(document.getElementById("wrap").innerHTML)({ 1: toPlace((i * 2) + 1,2), 2: toPlace((i * 2) + 2,2), 3: i + 1, 4: fieldTypes[i].split(" ")[0] + "Back"});
-    wrapper.id = "wrap" + (i + 1);
-    wrapper.style.display = "none";
-    wrapper.onmouseup = function(){
-        if(catchMode){
-            catchLocation = this.id.substring(4);
-            catchMon();
-            catchMode = false;
-        }   
-    };
-    newF.appendChild(wrapper);
-    fighting.push(new Inventory(1, 1, "F" + toPlace((i * 2) + 1,2), "F" + toPlace((i * 2) + 1,2), RIGHT, levelBase + ((i - 1) * 3), fieldTypes[i].split(" ")), 
-    new Inventory(1, 1, "F" + toPlace((i * 2) + 2,2), "F" + toPlace((i * 2) + 2,2), LEFT, levelBase + ((i - 1) * 2), fieldTypes[i].split(" ")))
-}
-document.getElementById("main0").appendChild(newF);
-
-unlockedField = 0;
-var unlockField = function(){
-    document.getElementById("buyField").innerHTML = "Buy a new field for " + curCost + " coins";
-    unlockedField++;
-    document.getElementById("wrap" + unlockedField).style.display = "inline-block";
-    document.getElementById("wrap" + unlockedField).childNodes[5].style.display = "inline-block";
-    if(unlockedField < fighting.length / 2){
-        document.getElementById("wrap" + (unlockedField + 1)).style.display = "inline-block";
-        document.getElementById("wrap" + (unlockedField + 1)).childNodes[5].style.display = "inline-block";
-    } 
-}
-var curCost = 15;
-unlockField();
-
-var buyField = function(){
-    if(unlockedField >= fighting.length / 2){
-        return;
-    }
-    if(coins >= curCost){
-        coins -= curCost;
-        curCost = Math.floor(curCost * 1.5);
-        unlockField();
-    }
-    updateCoins();
-    saveGame();
-}
-
-var active = 0;
-var selected = "";
-var lastSelected = "";
-var hover = "";
-var isMoving = false;
-
-var catchMode = false;
-var catchBall = 0;
-var catchLocation = 0;
-
-var statNames = ["HP", "ATK", "DEF", "SPATK", "SPDEF", "SPD"]
-
-var PID = [];
-
-//alert("POKEH 0".substring(4).split(" "))
-function remove(id) {
+var remove = function(id) {
     var elem = document.getElementById(id);
     return elem.parentNode.removeChild(elem);
 }
@@ -160,7 +89,139 @@ var fixName = function(name, lower){
     return newName;
 }
 
+var rand5 = function(){
+    return (Math.random() + Math.random()) / 2
+}
+
+var toBool = function(take){
+    switch(take){
+        case "false": return false;
+        case "0": return false;
+        case 0: return false;
+        case false: return false;
+    }
+    return true;
+}
+
+var returnFromSelect = function(select){            
+    switch(select.substring(4).split(" ")[0].substring(0,1)){
+        case "H": return holder.contains[select.substring(4).split(" ")[1] - 1]; break;
+        case "F": return fighting[select.substring(5,7) - 1].contains[0]; break;
+        default : return box[select.substring(4,5)].contains[select.substring(4).split(" ")[1] - 1];
+    }
+}
+
+var toPlace = function(conv, place){
+    var final = String(conv);
+    while(final.length < place){
+        final = "0" + final;
+    }
+    return final;
+}
+
+var unlockField = function(){
+    document.getElementById("buyField").innerHTML = "Buy a new field for " + curCost + " coins";
+    unlockedField++;
+    document.getElementById("wrap" + unlockedField).style.display = "inline-block";
+    document.getElementById("wrap" + unlockedField).childNodes[5].style.display = "inline-block";
+    if(unlockedField < fighting.length / 2){
+        document.getElementById("wrap" + (unlockedField + 1)).style.display = "inline-block";
+        document.getElementById("wrap" + (unlockedField + 1)).childNodes[5].style.display = "inline-block";
+    } 
+}
+
+var buyField = function(){
+    if(unlockedField >= fighting.length / 2){
+        return;
+    }
+    if(coins >= curCost){
+        coins -= curCost;
+        curCost = Math.floor(curCost * 1.5);
+        unlockField();
+    }
+    saveGame();
+}
+    
+
+var curCost = 15;
+var unlockedField = 0;
+
+var active = 0;
+var selected = "";
+var lastSelected = "";
+var hover = "";
+var isMoving = false;
+
+var catchMode = false;
+var catchBall = 0;
+var catchLocation = 0;
+var hasUsedPremier = false; 
+
+var statNames = ["HP", "ATK", "DEF", "SPATK", "SPDEF", "SPD"]
+
+var coins = 5000;
+var recent = 0;
+
+var PID = [];
+
 var blankPokemon = pokemonFromString("")[0];
+var data = [];
+for(var i = 0; i < pD.length; i++){
+    data.push(0);
+}
+
+var newF = document.createElement("DIV");
+newF.className = "pInv battle";
+
+var holder = new Box(20, 1, "pokeHolder", "H", LEFT, 1, []);
+var box = [];
+box.push(new Box(16, 16, "main2", "0", RIGHT, 1, []));
+var fighting = [];
+
+var fieldTypes = ["Grass", "Normal", "Water Dragon", "Bug Fairy", "Rock Ghost", "Ground", "Fire", "Electric", "Flying Steel", "Dark Poison", "Fighting", "Ice Psychic"];
+
+var levelBase = 1;
+for(var i = 0; i < fieldTypes.length; i++){
+    levelBase += 2;
+    var wrapper = document.createElement("DIV");
+    wrapper.className = "wrapper";
+    wrapper.innerHTML = Handlebars.compile(document.getElementById("wrap").innerHTML)({ 1: toPlace((i * 2) + 1,2), 2: toPlace((i * 2) + 2,2), 3: i + 1, 4: fieldTypes[i].split(" ")[0]});
+    wrapper.id = "wrap" + (i + 1);
+    wrapper.style.display = "none";
+    wrapper.style.backgroundImage = "url(" + fieldTypes[i].split(" ")[0].toLowerCase() + "Battle.png)";
+    wrapper.onmouseup = function(){
+        if(catchMode){
+            catchLocation = this.id.substring(4);
+            catchMon();
+            catchMode = false;
+        }   
+    };
+    newF.appendChild(wrapper);
+    fighting.push(new Box(1, 1, "F" + toPlace((i * 2) + 1,2), "F" + toPlace((i * 2) + 1,2), RIGHT, levelBase + ((i - 1) * 3), fieldTypes[i].split(" ")), 
+    new Box(1, 1, "F" + toPlace((i * 2) + 2,2), "F" + toPlace((i * 2) + 2,2), LEFT, levelBase + ((i - 1) * 2), fieldTypes[i].split(" ")))
+}
+document.getElementById("main0").appendChild(newF);
+unlockField();
+
+for(var i = 1; i < fighting.length; i += 2){
+    if(fighting[i].contains.length < 1){
+        var found = getMon(fighting[i].catchable, fighting[i].levelBase, 0, 1);
+        fighting[i].contains.push(new Pokemon("", found[0], false, found[1], false))
+    }
+}
+
+//alert("POKEH 0".substring(4).split(" "))
+function Item(id, name, dream, sprite, type){
+    this.id = id;
+    this.name = name;
+    this.dream = "items/dream-world" + dream;
+    this.sprite = "pokesprite-master/icons/" + sprite;
+    this.type = type;
+}
+
+var items = [new Item(
+    0, "Sitrus", "sitrus-berry.png", "berry/sitrus.png", BERRY
+)]
 
 function Pokemon(nick, id, shinys, level, player){
     if(nick != ""){
@@ -293,7 +354,146 @@ function Pokemon(nick, id, shinys, level, player){
     }
 }
 
-var hasUsedPremier = false; 
+function Ball(cost, image, bonus){
+    this.cost = cost;
+    this.image = image;
+    this.bonus = bonus;
+}
+
+function Box(width, height, place, prefix, direction, levelBase, catchable){
+    this.width = width;
+    this.height = height;
+    this.limit = this.width * this.height;
+    this.prefix = prefix;
+    this.direction = direction;
+    this.place = place;
+
+    this.levelBase = levelBase;
+    this.catchable = catchable;
+
+    if(catchable == undefined){
+        this.catchable = ["",""]
+    }
+
+    this.allowHover = true;
+
+    this.dmg = 0;
+    this.dmgFly = 100;
+    this.colour = "white";
+
+    this.itemUrl = "";
+    this.itemFly = 100;
+    this.itemColour = "white";
+    
+    this.bouncey = 0;
+    if(prefix.substring(0,1) == "F"){
+        this.bouncey = 50 * ((prefix.substring(1) - 1) % 2);
+    }
+
+    this.contains = [];
+
+    this.add = function(pokemon){
+        this.contains.push(pokemon)
+        //console.log(this.contains);
+        this.renderMon();
+    }
+
+    this.remove = function(toGo){
+        this.contains.splice(toGo,1);
+        this.renderMon();
+    }
+
+    this.renderNumb = function(){
+        this.dmgFly+=.5;
+        document.getElementById("N" + this.place.substring(1)).style.setProperty("--backColour", this.colour)
+        document.getElementById("N" + this.place.substring(1)).innerHTML = Math.ceil(this.dmg);
+        document.getElementById("N" + this.place.substring(1)).style.bottom = 30 + this.dmgFly + "px";
+        document.getElementById("N" + this.place.substring(1)).style.left = 46 + (-95 * this.direction) + "px";
+        document.getElementById("N" + this.place.substring(1)).style.opacity = 1 - (this.dmgFly / 40)
+
+        if(this.itemFly < 50){
+        this.itemFly+=.25;
+        }
+        document.getElementById("I" + this.place.substring(1)).style.setProperty("--backColour", this.itemColour)
+        document.getElementById("I" + this.place.substring(1)).src = this.itemUrl;
+        document.getElementById("I" + this.place.substring(1)).style.bottom = 30 + this.itemFly + "px";
+        document.getElementById("I" + this.place.substring(1)).style.left = 226 + (-215 * this.direction) + "px";
+        document.getElementById("I" + this.place.substring(1)).style.opacity = 1 - (this.itemFly / 40)
+    }
+
+    this.renderMon = function(){
+        for(var i = 0; i < this.contains.length; i++){
+            if(this.contains[i].id === undefined){
+                this.contains.splice(i,1);
+            }
+        }
+
+        for(var i = 1; i <= this.contains.length; i++){  
+            var contain = document.createElement("div");
+            contain.id = "POKE" + this.prefix + " " + i;
+            contain.className = "POKEC";
+
+            var leftS = document.getElementById(this.place).getBoundingClientRect().left + 10 + ((i - 1) % (this.width)) * 48;
+            var topS = document.getElementById(this.place).getBoundingClientRect().top + 10 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64;
+
+            if(this.allowHover){
+                contain.onmousedown = new Function("if(selected == '' && !catchMode){selected = " + '"' + contain.id + '";}');
+            }
+            contain.oncontextmenu = new Function('lastSelected = "' + contain.id + '"; return false');
+             
+            var newMon = document.createElement("IMG");
+            newMon.className = "pokemonSprite";
+            newMon.setAttribute("draggable",false);
+            if(this.direction == RIGHT){
+                newMon.style.transform = "scale(-1,1)"
+            }
+
+            var ext = "regular";
+            if(this.contains[i - 1].shiny){
+                ext = "shiny";
+                contain.className = "POKEC shiny";
+            }
+            newMon.src = "pokesprite-master/icons/pokemon/" + ext + "/" + fixName(pD[this.contains[i - 1].id].name, true) + ".png";
+
+            if(this.prefix.substring(0,1) == "F"){
+                newMon.className = "battleSprite";
+
+                ext = "";
+                if(this.contains[i - 1].shiny){
+                    ext = "/shiny"
+                }
+                newMon.src = "pokemon" + ext + "/" + this.contains[i - 1].id + ".png";
+                leftS = document.getElementById(this.place).getBoundingClientRect().left + 5 + ((i - 1) % (this.width)) * 64;
+                topS = document.getElementById(this.place).getBoundingClientRect().top + 15 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64;
+            }
+            
+            contain.style.left = leftS + "px";
+            contain.style.top = topS + "px";
+            contain.appendChild(newMon);
+
+            if(document.getElementById(this.place).style.display == "" || (!isNaN(Number(this.prefix)) && current != 2) || (this.prefix.substring(0,1) == "F" && current != 0) && document.getElementById(this.place).style.display != "none"){
+                contain.style.display = "none";
+            }
+
+            document.getElementById("TEMP").appendChild(contain);
+
+            if(this.prefix.substring(0,1) != "F" || (document.getElementById(this.place).style.display != "" && document.getElementById(this.place).style.display != "none")){
+                if(this.contains[i - 1].player){
+                    data[this.contains[i - 1].id] = 2;
+                } else if(data[this.contains[i - 1].id] != 2){
+                    data[this.contains[i - 1].id] = 1;
+                }
+            }
+        }
+    }
+
+    this.willAllowAdd = function(toAdd){
+        if(this.limit < this.contains.length + toAdd){
+            return false;
+        }
+        return true
+    }
+}
 
 if (typeof(Storage) !== "undefined") {
     if(localStorage.getItem("version") != version){
@@ -337,7 +537,6 @@ if (typeof(Storage) !== "undefined") {
             fighting[i].contains = pokemonFromString(saveString[i]);
         }
     }
-} else {
 }
 
 var saveGame = function() {
@@ -368,339 +567,10 @@ var saveGame = function() {
     }
 }
 
-var renderAll = function(){
-    
-    document.getElementById("TEMP").innerHTML = "";
-    if(true || !shakeOn){
-        holder.renderMon();
-    }
-    for(var i = 0; i < box.length; i++){
-        box[i].renderMon();
-    }
-    for(var i = 0; i < fighting.length; i++){
-        fighting[i].renderMon();
-    }
-
-    if(lastSelected != "" && returnFromSelect(lastSelected) != undefined){
-        var cur = returnFromSelect(lastSelected);
-        document.getElementById("nickShow").innerHTML = cur.nick;
-        document.getElementById("statsShow").innerHTML = "Level: " + cur.level + "<br>Types: " + pD[cur.id].type[0];
-        if(pD[cur.id].type[1] != "None"){
-            document.getElementById("statsShow").innerHTML += ", " + pD[cur.id].type[1];
-        }
-        document.getElementById("statsShow").innerHTML += "<br>HP: " + cur.stats.reduce((z,y,f) => String(z) + "<br>" + statNames[f] + ": " + String(y) + " (+" + String(y - pD[cur.id].stats[f]) + ")");
-        document.getElementById("info").style.display = "block" ;
-    } else {
-        document.getElementById("nickShow").innerHTML = "";
-        document.getElementById("info").style.display = "none" ;
-    }
-    
-    if(toBool(hasUsedPremier)){
-        document.getElementById("item2").style.display = "none";
-    }
-
-    
-
-    if(!mouseDown){
-        selected = "";
-        catchMode = false;
-    }
-
-    //if(lastSelected == "" || false){
-        //document.getElementById("info").style.width = "99px";
-    //} else {
-        //document.getElementById("info").style.width = (.1 * $(window).width()) + "px";
-    //}
-    fixItems();
-
-    if(!(unlockedField >= fighting.length / 2)){
-        document.getElementById("buyField").style.left = document.getElementById("wrap" + (unlockedField + 1)).getBoundingClientRect().left + "px";
-        document.getElementById("buyField").style.top = document.getElementById("wrap" + (unlockedField + 1)).getBoundingClientRect().top + "px";
-    } 
-    
-    if(current != 0 || unlockedField >= fighting.length / 2){
-        document.getElementById("buyField").style.display = "none";
-    } else {
-        document.getElementById("buyField").style.display = "block";
-    }
-    
-    if(catchMode){
-        document.getElementById("shake").style.display = "block";
-        document.getElementById("shake").style.opacity = ".9";
-        document.getElementById("shake").style.transform = "scale(.3)";
-        document.getElementById("shake").src = balls[catchBall].image;
-
-        
-        document.getElementById("item" + catchBall).childNodes[0].style.opacity = "0";
-    } else if(!shakeOn){
-        document.getElementById("shake").style.opacity = "0";
-        document.getElementById("item" + catchBall).childNodes[0].style.opacity = "1";
-    }
-
-    for(var i = 0; i < fighting.length; i++){
-        if(i % 2 == 1){
-            fighting[i].allowHover = false;
-        }
-        if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1 && fighting[setPair(i)[0]].contains[0].hp > 0){
-            fighting[i].bouncey+=.75;
-            if(fighting[i].bouncey > 100){
-                fighting[i].bouncey = 0;
-            }
-            if(fighting[i].bouncey > 90){
-                document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[1].style.transform += "translate(0, " + (Math.cos(fighting[i].bouncey * 1.5) * 6) + "px)";
-            } else if (fighting[i].bouncey > 35 && fighting[i].bouncey < 45){
-                document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[1].style.transform += "translate(" + (Math.cos(fighting[i].bouncey * 1.5) * 3) + "px, 0)"
-
-                if(fighting[i].bouncey == 36 + 1.5){
-                    var damaged = fighting[getPair(i, true)].contains[0].attack(fighting[getPair(i, false)].contains[0]);
-                    fighting[getPair(i, false)].dmg = "-" + fighting[getPair(i, false)].contains[0].defend(damaged[0]);
-                    fighting[getPair(i, false)].dmgFly = 0;
-                    fighting[getPair(i, false)].colour = "white";
-                    if(damaged[2]){
-                        fighting[getPair(i, false)].colour = "lawngreen";
-                    }
-                    if(damaged[3]){
-                        fighting[getPair(i, false)].colour = "LightSkyBlue";
-                    }
-                    if(damaged[1]){
-                        fighting[getPair(i, false)].colour = "lightCoral";
-                    }
-                    if(damaged[1] && damaged[3]){
-                        fighting[getPair(i, false)].colour = "plum";
-                    }
-
-                    if(fighting[setPair(i)[1]].contains[0].hp <= 0){
-                        coins -= -10 * fighting[setPair(i)[1]].contains[0].level;
-                        updateCoins();
-                        saveGame();
-                        fighting[getPair(i, true)].contains[0].levelUp(fighting[getPair(i, true)].contains[0].level < fighting[getPair(i, false)].contains[0].level + 3);
-                        fighting[getPair(i, true)].dmgFly = 0;
-                        fighting[getPair(i, true)].dmg = String(fighting[setPair(i)[1]].contains[0].level * 10);
-                        fighting[getPair(i, true)].colour = "yellow";
-                        fighting[setPair(i)[1]].contains.splice(0,1);
-                        
-                        var found = getMon(fighting[setPair(i)[1]].catchable, fighting[setPair(i)[1]].levelBase, 1, 1);
-                        fighting[setPair(i)[1]].contains.push(new Pokemon("", found[0], (.0001 > Math.random()), found[1], false))
-                    }
-                }
-
-            } else {
-                //document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[1].style.transform += "translate(0, 0)";
-            }
-        } else if (fighting[setPair(i)[1]].contains.length == 1){
-            document.getElementById("POKE" + fighting[setPair(i)[1]].prefix + " 1").childNodes[1].style.opacity = ".5";
-            fighting[setPair(i)[1]].contains[0].hp = fighting[setPair(i)[1]].contains[0].stats[0];
-            document.getElementById("H" + fighting[setPair(i)[0]].prefix).style.width = "70px";
-            document.getElementById("T" + fighting[setPair(i)[0]].prefix).style.width = "00px";
-            document.getElementById("H" + fighting[setPair(i)[0]].prefix).style.backgroundColor = "green";
-        }
-
-        if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1){
-            document.getElementById("dead" + Math.ceil((i + 1) / 2)).style.opacity = fighting[setPair(i)[0]].contains[0].dead() - .2;
-            if(fighting[setPair(i)[0]].contains[0].hp <= 0){
-                document.getElementById("dead" + Math.ceil((i + 1) / 2)).style.pointerEvents = "auto";
-                document.getElementById("POKE" + fighting[setPair(i)[0]].prefix + " 1").childNodes[1].style.transform = "scale(1,-1)";
-            } else {
-                document.getElementById("dead" + Math.ceil((i + 1) / 2)).style.pointerEvents = "none"
-            }
-        }
-        
-        if(typeof(fighting[i].contains[0]) == "object" && fighting[i].contains[0].id != undefined){
-            document.getElementById("H" + fighting[i].prefix).style.width = Math.max(70 * (fighting[i].contains[0].hp / fighting[i].contains[0].stats[0]), 0) + "px";
-            document.getElementById("T" + fighting[i].prefix).style.width = Math.max(70 * (Math.min(100, (fighting[i].contains[0].tCharge)) / 100), 0) + "px";
-            if(fighting[i].contains[0].hp / fighting[i].contains[0].stats[0] > .5){
-                document.getElementById("H" + fighting[i].prefix).style.backgroundColor = "green";
-            } else if (fighting[i].contains[0].hp / fighting[i].contains[0].stats[0] > .2){
-                document.getElementById("H" + fighting[i].prefix).style.backgroundColor = "yellow";
-            } else {
-                document.getElementById("H" + fighting[i].prefix).style.backgroundColor = "red";
-            }
-            document.getElementById("H" + fighting[i].prefix).style.borderTopRightRadius = Math.min(3, Math.max(0, 2 * (fighting[i].contains[0].hp - (.9 * fighting[i].contains[0].stats[0])))) + "px";
-            document.getElementById("T" + fighting[i].prefix).style.borderTopLeftRadius = Math.min(3, Math.max(0, 2 * (fighting[i].contains[0].tCharge - (50)))) + "px";
-
-            document.getElementById("nick" + toPlace(i + 1,2)).innerHTML = fighting[i].contains[0].nick;
-            document.getElementById("level" + toPlace(i + 1,2)).innerHTML = " LVL. " + fighting[i].contains[0].level;
-        }
-    }
-}
-
-var returnFromSelect = function(select){            
-    switch(select.substring(4).split(" ")[0].substring(0,1)){
-        case "H": return holder.contains[select.substring(4).split(" ")[1] - 1]; break;
-        case "F": return fighting[select.substring(5,7) - 1].contains[0]; break;
-        default : return box[select.substring(4,5)].contains[select.substring(4).split(" ")[1] - 1];
-    }
-}
-
-
-function Ball(cost, image, bonus){
-    this.cost = cost;
-    this.image = image;
-    this.bonus = bonus;
-}
-
 var balls = [];
 balls.push(new Ball(20, "items/dream-world/poke-ball.png", 1));
 balls.push(new Ball(30, "items/dream-world/great-ball.png", .8));
 balls.push(new Ball(0, "items/dream-world/premier-ball.png", 1));
-
-function Inventory(width, height, place, prefix, direction, levelBase, catchable){
-    this.width = width;
-    this.height = height;
-    this.limit = this.width * this.height;
-    this.prefix = prefix;
-    this.direction = direction;
-    this.place = place;
-
-    this.levelBase = levelBase;
-    this.catchable = catchable;
-
-    if(catchable == undefined){
-        this.catchable = ["",""]
-    }
-
-    this.allowHover = true;
-
-    this.dmg = 0;
-    this.dmgFly = 100;
-    this.colour = "white";
-    
-    this.bouncey = 0;
-    if(prefix.substring(0,1) == "F"){
-        this.bouncey = 50 * ((prefix.substring(1) - 1) % 2);
-    }
-
-    this.contains = [];
-
-    this.add = function(pokemon){
-        this.contains.push(pokemon)
-        //console.log(this.contains);
-        this.renderMon();
-    }
-
-    this.remove = function(toGo){
-        this.contains.splice(toGo,1);
-        this.renderMon();
-    }
-
-    this.renderMon = function(){
-
-        for(var i = 0; i < this.contains.length; i++){
-            if(this.contains[i].id === undefined){
-                this.contains.splice(i,1);
-            }
-        }
-
-        var limit = 0;
-        if(this.prefix == "H"){
-            limit = Math.floor(document.getElementById(this.place).offsetWidth / 64);
-        }
-
-        for(var i = 1; i <= this.contains.length; i++){  
-            if(limit != 0 && i > limit){
-                //continue;
-            }
-            var contain = document.createElement("div");
-            contain.id = "POKE" + this.prefix + " " + i;
-            contain.className = "POKEC";
-            contain.setAttribute("draggable",false);
-
-            var leftS = document.getElementById(this.place).getBoundingClientRect().left + 10 + ((i - 1) % (this.width)) * 48;
-            var topS = document.getElementById(this.place).getBoundingClientRect().top + 10 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64;
-
-            if(this.allowHover){
-                contain.onmousedown = new Function("if(selected == '' && !catchMode){selected = " + '"' + contain.id + '";}');
-            }
-            contain.oncontextmenu = new Function('lastSelected = "' + contain.id + '"; return false');
-             
-            var newMon = document.createElement("IMG");
-            newMon.className = "pokemonSprite";
-            newMon.setAttribute("draggable",false);
-            if(this.direction == RIGHT){
-                newMon.style.transform = "scale(-1,1)"
-            }
-
-            var ext = "regular";
-            if(this.contains[i - 1].shiny){
-                ext = "shiny";
-                contain.className = "POKEC shiny";
-            }
-            newMon.src = "pokesprite-master/icons/pokemon/" + ext + "/" + fixName(pD[this.contains[i - 1].id].name, true) + ".png";
-
-            if(this.prefix.substring(0,1) == "F"){
-                newMon.className = "battleSprite";
-
-                ext = "";
-                if(this.contains[i - 1].shiny){
-                    ext = "/shiny"
-                }
-                newMon.src = "pokemon" + ext + "/" + this.contains[i - 1].id + ".png";
-                leftS = document.getElementById(this.place).getBoundingClientRect().left + 5 + ((i - 1) % (this.width)) * 64;
-                topS = document.getElementById(this.place).getBoundingClientRect().top + 15 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64;
-
-                this.dmgFly+=2;
-                var newNumber = document.createElement("DIV");
-                newNumber.style.setProperty("--backColour", this.colour)
-                newNumber.className = "number";
-                newNumber.innerHTML = Math.ceil(this.dmg);
-                newNumber.style.bottom = 30 + this.dmgFly + "px";
-                newNumber.style.right = (75 - (75 * this.direction)) + "px";
-                newNumber.style.opacity = 1 - (this.dmgFly / 40)
-                contain.appendChild(newNumber);
-            }
-
-            if(document.getElementById(this.place).style.display == "" || ((this.prefix.substring(0,1) == "F" || this.prefix == "0") && !(topS > $(window).height() * .02 && topS < $(window).height() - (60 + 108)))){
-                newMon.style.display = "none";
-            }
-
-            if(this.contains[i - 1].player){
-            }
-
-            if(this.prefix.substring(0,1) != "F" || (document.getElementById(this.place).style.display != "" && document.getElementById(this.place).style.display != "none")){
-                if(this.contains[i - 1].player){
-                    data[this.contains[i - 1].id] = 2;
-                } else if(data[this.contains[i - 1].id] != 2){
-                    data[this.contains[i - 1].id] = 1;
-                }
-            }
-
-            this.contains[i - 1].find = contain.id;
-            
-            contain.style.left = leftS + "px";
-            contain.style.top = topS + "px";
-            contain.appendChild(newMon);
-
-            if((!isNaN(Number(this.prefix)) && current != 2) || (this.prefix.substring(0,1) == "F" && current != 0) && document.getElementById(this.place).style.display != "none"){
-                contain.style.display = "none";
-            }
-
-            //newMon.src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + this.contains[i - 1] + ".png";
-            document.getElementById("TEMP").appendChild(contain);
-        }
-    }
-
-    this.willAllowAdd = function(toAdd){
-        if(this.limit < this.contains.length + toAdd){
-            return false;
-        }
-        return true
-    }
-}
-
-function deleteHolder(){
-    if(confirm("Are you sure you want to delete the Pokémon in the Holder Bar?")){
-        holder.contains = [];
-    }
-    saveGame();
-}
-
-function updateCoins(){
-    if(coins > 9999){
-        coins = 9999;
-    }
-    document.getElementById("coinsCount").innerHTML = coins;
-}
-updateCoins();
 
 for(var i = 1; i < pD.length; i++){
     var newRow = document.createElement("TR");
@@ -792,11 +662,15 @@ $(document).mouseup(function(){
 
 var moveCount = 0;
 setInterval(function(){
-    moveCount++;
+    moveCount+=2;
     if(moveCount > 50){
         moveCount = 0;
         hover = "";
     } 
+
+    for(var i = 0; i < fighting.length; i++){
+        fighting[i].renderNumb();
+    }
 
     if(catchMode){
         $(".battle").css({"cursor":"pointer"})
@@ -811,108 +685,16 @@ setInterval(function(){
             document.getElementById("main" + i).style.display = "none";
         }
     }
-}, 1)
-
-var getMon = function(catchable, levelBase, variation, chance){
-    var caught = Math.ceil((pD.length - 1) * Math.random());
-    while(pD[caught].rarity < (rand5() * chance) || !pD[caught].hasType(catchable[0], catchable[1])){
-        caught = Math.ceil((pD.length - 1) * Math.random());
-    }
-    var level = levelBase + Math.floor(Math.random() * variation);
-    return [caught, level]
-}
-    
-for(var i = 1; i < fighting.length; i += 2){
-    if(fighting[i].contains.length < 1){
-        var found = getMon(fighting[i].catchable, fighting[i].levelBase, 0, 1);
-        fighting[i].contains.push(new Pokemon("", found[0], false, found[1], false))
-    }
-}
+}, 5)
 
 var revive = function(reviving){
     fighting[setPair(reviving)[0]].contains[0].hp = fighting[setPair(reviving)[0]].contains[0].stats[0];
     fighting[setPair(reviving)[1]].contains[0].hp = fighting[setPair(reviving)[1]].contains[0].stats[0];
 }
 
-var shake = function(){
-    shakeOn = true;
-    scale = 20;
-
-    document.getElementById("shake").src = balls[catchBall].image;
-    document.getElementById("shakeBehind").src = "pokemon/other-sprites/official-artwork/" + recent.id + ".png";
-
-    $('#shake').css('transform', 'scale(' + (.5 + Math.abs(.5 - (scale / 100))) + ')')
-    document.getElementById("shake").style.display = "block";
-    document.getElementById("shakeBehind").style.display = "block";
-} 
-
 var scale = 1;
-setInterval(function(){
-    if(!shakeOn){
-        return
-    }
-    scale = scale + 7;
-    $('#shake').css('transform', 'scale(' + (.15 + Math.abs(.5 - (scale / 100))) + ')')
-    document.getElementById("shake").style.opacity = 2 - (scale / 100);
 
-    $('#shakeBehind').css('transform', 'scale(' + (.15 + Math.abs(.5 - (scale / 100))) / 1.35 + ')')
-    document.getElementById("shakeBehind").style.opacity = 3 - (scale / 100);
-
-    if(scale > 301){
-        document.getElementById("shake").style.display = "none";
-        holder.add(recent);
-        shakeOn = false;
-        if((document.getElementById("POKE" + "H " + (holder.contains.length))) != null){
-            document.getElementById("POKE" + "H " + (holder.contains.length)).style.display = "inline";
-        }
-        document.getElementById("shakeBehind").style.display = "none";
-        saveGame();
-    }
-}, 30)
-
-setInterval(function(){
-    for(var i = 1; i < pD.length; i++){
-        if(data[i] == 2){
-            document.getElementById("data" + i).style.display = "table-row";
-            document.getElementById("fake" + i).style.display = "none";
-            document.getElementById("dumb" + i).style.display = "none";
-        } else if(data[i] == 1){
-            document.getElementById("data" + i).style.display = "none";
-            document.getElementById("fake" + i).style.display = "table-row";
-            document.getElementById("dumb" + i).style.display = "none";
-        } else if(data[i] == 0){
-            document.getElementById("data" + i).style.display = "none";
-            document.getElementById("fake" + i).style.display = "none";
-            document.getElementById("dumb" + i).style.display = "table-row";
-        }
-    }
-}, 15)
-
-    var mouseDown = false;
-    document.onmousedown = function() { 
-        mouseDown = true;
-    }
-    document.onmouseup = function() {
-        mouseDown = false;
-    }       
-
-    $(this).mousemove(function(event){
-        moveCount = 0;
-        if(!shakeOn){
-            document.getElementById("shake").style.left = event.clientX - 60 + "px";
-            document.getElementById("shake").style.top = event.clientY - 60 + "px";
-            document.getElementById("shakeBehind").style.left = (event.clientX - 44) + "px";
-            document.getElementById("shakeBehind").style.top = (event.clientY - 44) + "px";
-        }
-        if(selected != "" && mouseDown > 0){
-            document.getElementById(selected).style.position = "fixed";
-            document.getElementById(selected).style.pointerEvents = "none";
-            document.getElementById(selected).style.left = event.clientX - 30 + "px";
-            document.getElementById(selected).style.top = event.clientY - 30 + "px";
-        }
-    })
-
-function catchMon(){
+var catchMon = function(){
     if(shakeOn){
         return;
     }
@@ -931,7 +713,6 @@ function catchMon(){
     }
 
     coins -= balls[catchBall].cost;
-    updateCoins();
 
     var found = getMon(fieldTypes[catchLocation - 1].split(" "), 1, 0, balls[catchBall].bonus);
 
@@ -944,6 +725,236 @@ function catchMon(){
 
     saveGame();
     shake();
+}
+
+var shake = function(){
+    shakeOn = true;
+    scale = 20;
+
+    document.getElementById("shake").src = balls[catchBall].image;
+    document.getElementById("shakeBehind").src = "pokemon/other-sprites/official-artwork/" + recent.id + ".png";
+
+    $('#shake').css('transform', 'scale(' + (.5 + Math.abs(.5 - (scale / 100))) + ')')
+    document.getElementById("shake").style.display = "block";
+    document.getElementById("shakeBehind").style.display = "block";
+} 
+
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+/////////////////RENDERALL
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+
+var renderAll = function(){
+    if(coins > 9999){
+        coins = 9999;
+    }
+    document.getElementById("coinsCount").innerHTML = coins;
+    
+    document.getElementById("TEMP").innerHTML = "";
+    if(true || !shakeOn){
+        holder.renderMon();
+    }
+    for(var i = 0; i < box.length; i++){
+        box[i].renderMon();
+    }
+    for(var i = 0; i < fighting.length; i++){
+        fighting[i].renderMon();
+    }
+
+    for(var i = 1; i < pD.length; i++){
+        if(data[i] == 2){
+            document.getElementById("data" + i).style.display = "table-row";
+            document.getElementById("fake" + i).style.display = "none";
+            document.getElementById("dumb" + i).style.display = "none";
+        } else if(data[i] == 1){
+            document.getElementById("data" + i).style.display = "none";
+            document.getElementById("fake" + i).style.display = "table-row";
+            document.getElementById("dumb" + i).style.display = "none";
+        } else if(data[i] == 0){
+            document.getElementById("data" + i).style.display = "none";
+            document.getElementById("fake" + i).style.display = "none";
+            document.getElementById("dumb" + i).style.display = "table-row";
+        }
+    }
+
+    if(lastSelected != "" && returnFromSelect(lastSelected) != undefined){
+        var cur = returnFromSelect(lastSelected);
+        document.getElementById("nickShow").innerHTML = cur.nick;
+        document.getElementById("statsShow").innerHTML = "Level: " + cur.level + "<br>Types: " + pD[cur.id].type[0];
+        if(pD[cur.id].type[1] != "None"){
+            document.getElementById("statsShow").innerHTML += ", " + pD[cur.id].type[1];
+        }
+        document.getElementById("statsShow").innerHTML += "<br>HP: " + cur.stats.reduce((z,y,f) => String(z) + "<br>" + statNames[f] + ": " + String(y) + " (+" + String(y - pD[cur.id].stats[f]) + ")");
+        document.getElementById("info").style.display = "block" ;
+    } else {
+        document.getElementById("nickShow").innerHTML = "";
+        document.getElementById("info").style.display = "none" ;
+    }
+    
+    if(toBool(hasUsedPremier)){
+        document.getElementById("item2").style.display = "none";
+    }
+
+    
+    if(!mouseDown){
+        selected = "";
+        catchMode = false;
+    }
+
+    //if(lastSelected == "" || false){
+        //document.getElementById("info").style.width = "99px";
+    //} else {
+        //document.getElementById("info").style.width = (.1 * $(window).width()) + "px";
+    //}
+    fixItems();
+
+    if(!(unlockedField >= fighting.length / 2)){
+        document.getElementById("buyField").style.left = document.getElementById("wrap" + (unlockedField + 1)).getBoundingClientRect().left + "px";
+        document.getElementById("buyField").style.top = document.getElementById("wrap" + (unlockedField + 1)).getBoundingClientRect().top + "px";
+    } 
+    
+    if(current != 0 || unlockedField >= fighting.length / 2){
+        document.getElementById("buyField").style.display = "none";
+    } else {
+        document.getElementById("buyField").style.display = "block";
+    }
+    
+    if(catchMode){
+        document.getElementById("shake").style.display = "block";
+        document.getElementById("shake").style.opacity = ".9";
+        document.getElementById("shake").style.transform = "scale(.3)";
+        document.getElementById("shake").src = balls[catchBall].image;
+
+        
+        document.getElementById("item" + catchBall).childNodes[0].style.opacity = "0";
+    } else if(!shakeOn){
+        document.getElementById("shake").style.opacity = "0";
+        document.getElementById("item" + catchBall).childNodes[0].style.opacity = "1";
+    }
+
+    for(var i = 0; i < fighting.length; i++){
+        if(i % 2 == 1){
+            fighting[i].allowHover = false;
+        }
+        if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1 && fighting[setPair(i)[0]].contains[0].hp > 0){
+            fighting[i].bouncey+=.75;
+            if(fighting[i].bouncey > 100){
+                fighting[i].bouncey = 0;
+            }
+            if(fighting[i].bouncey > 90){
+                document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[0].style.transform += "translate(0, " + (Math.cos(fighting[i].bouncey * 1.5) * 6) + "px)";
+            } else if (fighting[i].bouncey > 35 && fighting[i].bouncey < 45){
+                document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[0].style.transform += "translate(" + (Math.cos(fighting[i].bouncey * 1.5) * 3) + "px, 0)"
+
+                if(fighting[i].bouncey == 36 + 1.5){
+                    var damaged = fighting[getPair(i, true)].contains[0].attack(fighting[getPair(i, false)].contains[0]);
+                    fighting[getPair(i, false)].dmg = "-" + fighting[getPair(i, false)].contains[0].defend(damaged[0]);
+                    fighting[getPair(i, false)].dmgFly = 0;
+                    fighting[getPair(i, false)].colour = "white";
+                    if(damaged[2]){
+                        fighting[getPair(i, false)].colour = "lawngreen";
+                    }
+                    if(damaged[3]){
+                        fighting[getPair(i, false)].colour = "LightSkyBlue";
+                    }
+                    if(damaged[1]){
+                        fighting[getPair(i, false)].colour = "lightCoral";
+                    }
+                    if(damaged[1] && damaged[3]){
+                        fighting[getPair(i, false)].colour = "plum";
+                    }
+
+                    if(fighting[setPair(i)[1]].contains[0].hp <= 0){
+                        coins -= -10 * fighting[setPair(i)[1]].contains[0].level;
+                        saveGame();
+                        fighting[getPair(i, true)].contains[0].levelUp(fighting[getPair(i, true)].contains[0].level < fighting[getPair(i, false)].contains[0].level + 3);
+                        fighting[getPair(i, true)].dmgFly = 0;
+                        fighting[getPair(i, true)].dmg = String(fighting[setPair(i)[1]].contains[0].level * 10);
+                        fighting[getPair(i, true)].colour = "yellow";
+
+                        fighting[getPair(i, true)].itemFly = 0;
+                        fighting[getPair(i, true)].itemUrl = items[Math.floor(items.length * Math.random())].sprite;
+                        fighting[getPair(i, true)].itemColour = "white";
+                        fighting[setPair(i)[1]].contains.splice(0,1);
+                        
+                        var found = getMon(fighting[setPair(i)[1]].catchable, fighting[setPair(i)[1]].levelBase, 1, 1);
+                        fighting[setPair(i)[1]].contains.push(new Pokemon("", found[0], (.0001 > Math.random()), found[1], false))
+                    }
+                }
+
+            } else {
+                //document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[0].style.transform += "translate(0, 0)";
+            }
+        } else if (fighting[setPair(i)[1]].contains.length == 1){
+            document.getElementById("POKE" + fighting[setPair(i)[1]].prefix + " 1").childNodes[0].style.opacity = ".5";
+            fighting[setPair(i)[1]].contains[0].hp = fighting[setPair(i)[1]].contains[0].stats[0];
+            document.getElementById("H" + fighting[setPair(i)[0]].prefix).style.width = "70px";
+            document.getElementById("T" + fighting[setPair(i)[0]].prefix).style.width = "00px";
+            document.getElementById("H" + fighting[setPair(i)[0]].prefix).style.backgroundColor = "green";
+        }
+
+        if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1){
+            document.getElementById("dead" + Math.ceil((i + 1) / 2)).style.opacity = fighting[setPair(i)[0]].contains[0].dead() - .2;
+            if(fighting[setPair(i)[0]].contains[0].hp <= 0){
+                document.getElementById("dead" + Math.ceil((i + 1) / 2)).style.pointerEvents = "auto";
+                document.getElementById("POKE" + fighting[setPair(i)[0]].prefix + " 1").childNodes[0].style.transform = "scale(1,-1)";
+            } else {
+                document.getElementById("dead" + Math.ceil((i + 1) / 2)).style.pointerEvents = "none"
+            }
+        }
+        
+        if(typeof(fighting[i].contains[0]) == "object" && fighting[i].contains[0].id != undefined){
+            document.getElementById("H" + fighting[i].prefix).style.width = Math.max(70 * (fighting[i].contains[0].hp / fighting[i].contains[0].stats[0]), 0) + "px";
+            document.getElementById("T" + fighting[i].prefix).style.width = Math.max(70 * (Math.min(100, (fighting[i].contains[0].tCharge)) / 100), 0) + "px";
+            if(fighting[i].contains[0].hp / fighting[i].contains[0].stats[0] > .5){
+                document.getElementById("H" + fighting[i].prefix).style.backgroundColor = "green";
+            } else if (fighting[i].contains[0].hp / fighting[i].contains[0].stats[0] > .2){
+                document.getElementById("H" + fighting[i].prefix).style.backgroundColor = "yellow";
+            } else {
+                document.getElementById("H" + fighting[i].prefix).style.backgroundColor = "red";
+            }
+            document.getElementById("H" + fighting[i].prefix).style.borderTopRightRadius = Math.min(3, Math.max(0, 2 * (fighting[i].contains[0].hp - (.9 * fighting[i].contains[0].stats[0])))) + "px";
+            document.getElementById("T" + fighting[i].prefix).style.borderTopLeftRadius = Math.min(3, Math.max(0, 2 * (fighting[i].contains[0].tCharge - (50)))) + "px";
+
+            document.getElementById("nick" + toPlace(i + 1,2)).innerHTML = fighting[i].contains[0].nick;
+            document.getElementById("level" + toPlace(i + 1,2)).innerHTML = " LVL. " + fighting[i].contains[0].level;
+        }
+    }
+
+    if(shakeOn){
+        scale = scale + 7;
+        $('#shake').css('transform', 'scale(' + (.15 + Math.abs(.5 - (scale / 100))) + ')')
+        document.getElementById("shake").style.opacity = 2 - (scale / 100);
+    
+        $('#shakeBehind').css('transform', 'scale(' + (.15 + Math.abs(.5 - (scale / 100))) / 1.35 + ')')
+        document.getElementById("shakeBehind").style.opacity = 3 - (scale / 100);
+    
+        if(scale > 301){
+            document.getElementById("shake").style.display = "none";
+            holder.add(recent);
+            shakeOn = false;
+            if((document.getElementById("POKE" + "H " + (holder.contains.length))) != null){
+                document.getElementById("POKE" + "H " + (holder.contains.length)).style.display = "inline";
+            }
+            document.getElementById("shakeBehind").style.display = "none";
+            saveGame();
+        }
+    }
 }
 
 setInterval(function(){
