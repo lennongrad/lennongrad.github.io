@@ -43,31 +43,31 @@
     </script>
 
     <script id="fakeRow" type="text/x-handlebars-template">
-        <td class="row box"> <div><img src="{{src}}"/></div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>{{name}}</div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
+        <td class="fakerow box"> <div><img src="{{src}}"/></div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>{{name}}</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
     </script>
 
     <script id="dumbRow" type="text/x-handlebars-template">
-        <td class="row box"> <div><img src="pokesprite-master/icons/pokemon/unknown.png"/></div> </td>
-        <td class="row" class="width:100px"> <div>???</div> </td>
-        <td class="row" class="width:100px"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
-        <td class="row"> <div>???</div> </td>
+        <td class="dumbrow box"> <div><img src="pokesprite-master/icons/pokemon/unknown.png"/></div> </td>
+        <td class="dumbrow" class="width:100px"> <div>???</div> </td>
+        <td class="dumbrow" class="width:100px"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
     </script>
 
     <script id="wrap" type="text/x-handlebars-template">
@@ -141,12 +141,14 @@
                                 </table>
                             </div>
                             <div id="main2" onmouseover="hover = '0'" class="main" style="overflow-y: hidden; display: none">
+                                <div id="boxes" style="display: inline-block"></div>
                             </div>
                         </td>
-                        <td style="background-color: #2A2A2A; text-align: center; width: 5%; overflow-x: hidden; overflow-y: visible">
-                            <div class="item" id="item0" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 0"><image draggable="false" class="icon" id="commonBall" src="items/dream-world/poke-ball.png"/></div>
-                            <div class="item" id="item1" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 1"><image draggable="false" class="icon" id="ultraBall" src="items/dream-world/great-ball.png"/></div>
-                            <div class="item" id="item2" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 2"><image draggable="false" class="icon" id="ultraBall" src="items/dream-world/premier-ball.png"/></div>
+                        <td id="itemSpace" style="background-color: #2A2A2A; text-align: center; width: 5%; overflow-x: hidden; overflow-y: visible">
+                                <div class="item" id="item0"><image draggable="false" class="icon" id="commonBall" src="items/dream-world/sitrus-berry.png"/></div>
+                                <div class="item" id="item1" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 1"><image draggable="false" class="icon" src="items/dream-world/poke-ball.png"/></div>
+                                <div class="item" id="item2" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 2"><image draggable="false" class="icon" src="items/dream-world/great-ball.png"/></div>
+                                <div class="item" id="item3" onmousedown="if(!shakeOn){catchMode = true}; catchBall = 3"><image draggable="false" class="icon" src="items/dream-world/premier-ball.png"/></div>
                         </td>
                 </tr>
                 <tr> 
