@@ -198,7 +198,11 @@ for(var i = 0; i < fieldTypes.length; i++){
     wrapper.innerHTML = Handlebars.compile(document.getElementById("wrap").innerHTML)({ 1: toPlace((i * 2) + 1,2), 2: toPlace((i * 2) + 2,2), 3: i + 1, 4: fieldTypes[i].split(" ")[0]});
     wrapper.id = "wrap" + (i + 1);
     wrapper.style.display = "none";
-    wrapper.style.backgroundImage = "url(" + fieldTypes[i].split(" ")[0].toLowerCase() + "Battle.png)";
+    if(fieldTypes[i].split(" ")[0].toLowerCase() != "grass"){
+        wrapper.style.backgroundImage = "url(" + fieldTypes[i].split(" ")[0].toLowerCase() + "Battle.png)";
+    } else {
+        wrapper.style.backgroundImage = "url(defaultBattle.png)";
+    }
     wrapper.onmouseup = function(){
         if(catchMode){
             catchLocation = this.id.substring(4);
