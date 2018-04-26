@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agriculture</title>
+    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="icon" href="faviconagr.ico" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+    <script id="entry-template" type="text/x-handlebars-template">
+                <td>
+
+                    <div id="{{type}}details" class="tooltip detailer">
+                        <img draggable="false" src="{{type}}.png" class="food-icon">
+                        <span class="tooltiptext">{{type}}</span>
+                    </div>
+                </td>
+                <td>
+                    <span id="{{type}}" class="text"></span>
+                </td>
+                <td>
+                    <span id="{{abr}}ps" class="text"></span>
+                </td>
+    </script>
+
+    <script id="bldg-template" type="text/x-handlebars-template">
+                        <div id="{{bldg}}_header" class="boxholderheader">
+                            <span id="{{bldg}}s_number" class="amt"></span> <span id="{{bldg}}plural">{{name}}s</span>
+                            <br />
+                            <span id="{{bldg}}s_fps" class="fpsamt"></span>
+                            <br />
+                            <span class="button" onclick="bldg[{{ide}}].left()"> ◄ </span> <span id="{{bldg}}_working"></span>
+                            <span class="button" onclick="bldg[{{ide}}].right()"> ► </span>
+                        </div>
+                        <div class="bldgbuy button" onclick="bldg[{{ide}}].buy()">
+                            <span id="{{bldg}}_cost" style="font-size:18px; height:20px"></span>
+                            <span style="height:1px; top:3px; position:relative" colspan=2 id="{{ide}}cost"><img draggable="false" src="cash.png" class="cashicon food-icon"></span></div>
+   </script>
+
+    <script id="appear-template" type="text/x-handlebars-template">
+                <span id="{{name}}appear" class="appearer">+1</span>
+                <div onclick="res[{{ide}}].toClick()" id="{{name}}_click" class="clickeer button click" style="background-color:{{color}}">
+                    <img draggable="false" src="{{name}}click.png" class="clicker">
+                </div>
+    </script>
+
+    <script id="conv-template" type="text/x-handlebars-template">
+    
+                            <td>
+                                <div class="tooltip button" onclick="auto({{ide1}},{{ide2}})"><span id="{{name1}}{{name2}}convo">☐</span><span class="tooltiptext convert">Auto-convert {{name1}} to {{name2}}?</span></div>
+                                (<span id="{{name1}}_to_{{name2}}_rate" class="rate"></span>)
+                            </td>
+                            <td>
+                                <div onclick="converter({{ide1}},{{ide2}})" id="convertbutton" class="button">
+                                    <div class="tooltip">
+                                        <img draggable="false" src="{{name1}}.png" class="food-icon {{name1}}icon">
+                                    </div>
+                                    <img draggable="false" src="sideswipe.png" class="convert-clicker">
+                                    <div class="tooltip">
+                                        <img draggable="false" src="{{name2}}.png" class="{{name2}}icon food-icon">
+                                    </div>
+                                </div>
+                            </td>
+                            </script>
+
+    <script id="charge-template" type="text/x-handlebars-template">
+                <td class="chargetitle">{{chargename}}<br>
+                            <div  id="convertbutton" >
+                                <div class="button charger" onclick="buy_charge({{chargeid}})">
+                                    <span id="charge_cost{{chargeid}}" class="text"></span>
+                                    <img draggable="false" src="energy.png" class="energyicon food-icon">
+                                        
+                                </div>
+                            </div>
+                            </script>
+</head>
+<body>
+
+    <div id="loadingleft"><div id="logo">Agriculture</div> <img src="loading.gif" id="loadingicon"/></div><div id="loadingright"></div>
+
+    <!-- Start of Header div -->
+    <div id="header" class="header">
+        <table id="1pageclick" class="pager button depress" onclick="switchPage(1)"> <tr><td><img src="page1.png" class="page-icon" /></td><td>Resources</td></tr></table>
+
+        <table id="2pageclick" class="pager button depress" onclick="switchPage(2)"> <tr><td><img src="page2.png" class="page-icon" /></td><td>Government</td></tr></table>
+
+        <table id="4pageclick" class="pager button depress" onclick="switchPage(4)"> <tr><td><img src="page4.png" class="page-icon" /></td><td>Development</td></tr></table>
+
+        <table id="3pageclick" class="pager button depress" onclick="switchPage(3)"> <tr><td><img src="page3.png" class="page-icon" /></td><td>Settings</td></tr></table>
+
+
+    </div>
+    <!-- End of Header div -->
+    <!-- Start of Ledger div -->
+    <div id="ledger">
+        <table  class="ledger">
+            <tbody id="ledgerbody">
+            <tr>
+                <td colspan="4">
+                    <div class="ledgerheader">
+                        Ledger
+                    </div>
+                </td>
+            </tr>
+            <tr class="row-odd">
+                <td style="width:30px; ">
+
+                    <div class="tooltip detailer">
+                        <img draggable="false" src="cash.png" class="cashicon food-icon">
+                        <span class="tooltiptext">Cash</span>
+                    </div>
+                </td>
+                <td colspan=2 style="width:55px">
+                    <span id="cash" class="text"></span><span id="caps" class="text"></span>
+                </td>
+            </tr>
+            <tr class="row-odd">
+                <td style="width:30px; ">
+
+                    <div class="tooltip detailer">
+                        <img draggable="false" src="unrest.png" class="unresticon food-icon">
+                        <span class="tooltiptext">Unrest</span>
+                    </div>
+                </td>
+                <td colspan=2 style="width:55px">
+                    <span id="unrest" class="text"></span><span id="unps" class="text"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div id="page1" class="page">
+    <table id="main"><tbody id="mainbody"></tbody></table>
+    <div style="height:58px"></div>
+        </div>
+
+    <div class="page" id="page2">
+        <!--<iframe src="spacers.html" id="hi" name="targetframe" allowTransparency="true" scrolling="no" frameborder="0" style="width:100%; height:100%;">
+    </iframe>-->
+
+
+        <div id="charge_box">
+            <table id="chargebox"><tbody id="chargeanchor"></tbody></table>
+        </div>
+    </div>
+
+    <div class="page" id="page3">
+        <div id="exp"></div>
+        <button class="clicker button" onclick="exporto()"></button>
+    </div>
+
+    <div class="page" id="page4">
+    </div>
+
+    <table id="rightside">
+        <tbody id="conver">
+        <tr class="row-odd">
+            <td colspan="2">
+                <div id="superappear" class="appearer">+1</div>
+                <div id="superbox">rrrr</div>
+                <div id="superback"><div id="super"></div></div>
+
+            </td>
+        </tr>
+                        <tr class="row-even">
+                            <td></td>
+                            <td  id="conversionheader">
+                                Conversions
+                            </td>
+                        </tr>
+        <tr class="row-odd" id="convanchor">
+            <td>
+                <div class="flashing" id="near_worker">!</div>
+            </td>
+            <td id="worker_header">
+                Workers
+            </td></tr>
+                        <tr class="row-even">
+                            <td id="worker_number" class="amt">
+                                <span id="workers_number" class="amt"></span>
+                            </td>
+                            <td class="button" id="convertbutton" onclick="buyWorker()">
+                                <p id="worker_cost" class="text"></p>
+                                <img draggable="false" src="food.png" class="foodicon food-icon">
+                            </td>
+                        </tr>
+        <tr class="row-odd">
+            <td>
+                <div class="flashing" id="near_tech">!</div>
+            </td>
+                            <td id="science_header">
+                                Technology
+                            </td>
+                        </tr>
+                        <tr class="row-even">
+                            <td style="width:110px">
+                                <span class="button depress" onclick="techleft()"> ◄ </span> Lvl. <span id="tech_level"></span> <span class="button depress" onclick="techright(1)"> ► </span>
+                            </td>
+                            <td  id="convertbutton" >
+                                <div class="button" onclick="buytech()">
+                                    <span id="tech_cost" class="text"></span>
+                                    <img draggable="false" src="science.png" class="scienceicon food-icon">
+                                        
+                                </div>
+                            </td>
+                        </tr><tr class="row-even"><td><span id="tech_name"></span>:</td><td>
+<span id="tech_descr"></span></td></tr>
+        <tr class="row-odd">
+            <td>
+                <div class="flashing" id="near_idea">!</div>
+            </td>
+                            <td id="science_header">
+                                Ideas
+                            </td>
+                        </tr>
+                        <tr class="row-even">
+                            <td style="width:110px">
+                                <span class="button depress" onclick="idealeft()"> ◄ </span> Lvl. <span id="idea_level"></span> <span class="button depress" onclick="idearight(1)"> ► </span>
+                            </td>
+                            <td  id="convertbutton" >
+                                <div class="button" onclick="buyidea()">
+                                    <span id="idea_cost" class="text"></span>
+                                    <img draggable="false" src="culture.png" class="cultureicon food-icon">
+                                        
+                                </div>
+                            </td>
+                        </tr><tr class="row-even"><td><span id="idea_name"></span>:</td><td>
+<span id="idea_descr"></span></td></tr>
+        <tr><td></td></tr></tbody>
+    </table>
+
+    <span id="cashdetails"><span id="cash_click"><span id="cash-column"><span id="unrestdetails"><span id="unrest_click"><span id="unrest-column"></span></span></span>
+    <!-- Start of Footer div -->
+    <table class="footer">
+        <tr>
+            <td>
+                Game by <a href="http://lennongrad.com">Brock Dilley</a>.
+            </td>
+            <td id="tester">
+                v1.04 (Pretty Update)
+            </td>
+            <td>
+                Icons by <a href="http://lorcblog.blogspot.com/">Lorc</a>, <a href="http://delapouite.com/">Delapouite</a>, and <a href="http://blackdogofdoom.blogspot.co.uk/">Felbrigg</a>. Retrieved from <a href="http://game-icons.net">http://game-icons.net</a>.
+            </td>
+        </tr>
+    </table>
+    <!-- End of Footer div -->
+<canvas id="spinner" onclick="clickSpinner()">
+
+    <script src="runscript.js"></script>
+</body>
+</html>

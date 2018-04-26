@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Pokémon: Catch 'Em!</title>
+    <base href="pokemon/" target="_blank">
     <meta name="description" content="A fun game!">
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@brockdilley" />
@@ -57,7 +58,7 @@
     </script>
 
     <script id="dumbRow" type="text/x-handlebars-template">
-        <td class="dumbrow box"> <div><img src="pokesprite-master/icons/pokemon/unknown.png"/></div> </td>
+        <td class="dumbrow box"> <div><img src="icons/pokemon/unknown.png"/></div> </td>
         <td class="dumbrow" class="width:100px"> <div>???</div> </td>
         <td class="dumbrow" class="width:100px"> <div>???</div> </td>
         <td class="dumbrow"> <div>???</div> </td>
@@ -72,7 +73,7 @@
 
     <script id="wrap" type="text/x-handlebars-template">
                 <div id="dead{{3}}" class="dead" style="pointer-events:none; opacity: 0">
-                       <image draggable=false onclick="revive({{1}})" class="revive icon" src="items/dream-world/revive.png"/>
+                       <image draggable=false onclick="revive({{1}})" class="revive icon" src="icons/dream-world/revive.png"/>
                 </div>
                 <div id="F{{1}}" class="fBox pInv" onmouseover="hover = 'F{{1}}';" style="background-image: url(backBattle{{4}}.png);display: block; left: 20px"></div>
                 <div id="F{{2}}" class="fBox pInv" onmouseover="hover = '';"  style="background-image: url(backBattle{{4}}.png); left: 144px"></div>
