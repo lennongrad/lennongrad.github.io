@@ -1,5 +1,5 @@
 
-var version = "B7";
+var version = "B8";
 document.getElementById("version").innerHTML = "Version " + version;
 var LEFT = 0;
 var RIGHT = 1;
@@ -50,6 +50,15 @@ var fixItems = function(){
     }
 }
 fixItems();
+
+var setInfo = function(){
+    document.getElementById("info").style.right = -160 + ($(window).width() - mouseX) + "px";
+    document.getElementById("info").style.bottom = 50 + ($(window).height() - mouseY) + "px";
+}
+
+function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 var getMon = function(catchable, levelBase, variation, chance){
     var caught = Math.ceil((pD.length - 1) * Math.random());
@@ -149,6 +158,7 @@ var unlockedField = 0;
 
 var active = 0;
 var selected = "";
+var hovered = "";
 var lastSelected = "";
 var hover = "";
 var isMoving = false;
@@ -211,36 +221,75 @@ for(var i = 1; i < fighting.length; i += 2){
 }
 
 //alert("POKEH 0".substring(4).split(" "))
-function Item(id, amt, render, name, type, first, second, third){
+function Item(id, amt, render, name, type, cost, first, second){
     this.id = id;
-    this.name = name;
+    this.name = capitalize(name);
     this.dream = "items/dream-world/" + this.name.toLowerCase();
     this.sprite = "pokesprite-master/icons/";
     this.amt = amt;
     this.render = render;
+    this.cost = cost;
 
     this.type = type;
     switch(this.type){
         case BERRY: 
+            this.specialty = first;
             this.dream += "-berry.png"; 
             this.sprite += "berry/" + this.name.toLowerCase() + ".png"; 
+            this.name += " Berry";
             break; 
         case BALL: 
             this.dream += "-ball.png"; 
             this.sprite += "pokeball/" + this.name.toLowerCase() + ".png"; 
-            this.cost = first;
-            this.bonus = second;
+            this.bonus = first;
+            this.name += " Ball"
             break;
     }
+
+    this.buy = function(){
+        if(coins >= this.cost){
+            coins -= this.cost;
+            this.amt++
+        }
+    }
+}
+var items = [new Item(
+	0 , 1, false, "sitrus" , BERRY, 20, "HEAL50")  , new Item(
+	1 , 1, false, "oran"   , BERRY, 5 , "HEAL10")  , new Item(
+	2 , 1, false, "enigma" , BERRY, 40, "SPICY")   , new Item(
+	3 , 1, false, "micle"  , BERRY, 40, "DRY")     , new Item(
+	4 , 1, false, "custap" , BERRY, 40, "SWEET")   , new Item(
+	5 , 1, false, "jaboca" , BERRY, 40, "BITTER")  , new Item(
+	6 , 1, false, "rowap"  , BERRY, 40, "SOUR")    , new Item(
+	7 , 1, false, "occa"   , BERRY, 40, "Fire")    , new Item(
+	8 , 1, false, "passho" , BERRY, 40, "Water")   , new Item(
+	9 , 1, false, "wacan"  , BERRY, 40, "Electric"), new Item(
+	10, 1, false, "rindo"  , BERRY, 40, "Grass")   , new Item(
+	11, 1, false, "yache"  , BERRY, 40, "Ice")     , new Item(
+	12, 1, false, "chople" , BERRY, 40, "Fighting"), new Item(
+	13, 1, false, "kebia"  , BERRY, 40, "Poison")  , new Item(
+	14, 1, false, "shuca"  , BERRY, 40, "Ground")  , new Item(
+	15, 1, false, "coba"   , BERRY, 40, "Flying")  , new Item(
+	16, 1, false, "payapa" , BERRY, 40, "Psychic") , new Item(
+	17, 1, false, "tanga"  , BERRY, 40, "Bug")     , new Item(
+	18, 1, false, "charti" , BERRY, 40, "Rock")    , new Item(
+	19, 1, false, "kasib"  , BERRY, 40, "Ghost")   , new Item(
+	20, 1, false, "haban"  , BERRY, 40, "Dragon")  , new Item(
+	21, 1, false, "colbur" , BERRY, 40, "Dark")    , new Item(
+	22, 1, false, "babiri" , BERRY, 40, "Steel")   , new Item(
+	23, 1, false, "cornn"  , BERRY, 40, "Fairy")   , new Item(
+	24, 1, false, "chilan" , BERRY, 40, "Normal")  , new Item(
+	25, 5, true , "poke"   , BALL , 20, 1)         , new Item(
+	26, 3, true , "great"  , BALL , 30, .8)        , new Item(
+	27, 1, true , "ultra"  , BALL , 50, .6)        , new Item(
+	28, 1, true , "premier", BALL , 0 , 1)]
+
+var categories = {
+    "Berry": 0, 0: "Berry",
+    "Ball": 1, 1: "Ball"
 }
 
-var items = [new Item(
-    0, 1, true, "sitrus", BERRY), new Item(
-    1, 5, true, "poke", BALL, 20, 1), new Item(
-    2, 3, true, "great", BALL, 30, 1), new Item(
-    3, 1, true, "premier", BALL, 0, 1)]
-
-document.getElementById("itemSpace").innerHTML = "";
+document.getElementById("itemPlace").innerHTML = "";
 for(var i = 0; i < items.length; i++){
     var newItem = document.createElement("DIV");
     newItem.className = "item";
@@ -254,9 +303,13 @@ for(var i = 0; i < items.length; i++){
     newItemImage.className = "icon";
     newItemImage.src = items[i].dream;
 
-
     newItem.appendChild(newItemImage);
-    document.getElementById("itemSpace").appendChild(newItem);
+    document.getElementById("itemPlace").appendChild(newItem);
+
+    var newTable = document.createElement("TABLE");
+    newTable.onmousedown = new Function("items[" + i + "].buy()");
+    newTable.innerHTML = Handlebars.compile(document.getElementById("buy").innerHTML)({ cost: items[i].cost, name: items[i].name, dream: items[i].dream });
+    document.getElementById("storefront" + items[i].type).appendChild(newTable);
 }
 
 function Pokemon(nick, id, shinys, level, player){
@@ -411,7 +464,7 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
     this.dmgFly = 100;
     this.colour = "white";
 
-    this.itemUrl = "";
+    this.itemUrl = 0;
     this.itemFly = 100;
     this.itemColour = "white";
     
@@ -434,18 +487,23 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
     }
 
     this.renderNumb = function(){
-        this.dmgFly+=.5;
+        this.dmgFly+=1;
         document.getElementById("N" + this.place.substring(1)).style.setProperty("--backColour", this.colour)
         document.getElementById("N" + this.place.substring(1)).innerHTML = Math.ceil(this.dmg);
         document.getElementById("N" + this.place.substring(1)).style.bottom = 30 + this.dmgFly + "px";
         document.getElementById("N" + this.place.substring(1)).style.left = 46 + (-95 * this.direction) + "px";
         document.getElementById("N" + this.place.substring(1)).style.opacity = 1 - (this.dmgFly / 40)
 
-        if(this.itemFly < 50){
+        if(this.itemFly <= 50){
         this.itemFly+=.25;
         }
+
+        if(this.itemFly == 50){
+            items[this.itemUrl].amt++;
+        }
+
         document.getElementById("I" + this.place.substring(1)).style.setProperty("--backColour", this.itemColour)
-        document.getElementById("I" + this.place.substring(1)).src = this.itemUrl;
+        document.getElementById("I" + this.place.substring(1)).src = items[this.itemUrl].sprite;
         document.getElementById("I" + this.place.substring(1)).style.bottom = 30 + this.itemFly + "px";
         document.getElementById("I" + this.place.substring(1)).style.left = 226 + (-215 * this.direction) + "px";
         document.getElementById("I" + this.place.substring(1)).style.opacity = 1 - (this.itemFly / 40)
@@ -473,13 +531,18 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
                     if(this.allowHover){
                         contain.onmousedown = new Function("if(selected == '' && !catchMode){selected = " + '"' + contain.id + '";}');
                     }
-                    contain.oncontextmenu = new Function('lastSelected = "' + contain.id + '"; return false');
+                    contain.onmouseover = new Function('hovered = "' + contain.id + '"');
+                    contain.oncontextmenu = new Function('lastSelected = "' + contain.id + '"; setInfo(); return false');
 
                     var newMon = document.createElement("IMG");
                     newMon.className = "pokemonSprite";
                     newMon.setAttribute("draggable",false);
                     if(this.direction == RIGHT){
                         newMon.style.transform = "scale(-1,1)"
+                    }
+
+                    if((this.prefix.substring(0,1) != "F" && this.prefix.substring(0,1) != "H") || contain.id == hovered){
+                        newMon.className += " inBox"
                     }
         
                     var ext = "regular";
@@ -510,6 +573,7 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
                         }
                     }
                 } 
+
 
                  if(this.prefix.substring(0,1) != "F"){
                     contain.className += " unknownSprite";
@@ -632,7 +696,8 @@ for(var i = 1; i < pD.length; i++){
 }
 
 var current = 0;
-var amt = 3;
+var itemShow = 0;
+var amt = 4;
 
 var shakeOn = false;
 
@@ -649,6 +714,22 @@ var getPair = function(numb, which){
         return temp[0];
     }
     return temp[1];
+}
+
+var itemSwitch = function(){
+    itemShow++;
+    if(itemShow > 1){
+        itemShow = 0;
+    }
+    document.getElementById("itemSwitch").innerHTML = categories[(itemShow + 1) % 2];
+
+    for(var i = 0; i < items.length; i++){
+        if(items[i].type == itemShow){
+            items[i].render = true;
+        } else {
+            items[i].render = false;
+        }
+    }
 }
 
 $(document).mouseup(function(){
@@ -706,6 +787,7 @@ setInterval(function(){
     if(moveCount > 50){
         moveCount = 0;
         hover = "";
+        hovered = "";
     } 
 
     for(var i = 0; i < fighting.length; i++){
@@ -748,9 +830,6 @@ var catchMon = function(){
         return;
     }
 
-    var cost = 0;
-    var bonus = 0;
-
     if(coins - items[catchBall].cost < 0 || items[catchBall].amt < 1){
         alert("You don't have enough Coins!");
         return;
@@ -761,7 +840,7 @@ var catchMon = function(){
 
     var found = getMon(fieldTypes[catchLocation - 1].split(" "), 1, 0, items[catchBall].bonus);
 
-    if(catchBall == 3){
+    if(items[catchBall].name == "Premier Ball"){
         found = [Math.floor(Math.random() * 3) * 3 + 1, false];
     }
 
@@ -858,9 +937,15 @@ var renderAll = function(){
     }
 
     for(var i = 0; i < items.length; i++){
+        if(items[i].amt > 99){
+            items[i].amt = 99;
+        }
         document.getElementById("item" + i).style.setProperty("--used", String(items[i].amt))
+        document.getElementById("buy" + items[i].name).style.setProperty("--used", String(items[i].amt))
         if(items[i].amt == 0 || !items[i].render){
             document.getElementById("item" + i).style.display = "none";
+        } else {
+            document.getElementById("item" + i).style.display = "flex";
         }
         
     }
@@ -942,7 +1027,7 @@ var renderAll = function(){
                         fighting[getPair(i, true)].colour = "yellow";
 
                         fighting[getPair(i, true)].itemFly = 0;
-                        fighting[getPair(i, true)].itemUrl = items[Math.floor(items.length * Math.random())].sprite;
+                        fighting[getPair(i, true)].itemUrl = Math.floor(items.length * Math.random());
                         fighting[getPair(i, true)].itemColour = "white";
                         fighting[setPair(i)[1]].contains.splice(0,1);
                         

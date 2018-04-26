@@ -1,9 +1,27 @@
+:root{
+    --darktext: #030303;
+    --lighttext: #EEEEEE;
+
+    --grey0: #EEEEEE;
+    --grey1: #CCCCCF;
+    --grey2: #888888;
+    --grey3: #555555;
+    --grey4: #333333;
+    --grey5: #2A2A2A;
+    --grey6: #1A1A1A;
+    
+    --inactive: #4444AA;
+    --active: #5555CC;
+    --number: #3311EE;
+}
+
+
 #moneyCount{
-    background: no-repeat 10px 0px/25px 25px  url("items/dream-world/electric-gem.png"), #333333;
-    color:white;
+    background: no-repeat 10px 0px/25px 25px  url("items/dream-world/electric-gem.png"), var(--grey4);
+    color: var(--lighttext);
     width: 99%;
-    height: 25px;
     text-align: right;
+    height: 25px;
     line-height: 20px;
     font-size:32px;
     text-align: center;
@@ -16,19 +34,7 @@
 
 #spinny{
     height:20px;
-    background-color:white;
-    cursor: pointer;
-}
-
-#spinnyHolder{
-    position: absolute;
-    top:30px;
-    left:250px;
-    width:200px;
-    height:20px;
-    border-radius: 2px;
-    background-color:grey;
-    padding: 5px;
+    background-color: var(--lighttext);
     cursor: pointer;
 }
 
@@ -52,12 +58,16 @@
     --used: 99;
     display: flex;
     width: 75%;
-    background-color:#4444AA;
+    background-color:var(--active);
     border-radius:100%;
     margin-right: auto;
     margin-left: auto;
     margin-bottom:10px;
     align-items: center;
+}
+
+.item:hover{
+    background-color: var(--inactive)
 }
 
 .item .icon{
@@ -101,7 +111,7 @@
     position: absolute;
     font-size: 17px;
     right: 20px;
-    color: black;
+    color: var(--darktext);
     bottom: -25px;
     --backColour : white;
     text-shadow: 0px 0px 3px var(--backColour), 0px 0px 6px var(--backColour), 0px 0px 9px var(--backColour), 0px 0px 12px var(--backColour), 0px 0px 15px var(--backColour);
@@ -112,10 +122,14 @@
     position: absolute;
     font-size: 17px;
     right: 20px;
-    color: black;
+    color: var(--darktext);
     bottom: -25px;
     --backColour : white;
     text-shadow: 0px 0px 3px var(--backColour), 0px 0px 6px var(--backColour), 0px 0px 9px var(--backColour), 0px 0px 12px var(--backColour), 0px 0px 15px var(--backColour);
+}
+
+.inBox{
+    background: radial-gradient(at 50% 65%,white, rgba(255,255,255,0) 50%);
 }
 
 .barHold{
@@ -125,7 +139,7 @@
     height:14px; 
     width: 70px;  
     top:27px; 
-    background-color:black; 
+    background-color: var(--darktext); 
     border-radius:5px
 }
 
@@ -151,14 +165,13 @@
     width:15%;
     z-index:15;
     position: absolute;
-    left: 20px;
     bottom: 200px;
     padding: 20px;
     border-radius: 20px;
     opacity: .7;
-    background-color: #2A2A2A; 
+    background-color: var(--grey3); 
     text-align: center; 
-    color:white; 
+    color: var(--lighttext); 
     font-family:Arial;
 }
 
@@ -171,7 +184,7 @@
 
 .top :first-child{
     position: auto;
-    color: black;
+    color: var(--darktext);
     font-weight: bold;
     font-size: 15px;
     font-family: Arial;
@@ -180,7 +193,7 @@
 .top :nth-child(2){
     position: auto;
     margin-top:-3px;
-    color: black;
+    color: var(--darktext);
     font-weight: bold;
     font-size: 12px;
     font-family: Helvetica;
@@ -216,25 +229,6 @@
     z-index:5;
 }
 
-.pokemonSprite:hover{
-    background: radial-gradient(at 50% 65%,#FFFFFF, rgba(255,255,255,0) 50%);
-}
-
-#trasher{
-    background-color: red;
-    border: 2px solid black;
-    position: absolute;
-    bottom: 20px;
-    width:60px;
-    height:60px;
-    right: 500px;
-    font-size:50px;
-    padding-top:5px;
-    padding-bottom:15px;
-    padding-left:5px;
-    padding-right:15px;
-}
-
 #shake{
     width:128px;
     height:128px;
@@ -256,8 +250,8 @@
 
 .item::after{
     counter-increment: test var(--used);
-    background-color: red;
-    color: white;
+    background-color: var(--number);
+    color: var(--lighttext);
     border-radius: 100%;
     width: 25px;
     height: 25px;
@@ -312,10 +306,11 @@
     position: relative;
     display: inline-block;
     background-size:100% 100%;
-    width:272px; 
+    width: 272px; 
     height: 144px; 
-    border:5px outset #333333;
-    border-radius: 5px;
+    box-shadow: 5px 5px 2px var(--darktext);
+    margin: 5px;
+    border-radius: 2px;
 }
 
 .fBox{
@@ -348,7 +343,7 @@
 }
 
 #pokeHolder{
-    background-color: #333333;
+    background-color: var(--grey4);
     z-index:1;
     height: 60px;
     padding:10px;
@@ -359,19 +354,19 @@
     margin: 0;
     cursor: pointer;
     height: 40px;
-    width: 25%;
+    width: 20%;
     overflow-x: hidden;
-    background-color: darkgrey;
+    background-color: var(--grey1);
     line-height:40px;
     text-align: center;
     font-size: 19px;
     font-family: Arial;
-    color: black;
+    color: var(--darktext);
     border: 2px solid black;
 }
 
 .setCurrent:hover{
-    background-color: grey;
+    background-color: var(--grey2);
 }
 
 #dexTab td{
@@ -380,16 +375,91 @@
     height:15px;
 }
 
-.row{
-    background-color: #CCCCCF;
+#main3{
+    text-align: center;
 }
 
-.dumbrow{
-    background-color: #555555;
+.storefront{
+    display: inline-block;
+    margin-top: 10px;
+    left: 50px;
+    top: 50px;
+    width: 90%;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    background-color: var(--grey4);
+    color: white;
+    text-align: left;
+}
+
+.head{
+    width: 100%;
+    margin-left: -10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 25px;
+    font-weight: bolder;
+    border-bottom: 2px solid white;
+}
+
+.storefront table{
+    text-align: center;
+    width:300px;
+    margin-left: 5px;
+    cursor: pointer;
+    background-color: var(--active);
+    border-radius: 1px;
+    padding: 10px;
+    display: inline-block;
+}
+
+.storefront table:hover{
+    background-color: var(--inactive);
+}
+
+.bImage::after{
+    counter-increment: test var(--used);
+    background-color: var(--number);
+    color: var(--lighttext);
+    border-radius: 100%;
+    width: 25px;
+    height: 25px;
+    position: relative;
+    top: 4px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 8px;
+    padding-left: 8px;
+    content: counter(test);
+    margin-left: -10px;
+    pointer-events: none;
+}
+
+.bName{
+    height: 25px;
+    line-height: 20px;
+    font-size:32px;
+}
+
+.bCost{
+    padding-top: 5px;
+    height: 25px;
+    line-height: 20px;
+    font-size:32px;
+    padding-left: 40px;
+    background: no-repeat 10px 5px/25px 25px  url("items/dream-world/electric-gem.png");
+}
+
+.row{
+    background-color: var(--grey1);
 }
 
 .fakerow{
-    background-color: #888888;
+    background-color: var(--grey2);
+}
+
+.dumbrow{
+    background-color: var(--grey3);
 }
 
 #dexTab{
@@ -399,12 +469,38 @@
     width: 100%;
 }
 
+#itemSpace{
+    background-color: var(--grey5);
+}
+
+::-webkit-scrollbar {
+    width: 20px;
+}
+
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey; 
+    border-radius: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    background: var(--inactive); 
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--active); 
+}
+
+.heading{
+    background-color: var(--grey4);
+}
+
 .main{
     overflow-y: auto;
     scroll-snap-type: mandatory;
     scroll-snap-points-y: repeat(144px);
     height:100%;
-    background-color: #111111;
+    background-color: var(--grey6);
     align-items: center;
     justify-content: center;
     display: flex;
@@ -414,24 +510,11 @@
     display: inline-block;
     height: 456px;
     width: 456px;
-    background-color: #777777;
+    background-color: var(--grey1);
 }
 
 .POKEC{
     position:absolute;
-}
-
-#pokeBoxOut{
-    background-color: #333333;
-    border:2px solid black;
-    border-radius: 20px;
-    position: fixed;
-    bottom: 10px;
-    left: 20px;
-    z-index:-2;
-    width:226px;
-    height: 222px;
-    padding:10px;
 }
 
 #pokeBox{
@@ -445,8 +528,8 @@
 }
 
 #resetButton{
-    background-color: #333333;
-    color:white;
+    background-color: var(--grey4);
+    color: var(--lighttext);
     width: 99%;
     height: 35px;
     line-height: 14px;
@@ -462,8 +545,8 @@
     height: 154px; 
     z-index:5;
     cursor: pointer; 
-    color:white; 
-    background-color: black;
+    color: var(--lighttext); 
+    background-color: var(--darktext);
     line-height: 154px;
     font-family: arial;
     font-size: 20px;
@@ -471,7 +554,7 @@
 }
 
 #resetButton:hover{
-    background-color: #444444;
+    background-color: var(--grey3);
 }
 
 .box{
