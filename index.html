@@ -1,41 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="description" content="Personal Site for Brock Dilley">
-    <meta name="keywords" content="Brock,Dilley,Personal,Development">
-    <meta name="author" content="Brock Dilley">
-    <title id="title">ennongrad</title>
+    <title>ennongrad</title>
+    <meta name="description" content="Brock Dilley's Portfolio">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@brockdilley" />
+    <meta name="twitter:title" content=".lennongrad" />
+    <meta name="twitter:description" content="Brock Dilley's Portfolio / .lennongrad" />
+    <meta name="twitter:image" content="https://i.imgur.com/LG0k3wB.png" />
+    <link rel="stylesheet" href="index.css">
     <link rel="icon" href="faviconmain.ico" type="image/x-icon">
-    <link rel="stylesheet" type="text/css" href="index.css">
-  <title>Brock Dilley</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 </head>
 <body>
-
-    <div id="top">
-    <div id="follower">
-        <p id="name">Brock Dilley</p>
-        <a href='/agr'>Agriculture</a>
-        <a href='/spacers'>Spacers</a>
-    </div>
+        <div id="header">.lennongrad (Brock Dilley)</div>
+        <div id="bottom">
+            <div id="work">
+                <span>Projects</span>
+                <a href="catchem.html">Catch 'Em!</a>
+                <a href="agr.html">Agriculture</a>
+                <a href="cybercrawl.html">Cybercrawl</a>
+                <a href="spacers.html">Spacers</a>
+                <a href="spammers.html">Spammers</a>
+            </div>
+            <div id="contact">
+                <span>Contact Info</span>
+                <div>
+                    <a href="mailto:brockdilley2000@gmail.com" target="_top">brockdilley2000@gmail.com</a><br>
+                    972-400-6172<br>
+                    <a href="https://github.com/lennongrad/">Github</a><br>
+                    <a href="https://twitter.com/BrockDilley">Twitter</a>
+                </div>
+            </div>
         </div>
-
-    <script>
-        var follower = document.getElementById("follower");
-        var sticky = follower.offsetTop;
-
-        function repeat() {
-            if (window.pageYOffset >= sticky) {
-                follower.classList.add("sticky")
-            } else {
-                follower.classList.remove("sticky");
-            }
-
-            setTimeout(repeat, 1);
-        }
-
-        repeat();
-
-        document.getElementById("title").innerHTML = "Lennongrad";
-    </script>
 </body>
 </html>

@@ -1,44 +1,77 @@
-﻿body{
-    height:2400px;
-    font-family:calibri
+﻿#header{
+  position: absolute;
+  height: 15%;
+  width: 100%;
+  background-color: black;
+  color: white;
+  left: 0px;
+  top: 0px;
+  font-family: Courier;
+  display: flex;
+  align-items: flex-end;
+  font-size: 40px;
+  padding-left: 20px;
 }
 
-#follower {
-  overflow: hidden;
-  background-color: #333;
-  left:0;
+#bottom{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 85%;
+  width: 100%;
+  background-color: #F5F5F5;
 }
 
-#name{
-    font-size:30px;
-    padding:2px;
-    line-height:1px;
-    text-align:center;
-    color:white;
-}
-
-#top{
-  background-color: #333;
-  position:absolute;
-  left:0;
-  top:0;
-  height:500px;
-}
-
-#follower a {
-  float: left;
-  display: block;
-  margin-right:4px;
-  color: #f2f2f2;
-  background-color:#f33444;
-  text-align: center;
-  padding: 9px;
+#work a{
   text-decoration: none;
-  border-radius:3px 3px 0px 0px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 7px;
+  width: 92%;
+  height: 70px;
+  color: #EEEEEE;
+  display: flex;
+  align-items: center;
+  font-size: 40px;
+  padding-left: 20px;
+  background-color: #4444AA;
+  cursor: pointer;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  transition: width .5s;
 }
 
-.sticky {
-  position: fixed;
-  top: 0;
-  width: 100%
+#work a:hover{
+  background-color: #5555CC;
+  width: 87%;
+}
+
+#bottom div span{
+  display: block;
+  margin: auto;
+  width: 95%;
+  border-bottom: 2px solid black;
+  padding: 5px;
+  padding-bottom: 2px;
+  font-size: 27px;
+  font-weight: bold;
+  font-family: Courier;
+}
+
+#contact div{
+  text-decoration: none;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 7px;
+  width: 92%;
+  height: 70px;
+  color: #EEEEEE;
+  font-size: 40px;
+  padding-left: 20px;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  transition: width .5s;
 }
