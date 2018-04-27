@@ -116,6 +116,7 @@ var toBool = function(take){
 var returnFromSelect = function(select){            
     switch(select.substring(4).split(" ")[0].substring(0,1)){
         case "H": return holder.contains[select.substring(4).split(" ")[1] - 1]; break;
+        case "M": return mixer.contains[select.substring(4).split(" ")[1] - 1]; break;
         case "F": return fighting[select.substring(5,7) - 1].contains[0]; break;
         default : return box[select.substring(4,5)].contains[select.substring(4).split(" ")[1] - 1];
     }
@@ -184,6 +185,7 @@ var newF = document.createElement("DIV");
 newF.className = "pInv battle";
 
 var holder = new Box(15, 1, "pokeHolder", "H", LEFT, 1, []);
+var mixer = new Box(1, 1, "pokeMixer", "M", LEFT, 1, []);
 var box = [];
 box.push(new Box(8, 8, "boxes", "0", RIGHT, 1, []));
 var fighting = [];
@@ -198,6 +200,7 @@ for(var i = 0; i < fieldTypes.length; i++){
     wrapper.innerHTML = Handlebars.compile(document.getElementById("wrap").innerHTML)({ 1: toPlace((i * 2) + 1,2), 2: toPlace((i * 2) + 2,2), 3: i + 1, 4: fieldTypes[i].split(" ")[0]});
     wrapper.id = "wrap" + (i + 1);
     wrapper.style.display = "none";
+    wrapper.onmouseover= new Function("hover = 'F" + toPlace((i * 2) + 1,2) + "';")
     if(fieldTypes[i].split(" ")[0].toLowerCase() != "grass"){
         wrapper.style.backgroundImage = "url(" + fieldTypes[i].split(" ")[0].toLowerCase() + "Battle.png)";
     } else {
@@ -225,7 +228,7 @@ for(var i = 1; i < fighting.length; i += 2){
 }
 
 //alert("POKEH 0".substring(4).split(" "))
-function Item(id, amt, render, name, type, cost, first, second){
+function Item(id, amt, render, name, type, cost, display, first, second){
     this.id = id;
     this.name = capitalize(name);
     this.dream = "icons/dream-world/" + this.name.toLowerCase();
@@ -233,11 +236,13 @@ function Item(id, amt, render, name, type, cost, first, second){
     this.amt = amt;
     this.render = render;
     this.cost = cost;
+    this.display = display;
 
     this.type = type;
     switch(this.type){
         case BERRY: 
-            this.specialty = first;
+            this.taste = first.split(" ").map(x => Number(x));
+            this.special = second;
             this.dream += "-berry.png"; 
             this.sprite += "berry/" + this.name.toLowerCase() + ".png"; 
             this.name += " Berry";
@@ -258,35 +263,35 @@ function Item(id, amt, render, name, type, cost, first, second){
     }
 }
 var items = [new Item(
-	0 , 1, false, "sitrus" , BERRY, 20, "HEAL50")  , new Item(
-	1 , 1, false, "oran"   , BERRY, 5 , "HEAL10")  , new Item(
-	2 , 1, false, "enigma" , BERRY, 40, "SPICY")   , new Item(
-	3 , 1, false, "micle"  , BERRY, 40, "DRY")     , new Item(
-	4 , 1, false, "custap" , BERRY, 40, "SWEET")   , new Item(
-	5 , 1, false, "jaboca" , BERRY, 40, "BITTER")  , new Item(
-	6 , 1, false, "rowap"  , BERRY, 40, "SOUR")    , new Item(
-	7 , 1, false, "occa"   , BERRY, 40, "Fire")    , new Item(
-	8 , 1, false, "passho" , BERRY, 40, "Water")   , new Item(
-	9 , 1, false, "wacan"  , BERRY, 40, "Electric"), new Item(
-	10, 1, false, "rindo"  , BERRY, 40, "Grass")   , new Item(
-	11, 1, false, "yache"  , BERRY, 40, "Ice")     , new Item(
-	12, 1, false, "chople" , BERRY, 40, "Fighting"), new Item(
-	13, 1, false, "kebia"  , BERRY, 40, "Poison")  , new Item(
-	14, 1, false, "shuca"  , BERRY, 40, "Ground")  , new Item(
-	15, 1, false, "coba"   , BERRY, 40, "Flying")  , new Item(
-	16, 1, false, "payapa" , BERRY, 40, "Psychic") , new Item(
-	17, 1, false, "tanga"  , BERRY, 40, "Bug")     , new Item(
-	18, 1, false, "charti" , BERRY, 40, "Rock")    , new Item(
-	19, 1, false, "kasib"  , BERRY, 40, "Ghost")   , new Item(
-	20, 1, false, "haban"  , BERRY, 40, "Dragon")  , new Item(
-	21, 1, false, "colbur" , BERRY, 40, "Dark")    , new Item(
-	22, 1, false, "babiri" , BERRY, 40, "Steel")   , new Item(
-	23, 1, false, "cornn"  , BERRY, 40, "Fairy")   , new Item(
-	24, 1, false, "chilan" , BERRY, 40, "Normal")  , new Item(
-	25, 5, true , "poke"   , BALL , 20, 1)         , new Item(
-	26, 3, true , "great"  , BALL , 30, .8)        , new Item(
-	27, 1, true , "ultra"  , BALL , 50, .6)        , new Item(
-	28, 1, true , "premier", BALL , 0 , 1)]
+	0 , 0, false, "sitrus" , BERRY, 20, true , "0 10 10 10 10", "HEAL50")  , new Item(
+	1 , 0, false, "oran"   , BERRY, 5 , true , "10 10 0 10 10", "HEAL10")  , new Item(
+	2 , 0, false, "enigma" , BERRY, 40, true , "40 10 0 0 0"  , "")        , new Item(
+	3 , 0, false, "micle"  , BERRY, 40, true , "0 40 10 0 0"  , "")        , new Item(
+	4 , 0, false, "custap" , BERRY, 40, true , "0 0 40 10 0"  , "")        , new Item(
+	5 , 0, false, "jaboca" , BERRY, 40, true , "0 0 0 40 10"  , "")        , new Item(
+	6 , 0, false, "rowap"  , BERRY, 40, true , "10 0 0 0 40"  , "")        , new Item(
+	7 , 0, false, "occa"   , BERRY, 40, false, "15 0 10 0 0"    , "Fire")    , new Item(
+	8 , 0, false, "passho" , BERRY, 40, false, "0 15 0 10 0"    , "Water")   , new Item(
+	9 , 0, false, "wacan"  , BERRY, 40, false, "0 0 15 0 10"    , "Electric"), new Item(
+	10, 0, false, "rindo"  , BERRY, 40, false, "10 0 0 15 0"    , "Grass")   , new Item(
+	11, 0, false, "yache"  , BERRY, 40, false, "0 10 0 0 15"    , "Ice")     , new Item(
+	12, 0, false, "chople" , BERRY, 40, false, "15 0 0 10 0"    , "Fighting"), new Item(
+	13, 0, false, "kebia"  , BERRY, 40, false, "0 15 0 0 10"    , "Poison")  , new Item(
+	14, 0, false, "shuca"  , BERRY, 40, false, "10 0 15 0 0"    , "Ground")  , new Item(
+	15, 0, false, "coba"   , BERRY, 40, false, "0 10 0 15 0"    , "Flying")  , new Item(
+	16, 0, false, "payapa" , BERRY, 40, false, "0 0 10 0 15"    , "Psychic") , new Item(
+	17, 0, false, "tanga"  , BERRY, 40, false, "20 0 0 0 10"    , "Bug")     , new Item(
+	18, 0, false, "charti" , BERRY, 40, false, "10 20 0 0 0"    , "Rock")    , new Item(
+	19, 0, false, "kasib"  , BERRY, 40, false, "0 10 20 0 0"    , "Ghost")   , new Item(
+	20, 0, false, "haban"  , BERRY, 40, false, "0 0 10 20 0"    , "Dragon")  , new Item(
+	21, 0, false, "colbur" , BERRY, 40, false, "0 0 0 10 20"    , "Dark")    , new Item(
+	22, 0, false, "babiri" , BERRY, 40, false, "25 10 0 0 0"    , "Steel")   , new Item(
+	23, 0, false, "cornn"  , BERRY, 40, false, "0 20 10 0 0"    , "Fairy")   , new Item(
+	24, 0, false, "chilan" , BERRY, 40, false, "0 25 10 0 0"    , "Normal")  , new Item(
+	25, 5, true , "poke"   , BALL , 20, true , 1)             , new Item(
+	26, 3, true , "great"  , BALL , 30, true , .8)            , new Item(
+	27, 1, true , "ultra"  , BALL , 50, true , .6)            , new Item(
+	28, 1, true , "premier", BALL , 0 , false, 1)]
 
 var categories = {
     "Berry": 0, 0: "Berry",
@@ -313,6 +318,9 @@ for(var i = 0; i < items.length; i++){
     var newTable = document.createElement("TABLE");
     newTable.onmousedown = new Function("items[" + i + "].buy()");
     newTable.innerHTML = Handlebars.compile(document.getElementById("buy").innerHTML)({ cost: items[i].cost, name: items[i].name, dream: items[i].dream });
+    if(!items[i].display){
+        newTable.style.display = "none";
+    }
     document.getElementById("storefront" + items[i].type).appendChild(newTable);
 }
 
@@ -328,7 +336,7 @@ function Pokemon(nick, id, shinys, level, player){
     this.find = "";
     this.tCharge = 0;
     this.player = player;
-
+    this.set = "";
     this.shiny = shinys;
     
     if(id != undefined){
@@ -485,9 +493,13 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
         this.renderMon();
     }
 
-    this.remove = function(toGo){
-        this.contains.splice(toGo,1);
+    this.remove = function(toGo, more){
+        var temp = this.contains.splice(toGo,1)[0];
+        if(arguments.length > 1){
+            this.add(more);
+        }
         this.renderMon();
+        return temp;
     }
 
     this.renderNumb = function(){
@@ -520,6 +532,8 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
             }
         }
 
+        document.getElementById(this.place).innerHTML = "";
+
         for(var e = 1; e <= this.width; e++){  
             for(var y = 0; y < this.height; y++){
                 var i = (y * this.width) + e;
@@ -530,7 +544,8 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
                 var topS = document.getElementById(this.place).getBoundingClientRect().top + 10 + ((i - 1) - ((i - 1) % this.width)) / this.height * 52;
     
 
-                if(this.contains.length >= i){              
+                if(this.contains.length >= i){
+                    this.contains[i - 1].set = "POKE" + this.prefix + " " + i;
                     contain.id = "POKE" + this.prefix + " " + i;
                     if(this.allowHover){
                         contain.onmousedown = new Function("if(selected == '' && !catchMode){selected = " + '"' + contain.id + '";}');
@@ -564,7 +579,7 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
                             ext = "/shiny"
                         }
                         newMon.src = "pokemon" + ext + "/" + this.contains[i - 1].id + ".png";
-                        leftS = document.getElementById(this.place).getBoundingClientRect().left + 5 + ((i - 1) % (this.width)) * 64;
+                        leftS =  document.getElementById(this.place).getBoundingClientRect().left + 5 + ((i - 1) % (this.width)) * 64;
                         topS = document.getElementById(this.place).getBoundingClientRect().top + 15 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64;
                     }
                     contain.appendChild(newMon);
@@ -586,7 +601,7 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
                 contain.style.left = leftS + "px";
                 contain.style.top = topS + "px";
     
-                if(document.getElementById(this.place).style.display == "" || (!isNaN(Number(this.prefix)) && current != 2) || (this.prefix.substring(0,1) == "F" && current != 0) && document.getElementById(this.place).style.display != "none"){
+                if(document.getElementById(this.place).style.display == "" || (current != 4 && this.prefix == "M") || (!isNaN(Number(this.prefix)) && current != 2) || (this.prefix.substring(0,1) == "F" && current != 0) && document.getElementById(this.place).style.display != "none"){
                     contain.style.display = "none";
                 }
     
@@ -701,7 +716,7 @@ for(var i = 1; i < pD.length; i++){
 
 var current = 0;
 var itemShow = 0;
-var amt = 4;
+var amt = 5;
 
 var shakeOn = false;
 
@@ -738,7 +753,7 @@ var itemSwitch = function(){
 
 $(document).mouseup(function(){
     if(selected != "" && hover != ""){
-        if(hover == selected.substring(4,5)){
+        if(hover.substring(0,1) == selected.substring(4,5)){
             return;
         }
         document.getElementById("TEMP").innerHTML = "";
@@ -746,6 +761,7 @@ $(document).mouseup(function(){
         
         switch(selected.substring(4).split(" ")[0].substring(0,1)){
             case "H": toMove = holder.contains[selected.substring(4).split(" ")[1] - 1]; break;
+            case "M": toMove = mixer.contains[selected.substring(4).split(" ")[1] - 1]; break;
             case "F": toMove = fighting[selected.substring(5,7) - 1].contains[0]; break;
             default : toMove = box[selected.substring(4,5)].contains[selected.substring(4).split(" ")[1] - 1];
         }
@@ -755,13 +771,27 @@ $(document).mouseup(function(){
         } else if(hover == "H" && !holder.willAllowAdd(1)){
             return;
         }
+        
+        if(hover == "M" && mixer.willAllowAdd(1)){
+            mixer.add(toMove);
+        } else if(hover == "M" && !mixer.willAllowAdd(1)){
+            return;
+        }
 
         if(hover.substring(0,1) == "F" && fighting[hover.substring(1) - 1].willAllowAdd(1)){
             fighting[hover.substring(1) - 1].add(toMove);
             fighting[setPair(hover.substring(1) - 1)[0]].bouncey = 0; fighting[setPair(hover.substring(1) - 1)[1]].bouncey = 50; 
             fighting[setPair(hover.substring(1) - 1)[0]].contains[0].hp = fighting[setPair(hover.substring(1) - 1)[0]].contains[0].stats[0]; 
             fighting[setPair(hover.substring(1) - 1)[1]].contains[0].hp = fighting[setPair(hover.substring(1) - 1)[1]].contains[0].stats[0]; 
-        } else if(hover.substring(0,1) == "F"){
+        } else if(hover.substring(0,1) == "F" && selected.substring(4).split(" ")[0].substring(0,1) == "H"){
+            var temp = fighting[hover.substring(1) - 1].contains[0];
+            fighting[hover.substring(1) - 1].remove(0); 
+            holder.remove(selected.substring(4).split(" ")[1] - 1)
+            fighting[hover.substring(1) - 1].add(toMove)
+            holder.add(temp);
+            fighting[setPair(hover.substring(1) - 1)[0]].bouncey = 0; fighting[setPair(hover.substring(1) - 1)[1]].bouncey = 50; 
+            fighting[setPair(hover.substring(1) - 1)[0]].contains[0].hp = fighting[setPair(hover.substring(1) - 1)[0]].contains[0].stats[0]; 
+            fighting[setPair(hover.substring(1) - 1)[1]].contains[0].hp = fighting[setPair(hover.substring(1) - 1)[1]].contains[0].stats[0]; 
             return;
         }
 
@@ -775,6 +805,7 @@ $(document).mouseup(function(){
 
         switch(selected.substring(4).split(" ")[0].substring(0,1)){
             case "H": holder.remove(selected.substring(4).split(" ")[1] - 1);  holder.renderMon(); break;
+            case "M": mixer.remove(selected.substring(4).split(" ")[1] - 1);  mixer.renderMon(); break;
             case "F": fighting[selected.substring(5,7) - 1].remove(selected.substring(4).split(" ")[1] - 1); fighting[selected.substring(5,7) - 1].renderMon(); break;
             default: box[selected.substring(4).split(" ")[0]].remove(selected.substring(4).split(" ")[1] - 1); box[selected.substring(4).split(" ")[0]].renderMon(); 
         }
@@ -834,12 +865,10 @@ var catchMon = function(){
         return;
     }
 
-    if(coins - items[catchBall].cost < 0 || items[catchBall].amt < 1){
-        alert("You don't have enough Coins!");
+    if(items[catchBall].amt < 1){
         return;
     }
 
-    coins -= items[catchBall].cost;
     items[catchBall].amt -= 1;
 
     var found = getMon(fieldTypes[catchLocation - 1].split(" "), 1, 0, items[catchBall].bonus);
@@ -902,6 +931,7 @@ var renderAll = function(){
     for(var i = 0; i < fighting.length; i++){
         fighting[i].renderMon();
     }
+    mixer.renderMon();
 
     if(selected != ""){
         document.getElementById(selected).childNodes[0].style.position = "fixed";

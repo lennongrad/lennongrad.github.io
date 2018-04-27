@@ -75,8 +75,8 @@
                 <div id="dead{{3}}" class="dead" style="pointer-events:none; opacity: 0">
                        <image draggable=false onclick="revive({{1}})" class="revive icon" src="icons/dream-world/revive.png"/>
                 </div>
-                <div id="F{{1}}" class="fBox pInv" onmouseover="hover = 'F{{1}}';" style="background-image: url(backBattle{{4}}.png);display: block; left: 20px"></div>
-                <div id="F{{2}}" class="fBox pInv" onmouseover="hover = '';"  style="background-image: url(backBattle{{4}}.png); left: 144px"></div>
+                <div id="F{{1}}" class="fBox pInv"  style="background-image: url(backBattle{{4}}.png);display: block; left: 20px"></div>
+                <div id="F{{2}}" class="fBox pInv"  style="background-image: url(backBattle{{4}}.png); left: 144px"></div>
                 <div class="top" style="left: 33px;"><span id="nick{{1}}"></span><div id="level{{1}}"></div></div>
                 <div class="top" style="left: 157px;"><span id="nick{{2}}"></span><div id="level{{2}}"></div></div>
                 <div class="barHold" style="left: 33px;">
@@ -125,9 +125,10 @@
                             <div class="setCurrent" id="setCurrent1" onclick="current = 1">Pokédex</div>
                             <div class="setCurrent" id="setCurrent2" onclick="current = 2">Box</div>
                             <div class="setCurrent" id="setCurrent3" onclick="current = 3">Shoppe</div>
+                            <div class="setCurrent" id="setCurrent4" onclick="current = 4">Mixer</div>
                         </td>
 
-                        <td class="heading" id="itemSwitch" onclick="itemSwitch()" style="cursor: pointer; text-align: center; font-size: 20px; font-weight: bolder; color: white;">
+                        <td class="heading" id="itemSwitch" onclick="itemSwitch()">
                             Berry
                         </td>
                 </tr>
@@ -160,6 +161,10 @@
                                     </div>
                                     <div class="storefront" id="storefront0">
                                         <div class="head">Berries</div>
+                                    </div>
+                            </div>
+                            <div id="main4" class="main" style="overflow-y: hidden; display: none">
+                                    <div class="pInv" onmouseover="hover = 'M'" id="pokeMixer" style="display: block">
                                     </div>
                             </div>
                         </td>
