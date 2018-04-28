@@ -100,6 +100,20 @@
                 <td class="bCost">{{cost}}</td>
             </tr>
     </script>
+
+    <script id="berryTemp" type="text/x-handlebars-template">
+        <div class="bInv" id="berry{{1}}" style="display: block;">
+                <div class="name"></div>
+                <div class="taste">
+                        <div class="sour"></div>
+                        <div class="bitter"></div>
+                        <div class="sweet"></div>
+                        <div class="dry"></div>
+                        <div class="spicy"></div>
+                </div>
+                <img draggable="none" src="none.png" onclick="mixSet[{{1}}] = -1" class="berry">
+            </div>
+    </script>
 </head>
 <body>
         <div id="foreground" style=" display: none; align-items: center;position: absolute; left: 0px; top: 0px; width:100%; height:100%; z-index: 15;background-color: #111111;  background-size: cover;">
@@ -110,6 +124,7 @@
             </div>
         </div>
 
+        <img id="bry" style="z-index: 15; display:none"/>
         <img id="shake" style="z-index: 15; display:none"/>
         <img id="shakeBehind" style="opacity:0; position: absolute; z-index:14"/>
         <div id="TEMP" style="z-index:4; position: fixed; top: 0; left: 0;"></div>
@@ -152,10 +167,10 @@
                                         <td>Rarity</td></tr>
                                 </table>
                             </div>
-                            <div id="main2" onmouseover="hover = '0'" class="main" style="overflow-y: hidden; display: none">
+                            <div id="main2" onmouseover="hover = '0'" class="main" style="overflow-y: hidden; display: flex">
                                 <div id="boxes" style="display: inline-block"></div>
                             </div>
-                            <div id="main3" onmouseover="hover = '0'" class="main" style="overflow-y: scroll; display: none">
+                            <div id="main3" onmouseover="hover = '0'" class="main" style="overflow-y: scroll; display: block">
                                     <div class="storefront" id="storefront1">
                                         <div class="head">Balls</div>
                                     </div>
@@ -163,9 +178,36 @@
                                         <div class="head">Berries</div>
                                     </div>
                             </div>
-                            <div id="main4" class="main" style="overflow-y: hidden; display: none">
-                                    <div class="pInv" onmouseover="hover = 'M'" id="pokeMixer" style="display: block">
-                                    </div>
+                            <div id="main4" class="main" style="overflow-y: hidden; display: flex">
+                                <table id="tab4" cellspacing="0px">
+                                    <tr>
+                                        <td></td>
+                                        <td colspan=16 style="border-top-left-radius: 5px; border-top-right-radius: 5px; background-color: var(--grey3); height:10px"></td>
+                                    </tr>
+                                    <tr id="frow">
+                                            <td></td>
+                                            <td class="vertbar"></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="vertbar"></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="vertbar"></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="vertbar"></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="vertbar"></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="vertbar"></td>
+                                            <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan=3><div class="pInv" onmouseover="hover = 'M'" id="pokeMixer" style="display: block"></div></td>
+                                    </tr>
+                                </table>
                             </div>
                         </td>
                         <td id="itemSpace" style=" text-align: center; width: 5%; overflow-x: hidden; max-height: 80%; ">

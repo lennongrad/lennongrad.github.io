@@ -3,7 +3,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
-    <title id="title">Test</title>
+    <title id="title">Galagaish</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -11,19 +11,11 @@
 </script>
 </head>
 <body>
-    <div>Did you know: if you have 23 people in a room, theres a 50% chance that atleast 2 of them share birthdays?</div>
-        <div><input type="text" id="input1" class="input" value="23"> # of people</div>
-        <div><input type="text" id="input2" class="input" value="1" style="margin-top:30px;"> <div class="button" onclick="iter()"> >> iterations</div></div>
-        <div class="button" onclick="goodrep = 0; totrep = 0; $('.date').remove(); document.getElementById('result').innerHTML = 'click here'; document.getElementById('result').style.backgroundColor = '#17a8b2'" style="width:300px; text-align:center"> reset</div>
-
-
-    <div onClick="onc()" style="background-color:#17a8b2" id="result">click here</div>
+    
+    <canvas id="main" style="position: absolute; left: 0; top: 0"></canvas>
+    <img id="ship" src="galaga.png" style="width: 20px; height: 20px; position:absolute; transform: scale(2); image-rendering: pixelated; border-radius: 20px">
 
     <script src="test.js"></script>
     <link rel="stylesheet" type="text/css" href="test.css">
-    <script src="js-svg-path/library.js"></script>
-    <script src="overscroll/dist/jquery.overscroll.js"></script>
-    <script src="overscroll/dist/jquery.overscroll.map"></script>
-    <script src="overscroll/dist/jquery.overscroll.min.js"></script>
 </body>
 </html>

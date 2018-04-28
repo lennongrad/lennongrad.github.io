@@ -37,6 +37,8 @@ $(this).mousemove(function(event){
     if(!shakeOn){
         document.getElementById("shake").style.left = event.clientX - 60 + "px";
         document.getElementById("shake").style.top = event.clientY - 60 + "px";
+        document.getElementById("bry").style.left = event.clientX - 60 + "px";
+        document.getElementById("bry").style.top = event.clientY - 60 + "px";
         document.getElementById("shakeBehind").style.left = (event.clientX - 44) + "px";
         document.getElementById("shakeBehind").style.top = (event.clientY - 44) + "px";
     }
@@ -168,6 +170,10 @@ var catchMode = false;
 var catchBall = 1;
 var catchLocation = 0;
 
+var berryMode = false;
+var berryBall = 1;
+var berryLocation = 0;
+
 var statNames = ["HP", "ATK", "DEF", "SPATK", "SPDEF", "SPD"]
 
 var coins = 5000;
@@ -245,6 +251,7 @@ function Item(id, amt, render, name, type, cost, display, first, second){
             this.special = second;
             this.dream += "-berry.png"; 
             this.sprite += "berry/" + this.name.toLowerCase() + ".png"; 
+            this.icon = "icons/berries/" + this.name.toLowerCase() + "-berry.png";
             this.name += " Berry";
             break; 
         case BALL: 
@@ -262,9 +269,20 @@ function Item(id, amt, render, name, type, cost, display, first, second){
         }
     }
 }
+
+var mixSet = [-1,-1,-1,-1,-1];
+for(var i = 0; i < mixSet.length; i++){
+    var newTable = document.createElement("TD");
+    newTable.setAttribute("colspan", 3)
+    newTable.style.display = "table-cell";
+    newTable.onmouseup = new Function("if(berryMode){mixSet[" + i + "] = berryBall; berryMode = false}");
+    newTable.innerHTML = Handlebars.compile(document.getElementById("berryTemp").innerHTML)({ 1: i });
+    document.getElementById("tab4").childNodes[1].childNodes[4].insertBefore(newTable, document.getElementById("tab4").childNodes[1].childNodes[4].firstChild);
+}
+
 var items = [new Item(
-	0 , 0, false, "sitrus" , BERRY, 20, true , "0 10 10 10 10", "HEAL50")  , new Item(
-	1 , 0, false, "oran"   , BERRY, 5 , true , "10 10 0 10 10", "HEAL10")  , new Item(
+	0 , 10, false, "sitrus" , BERRY, 20, true , "0 10 10 10 10", "HEAL50")  , new Item(
+	1 , 10, false, "oran"   , BERRY, 5 , true , "10 10 0 10 10", "HEAL10")  , new Item(
 	2 , 0, false, "enigma" , BERRY, 40, true , "40 10 0 0 0"  , "")        , new Item(
 	3 , 0, false, "micle"  , BERRY, 40, true , "0 40 10 0 0"  , "")        , new Item(
 	4 , 0, false, "custap" , BERRY, 40, true , "0 0 40 10 0"  , "")        , new Item(
@@ -305,6 +323,8 @@ for(var i = 0; i < items.length; i++){
     newItem.id = "item" + i;
     if(items[i].type == BALL){
         newItem.onmousedown = new Function("if(!shakeOn){catchMode = true}; catchBall = " + i);
+    } else if(items[i].type == BERRY){
+        newItem.onmousedown = new Function("berryMode = true; berryBall = " + i);
     }
 
     var newItemImage = document.createElement("IMG");
@@ -714,7 +734,7 @@ for(var i = 1; i < pD.length; i++){
     document.getElementById("dexTab").appendChild(dumbRow);
 }
 
-var current = 0;
+var current = 4;
 var itemShow = 0;
 var amt = 5;
 
@@ -837,13 +857,15 @@ setInterval(function(){
 
     for(var i = 0; i < amt; i++){
         if(current == i){
-            if(i == 0 || i == 2){
+            if(i == 0 || i == 2 || i == 4){
                 document.getElementById("main" + i).style.display = "flex";
             } else {
                 document.getElementById("main" + i).style.display = "block";
             }
+            document.getElementById("main" + i).style.opacity = "1";
         } else {
             document.getElementById("main" + i).style.display = "none";
+            document.getElementById("main" + i).style.opacity = "0";
         }
     }
 }, 5)
@@ -940,6 +962,35 @@ var renderAll = function(){
         document.getElementById(selected).childNodes[0].style.top = mouseY - 30 + "px";
     }
 
+    for(var i = 0; i < mixSet.length; i++){
+        if(mixSet[i] != -1){
+            document.getElementById("berry" + i).childNodes[1].innerHTML = items[mixSet[i]].name.split(" ")[0];
+            document.getElementById("berry" + i).childNodes[5].src = items[mixSet[i]].dream;
+            var first = true;
+            var last = 0;
+            for(var e = 0; e < items[mixSet[i]].taste.length; e++){
+                if(items[mixSet[i]].taste[e] != 0 && first){
+                    first = false;
+                    document.getElementById("berry" + i).childNodes[3].childNodes[1 + (e * 2)].style.borderTopLeftRadius = "5px";
+                } else {
+                    document.getElementById("berry" + i).childNodes[3].childNodes[1 + (e * 2)].style.borderTopLeftRadius = "0px";
+                }
+                if(items[mixSet[i]].taste[e] != 0){
+                    last = e;
+                }
+                document.getElementById("berry" + i).childNodes[3].childNodes[1 + (e * 2)].style.borderBottomLeftRadius = "0px";
+                document.getElementById("berry" + i).childNodes[3].childNodes[1 + (e * 2)].style.height = 88 * (items[mixSet[i]].taste[e] / items[mixSet[i]].taste.reduce((a, b) => a + b)) + "px";
+            }
+            document.getElementById("berry" + i).childNodes[3].childNodes[1 + (last * 2)].style.borderBottomLeftRadius = "5px";
+        } else {
+            document.getElementById("berry" + i).childNodes[5].src = "none.png";
+            document.getElementById("berry" + i).childNodes[1].innerHTML = "";
+            for(var e = 0; e < 5; e++){
+                document.getElementById("berry" + i).childNodes[3].childNodes[1 + (e * 2)].style.height = "0px";
+            }
+        }
+    }
+
     for(var i = 1; i < pD.length; i++){
         if(data[i] == 2){
             document.getElementById("data" + i).style.display = "table-row";
@@ -987,6 +1038,7 @@ var renderAll = function(){
     if(!mouseDown){
         selected = "";
         catchMode = false;
+        berryMode = false;
     }
 
     //if(lastSelected == "" || false){
@@ -1018,6 +1070,13 @@ var renderAll = function(){
     } else if(!shakeOn){
         document.getElementById("shake").style.opacity = "0";
         document.getElementById("item" + catchBall).childNodes[0].style.opacity = "1";
+    }
+
+    if(berryMode){
+        document.getElementById("bry").src = items[berryBall].dream;
+        document.getElementById("bry").style.display = "block";
+    } else {
+        document.getElementById("bry").style.display = "none";
     }
 
     for(var i = 0; i < fighting.length; i++){

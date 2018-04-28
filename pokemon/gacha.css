@@ -13,6 +13,12 @@
     --inactive: #4444AA;
     --active: #5555CC;
     --number: #3311EE;
+
+    --cool: #F08030;
+    --beauty: #6890F0;
+    --cute: #F85888;
+    --smart: #78C850;
+    --tough: #F8D030;    
 }
 
 
@@ -36,10 +42,6 @@
     height:20px;
     background-color: var(--lighttext);
     cursor: pointer;
-}
-
-#shake{
-    pointer-events: none;
 }
 
 #shakeBehind{
@@ -130,6 +132,24 @@
     --backColour : white;
     text-shadow: 0px 0px 3px var(--backColour), 0px 0px 6px var(--backColour), 0px 0px 9px var(--backColour), 0px 0px 12px var(--backColour), 0px 0px 15px var(--backColour);
     font-weight: 900;
+}
+
+.berry{
+    position: absolute;
+    right: 3px;
+    top: 25px;
+    width: 75%;
+    margin-right: auto;
+    margin-left: auto;
+    margin-bottom:10px;
+    align-items: center;
+    width: 80px;
+    height: 80px;
+}
+
+.bico{
+    height: 24px;
+    width: 24px;
 }
 
 .itemAppear{
@@ -244,12 +264,23 @@
 }
 
 #shake{
+    pointer-events: none;
     width:128px;
     height:128px;
     position: absolute;
     left: 500px;
     top: 500px;
     transform: scale(0);
+}
+
+#bry{
+    pointer-events: none;
+    width:128px;
+    height:128px;
+    position: absolute;
+    left: 500px;
+    top: 500px;
+    transform: scale(.3);
 }
 
 .shiny::after{
@@ -363,14 +394,84 @@
     padding:10px;
 }
 
+#tab4 td{
+    padding: 0px;
+}
+
+#frow td{
+    width: 40px;
+}
+
 #pokeMixer{
-    height: 80px;
+    height: 60px;
+    width: 80px;
+    position: relative;
+    top: -20px; 
+    left: 10px; 
+    border-radius: 20px;
+    border: 10px solid var(--grey3);
+    background-color: var(--grey2)
+}
+
+.bInv{
+    margin-left: 10px;
+    height: 107px;
     width: 100px;
     position: relative;
-    left: 300px;
-    top: 100px;
-    border-radius: 20px;
+    left: 5px;
+    border-radius: 5px;
     background-color: var(--grey2)
+}
+
+.name{
+    height:22px;
+    font-size: 18px;
+    line-height: 22px;
+    font-family: Courier;
+    font-weight: bold;
+    color: var(--lighttext);
+    width: 100%;
+    background-color: var(--grey3)
+}
+
+.vertbar{
+    background-color: var(--grey3);
+    height: 20px;
+    width: 20px;
+}
+
+.taste{
+    width:15px;
+    height: 90px;
+    padding-left: 2px;
+    padding-top: 4px;
+    border-bottom-left-radius: 5px;
+    background-color: var(--grey3);
+}
+
+.taste div{
+    width:13px;
+    height: 0px;
+}
+
+.spicy{
+    background-color: var(--cool);
+}
+
+.dry{
+    background-color: var(--beauty);
+}
+
+.sweet{
+    background-color: var(--cute);
+}
+
+.bitter{
+    background-color: var(--smart);
+}
+
+.sour{
+    background-color: var(--tough);
 }
 
 .setCurrent{
@@ -401,6 +502,12 @@
 
 #main3{
     text-align: center;
+}
+
+#main4{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .storefront{
@@ -528,6 +635,7 @@
     align-items: center;
     justify-content: center;
     display: flex;
+    transition: opacity 5s;
 }
 
 #boxes{
