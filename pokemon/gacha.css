@@ -135,6 +135,7 @@
 }
 
 .berry{
+    opacity: .7;
     position: absolute;
     right: 3px;
     top: 25px;
@@ -406,11 +407,44 @@
     height: 60px;
     width: 80px;
     position: relative;
-    top: -20px; 
     left: 10px; 
     border-radius: 20px;
     border: 10px solid var(--grey3);
     background-color: var(--grey2)
+}
+
+.more{
+    background-color: var(--inactive);
+    color: var(--lighttext);
+    margin-bottom: 5px;
+    margin-top: 5px;
+    height: 20px;
+}
+
+.more:hover{
+    background-color: var(--active); 
+}
+
+#amtBerry{
+    background-color: var(--number);
+    color: var(--lighttext);
+    margin-bottom: 5px;
+    margin-top: 5px;
+    height: 20px;
+    line-height: 20px;
+}
+
+#mixClick{
+    background-color: var(--inactive); 
+    width:100%; 
+    height: 20px;
+    line-height: 20px;
+    border-radius: 5px;
+    color: var(--lighttext)
+}
+
+#mixClick:hover{
+    background-color: var(--active); 
 }
 
 .bInv{
@@ -419,6 +453,7 @@
     width: 100px;
     position: relative;
     left: 5px;
+    top:-20px;
     border-radius: 5px;
     background-color: var(--grey2)
 }
@@ -452,6 +487,23 @@
 .taste div{
     width:13px;
     height: 0px;
+    transition: height .76s;
+}
+
+#longbar{
+    border-top-left-radius: 5px; 
+    border-top-right-radius: 5px; 
+    background-color: var(--grey3); 
+    height:10px;
+}
+
+#longbar div{
+    display: inline-block;
+    width: 120px;
+    height: 10px;
+    transition: width .76s;
+    min-width: 3px;
+    display: none;
 }
 
 .spicy{

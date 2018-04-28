@@ -111,7 +111,7 @@
                         <div class="dry"></div>
                         <div class="spicy"></div>
                 </div>
-                <img draggable="none" src="none.png" onclick="mixSet[{{1}}] = -1" class="berry">
+                <img draggable="false" src="none.png" onclick="mixSet[{{1}}] = -1" class="berry">
             </div>
     </script>
 </head>
@@ -124,7 +124,7 @@
             </div>
         </div>
 
-        <img id="bry" style="z-index: 15; display:none"/>
+        <img id="bry" draggable="false" style="z-index: 15; display:none"/>
         <img id="shake" style="z-index: 15; display:none"/>
         <img id="shakeBehind" style="opacity:0; position: absolute; z-index:14"/>
         <div id="TEMP" style="z-index:4; position: fixed; top: 0; left: 0;"></div>
@@ -136,11 +136,11 @@
                         </td>
 
                         <td class="heading">
-                            <div class="setCurrent" id="setCurrent0" onclick="current = 0">Fields</div>
-                            <div class="setCurrent" id="setCurrent1" onclick="current = 1">Pokédex</div>
-                            <div class="setCurrent" id="setCurrent2" onclick="current = 2">Box</div>
-                            <div class="setCurrent" id="setCurrent3" onclick="current = 3">Shoppe</div>
-                            <div class="setCurrent" id="setCurrent4" onclick="current = 4">Mixer</div>
+                            <div class="setCurrent" id="setCurrent0" onclick="current = 0; renderPoke(); ">Fields</div>
+                            <div class="setCurrent" id="setCurrent1" onclick="current = 1; renderPoke(); ">Pokédex</div>
+                            <div class="setCurrent" id="setCurrent2" onclick="current = 2; renderPoke(); ">Box</div>
+                            <div class="setCurrent" id="setCurrent3" onclick="current = 3; renderPoke(); ">Shoppe</div>
+                            <div class="setCurrent" id="setCurrent4" onclick="current = 4;renderPoke(); ">Mixer</div>
                         </td>
 
                         <td class="heading" id="itemSwitch" onclick="itemSwitch()">
@@ -182,7 +182,13 @@
                                 <table id="tab4" cellspacing="0px">
                                     <tr>
                                         <td></td>
-                                        <td colspan=16 style="border-top-left-radius: 5px; border-top-right-radius: 5px; background-color: var(--grey3); height:10px"></td>
+                                        <td colspan=16 id="longbar">
+                                                <div style="border-top-left-radius: 3px; border-bottom-left-radius: 3px;" class="sour"></div>
+                                                <div class="bitter"></div>
+                                                <div class="sweet"></div>
+                                                <div class="dry"></div>
+                                                <div style="border-top-right-radius: 3px; border-bottom-right-radius: 3px;" class="spicy"></div>
+                                            </td>
                                     </tr>
                                     <tr id="frow">
                                             <td></td>
@@ -206,6 +212,14 @@
                                     </tr>
                                     <tr>
                                         <td colspan=3><div class="pInv" onmouseover="hover = 'M'" id="pokeMixer" style="display: block"></div></td>
+                                    </tr>
+                                    <tr>
+                                        <td><div class="more" onclick="numberBerries--">-</div></td>
+                                        <td><div id="amtBerry">3</div></td>
+                                        <td><div class="more" onclick="numberBerries++">+</div></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan=3><div id="mixClick" onclick="addHapp()">Mix</div></td>
                                     </tr>
                                 </table>
                             </div>
