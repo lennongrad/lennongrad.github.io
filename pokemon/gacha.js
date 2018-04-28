@@ -283,6 +283,7 @@ function Item(id, amt, render, name, type, cost, display, first, second){
             this.sprite += "berry/" + this.name.toLowerCase() + ".png"; 
             this.icon = "icons/berries/" + this.name.toLowerCase() + "-berry.png";
             this.name += " Berry";
+            this.bonus = second.split(" ");
             break; 
         case BALL: 
             this.dream += "-ball.png"; 
@@ -307,21 +308,21 @@ for(var i = 0; i < mixSet.length; i++){
     newTable.setAttribute("colspan", 3)
     newTable.setAttribute("rowspan", 3)
     newTable.style.display = "table-cell";
-    newTable.onmouseup = new Function("if(berryMode){mixSet[" + i + "] = berryBall; berryMode = false}");
+    newTable.onmouseup = new Function("if(berryMode){mixSet[" + i + "] = berryBall; console.log('hi'); berryMode = false}");
     newTable.innerHTML = Handlebars.compile(document.getElementById("berryTemp").innerHTML)({ 1: i });
     document.getElementById("tab4").childNodes[1].childNodes[4].insertBefore(newTable, document.getElementById("tab4").childNodes[1].childNodes[4].firstChild);
 }
 
 var items = [new Item(
-	0 , 10, false, "sitrus" , BERRY, 20, true , "10 10 10 10 10", "HEAL50")  , new Item(
-	1 , 10, false, "oran"   , BERRY, 5 , true , "10 10 10 10 10", "HEAL10")  , new Item(
+	0 , 10, false, "sitrus" , BERRY, 20, true , "10 10 10 10 10", "HP HP")  , new Item(
+	1 , 10, false, "oran"   , BERRY, 5 , true , "10 10 10 10 10", "HP")  , new Item(
 	2 , 0, false, "enigma" , BERRY, 40, true , "40 10 0 0 0"  , "")        , new Item(
 	3 , 0, false, "micle"  , BERRY, 40, true , "0 40 10 0 0"  , "")        , new Item(
 	4 , 0, false, "custap" , BERRY, 40, true , "0 0 40 10 0"  , "")        , new Item(
 	5 , 0, false, "jaboca" , BERRY, 40, true , "0 0 0 40 10"  , "")        , new Item(
 	6 , 0, false, "rowap"  , BERRY, 40, true , "10 0 0 0 40"  , "")        , new Item(
-	7 , 0, false, "occa"   , BERRY, 40, false, "15 0 10 0 0"    , "Fire")    , new Item(
-	8 , 0, false, "passho" , BERRY, 40, false, "0 15 0 10 0"    , "Water")   , new Item(
+	7 , 0, false, "occa"   , BERRY, 40, true, "15 0 10 0 0"    , "Fire")    , new Item(
+	8 , 0, false, "passho" , BERRY, 40, true, "0 15 0 10 0"    , "Water")   , new Item(
 	9 , 0, false, "wacan"  , BERRY, 40, false, "0 0 15 0 10"    , "Electric"), new Item(
 	10, 0, false, "rindo"  , BERRY, 40, false, "10 0 0 15 0"    , "Grass")   , new Item(
 	11, 0, false, "yache"  , BERRY, 40, false, "0 10 0 0 15"    , "Ice")     , new Item(
@@ -736,7 +737,7 @@ if (typeof(Storage) !== "undefined") {
         holder.contains = pokemonFromString(localStorage.getItem("saveHolder"));
     }
     if(localStorage.getItem("saveMixer") != null){
-        holder.contains = pokemonFromString(localStorage.getItem("saveMixer"));
+        mixer.contains = pokemonFromString(localStorage.getItem("saveMixer"));
     }
     if(localStorage.getItem("saveBoxes") != null){
         var saveString = localStorage.getItem("saveBoxes").split(" ");
@@ -1004,25 +1005,53 @@ var renderPoke = function(){
 }
 
 var addHapp = function(){
+    if(mixer.contains[0] == undefined){
+        return;
+    }
+    var costs = [];
     var totalTaste = [0,0,0,0,0];
     for(var i = 0; i < mixSet.length; i++){
         if(mixSet[i] != -1){
+            if(costs.map(y => y.id).includes(mixSet[i])){
+                costs[costs.map(y => y.id).indexOf(mixSet[i])].amt++
+            } else {
+                costs.push({id: mixSet[i], amt: 1})
+            }
             for(var e = 0; e < items[mixSet[i]].taste.length; e++){
                 totalTaste[e] += items[mixSet[i]].taste[e];
             }
         }
     }
+    
     nat = [0,0,0,0,0]
     if(mixer.contains.length != 0){
         nat = natures[natures[mixer.contains[0].nature]];
     }
+
     hap = 0;
     if(totalTaste.reduce((a, b) => a + b) != 0){
         for(var e = 0; e < 5; e++){
             hap += totalTaste[e] * nat[e];
         }
     }
-    console.log(hap)
+
+    var canDo = true;
+    for(var i = 0; i < costs.length; i++){
+        costs[i].amt *= numberBerries;;
+        if(costs[i].amt > items[costs[i].id].amt){
+            canDo = false;
+        }
+    }
+
+    if(canDo){
+        for(var i = 0; i < costs.length; i++){
+            items[costs[i].id].amt -= costs[i].amt;
+        }
+    }
+    updateItems();
+    
+
+    mixer.contains[0].friendship += hap;
 }
 
 ////////////////////////////////////////
@@ -1082,6 +1111,8 @@ var renderAll = function(){
         document.getElementById(selected).childNodes[0].style.top = mouseY - 30 + "px";
     }
 
+    document.getElementById("costs").innerHTML = "";
+    document.getElementById("bonuses").innerHTML = "";
     if(current == 4){
         if(numberBerries < 1){
             numberBerries = 1;
@@ -1090,8 +1121,24 @@ var renderAll = function(){
         }
         document.getElementById("amtBerry").innerHTML = numberBerries;
         var totalTaste = [0,0,0,0,0];
+        var costs = [];
+        var bonuses = [];
         for(var i = 0; i < mixSet.length; i++){
             if(mixSet[i] != -1){
+                if(costs.map(y => y.id).includes(mixSet[i])){
+                    costs[costs.map(y => y.id).indexOf(mixSet[i])].amt++
+                } else {
+                    costs.push({id: mixSet[i], amt: 1})
+                }
+
+                items[mixSet[i]].bonus.forEach(function(e){
+                    if(bonuses.map(y => y.id).includes(e)){
+                        bonuses[bonuses.map(y => y.id).indexOf(e)].amt++
+                    } else {
+                        bonuses.push({id: e, amt: 1})
+                    }
+                })
+
                 document.getElementById("berry" + i).childNodes[1].innerHTML = items[mixSet[i]].name.split(" ")[0];
                 document.getElementById("berry" + i).childNodes[5].src = items[mixSet[i]].dream;
                 var first = true;
@@ -1111,6 +1158,7 @@ var renderAll = function(){
                     document.getElementById("berry" + i).childNodes[3].childNodes[1 + (e * 2)].style.height = 88 * (items[mixSet[i]].taste[e] / items[mixSet[i]].taste.reduce((a, b) => a + b)) + "px";
                 }
                 document.getElementById("berry" + i).childNodes[3].childNodes[1 + (last * 2)].style.borderBottomLeftRadius = "5px";
+                
             } else {
                 document.getElementById("berry" + i).childNodes[5].src = "none.png";
                 document.getElementById("berry" + i).childNodes[1].innerHTML = "";
@@ -1119,6 +1167,31 @@ var renderAll = function(){
                 }
             }
         }
+
+        var nato = [0,0,0,0,0]
+        var hapo = 0;
+        if(totalTaste.reduce((a, b) => a + b) != 0 && mixer.contains.length !=0){
+            nato = natures[natures[mixer.contains[0].nature]];
+            for(var e = 0; e < 5; e++){
+                hapo += numberBerries * totalTaste[e] * nato[e] / 10;
+            }
+
+            var newBonus = document.createElement("div");
+            newBonus.innerHTML = hapo + " Friendship";
+            document.getElementById("bonuses").appendChild(newBonus);
+
+            for(var e = 0; e < bonuses.length; e++){
+                if(bonuses[e].id != ""){
+                    var extraBonus = document.createElement("div");
+                    extraBonus.innerHTML = bonuses[e].id + " x " + bonuses[e].amt;
+                    if(types.map(y => y.title).includes(bonuses[e].id)){
+                        extraBonus.style.backgroundColor = types[T[bonuses[e].id]].color1;
+                    }
+                    document.getElementById("bonuses").appendChild(extraBonus);
+                }
+            }
+        }
+
         if(totalTaste.reduce((a, b) => a + b) != 0){
             for(var e = 0; e < 5; e++){
                 document.getElementById("longbar").childNodes[1 + (e * 2)].style.width = 605 * (totalTaste[e] / totalTaste.reduce((a, b) => a + b)) + "px";
@@ -1127,6 +1200,11 @@ var renderAll = function(){
             for(var e = 0; e < 5; e++){
                 document.getElementById("longbar").childNodes[1 + (e * 2)].style.width = 605 * (.2) + "px";
             }
+        }
+        
+        for(var i = 0; i < costs.length; i++){
+            costs[i].amt *= numberBerries;;
+            document.getElementById("costs").innerHTML += "<img src='" + items[costs[i].id].sprite + "'/><p>" + costs[i].amt + "</p>";
         }
     }
 

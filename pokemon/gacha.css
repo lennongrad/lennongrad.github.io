@@ -399,6 +399,10 @@
     padding: 0px;
 }
 
+#tab4{
+    width: 720px;
+}
+
 #frow td{
     width: 40px;
 }
@@ -440,7 +444,8 @@
     height: 20px;
     line-height: 20px;
     border-radius: 5px;
-    color: var(--lighttext)
+    color: var(--lighttext);
+    margin-bottom: 20px;
 }
 
 #mixClick:hover{
@@ -453,7 +458,7 @@
     width: 100px;
     position: relative;
     left: 5px;
-    top:-20px;
+    top:-30px;
     border-radius: 5px;
     background-color: var(--grey2)
 }
@@ -488,6 +493,35 @@
     width:13px;
     height: 0px;
     transition: height .76s;
+}
+
+#costs{
+    text-align: center;
+    height: 32px;
+    font-size: 25px;
+    color: white;
+}
+
+#costs img{
+    margin-bottom: -6px;
+    display: inline;
+}
+
+#bonuses div{
+    margin-left: 20px;
+    margin-top: 20px;
+    height: 50px;
+    width: 300px;
+    font-size: 30px;
+    line-height: 50px;
+    font-weight: bold;
+    display: inline-block;
+    color: white;
+    background-color: var(--inactive);
+}
+
+#costs p{
+    display: inline;
 }
 
 #longbar{
