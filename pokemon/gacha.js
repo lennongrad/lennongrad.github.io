@@ -18,6 +18,7 @@ if(window.mobilecheck()){
 
 $(window).resize(function(){
     fixItems();
+    renderMen();
 })
 
 var mouseDown = false;
@@ -31,6 +32,17 @@ document.onmouseup = function() {
     mixer.renderMon();
     holder.renderMon();
 }     
+
+var holdCtrl = false;;
+document.addEventListener('keydown', function (event) {
+    if (event.keyCode == 17) {
+        holdCtrl = true;
+    }
+});
+document.addEventListener('keyup', function (event) {
+    holdCtrl = false;
+    lastSelected = "";
+});
 
 var mouseX = 0;
 var mouseY = 0;
@@ -83,7 +95,7 @@ var pokemonFromString = function(inputs){
     var outArray = [];
     for(var i = 0; i < tempArray.length; i++){
         var holdDat = tempArray[i].split(";");
-        outArray.push(new Pokemon(holdDat[0],holdDat[1],toBool(holdDat[2]),holdDat[3], toBool(holdDat[4]), holdDat[5], holdDat[6]))
+        outArray.push(new Pokemon(holdDat[0],holdDat[1],toBool(holdDat[2]),holdDat[3], toBool(holdDat[4]), holdDat[5], holdDat[6], holdDat[7]))
     }
     return outArray;
 };
@@ -259,7 +271,7 @@ unlockField();
 for(var i = 1; i < fighting.length; i += 2){
     if(fighting[i].contains.length < 1){
         var found = getMon(fighting[i].catchable, fighting[i].levelBase, 0, 1);
-        fighting[i].contains.push(new Pokemon("", found[0], false, found[1], false, Math.floor(Math.random() * 25),0))
+        fighting[i].contains.push(new Pokemon("", found[0], false, found[1], false, Math.floor(Math.random() * 25),0,0))
     }
 }
 
@@ -393,7 +405,7 @@ for(var i = 0; i < items.length; i++){
     document.getElementById("storefront" + items[i].type).appendChild(newTable);
 }
 
-function Pokemon(nick, id, shinys, level, player, nature, friendship){
+function Pokemon(nick, id, shinys, level, player, nature, friendship, ev){
     if(nick != ""){
         this.nick = nick;
     } else if(id != undefined){
@@ -409,6 +421,16 @@ function Pokemon(nick, id, shinys, level, player, nature, friendship){
     this.shiny = shinys;
     this.nature = nature;
     this.friendship = friendship;
+
+    if(natures[natures[this.nature]] == undefined){
+        this.nature = "0"
+    }
+
+    if(typeof(ev) == "String"){
+        this.ev = ev.split(".").map(y => Number(y));
+    } else {
+        this.ev = [0,0,0,0,0,0]
+    }
     
     if(id != undefined && pD[id] != undefined){
         this.stats = pD[id].stats.map(x => x * 1);
@@ -493,8 +515,9 @@ function Pokemon(nick, id, shinys, level, player, nature, friendship){
         if(this.stats == undefined || pD[this.id] == undefined){
             return;
         }
-        for(var i = 0; i < this.stats.length; i++){
-            this.stats[i] = pD[this.id].stats[i] + Math.ceil((1/25) * this.level * pD[this.id].stats[i]);
+        this.stats[0] = pD[this.id].stats[0] + this.ev[0] + Math.ceil((2/25) * this.level * pD[this.id].stats[0]);
+        for(var i = 1; i < this.stats.length; i++){
+            this.stats[i] = pD[this.id].stats[i] + this.ev[i] + Math.ceil((1/25) * this.level * pD[this.id].stats[i] * (1 + natures[natures[this.nature]][i - 1] / 5));
         }
     }
     this.calcLevel();
@@ -524,7 +547,7 @@ function Pokemon(nick, id, shinys, level, player, nature, friendship){
     }
 
     this.toString = function(){
-        return this.nick + ";" + this.id + ";" + this.shiny + ";" + this.level + ";" + this.player + ";" + this.nature + ";" + this.friendship;
+        return this.nick + ";" + this.id + ";" + this.shiny + ";" + this.level + ";" + this.player + ";" + this.nature + ";" + this.friendship + ";" + this.ev.reduce((x,y) => x + "." + y);
     }
 }
 
@@ -629,8 +652,7 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
                     if(this.allowHover){
                         contain.onmousedown = new Function("if(selected == '' && !catchMode){selected = " + '"' + contain.id + '";}');
                     }
-                    contain.onmouseover = new Function('hovered = "' + contain.id + '"');
-                    contain.oncontextmenu = new Function('lastSelected = "' + contain.id + '"; setInfo(); return false');
+                    contain.onmouseover = new Function('hovered = "' + contain.id + '"; if(holdCtrl){lastSelected = "' + contain.id + '"; setInfo()}');
 
                     var newMon = document.createElement("IMG");
                     newMon.className = "pokemonSprite";
@@ -843,7 +865,7 @@ var itemSwitch = function(){
 
 $(document).mouseup(function(){
     setTimeout(function(){
-        holder.renderMon();
+        renderMen();
     }, 400);
 
     if(selected != "" && hover != ""){
@@ -913,8 +935,9 @@ $(document).mouseup(function(){
 var moveCount = 0;
 var lastCurrent = -1;
 setInterval(function(){
+    console.log(holdCtrl);
     moveCount+=2;
-    if(moveCount > 50){
+    if(moveCount % 50 == 0){
         moveCount = 0;
         hover = "";
         hovered = "";
@@ -976,7 +999,7 @@ var catchMon = function(){
         found = [Math.floor(Math.random() * 3) * 3 + 1, false];
     }
 
-    recent = new Pokemon(pD[found[0]].name, found[0], (Math.random() < .05), 1, true, Math.floor(Math.random() * 25),0);    
+    recent = new Pokemon(pD[found[0]].name, found[0], (Math.random() < .05), 1, true, Math.floor(Math.random() * 25),0,0);    
 
     saveGame();
     shake();
@@ -1339,8 +1362,9 @@ var renderAll = function(){
                         fighting[setPair(i)[1]].contains.splice(0,1);
                         
                         var found = getMon(fighting[setPair(i)[1]].catchable, fighting[setPair(i)[1]].levelBase, 1, 1);
-                        fighting[setPair(i)[1]].contains.push(new Pokemon("", found[0], (.0001 > Math.random()), found[1], false, Math.floor(Math.random() * 25),0))
+                        fighting[setPair(i)[1]].contains.push(new Pokemon("", found[0], (.0001 > Math.random()), found[1], false, Math.floor(Math.random() * 25),0,0))
                     }
+                    renderMen()
                 }
 
             } else {
