@@ -1,5 +1,5 @@
 
-var version = "B8";
+var version = "C1";
 document.getElementById("version").innerHTML = "Version " + version;
 var LEFT = 0;
 var RIGHT = 1;
@@ -320,7 +320,7 @@ for(var i = 0; i < mixSet.length; i++){
     newTable.setAttribute("colspan", 3)
     newTable.setAttribute("rowspan", 3)
     newTable.style.display = "table-cell";
-    newTable.onmouseup = new Function("if(berryMode){mixSet[" + i + "] = berryBall; console.log('hi'); berryMode = false}");
+    newTable.onmouseup = new Function("if(berryMode){mixSet[" + i + "] = berryBall; berryMode = false}");
     newTable.innerHTML = Handlebars.compile(document.getElementById("berryTemp").innerHTML)({ 1: i });
     document.getElementById("tab4").childNodes[1].childNodes[4].insertBefore(newTable, document.getElementById("tab4").childNodes[1].childNodes[4].firstChild);
 }
@@ -585,7 +585,6 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
 
     this.add = function(pokemon){
         this.contains.push(pokemon)
-        //console.log(this.contains);
         this.renderMon();
     }
 
@@ -706,7 +705,7 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
                 contain.style.left = leftS + "px";
                 contain.style.top = topS + "px";
     
-                if(document.getElementById(this.place).style.display == "" || (current != 4 && this.prefix == "M") || (!isNaN(Number(this.prefix)) && current != 2) || (this.prefix.substring(0,1) == "F" && current != 0) && document.getElementById(this.place).style.display != "none"){
+                if(document.getElementById(this.place).style.display == "" || (current != 3 && this.prefix == "M") || (!isNaN(Number(this.prefix)) && current != 2) || (this.prefix.substring(0,1) == "F" && current != 0) && document.getElementById(this.place).style.display != "none"){
                     contain.style.display = "none";
                 }
     
@@ -825,7 +824,7 @@ for(var i = 1; i < pD.length; i++){
 
 var current = 0;
 var itemShow = 0;
-var amt = 5;
+var amt = 4;
 
 var numberBerries = 1;
 
@@ -935,9 +934,8 @@ $(document).mouseup(function(){
 var moveCount = 0;
 var lastCurrent = -1;
 setInterval(function(){
-    console.log(holdCtrl);
     moveCount+=2;
-    if(moveCount % 50 == 0){
+    if(moveCount % 150 == 0){
         moveCount = 0;
         hover = "";
         hovered = "";
@@ -1136,7 +1134,7 @@ var renderAll = function(){
 
     document.getElementById("costs").innerHTML = "";
     document.getElementById("bonuses").innerHTML = "";
-    if(current == 4){
+    if(current == 3){
         if(numberBerries < 1){
             numberBerries = 1;
         } else if(numberBerries > 99){
