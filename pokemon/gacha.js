@@ -21,6 +21,10 @@ $(window).resize(function(){
     renderMen();
 })
 
+$(".main").on("scroll", function(){
+    renderMen();
+})
+
 var mouseDown = false;
 document.onmousedown = function(e) { 
     if(e.which == 1){
@@ -33,14 +37,19 @@ document.onmouseup = function() {
     holder.renderMon();
 }     
 
-var holdCtrl = false;;
+var holdCtrl = false;
+var holdShift = false;
 document.addEventListener('keydown', function (event) {
     if (event.keyCode == 17) {
         holdCtrl = true;
     }
+    if (event.keyCode == 16) {
+        holdShift = true;
+    }
 });
 document.addEventListener('keyup', function (event) {
     holdCtrl = false;
+    holdShift = false;
     lastSelected = "";
 });
 
@@ -129,6 +138,21 @@ var toBool = function(take){
     return true;
 }
 
+var autoMove = function(){
+    switch(current){
+        case 0: break;
+        case 1: hover = ""; return;
+        case 2: hover = "0"; return;
+        case 3: hover = "M"; return; 
+    }
+    for(var i = 0; i < fighting.length; i+=2){
+        if(fighting[i].contains.length == 0){
+            hover = "F" + toPlace(i + 1, 2);
+            return;
+        }
+    }
+}
+
 var returnFromSelect = function(select){            
     switch(select.substring(4).split(" ")[0].substring(0,1)){
         case "H": return holder.contains[select.substring(4).split(" ")[1] - 1]; break;
@@ -166,6 +190,7 @@ var buyField = function(){
         curCost = Math.floor(curCost * 1.5);
         unlockField();
     }
+    renderMen();
     saveGame();
 }
     
@@ -248,6 +273,7 @@ for(var i = 0; i < fieldTypes.length; i++){
     wrapper.innerHTML = Handlebars.compile(document.getElementById("wrap").innerHTML)({ 1: toPlace((i * 2) + 1,2), 2: toPlace((i * 2) + 2,2), 3: i + 1, 4: fieldTypes[i].split(" ")[0]});
     wrapper.id = "wrap" + (i + 1);
     wrapper.style.display = "none";
+    wrapper.ondblclick = new Function("holdShift = true;  setTimeout(function(){holdShift = false}, 1000)")
     wrapper.onmouseover= new Function("hover = 'F" + toPlace((i * 2) + 1,2) + "';")
     if(fieldTypes[i].split(" ")[0].toLowerCase() != "grass"){
         wrapper.style.backgroundImage = "url(" + fieldTypes[i].split(" ")[0].toLowerCase() + "Battle.png)";
@@ -487,6 +513,14 @@ function Pokemon(nick, id, shinys, level, player, nature, friendship, ev){
         if(!useType){
             this.tCharge += Math.max(25, 25 + this.stats[5] - opponent.stats[5])
         }
+
+        if(this.stats[5] > 1.1 * opponent.stats[5]){
+            damage *= 2;
+        }
+        if(this.stats[5] > 1.6 * opponent.stats[5]){
+            damage *= 1.5;
+        }
+
         return [damage, crit, use == 3, useType];
     }
 
@@ -611,8 +645,8 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
         this.itemFly+=.25;
         }
 
-        if(this.itemFly == 49){
-            items[this.itemUrl].amt++;
+        if(this.itemFly == 1){
+            items[this.itemUrl].amt += Math.ceil(Math.random() * 3 + .1);
         }
 
         document.getElementById("I" + this.place.substring(1)).style.setProperty("--backColour", this.itemColour)
@@ -866,6 +900,14 @@ $(document).mouseup(function(){
     setTimeout(function(){
         renderMen();
     }, 400);
+
+    if(holdShift){
+        if(selected.substring(4).split(" ")[0].substring(0,1) == "H"){
+            autoMove();
+        } else {
+            hover = "H";
+        }
+    }
 
     if(selected != "" && hover != ""){
         if(hover.substring(0,1) == selected.substring(4,5)){
@@ -1248,7 +1290,7 @@ var renderAll = function(){
         }
     }
 
-    if(lastSelected != "" && returnFromSelect(lastSelected) != undefined){
+    if(!holdShift && lastSelected != "" && returnFromSelect(lastSelected) != undefined){
         var cur = returnFromSelect(lastSelected);
         document.getElementById("nickShow").innerHTML = cur.nick;
         document.getElementById("statsShow").innerHTML = "Level: " + cur.level + "<br>Types: " + pD[cur.id].type[0];
