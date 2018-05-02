@@ -9,6 +9,7 @@
     <meta name="twitter:title" content="Pokémon: Catch Em" />
     <meta name="twitter:description" content="Catch Pokémon and have them battle automatically! <br>Catch Em All!" />
     <meta name="twitter:image" content="https://i.imgur.com/LG0k3wB.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="gacha.css">
     <link rel="icon" href="catchem.ico" type="image/x-icon">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
@@ -77,14 +78,14 @@
                 </div>
                 <div id="F{{1}}" class="fBox pInv"  style="background-image: url(backBattle{{4}}.png);display: block; left: 20px"></div>
                 <div id="F{{2}}" class="fBox pInv"  style="background-image: url(backBattle{{4}}.png); left: 144px"></div>
-                <div class="top" style="left: 33px;"><span id="nick{{1}}"></span><div id="level{{1}}"></div></div>
-                <div class="top" style="left: 157px;"><span id="nick{{2}}"></span><div id="level{{2}}"></div></div>
                 <div class="barHold" style="left: 33px;">
-                        <div id="HF{{1}}" class="healthBar"></div>
-                        <div id="TF{{1}}" class="typeBar"></div></div>
+                    <div class="top"><span id="nick{{1}}"></span><div id="level{{1}}"></div></div>
+                    <div id="HF{{1}}" class="healthBar"></div>
+                    <div id="TF{{1}}" class="typeBar"></div></div>
                 <div class="barHold" style="left: 157px;">
-                        <div id="HF{{2}}" class="healthBar"></div>
-                        <div id="TF{{2}}" class="typeBar"></div>
+                    <div class="top"><span id="nick{{2}}"></span><div id="level{{2}}"></div></div>
+                    <div id="HF{{2}}" class="healthBar"></div>
+                    <div id="TF{{2}}" class="typeBar"></div>
                 </div>
                 <div id="N{{1}}" class="number"></div>
                 <div id="N{{2}}" class="number"></div>
@@ -129,27 +130,25 @@
         <img id="shakeBehind" style="opacity:0; position: absolute; z-index:14"/>
         <div id="TEMP" style="z-index:4; position: fixed; top: 0; left: 0;"></div>
 
-        <table  oncontextmenu="lastSelected = ''; return false;" cellspacing=0 style="position: absolute; top: 0; left:0; width: 100%; height:100%; background-color:black;">
+        <table  oncontextmenu="lastSelected = ''; return false;" cellspacing=0 style="table-layout: fixed; position: absolute; top: 0; left:0; width: 100%; height:100%; background-color:black;">
                 <tr>
-                        <td class="heading" style="height: 10px;">
+                        <td class="heading" style="width: 100%; height: 10px; text-align: center">
                             <img src="catchem_logo.png" style="display:inline-block; height:50px;">
+                            <div id="currents">
+                                <div class="setCurrent" id="setCurrent0" onclick="current = 0; renderPoke(); ">Fields</div>
+                                <div class="setCurrent" id="setCurrent1" onclick="current = 1; renderPoke(); ">Pokédex</div>
+                                <div class="setCurrent" id="setCurrent2" onclick="current = 2; renderPoke(); ">Box</div>
+                                <div class="setCurrent" id="setCurrent3" onclick="current = 3; renderPoke(); ">Items</div>
+                            </div>
                         </td>
 
-                        <td class="heading">
-                            <div class="setCurrent" id="setCurrent0" onclick="current = 0; renderPoke(); ">Fields</div>
-                            <div class="setCurrent" id="setCurrent1" onclick="current = 1; renderPoke(); ">Pokédex</div>
-                            <div class="setCurrent" id="setCurrent2" onclick="current = 2; renderPoke(); ">Box</div>
-                            <div class="setCurrent" id="setCurrent3" onclick="current = 3; renderPoke(); ">Items</div>
-                        </td>
-
-                        <td class="heading" id="itemSwitch" onclick="itemSwitch()">
+                        <td class="heading" id="itemSwitch" style="width: 130px" onclick="itemSwitch()">
                             Berry
                         </td>
                 </tr>
                 <tr>
-                        <td colspan=2  style="overflow-y: hidden; width: 78%; height:80%; text-align: center; background-color: #111111">   
-                            <div id="buyField" style="display: none" onclick="buyField()">15</div>         
-                            <div id="main0" class="main" style="display: block">
+                        <td colspan=1  style="overflow-y: hidden; height:80%; min-width: 0;; text-align: center; background-color: #111111">   
+                            <div id="main0" class="main" style="display: block">       
                             </div>
                             <div id="main1" class="main" style="overflow-y: scroll;display: none">
                                 <table cellspacing=0 id="dexTab">
@@ -166,10 +165,11 @@
                                         <td>Rarity</td></tr>
                                 </table>
                             </div>
-                            <div id="main2" onmouseover="hover = '0'" class="main" style="overflow-y: hidden; display: flex">
+                            <div id="main2" onmouseover="hover = '0'" class="main" style="overflow: scroll; display: flex">
                                 <div id="boxes" style="display: inline-block"></div>
                             </div>
-                            <div id="main3" onmouseover="hover = 'M'" class="main" style="overflow-y: scroll; display: block">
+                            <div id="main3" onmouseover="hover = 'M'" class="main" style="overflow-y: scroll; text-align: center; display: block">
+                                <div id="buyField" style="display: none" onclick="buyField()">15</div>  <br>
                                 <table id="tab4" onmouseover="hover = 'M'" class="storefront" style="background-color: transparent; text-align: center" cellspacing="0px">
                                     <tr>
                                         <td></td>
@@ -231,14 +231,15 @@
                                     </div>
                             </div>
                         </td>
-                        <td id="itemSpace" style=" text-align: center; width: 5%; overflow-x: hidden; max-height: 80%; ">
+                        <td id="itemSpace" style=" text-align: center; overflow-x: hidden; max-height: 80%; ">
                             <div id="itemPlace" style="overflow-y: scroll; height: 100%; width: 100%">
 
                             </div>
                         </td>
                 </tr>
                 <tr> 
-                        <td colspan=2 class="pInv" onmouseover="hover = 'H'" id="pokeHolder" style="display: table-cell;">
+                        <td colspan=1 class="pInv" onmouseover="hover = 'H'" id="pokeHolder" style="display: table-cell;">
+                            <div id="holden" class="pInv"  style="display: block"></div>
                             </td>
                         <td style="overflow-x: auto; background-color: var(--grey4)">
                             <div id="moneyCount"> <span id="coinsCount">6000</span> </div>

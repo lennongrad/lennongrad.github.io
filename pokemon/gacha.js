@@ -13,7 +13,8 @@ window.mobilecheck = function() {
 };
 
 if(window.mobilecheck()){
-    document.getElementById("foreground").style.display = 'flex';
+    document.getElementById("itemSwitch").style.width = "100px"
+    //document.getElementById("foreground").style.display = 'flex';
 }
 
 $(window).resize(function(){
@@ -46,6 +47,7 @@ document.addEventListener('keydown', function (event) {
     if (event.keyCode == 16) {
         holdShift = true;
     }
+    setInfo();
 });
 document.addEventListener('keyup', function (event) {
     holdCtrl = false;
@@ -257,10 +259,10 @@ for(var i = 0; i < pD.length; i++){
 var newF = document.createElement("DIV");
 newF.className = "pInv battle";
 
-var holder = new Box(15, 1, "pokeHolder", "H", LEFT, 1, []);
+var holder = new Box(15, 1, "holden", "H", LEFT, 1, []);
 var mixer = new Box(1, 1, "pokeMixer", "M", LEFT, 1, []);
 var box = [];
-box.push(new Box(8, 8, "boxes", "0", RIGHT, 1, []));
+box.push(new Box(9, 9, "boxes", "0", RIGHT, 1, []));
 var fighting = [];
 
 var fieldTypes = ["Grass", "Normal", "Water Dragon", "Bug Fairy", "Rock Ghost", "Ground", "Fire", "Electric", "Flying Steel", "Dark Poison", "Fighting", "Ice Psychic"];
@@ -596,6 +598,8 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
     this.levelBase = levelBase;
     this.catchable = catchable;
 
+    this.opacity = "1";
+
     if(catchable == undefined){
         this.catchable = ["",""]
     }
@@ -675,6 +679,7 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
                 var contain = document.createElement("div");
                 contain.className = "POKEC";
                 contain.id = e + "  " + y + "  " + this.prefix;
+                contain.style.opacity = this.opacity;
     
                 var leftS = document.getElementById(this.place).getBoundingClientRect().left + 10 + ((i - 1) % (this.width)) * 52;
                 var topS = document.getElementById(this.place).getBoundingClientRect().top + 10 + ((i - 1) - ((i - 1) % this.width)) / this.height * 52;
@@ -716,8 +721,8 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
                             ext = "/shiny"
                         }
                         newMon.src = "pokemon" + ext + "/" + this.contains[i - 1].id + ".png";
-                        leftS =  document.getElementById(this.place).getBoundingClientRect().left + 5 + ((i - 1) % (this.width)) * 64;
-                        topS = document.getElementById(this.place).getBoundingClientRect().top + 15 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64;
+                        leftS =  5 + ((i - 1) % (this.width)) * 64;
+                        topS = 15 + ((i - 1) - ((i - 1) % this.width)) / this.height * 64;
                     }
                     contain.appendChild(newMon);
         
@@ -732,18 +737,42 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
                     contain.style.pointerEvents = "none";
                 }
 
+                if(this.prefix.substring(0,1) == "M"){
+                    leftS =((i - 1) % (this.width)) * 64;
+                    topS = ((i - 1) - ((i - 1) % this.width)) / this.height * 64;
+                }
+
+                if(this.prefix.substring(0,1) == "H"){
+                    leftS = 0;
+                    topS = 0;
+                    contain.style.marginRight = "-30px"
+                }
+
+                if(!isNaN(Number(this.prefix.substring(0,1)))){
+                    leftS = 0;
+                    topS = 0;
+                    contain.style.marginLeft = "-30px"
+                    contain.style.marginTop = "-10px"
+                }
+
                 if(this.prefix.substring(0,1) != "F"){
                     contain.className += " unknownSprite";
                 }                
+
+                if(document.getElementById(contain.id) != null){
+                    remove(contain.id);
+                }
                 
                 contain.style.left = leftS + "px";
                 contain.style.top = topS + "px";
     
                 if(document.getElementById(this.place).style.display == "" || (current != 3 && this.prefix == "M") || (!isNaN(Number(this.prefix)) && current != 2) || (this.prefix.substring(0,1) == "F" && current != 0) && document.getElementById(this.place).style.display != "none"){
                     contain.style.display = "none";
+                } else {
+                    contain.style.display = "inline-block";
                 }
     
-                document.getElementById("TEMP").appendChild(contain);
+                document.getElementById(this.place).appendChild(contain);
             }
         }
     }
@@ -910,7 +939,7 @@ $(document).mouseup(function(){
     }
 
     if(selected != "" && hover != ""){
-        if(hover.substring(0,1) == selected.substring(4,5)){
+        if(hover == selected.substring(4,7)){
             return;
         }
         var toMove = 0;
@@ -1012,6 +1041,8 @@ setInterval(function(){
 var revive = function(reviving){
     fighting[setPair(reviving)[0]].contains[0].hp = fighting[setPair(reviving)[0]].contains[0].stats[0];
     fighting[setPair(reviving)[1]].contains[0].hp = fighting[setPair(reviving)[1]].contains[0].stats[0];
+    fighting[setPair(reviving)[0]].contains[0].tCharge = 0;
+    fighting[setPair(reviving)[1]].contains[0].tCharge = 0;
 }
 
 var scale = 1;
@@ -1021,7 +1052,7 @@ var catchMon = function(){
         return;
     }
 
-    if(!holder.willAllowAdd(1)){
+    if(!holder.willAllowAdd(2)){
         alert("You are full!");
         return;
     }
@@ -1317,16 +1348,11 @@ var renderAll = function(){
         //document.getElementById("info").style.width = (.1 * $(window).width()) + "px";
     //}
     fixItems();
-
-    if(!(unlockedField >= fighting.length / 2)){
-        document.getElementById("buyField").style.left = document.getElementById("wrap" + (unlockedField + 1)).getBoundingClientRect().left + "px";
-        document.getElementById("buyField").style.top = document.getElementById("wrap" + (unlockedField + 1)).getBoundingClientRect().top + "px";
-    } 
     
-    if(current != 0 || unlockedField >= fighting.length / 2){
+    if(current != 3 || unlockedField >= fighting.length / 2){
         document.getElementById("buyField").style.display = "none";
     } else {
-        document.getElementById("buyField").style.display = "block";
+        document.getElementById("buyField").style.display = "inline-block";
     }
     
     if(catchMode){
@@ -1358,17 +1384,16 @@ var renderAll = function(){
             if(fighting[i].bouncey > 100){
                 fighting[i].bouncey = 0;
             }
-            document.getElementById("POKE" + fighting[setPair(i)[1]].prefix + " 1").childNodes[0].style.opacity = "1";
+            fighting[setPair(i)[1]].opacity = "1";
+            if(fighting[i].direction == RIGHT){
+                document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[0].style.transform = "scale(-1,1)";
+            } else {
+                document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[0].style.transform = "";
+            }
             if(fighting[i].bouncey > 90){
-                document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[0].style.transform = "translate(0, " + (Math.cos(fighting[i].bouncey * 1.5) * 6) + "px)";
-                if(fighting[i].direction == RIGHT){
-                    document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[0].style.transform += "scale(-1,1)";
-                }
+                document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[0].style.transform += "translate(0, " + (Math.cos(fighting[i].bouncey * 1.5) * 7.5) + "px)";
             } else if (fighting[i].bouncey > 35 && fighting[i].bouncey < 45){
-                document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[0].style.transform = "translate(" + (Math.cos(fighting[i].bouncey * 1.5) * 3) + "px, 0)"
-                if(fighting[i].direction == RIGHT){
-                    document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[0].style.transform += "scale(-1,1)";
-                }
+                document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[0].style.transform += "translate(" + (Math.cos(fighting[i].bouncey * 1.5) * 5) + "px, 0)"
 
                 if(fighting[i].bouncey == 36 + 1.5){
                     var damaged = fighting[getPair(i, true)].contains[0].attack(fighting[getPair(i, false)].contains[0]);
@@ -1412,15 +1437,18 @@ var renderAll = function(){
             }
         } else if (fighting[setPair(i)[1]].contains.length == 1 && document.getElementById("POKE" + fighting[i].prefix + " 1") != undefined){
             if(document.getElementById("POKE" + fighting[setPair(i)[1]].prefix + " 1").childNodes[0] != undefined){
-                document.getElementById("POKE" + fighting[setPair(i)[1]].prefix + " 1").childNodes[0].style.opacity = ".5";
+                fighting[setPair(i)[1]].opacity = ".5";
                 fighting[setPair(i)[1]].contains[0].hp = fighting[setPair(i)[1]].contains[0].stats[0];
-                document.getElementById("H" + fighting[setPair(i)[0]].prefix).style.width = "70px";
+
+                document.getElementById("H" + fighting[setPair(i)[0]].prefix).style.width = "00px";
                 document.getElementById("T" + fighting[setPair(i)[0]].prefix).style.width = "00px";
+                document.getElementById("T" + fighting[setPair(i)[1]].prefix).style.width = "00px";
                 document.getElementById("H" + fighting[setPair(i)[0]].prefix).style.backgroundColor = "green";
             }
         }
 
         if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1){
+            document.getElementById("H" + fighting[setPair(i)[0]].prefix).parentNode.style.opacity = ".9";
             document.getElementById("dead" + Math.ceil((i + 1) / 2)).style.opacity = fighting[setPair(i)[0]].contains[0].dead() - .2;
             if(fighting[setPair(i)[0]].contains[0].hp <= 0){
                 document.getElementById("dead" + Math.ceil((i + 1) / 2)).style.pointerEvents = "auto";
@@ -1440,11 +1468,13 @@ var renderAll = function(){
             } else {
                 document.getElementById("H" + fighting[i].prefix).style.backgroundColor = "red";
             }
-            document.getElementById("H" + fighting[i].prefix).style.borderTopRightRadius = Math.min(3, Math.max(0, 2 * (fighting[i].contains[0].hp - (.9 * fighting[i].contains[0].stats[0])))) + "px";
-            document.getElementById("T" + fighting[i].prefix).style.borderTopLeftRadius = Math.min(3, Math.max(0, 2 * (fighting[i].contains[0].tCharge - (50)))) + "px";
 
             document.getElementById("nick" + toPlace(i + 1,2)).innerHTML = fighting[i].contains[0].nick;
             document.getElementById("level" + toPlace(i + 1,2)).innerHTML = " LVL. " + fighting[i].contains[0].level;
+        } else {
+            document.getElementById("H" + fighting[setPair(i)[0]].prefix).parentNode.style.opacity = "0";
+            document.getElementById("nick" + toPlace(i + 1,2)).innerHTML = "";
+            document.getElementById("level" + toPlace(i + 1,2)).innerHTML = "";
         }
     }
 

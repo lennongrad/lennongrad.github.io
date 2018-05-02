@@ -168,13 +168,12 @@
 }
 
 .barHold{
-    opacity: .55; 
     position: absolute; 
     padding:3px; 
-    height:14px; 
+    height:16px; 
     width: 70px;  
     top:27px; 
-    background-color: var(--darktext); 
+    background-color: rgba(10,10,10,.75); 
     border-radius:5px
 }
 
@@ -182,9 +181,9 @@
     transition: width 1s; 
     height:7px; 
     width: 70px; 
+    margin-bottom: 2px;
     background-color:green; 
-    border-top-left-radius:3px;
-    border-top-right-radius:3px
+    border-radius:3px;
 }
 
 .typeBar{
@@ -192,8 +191,7 @@
     height:7px; 
     width: 0px; 
     background-color:#0081af; 
-    border-bottom-left-radius:3px;
-    border-bottom-right-radius:3px
+    border-radius:3px;
 }
 
 #info{
@@ -212,7 +210,7 @@
 
 .top{
     position: absolute;
-    top:-2px;
+    top:-28px;
     width:70px;
     text-align: center;
 }
@@ -249,6 +247,7 @@
     width:80px;
     height:60px;
     image-rendering: pixelated;
+    position: relative !important;
     background-image: url("icons/pokemon/unknown.png");
     background-size: 100% 100%;
 }
@@ -323,6 +322,7 @@
 .battle{
     position: relative;
     border-radius: 2px; 
+    height: 100%;
     width:99%; 
     left: 0;
     text-align: center;
@@ -389,10 +389,17 @@
 }
 
 #pokeHolder{
-    background-color: var(--grey4);
     z-index:1;
-    height: 60px;
-    padding:10px;
+    height: 70px;
+}
+
+#holden{
+    white-space: nowrap;
+    height: 100%;
+    width: 100%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    background-color: var(--grey4);
 }
 
 #tab4 td{
@@ -560,12 +567,16 @@
     background-color: var(--tough);
 }
 
+#currents{
+    display: inline-block;
+}
+
 .setCurrent{
     display: inline-block;
     margin: 0;
     cursor: pointer;
     height: 40px;
-    width: 16%;
+    width: 83px;
     overflow-x: hidden;
     background-color: var(--grey1);
     line-height:40px;
@@ -714,6 +725,7 @@
 
 .main{
     overflow-y: auto;
+    min-width: 0;
     scroll-snap-type: mandatory;
     scroll-snap-points-y: repeat(144px);
     height:100%;
@@ -726,8 +738,10 @@
 
 #boxes{
     display: inline-block;
-    height: 456px;
+    height: 496px;
     width: 456px;
+    padding-left: 22px;
+    padding-top: 15px;
     background-color: var(--grey1);
 }
 
@@ -758,7 +772,8 @@
 }
 
 #buyField{
-    position: absolute;
+    position: relative;
+    margin: 50px; 
     width:282px; 
     height: 154px; 
     z-index:5;
@@ -781,6 +796,7 @@
 }
 
 body{
+    margin: 0;
     font-family: Arial;
     user-select: none; 
     overflow: hidden;
