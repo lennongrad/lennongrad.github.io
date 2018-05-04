@@ -195,10 +195,9 @@
 }
 
 #info{
-    width:15%;
+    width:90px;
     z-index:15;
     position: absolute;
-    bottom: 200px;
     padding: 20px;
     border-radius: 20px;
     opacity: .7;
@@ -514,7 +513,14 @@
     display: inline;
 }
 
+#bonuses{
+    overflow-y: scroll;
+    height: 220px;
+    min-height: 220px;
+}
+
 #bonuses div{
+    display: inline-block;
     margin-left: 20px;
     margin-top: 20px;
     height: 50px;

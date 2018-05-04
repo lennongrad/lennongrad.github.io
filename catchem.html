@@ -115,6 +115,22 @@
                 <img draggable="false" src="none.png" onclick="mixSet[{{1}}] = -1" class="berry">
             </div>
     </script>
+
+    <script id="moveTemp0" type="text/x-handlebars-template">
+        <table style="background-color: {{bg}}; border: 3px solid {{border}}; width: 300px">
+                <tr><td>{{name}}</td><td>Lvl. {{level}}</td><td>{{top}}/{{bottom}}</td></tr>
+                <tr><td colspan=4></td></tr>
+                <tr><td>{{type}}</td><td>POW: {{pow}}</td><td>ACC: {{acc}}%</td></tr>
+        </table>
+    </script>
+
+    <script id="moveTemp1" type="text/x-handlebars-template">
+        <table style="background-color: {{bg}}; border: 3px solid {{border}}; width: 300px">
+                <tr><td>{{name}}</td><td>Lvl. {{level}}</td><td>{{top}}/{{bottom}}</td></tr>
+                <tr><td colspan=3></td></tr>
+                <tr><td>POW: {{pow}}</td><td colspan=2>ACC: {{acc}}%</td></tr>
+        </table>
+    </script>
 </head>
 <body>
         <div id="foreground" style=" display: none; align-items: center;position: absolute; left: 0px; top: 0px; width:100%; height:100%; z-index: 15;background-color: #111111;  background-size: cover;">
@@ -139,6 +155,7 @@
                                 <div class="setCurrent" id="setCurrent1" onclick="current = 1; renderPoke(); ">Pokédex</div>
                                 <div class="setCurrent" id="setCurrent2" onclick="current = 2; renderPoke(); ">Box</div>
                                 <div class="setCurrent" id="setCurrent3" onclick="current = 3; renderPoke(); ">Items</div>
+                                <div class="setCurrent" id="setCurrent4" onclick="current = 4; renderPoke(); ">Analyzer</div>
                             </div>
                         </td>
 
@@ -148,7 +165,7 @@
                 </tr>
                 <tr>
                         <td colspan=1  style="overflow-y: hidden; height:80%; min-width: 0;; text-align: center; background-color: #111111">   
-                            <div id="main0" class="main" style="display: block">       
+                            <div id="main0" class="main" onmouseover="autoMove()" style="display: block">       
                             </div>
                             <div id="main1" class="main" style="overflow-y: scroll;display: none">
                                 <table cellspacing=0 id="dexTab">
@@ -168,67 +185,72 @@
                             <div id="main2" onmouseover="hover = '0'" class="main" style="overflow: scroll; display: flex">
                                 <div id="boxes" style="display: inline-block"></div>
                             </div>
-                            <div id="main3" onmouseover="hover = 'M'" class="main" style="overflow-y: scroll; text-align: center; display: block">
+                            <div id="main3" class="main" style="overflow-y: scroll; text-align: center; display: block">
                                 <div id="buyField" style="display: none" onclick="buyField()">15</div>  <br>
-                                <table id="tab4" onmouseover="hover = 'M'" class="storefront" style="background-color: transparent; text-align: center" cellspacing="0px">
-                                    <tr>
-                                        <td></td>
-                                        <td colspan=16 id="longbar">
-                                                <div style="border-top-left-radius: 3px; border-bottom-left-radius: 3px;" class="sour"></div>
-                                                <div class="bitter"></div>
-                                                <div class="sweet"></div>
-                                                <div class="dry"></div>
-                                                <div style="border-top-right-radius: 3px; border-bottom-right-radius: 3px;" class="spicy"></div>
-                                            </td>
-                                    </tr>
-                                    <tr id="frow">
-                                            <td></td>
-                                            <td class="vertbar"></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td class="vertbar"></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td class="vertbar"></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td class="vertbar"></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td class="vertbar"></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td class="vertbar"></td>
-                                            <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan=3><div class="pInv" onmouseover="hover = 'M'" id="pokeMixer" style="display: block"></div></td>
-                                    </tr>
-                                    <tr>
-                                        <td><div class="more" onclick="numberBerries--">-</div></td>
-                                        <td><div id="amtBerry">3</div></td>
-                                        <td><div class="more" onclick="numberBerries++">+</div></td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan=3><div id="mixClick" onclick="addHapp()">Mix</div></td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan=25 id="costs">
-                                            
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan=25 id="bonuses">
-                                            
-                                        </td>
-                                    </tr>
-                                </table>
                                     <div class="storefront" id="storefront1">
                                         <div class="head">Balls</div>
                                     </div>
                                     <div class="storefront" id="storefront0">
                                         <div class="head">Berries</div>
                                     </div>
+                            </div>
+                            <div id="main4" onmouseover="hover = 'M'" class="main" style="overflow: scroll;">
+                                    <table style="margin-left: auto; margin-right: auto; margin-bottom: 30px; display: block; width:700px">
+                                        <tr>
+                                            <td></td><td id="moves0" style="height: 50%; width: 350px; overflow-y: scroll"></td><td id="moves1" style="height: 50%; width: 350px; overflow-y: scroll"></td>
+                                        </tr>
+                                    </table>
+                                         
+                                    <div class="pInv" onmouseover="hover = 'M'" id="pokeMixer" style="display: block; margin-left: auto; margin-right:auto;"></div>
+                                    
+                                        <table id="tab4" onmouseover="hover = 'M'" class="storefront" style="background-color: transparent; text-align: center;" cellspacing="0px">
+                                            <tr>
+                                                <td></td>
+                                                <td colspan=16 id="longbar">
+                                                        <div style="border-top-left-radius: 3px; border-bottom-left-radius: 3px;" class="sour"></div>
+                                                        <div class="bitter"></div>
+                                                        <div class="sweet"></div>
+                                                        <div class="dry"></div>
+                                                        <div style="border-top-right-radius: 3px; border-bottom-right-radius: 3px;" class="spicy"></div>
+                                                    </td>
+                                            </tr>
+                                            <tr id="frow">
+                                                    <td></td>
+                                                    <td class="vertbar"></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="vertbar"></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="vertbar"></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="vertbar"></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="vertbar"></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="vertbar"></td>
+                                                    <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td><div class="more" onclick="numberBerries--">-</div></td>
+                                                <td><div id="amtBerry">3</div></td>
+                                                <td><div class="more" onclick="numberBerries++">+</div></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan=3><div id="mixClick" onclick="addHapp()">Mix</div></td>
+                                            </tr>
+                                            <tr>
+                                            </tr>
+                                                    <tr>
+                                                <td colspan=25 id="costs">
+                                                    
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div id="bonuses"></div>
                             </div>
                         </td>
                         <td id="itemSpace" style=" text-align: center; overflow-x: hidden; max-height: 80%; ">

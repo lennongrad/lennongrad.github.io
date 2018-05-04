@@ -1,4 +1,3 @@
-
 var version = "C1";
 document.getElementById("version").innerHTML = "Version " + version;
 var LEFT = 0;
@@ -78,13 +77,53 @@ var fixItems = function(){
 }
 fixItems();
 
-var setInfo = function(){
-    document.getElementById("info").style.right = -160 + ($(window).width() - mouseX) + "px";
+var setInfo = function(){/*
+    document.getElementById("info").style.right = -55 + ($(window).width() - mouseX) + "px";
     document.getElementById("info").style.bottom = 50 + ($(window).height() - mouseY) + "px";
+    if(mouseY < $(window).height() / 2){
+        document.getElementById("info").style.bottom = -150 + ($(window).height() - mouseY) + "px";
+    }
+    if(mouseX < 145){
+        document.getElementById("info").style.right = -145 + ($(window).width() - mouseX) + "px";
+    }*/
+    if(document.getElementById(lastSelected) != undefined){
+        document.getElementById("info").style.left = document.getElementById(lastSelected).getBoundingClientRect().left + "px";
+        if(document.getElementById(lastSelected).getBoundingClientRect().top > $(window).height() / 2){
+            document.getElementById("info").style.top = -100 + document.getElementById(lastSelected).getBoundingClientRect().top + "px";
+        } else{
+            document.getElementById("info").style.top = 75 + document.getElementById(lastSelected).getBoundingClientRect().top + "px";
+        }
+    }
 }
 
 function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function createMoveBox(data, makeBorder, id){
+    if(typeof(data) != "object"){
+        return;
+    }
+    var boxDiv = document.createElement("DIV");
+    boxDiv.style.display = "inline-block";
+    var m = moves[data.id];
+
+    if(makeBorder){
+        boxDiv.style.border = "2px solid var(--active)"
+    } else {
+        boxDiv.style.border = "2px solid"
+    }
+
+    if(m.type != "None"){
+        boxDiv.onmousedown = new Function("if(mixer.contains.length != 0){mixer.contains[0].active[1] = " + id + "}; renderMen()");
+        boxDiv.innerHTML = Handlebars.compile(document.getElementById("moveTemp0").innerHTML)(
+            { bg: types[T[m.type]].color1, border: types[T[m.type]].color2, name: m.name.replace(/-/, " ").split(" ").map(x => capitalize(x)).reduce((x,y) => x + " " + y), level: data.level, top: data.exp, bottom: "40", type: m.type, pow: m.power, acc: m.accuracy, pp: m.pp});
+    } else {
+        boxDiv.onmousedown = new Function("if(mixer.contains.length != 0){mixer.contains[0].active[0] = " + id + "}; renderMen()");
+        boxDiv.innerHTML = Handlebars.compile(document.getElementById("moveTemp1").innerHTML)(
+            { bg: types[T[m.type]].color1, border: types[T[m.type]].color2, name: m.name.replace(/-/, " ").split(" ").map(x => capitalize(x)).reduce((x,y) => x + " " + y), level: data.level, top: data.exp, bottom: "40", type: m.type, pow: m.power, acc: m.accuracy, pp: m.pp});
+    }
+    return boxDiv;
 }
 
 var getMon = function(catchable, levelBase, variation, chance){
@@ -106,7 +145,7 @@ var pokemonFromString = function(inputs){
     var outArray = [];
     for(var i = 0; i < tempArray.length; i++){
         var holdDat = tempArray[i].split(";");
-        outArray.push(new Pokemon(holdDat[0],holdDat[1],toBool(holdDat[2]),holdDat[3], toBool(holdDat[4]), holdDat[5], holdDat[6], holdDat[7]))
+        outArray.push(new Pokemon(holdDat[0],holdDat[1],toBool(holdDat[2]),holdDat[3], toBool(holdDat[4]), holdDat[5], holdDat[6], holdDat[7], holdDat[8]))
     }
     return outArray;
 };
@@ -145,7 +184,7 @@ var autoMove = function(){
         case 0: break;
         case 1: hover = ""; return;
         case 2: hover = "0"; return;
-        case 3: hover = "M"; return; 
+        case 4: hover = "M"; return; 
     }
     for(var i = 0; i < fighting.length; i+=2){
         if(fighting[i].contains.length == 0){
@@ -433,7 +472,7 @@ for(var i = 0; i < items.length; i++){
     document.getElementById("storefront" + items[i].type).appendChild(newTable);
 }
 
-function Pokemon(nick, id, shinys, level, player, nature, friendship, ev){
+function Pokemon(nick, id, shinys, level, player, nature, friendship, ev, movest){
     if(nick != ""){
         this.nick = nick;
     } else if(id != undefined){
@@ -449,6 +488,25 @@ function Pokemon(nick, id, shinys, level, player, nature, friendship, ev){
     this.shiny = shinys;
     this.nature = nature;
     this.friendship = friendship;
+
+    this.moves = [];
+    this.active = [0,0]
+
+    if(movest != undefined && movest.split("|").length != 0){
+        for(var i = 0; i < movest.split("|").length; i++){
+            if(movest.split("|")[i].split(".").length == 3){
+                this.moves.push({id: Number(movest.split("|")[i].split(".")[0]), level: Number(movest.split("|")[i].split(".")[1]), exp: Number(movest.split("|")[i].split(".")[2])})
+            }
+        }
+    } else {
+        if(id != undefined){
+            for(var i = 0; i < pD[id].moves.length; i++){
+                this.moves.push({id: pD[id].moves[i], level: 1, exp: 0});
+            }
+        } else {
+            this.moves.push({id: 1, level: 1, exp: 0})
+        }
+    }
 
     if(natures[natures[this.nature]] == undefined){
         this.nature = "0"
@@ -467,6 +525,18 @@ function Pokemon(nick, id, shinys, level, player, nature, friendship, ev){
     }
     this.hp = this.stats[0];
 
+    if(moves != undefined){
+        this.active = [-1,-1];
+        for(var i = 0; i < this.moves.length; i++){
+            if(moves[this.moves[i].id].type == "None" && this.active[0] == -1){
+                this.active[0] = i;
+            }
+            if(moves[this.moves[i].id].type != "None" && this.active[1] == -1){
+                this.active[1] = i;
+            }
+        }
+    }
+
     this.deadness = 1;
 
     this.dead = function(){
@@ -479,8 +549,9 @@ function Pokemon(nick, id, shinys, level, player, nature, friendship, ev){
     }
 
     this.attack = function(opponent){
-        var power = 20 + (1 - pD[this.id].rarity) * 100;
-        var moveType = pD[this.id].type[0];
+        var power = moves[this.moves[this.active[0]].id].power * ((this.moves[this.active[0]].level + 1) / 2);
+        var moveType = moves[this.moves[this.active[1]].id].type;
+        var acc = moves[this.moves[this.active[0]].id].accuracy;
 
         var use = 1;
         if(this.stats[1] < this.stats[3]){
@@ -491,6 +562,8 @@ function Pokemon(nick, id, shinys, level, player, nature, friendship, ev){
         if(this.tCharge >= 100){
             this.tCharge -= 100;
             useType = true;
+            power = moves[this.moves[this.active[1]].id].power
+            acc = moves[this.moves[this.active[1]].id].accuracy
         }
         var modifier = 1;
         modifier *= 1; //targets
@@ -521,6 +594,10 @@ function Pokemon(nick, id, shinys, level, player, nature, friendship, ev){
         }
         if(this.stats[5] > 1.6 * opponent.stats[5]){
             damage *= 1.5;
+        }
+
+        if(acc < 100 * Math.random()){
+            damage = 0;
         }
 
         return [damage, crit, use == 3, useType];
@@ -572,18 +649,34 @@ function Pokemon(nick, id, shinys, level, player, nature, friendship, ev){
             newID = chances[Math.floor(Math.random() * chances.length)];
         }
 
-        if(newID != this.id && this.nick == pD[this.id].name){
-            this.nick = pD[newID].name;
+        if(newID != this.id){
+            if(this.nick == pD[this.id].name){
+                this.nick = pD[newID].name;
+            }
+            for(var i = 0; i < pD[newID].moves.length; i++){
+                if(!this.moves.map(x => x.id).includes(pD[newID].moves[i])){
+                    this.moves.push({id: pD[newID].moves[i], level: 1, exp: 0})
+                }
+            }
         }
 
         this.id = newID;
         this.calcLevel();
+        renderMen();
+        saveGame();
 
         return chances.length != 0;
     }
 
     this.toString = function(){
-        return this.nick + ";" + this.id + ";" + this.shiny + ";" + this.level + ";" + this.player + ";" + this.nature + ";" + this.friendship + ";" + this.ev.reduce((x,y) => x + "." + y);
+        var moveString = "";
+        for(var i = 0; i < this.moves.length; i++){
+            moveString += this.moves[i].id + "."  + this.moves[i].level + "." + this.moves[i].exp;
+            if(i != this.moves.length - 1){
+                moveString += "|";
+            }
+        }
+        return this.nick + ";" + this.id + ";" + this.shiny + ";" + this.level + ";" + this.player + ";" + this.nature + ";" + this.friendship + ";" + this.ev.reduce((x,y) => x + "." + y) + ";" + moveString;
     }
 }
 
@@ -766,7 +859,7 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
                 contain.style.left = leftS + "px";
                 contain.style.top = topS + "px";
     
-                if(document.getElementById(this.place).style.display == "" || (current != 3 && this.prefix == "M") || (!isNaN(Number(this.prefix)) && current != 2) || (this.prefix.substring(0,1) == "F" && current != 0) && document.getElementById(this.place).style.display != "none"){
+                if(document.getElementById(this.place).style.display == "" || (current != 4 && this.prefix == "M") || (!isNaN(Number(this.prefix)) && current != 2) || (this.prefix.substring(0,1) == "F" && current != 0) && document.getElementById(this.place).style.display != "none"){
                     contain.style.display = "none";
                 } else {
                     contain.style.display = "inline-block";
@@ -887,7 +980,7 @@ for(var i = 1; i < pD.length; i++){
 
 var current = 0;
 var itemShow = 0;
-var amt = 4;
+var amt = 5;
 
 var numberBerries = 1;
 
@@ -1022,7 +1115,7 @@ setInterval(function(){
     if(lastCurrent != current){
         for(var i = 0; i < amt; i++){
             if(current == i){
-                if(i == 0 || i == 2 || i == 4){
+                if(i == 0 || i == 2){
                     document.getElementById("main" + i).style.display = "flex";
                 } else {
                     document.getElementById("main" + i).style.display = "block";
@@ -1183,6 +1276,19 @@ var renderMen = function(){
             fighting[i].renderMon();
         }
     }
+
+    document.getElementById("moves0").innerHTML = "";
+    document.getElementById("moves1").innerHTML = "";
+    if(mixer.contains.length != 0){
+        mixer.contains[0].calcLevel();
+        for(var i = 0; i < mixer.contains[0].moves.length; i++){
+            if(moves[mixer.contains[0].moves[i].id].type != "None"){
+                document.getElementById("moves1").appendChild(createMoveBox(mixer.contains[0].moves[i], i == mixer.contains[0].active[1], i))
+            } else {
+                document.getElementById("moves0").appendChild(createMoveBox(mixer.contains[0].moves[i], i == mixer.contains[0].active[0], i))
+            }
+        }
+    }
 }
 
 var renderAll = function(){
@@ -1207,7 +1313,7 @@ var renderAll = function(){
 
     document.getElementById("costs").innerHTML = "";
     document.getElementById("bonuses").innerHTML = "";
-    if(current == 3){
+    if(current == 4){
         if(numberBerries < 1){
             numberBerries = 1;
         } else if(numberBerries > 99){
@@ -1324,12 +1430,8 @@ var renderAll = function(){
     if(!holdShift && lastSelected != "" && returnFromSelect(lastSelected) != undefined){
         var cur = returnFromSelect(lastSelected);
         document.getElementById("nickShow").innerHTML = cur.nick;
-        document.getElementById("statsShow").innerHTML = "Level: " + cur.level + "<br>Types: " + pD[cur.id].type[0];
-        if(pD[cur.id].type[1] != "None"){
-            document.getElementById("statsShow").innerHTML += ", " + pD[cur.id].type[1];
-        }
-        document.getElementById("statsShow").innerHTML += "<br>Nature: " + natures[cur.nature];
-        document.getElementById("statsShow").innerHTML += "<br>HP: " + cur.stats.reduce((z,y,f) => String(z) + "<br>" + statNames[f] + ": " + String(y) + " (+" + String(y - pD[cur.id].stats[f]) + ")");
+        document.getElementById("statsShow").innerHTML = "Level: " + cur.level;
+        document.getElementById("statsShow").innerHTML += "<br>HP: " + Math.floor(cur.hp);
         document.getElementById("info").style.display = "block" ;
     } else {
         document.getElementById("nickShow").innerHTML = "";
