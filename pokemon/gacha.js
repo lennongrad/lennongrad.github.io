@@ -1,4 +1,4 @@
-var version = "C1";
+var version = "C2";
 document.getElementById("version").innerHTML = "Version " + version;
 var LEFT = 0;
 var RIGHT = 1;

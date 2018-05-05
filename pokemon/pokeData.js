@@ -72,74 +72,74 @@ var types = [{
 	}]
 
 	var moves=[{}
-		,{id:1  ,name:"pound"         ,type:"None"    ,power:40 ,accuracy:100,pp:35}
-		,{id:2  ,name:"karate-chop"   ,type:"Fighting",power:50 ,accuracy:100,pp:25}
-		,{id:3  ,name:"double-slap"   ,type:"Normal"  ,power:15 ,accuracy:85 ,pp:10}
-		,{id:4  ,name:"mega-punch"    ,type:"Normal"  ,power:80 ,accuracy:85 ,pp:20}
-		,{id:5  ,name:"fire-punch"    ,type:"Fire"    ,power:75 ,accuracy:100,pp:15}
-		,{id:6  ,name:"ice-punch"     ,type:"Ice"     ,power:75 ,accuracy:100,pp:15}
-		,{id:7  ,name:"thunder-punch" ,type:"Electric",power:75 ,accuracy:100,pp:15}
-		,{id:8 ,name:"scratch"       ,type:"Normal"  ,power:40 ,accuracy:100,pp:35}
+		,{id:1 ,name:"pound"         ,type:"None"    ,power:40 ,accuracy:100,pp:35}
+		,{id:2 ,name:"karate-chop"   ,type:"Fighting",power:50 ,accuracy:100,pp:25}
+		,{id:3 ,name:"double-slap"   ,type:"Normal"  ,power:15 ,accuracy:85 ,pp:10}
+		,{id:4 ,name:"mega-punch"    ,type:"Normal"  ,power:80 ,accuracy:85 ,pp:20}
+		,{id:5 ,name:"fire-punch"    ,type:"Fire"    ,power:75 ,accuracy:100,pp:15}
+		,{id:6 ,name:"ice-punch"     ,type:"Ice"     ,power:75 ,accuracy:100,pp:15}
+		,{id:7 ,name:"thunder-punch" ,type:"Electric",power:75 ,accuracy:100,pp:15}
+		,{id:8 ,name:"scratch"       ,type:"None"    ,power:40 ,accuracy:100,pp:35}
 		,{id:9 ,name:"vice-grip"     ,type:"Normal"  ,power:55 ,accuracy:100,pp:30}
-		,{id:10 ,name:"razor-wind"    ,type:"Normal"  ,power:80 ,accuracy:100,pp:10}
-		,{id:11 ,name:"cut"           ,type:"Normal"  ,power:50 ,accuracy:95 ,pp:30}
-		,{id:12 ,name:"gust"          ,type:"Flying"  ,power:40 ,accuracy:100,pp:35}
-		,{id:13 ,name:"wing-attack"   ,type:"Flying"  ,power:60 ,accuracy:100,pp:35}
-		,{id:14 ,name:"fly"           ,type:"Flying"  ,power:90 ,accuracy:95 ,pp:15}
-		,{id:15 ,name:"bind"          ,type:"Normal"  ,power:15 ,accuracy:85 ,pp:20}
-		,{id:16 ,name:"slam"          ,type:"Normal"  ,power:80 ,accuracy:75 ,pp:20}
-		,{id:17 ,name:"vine-whip"     ,type:"Grass"   ,power:45 ,accuracy:100,pp:25}
-		,{id:18 ,name:"stomp"         ,type:"Normal"  ,power:65 ,accuracy:100,pp:20}
-		,{id:19 ,name:"double-kick"   ,type:"Fighting",power:30 ,accuracy:100,pp:30}
-		,{id:20 ,name:"mega-kick"     ,type:"Normal"  ,power:120,accuracy:75 ,pp:5}
-		,{id:21 ,name:"jump-kick"     ,type:"Fighting",power:100,accuracy:95 ,pp:10}
-		,{id:22 ,name:"rolling-kick"  ,type:"Fighting",power:60 ,accuracy:85 ,pp:15}
-		,{id:23 ,name:"headbutt"      ,type:"Normal"  ,power:70 ,accuracy:100,pp:15}
-		,{id:24 ,name:"horn-attack"   ,type:"Normal"  ,power:65 ,accuracy:100,pp:25}
-		,{id:25 ,name:"fury-attack"   ,type:"Normal"  ,power:15 ,accuracy:85 ,pp:20}
-		,{id:26 ,name:"tackle"        ,type:"Normal"  ,power:40 ,accuracy:100,pp:35}
-		,{id:27 ,name:"body-slam"     ,type:"Normal"  ,power:85 ,accuracy:100,pp:15}
-		,{id:28 ,name:"wrap"          ,type:"Normal"  ,power:15 ,accuracy:90 ,pp:20}
-		,{id:29 ,name:"take-down"     ,type:"Normal"  ,power:90 ,accuracy:85 ,pp:20}
-		,{id:30 ,name:"thrash"        ,type:"Normal"  ,power:120,accuracy:100,pp:10}
-		,{id:31 ,name:"double-edge"   ,type:"Normal"  ,power:120,accuracy:100,pp:15}
-		,{id:32 ,name:"poison-sting"  ,type:"Poison"  ,power:15 ,accuracy:100,pp:35}
-		,{id:33 ,name:"twineedle"     ,type:"Bug"     ,power:25 ,accuracy:100,pp:20}
-		,{id:34 ,name:"pin-missile"   ,type:"Bug"     ,power:25 ,accuracy:95 ,pp:20}
-		,{id:35 ,name:"bite"          ,type:"Dark"    ,power:60 ,accuracy:100,pp:25}
-		,{id:36 ,name:"acid"          ,type:"Poison"  ,power:40 ,accuracy:100,pp:30}
-		,{id:37 ,name:"ember"         ,type:"Fire"    ,power:40 ,accuracy:100,pp:25}
-		,{id:38 ,name:"flamethrower"  ,type:"Fire"    ,power:90 ,accuracy:100,pp:15}
-		,{id:39 ,name:"water-gun"     ,type:"Water"   ,power:40 ,accuracy:100,pp:25}
-		,{id:40 ,name:"hydro-pump"    ,type:"Water"   ,power:110,accuracy:80 ,pp:5}
-		,{id:41 ,name:"surf"          ,type:"Water"   ,power:90 ,accuracy:100,pp:15}
-		,{id:42 ,name:"ice-beam"      ,type:"Ice"     ,power:90 ,accuracy:100,pp:10}
-		,{id:43 ,name:"blizzard"      ,type:"Ice"     ,power:110,accuracy:70 ,pp:5}
-		,{id:44 ,name:"psybeam"       ,type:"Psychic" ,power:65 ,accuracy:100,pp:20}
-		,{id:45 ,name:"bubble-beam"   ,type:"Water"   ,power:65 ,accuracy:100,pp:20}
-		,{id:46 ,name:"aurora-beam"   ,type:"Ice"     ,power:65 ,accuracy:100,pp:20}
-		,{id:47 ,name:"hyper-beam"    ,type:"Normal"  ,power:150,accuracy:90 ,pp:5}
-		,{id:48 ,name:"peck"          ,type:"Flying"  ,power:35 ,accuracy:100,pp:35}
-		,{id:49 ,name:"drill-peck"    ,type:"Flying"  ,power:80 ,accuracy:100,pp:20}
-		,{id:50 ,name:"submission"    ,type:"Fighting",power:80 ,accuracy:80 ,pp:20}
-		,{id:51 ,name:"strength"      ,type:"Normal"  ,power:80 ,accuracy:100,pp:15}
-		,{id:52 ,name:"absorb"        ,type:"Grass"   ,power:20 ,accuracy:100,pp:25}
-		,{id:53 ,name:"mega-drain"    ,type:"Grass"   ,power:40 ,accuracy:100,pp:15}
-		,{id:54 ,name:"razor-leaf"    ,type:"Grass"   ,power:55 ,accuracy:95 ,pp:25}
-		,{id:55 ,name:"solar-beam"    ,type:"Grass"   ,power:120,accuracy:100,pp:10}
-		,{id:56 ,name:"petal-dance"   ,type:"Grass"   ,power:120,accuracy:100,pp:10}
-		,{id:57 ,name:"fire-spin"     ,type:"Fire"    ,power:35 ,accuracy:85 ,pp:15}
-		,{id:58 ,name:"thunder-shock" ,type:"Electric",power:40 ,accuracy:100,pp:30}
-		,{id:59 ,name:"thunderbolt"   ,type:"Electric",power:90 ,accuracy:100,pp:15}
-		,{id:60 ,name:"thunder"       ,type:"Electric",power:110,accuracy:70 ,pp:10}
-		,{id:61 ,name:"rock-throw"    ,type:"Rock"    ,power:50 ,accuracy:90 ,pp:15}
-		,{id:62 ,name:"earthquake"    ,type:"Ground"  ,power:100,accuracy:100,pp:10}
-		,{id:63 ,name:"dig"           ,type:"Ground"  ,power:80 ,accuracy:100,pp:10}
-		,{id:64 ,name:"confusion"     ,type:"Psychic" ,power:50 ,accuracy:100,pp:25}
-		,{id:65 ,name:"psychic"       ,type:"Psychic" ,power:90 ,accuracy:100,pp:10}
-		,{id:66 ,name:"quick-attack"  ,type:"Normal"  ,power:40 ,accuracy:100,pp:30}
-		,{id:67 ,name:"rage"          ,type:"Normal"  ,power:20 ,accuracy:100,pp:20}
-		,{id:68,name:"self-destruct" ,type:"Normal"  ,power:200,accuracy:100,pp:5}
+		,{id:10,name:"razor-wind"    ,type:"Normal"  ,power:80 ,accuracy:100,pp:10}
+		,{id:11,name:"cut"           ,type:"None"    ,power:50 ,accuracy:95 ,pp:30}
+		,{id:12,name:"gust"          ,type:"Flying"  ,power:40 ,accuracy:100,pp:35}
+		,{id:13,name:"wing-attack"   ,type:"Flying"  ,power:60 ,accuracy:100,pp:35}
+		,{id:14,name:"fly"           ,type:"Flying"  ,power:90 ,accuracy:95 ,pp:15}
+		,{id:15,name:"bind"          ,type:"None"    ,power:15 ,accuracy:85 ,pp:20}
+		,{id:16,name:"slam"          ,type:"None"    ,power:80 ,accuracy:75 ,pp:20}
+		,{id:17,name:"vine-whip"     ,type:"Grass"   ,power:45 ,accuracy:100,pp:25}
+		,{id:18,name:"stomp"         ,type:"None"    ,power:65 ,accuracy:100,pp:20}
+		,{id:19,name:"double-kick"   ,type:"Fighting",power:30 ,accuracy:100,pp:30}
+		,{id:20,name:"mega-kick"     ,type:"Normal"  ,power:120,accuracy:75 ,pp:5}
+		,{id:21,name:"jump-kick"     ,type:"Fighting",power:100,accuracy:95 ,pp:10}
+		,{id:22,name:"rolling-kick"  ,type:"Fighting",power:60 ,accuracy:85 ,pp:15}
+		,{id:23,name:"headbutt"      ,type:"None"    ,power:70 ,accuracy:100,pp:15}
+		,{id:24,name:"horn-attack"   ,type:"Normal"  ,power:65 ,accuracy:100,pp:25}
+		,{id:25,name:"fury-attack"   ,type:"Normal"  ,power:15 ,accuracy:85 ,pp:20}
+		,{id:26,name:"tackle"        ,type:"None"    ,power:40 ,accuracy:100,pp:35}
+		,{id:27,name:"body-slam"     ,type:"None"    ,power:85 ,accuracy:100,pp:15}
+		,{id:28,name:"wrap"          ,type:"None"    ,power:15 ,accuracy:90 ,pp:20}
+		,{id:29,name:"take-down"     ,type:"None"    ,power:90 ,accuracy:85 ,pp:20}
+		,{id:30,name:"thrash"        ,type:"None"    ,power:120,accuracy:100,pp:10}
+		,{id:31,name:"double-edge"   ,type:"Normal"  ,power:120,accuracy:100,pp:15}
+		,{id:32,name:"poison-sting"  ,type:"Poison"  ,power:15 ,accuracy:100,pp:35}
+		,{id:33,name:"twineedle"     ,type:"Bug"     ,power:25 ,accuracy:100,pp:20}
+		,{id:34,name:"pin-missile"   ,type:"Bug"     ,power:25 ,accuracy:95 ,pp:20}
+		,{id:35,name:"bite"          ,type:"Dark"    ,power:60 ,accuracy:100,pp:25}
+		,{id:36,name:"acid"          ,type:"Poison"  ,power:40 ,accuracy:100,pp:30}
+		,{id:37,name:"ember"         ,type:"Fire"    ,power:40 ,accuracy:100,pp:25}
+		,{id:38,name:"flamethrower"  ,type:"Fire"    ,power:90 ,accuracy:100,pp:15}
+		,{id:39,name:"water-gun"     ,type:"Water"   ,power:40 ,accuracy:100,pp:25}
+		,{id:40,name:"hydro-pump"    ,type:"Water"   ,power:110,accuracy:80 ,pp:5}
+		,{id:41,name:"surf"          ,type:"Water"   ,power:90 ,accuracy:100,pp:15}
+		,{id:42,name:"ice-beam"      ,type:"Ice"     ,power:90 ,accuracy:100,pp:10}
+		,{id:43,name:"blizzard"      ,type:"Ice"     ,power:110,accuracy:70 ,pp:5}
+		,{id:44,name:"psybeam"       ,type:"Psychic" ,power:65 ,accuracy:100,pp:20}
+		,{id:45,name:"bubble-beam"   ,type:"Water"   ,power:65 ,accuracy:100,pp:20}
+		,{id:46,name:"aurora-beam"   ,type:"Ice"     ,power:65 ,accuracy:100,pp:20}
+		,{id:47,name:"hyper-beam"    ,type:"Normal"  ,power:150,accuracy:90 ,pp:5}
+		,{id:48,name:"peck"          ,type:"Flying"  ,power:35 ,accuracy:100,pp:35}
+		,{id:49,name:"drill-peck"    ,type:"Flying"  ,power:80 ,accuracy:100,pp:20}
+		,{id:50,name:"submission"    ,type:"Fighting",power:80 ,accuracy:80 ,pp:20}
+		,{id:51,name:"strength"      ,type:"Normal"  ,power:80 ,accuracy:100,pp:15}
+		,{id:52,name:"absorb"        ,type:"Grass"   ,power:20 ,accuracy:100,pp:25}
+		,{id:53,name:"mega-drain"    ,type:"Grass"   ,power:40 ,accuracy:100,pp:15}
+		,{id:54,name:"razor-leaf"    ,type:"Grass"   ,power:55 ,accuracy:95 ,pp:25}
+		,{id:55,name:"solar-beam"    ,type:"Grass"   ,power:120,accuracy:100,pp:10}
+		,{id:56,name:"petal-dance"   ,type:"Grass"   ,power:120,accuracy:100,pp:10}
+		,{id:57,name:"fire-spin"     ,type:"Fire"    ,power:35 ,accuracy:85 ,pp:15}
+		,{id:58,name:"thunder-shock" ,type:"Electric",power:40 ,accuracy:100,pp:30}
+		,{id:59,name:"thunderbolt"   ,type:"Electric",power:90 ,accuracy:100,pp:15}
+		,{id:60,name:"thunder"       ,type:"Electric",power:110,accuracy:70 ,pp:10}
+		,{id:61,name:"rock-throw"    ,type:"Rock"    ,power:50 ,accuracy:90 ,pp:15}
+		,{id:62,name:"earthquake"    ,type:"Ground"  ,power:100,accuracy:100,pp:10}
+		,{id:63,name:"dig"           ,type:"Ground"  ,power:80 ,accuracy:100,pp:10}
+		,{id:64,name:"confusion"     ,type:"Psychic" ,power:50 ,accuracy:100,pp:25}
+		,{id:65,name:"psychic"       ,type:"Psychic" ,power:90 ,accuracy:100,pp:10}
+		,{id:66,name:"quick-attack"  ,type:"None"    ,power:40 ,accuracy:100,pp:30}
+		,{id:67,name:"rage"          ,type:"None"    ,power:20 ,accuracy:100,pp:20}
+		,{id:68,name:"self-destruct" ,type:"Normal"    ,power:200,accuracy:100,pp:5}
 		,{id:69,name:"egg-bomb"      ,type:"Normal"  ,power:100,accuracy:75 ,pp:10}
 		,{id:70,name:"lick"          ,type:"Ghost"   ,power:30 ,accuracy:100,pp:30}
 		,{id:71,name:"smog"          ,type:"Poison"  ,power:30 ,accuracy:70 ,pp:20}
@@ -148,179 +148,183 @@ var types = [{
 		,{id:74,name:"fire-blast"    ,type:"Fire"    ,power:110,accuracy:85 ,pp:5}
 		,{id:75,name:"waterfall"     ,type:"Water"   ,power:80 ,accuracy:100,pp:15}
 		,{id:76,name:"clamp"         ,type:"Water"   ,power:35 ,accuracy:85 ,pp:15}
-		,{id:77,name:"swift"         ,type:"Normal"  ,power:60 ,accuracy:0  ,pp:20}
+		,{id:77,name:"swift"         ,type:"None"    ,power:60 ,accuracy:0  ,pp:20}
 		,{id:78,name:"skull-bash"    ,type:"Normal"  ,power:130,accuracy:100,pp:10}
 		,{id:79,name:"spike-cannon"  ,type:"Normal"  ,power:20 ,accuracy:100,pp:15}
-		,{id:80,name:"constrict"     ,type:"Normal"  ,power:10 ,accuracy:100,pp:35}
+		,{id:80,name:"constrict"     ,type:"None"    ,power:10 ,accuracy:100,pp:35}
 		,{id:81,name:"high-jump-kick",type:"Fighting",power:130,accuracy:90 ,pp:10}
 		,{id:82,name:"dream-eater"   ,type:"Psychic" ,power:100,accuracy:100,pp:15}
-		,{id:83,name:"barrage"       ,type:"Normal"  ,power:15 ,accuracy:85 ,pp:20}
+		,{id:83,name:"barrage"       ,type:"None"    ,power:15 ,accuracy:85 ,pp:20}
 		,{id:84,name:"leech-life"    ,type:"Bug"     ,power:80 ,accuracy:100,pp:10}
 		,{id:85,name:"sky-attack"    ,type:"Flying"  ,power:140,accuracy:90 ,pp:5}
 		,{id:86,name:"bubble"        ,type:"Water"   ,power:40 ,accuracy:100,pp:30}
 		,{id:87,name:"dizzy-punch"   ,type:"Normal"  ,power:70 ,accuracy:100,pp:10}
 		,{id:88,name:"crabhammer"    ,type:"Water"   ,power:100,accuracy:90 ,pp:10}
-		,{id:89,name:"explosion"     ,type:"Normal"  ,power:250,accuracy:100,pp:5}
-		,{id:90,name:"fury-swipes"   ,type:"Normal"  ,power:18 ,accuracy:80 ,pp:15}
+		,{id:89,name:"explosion"     ,type:"Normal"    ,power:250,accuracy:100,pp:5}
+		,{id:90,name:"fury-swipes"   ,type:"None"    ,power:18 ,accuracy:80 ,pp:15}
 		,{id:91,name:"bonemerang"    ,type:"Ground"  ,power:50 ,accuracy:90 ,pp:10}
 		,{id:92,name:"rock-slide"    ,type:"Rock"    ,power:75 ,accuracy:90 ,pp:10}
 		,{id:93,name:"hyper-fang"    ,type:"Normal"  ,power:80 ,accuracy:90 ,pp:15}
 		,{id:94,name:"tri-attack"    ,type:"Normal"  ,power:80 ,accuracy:100,pp:10}
-		,{id:95,name:"slash"         ,type:"Normal"  ,power:70 ,accuracy:100,pp:20}]
+		,{id:95,name:"slash"         ,type:"None"    ,power:70 ,accuracy:100,pp:20}
+		,{id:96,name:"flail"         ,type:"None"    ,power:0 ,accuracy:100,pp:20}
+		,{id:97,name:"splash"         ,type:"Water"    ,power:0 ,accuracy:100,pp:20}
+		,{id:98,name:"outrage"         ,type:"Dragon"    ,power:200 ,accuracy:100,pp:20}]
 
 
+	var z = Array.apply(null, {length: moves.length}).map(Number.call, Number).splice(1);
 	var pD = [0, new p (
-		1      ,"Bulbasaur" ,"Grass"   ,"Poison"  ,318,45 ,49 ,49 ,65 ,65 ,45 ,1,false,0       ,.05   , [1,10]), new p(
-		2      ,"Ivysaur"   ,"Grass"   ,"Poison"  ,405,60 ,62 ,63 ,80 ,80 ,60 ,1,false,1       ,0     , [1,10]), new p(
-		3      ,"Venusaur"  ,"Grass"   ,"Poison"  ,525,80 ,82 ,83 ,100,100,80 ,1,false,2       ,0     , [1,10]), new p(
-		4      ,"Charmander","Fire"    ,"None"    ,309,39 ,52 ,43 ,60 ,50 ,65 ,1,false,0       ,.05   , [1,10]), new p(
-		5      ,"Charmeleon","Fire"    ,"None"    ,405,58 ,64 ,58 ,80 ,65 ,80 ,1,false,4       ,0     , [1,10]), new p(
-		6      ,"Charizard" ,"Fire"    ,"Flying"  ,534,78 ,84 ,78 ,109,85 ,100,1,false,5       ,0     , [1,10]), new p(
-		7      ,"Squirtle"  ,"Water"   ,"None"    ,314,44 ,48 ,65 ,50 ,64 ,43 ,1,false,0       ,.05   , [1,10]), new p(
-		8      ,"Wartortle" ,"Water"   ,"None"    ,405,59 ,63 ,80 ,65 ,80 ,58 ,1,false,7       ,0     , [1,10]), new p(
-		9      ,"Blastoise" ,"Water"   ,"None"    ,530,79 ,83 ,100,85 ,105,78 ,1,false,8       ,0     , [1,10]), new p(
-		10     ,"Caterpie"  ,"Bug"     ,"None"    ,195,45 ,30 ,35 ,20 ,20 ,45 ,1,false,0       ,.9    , [1,10]), new p(
-		11     ,"Metapod"   ,"Bug"     ,"None"    ,205,50 ,20 ,55 ,25 ,25 ,30 ,1,false,10      ,0     , [1,10]), new p(
-		12     ,"Butterfree","Bug"     ,"Flying"  ,395,60 ,45 ,50 ,90 ,80 ,70 ,1,false,11      ,0     , [1,10]), new p(
-		13     ,"Weedle"    ,"Bug"     ,"Poison"  ,195,40 ,35 ,30 ,20 ,20 ,50 ,1,false,0       ,.9    , [1,10]), new p(
-		14     ,"Kakuna"    ,"Bug"     ,"Poison"  ,205,45 ,25 ,50 ,25 ,25 ,35 ,1,false,13      ,0     , [1,10]), new p(
-		15     ,"Beedrill"  ,"Bug"     ,"Poison"  ,395,65 ,90 ,40 ,45 ,80 ,75 ,1,false,14      ,0     , [1,10]), new p(
-		16     ,"Pidgey"    ,"Normal"  ,"Flying"  ,251,40 ,45 ,40 ,35 ,35 ,56 ,1,false,0       ,.7    , [1,10]), new p(
-		17     ,"Pidgeotto" ,"Normal"  ,"Flying"  ,349,63 ,60 ,55 ,50 ,50 ,71 ,1,false,16      ,0     , [1,10]), new p(
-		18     ,"Pidgeot"   ,"Normal"  ,"Flying"  ,479,83 ,80 ,75 ,70 ,70 ,101,1,false,17      ,0     , [1,10]), new p(
-		19     ,"Rattata"   ,"Normal"  ,"None"    ,253,30 ,56 ,35 ,25 ,35 ,72 ,1,false,0       ,.9    , [1,10]), new p(
-		20     ,"Raticate"  ,"Normal"  ,"None"    ,413,55 ,81 ,60 ,50 ,70 ,97 ,1,false,19      ,0     , [1,10]), new p(
-		21     ,"Spearow"   ,"Normal"  ,"Flying"  ,262,40 ,60 ,30 ,31 ,31 ,70 ,1,false,0       ,.7    , [1,10]), new p(
-		22     ,"Fearow"    ,"Normal"  ,"Flying"  ,442,65 ,90 ,65 ,61 ,61 ,100,1,false,21      ,0     , [1,10]), new p(
-		23     ,"Ekans"     ,"Poison"  ,"None"    ,288,35 ,60 ,44 ,40 ,54 ,55 ,1,false,0       ,.5    , [1,10]), new p(
-		24     ,"Arbok"     ,"Poison"  ,"None"    ,438,60 ,85 ,69 ,65 ,79 ,80 ,1,false,23      ,0     , [1,10]), new p(
-		25     ,"Pikachu"   ,"Electric","None"    ,320,35 ,55 ,40 ,50 ,50 ,90 ,1,false,172     ,.1    , [1,10]), new p(
-		26     ,"Raichu"    ,"Electric","None"    ,485,60 ,90 ,55 ,90 ,80 ,110,1,false,25      ,0     , [1,10]), new p(
-		27     ,"Sandshrew" ,"Ground"  ,"None"    ,300,50 ,75 ,85 ,20 ,30 ,40 ,1,false,0       ,.5    , [1,10]), new p(
-		28     ,"Sandslash" ,"Ground"  ,"None"    ,450,75 ,100,110,45 ,55 ,65 ,1,false,27      ,0     , [1,10]), new p(
-		29     ,"Nidoran♀","Poison"  ,"None"    ,275,55 ,47 ,52 ,40 ,40 ,41 ,1,false,0       ,.45   , [1,10]), new p(
-		30     ,"Nidorina"  ,"Poison"  ,"None"    ,365,70 ,62 ,67 ,55 ,55 ,56 ,1,false,29      ,0     , [1,10]), new p(
-		31     ,"Nidoqueen" ,"Poison"  ,"Ground"  ,505,90 ,92 ,87 ,75 ,85 ,76 ,1,false,30      ,0     , [1,10]), new p(
-		32     ,"Nidoran♂","Poison"  ,"None"    ,273,46 ,57 ,40 ,40 ,40 ,50 ,1,false,0       ,.45   , [1,10]), new p(
-		33     ,"Nidorino"  ,"Poison"  ,"None"    ,365,61 ,72 ,57 ,55 ,55 ,65 ,1,false,32      ,0     , [1,10]), new p(
-		34     ,"Nidoking"  ,"Poison"  ,"Ground"  ,505,81 ,102,77 ,85 ,75 ,85 ,1,false,33      ,0     , [1,10]), new p(
-		35     ,"Clefairy"  ,"Fairy"   ,"None"    ,323,70 ,45 ,48 ,60 ,65 ,35 ,1,false,173     ,.1    , [1,10]), new p(
-		36     ,"Clefable"  ,"Fairy"   ,"None"    ,483,95 ,70 ,73 ,95 ,90 ,60 ,1,false,35      ,0     , [1,10]), new p(
-		37     ,"Vulpix"    ,"Fire"    ,"None"    ,299,38 ,41 ,40 ,50 ,65 ,65 ,1,false,0       ,.3    , [1,10]), new p(
-		38     ,"Ninetales" ,"Fire"    ,"None"    ,505,73 ,76 ,75 ,81 ,100,100,1,false,37      ,0     , [1,10]), new p(
-		39     ,"Jigglypuff","Normal"  ,"Fairy"   ,270,115,45 ,20 ,45 ,25 ,20 ,1,false,174     ,.1    , [1,10]), new p(
-		40     ,"Wigglytuff","Normal"  ,"Fairy"   ,435,140,70 ,45 ,85 ,50 ,45 ,1,false,39      ,0     , [1,10]), new p(
-		41     ,"Zubat"     ,"Poison"  ,"Flying"  ,245,40 ,45 ,35 ,30 ,40 ,55 ,1,false,0       ,.85   , [1,10]), new p(
-		42     ,"Golbat"    ,"Poison"  ,"Flying"  ,455,75 ,80 ,70 ,65 ,75 ,90 ,1,false,41      ,0     , [1,10]), new p(
-		43     ,"Oddish"    ,"Grass"   ,"Poison"  ,320,45 ,50 ,55 ,75 ,65 ,30 ,1,false,0       ,.7    , [1,10]), new p(
-		44     ,"Gloom"     ,"Grass"   ,"Poison"  ,395,60 ,65 ,70 ,85 ,75 ,40 ,1,false,43      ,0     , [1,10]), new p(
-		45     ,"Vileplume" ,"Grass"   ,"Poison"  ,490,75 ,80 ,85 ,110,90 ,50 ,1,false,44      ,0     , [1,10]), new p(
-		46     ,"Paras"     ,"Bug"     ,"Grass"   ,285,35 ,70 ,55 ,45 ,55 ,25 ,1,false,0       ,.5    , [1,10]), new p(
-		47     ,"Parasect"  ,"Bug"     ,"Grass"   ,405,60 ,95 ,80 ,60 ,80 ,30 ,1,false,46      ,0     , [1,10]), new p(
-		48     ,"Venonat"   ,"Bug"     ,"Poison"  ,305,60 ,55 ,50 ,40 ,55 ,45 ,1,false,0       ,.6    , [1,10]), new p(
-		49     ,"Venomoth"  ,"Bug"     ,"Poison"  ,450,70 ,65 ,60 ,90 ,75 ,90 ,1,false,48      ,0     , [1,10]), new p(
-		50     ,"Diglett"   ,"Ground"  ,"None"    ,265,10 ,55 ,25 ,35 ,45 ,95 ,1,false,0       ,.65   , [1,10]), new p(
-		51     ,"Dugtrio"   ,"Ground"  ,"None"    ,405,35 ,80 ,50 ,50 ,70 ,120,1,false,50      ,0     , [1,10]), new p(
-		52     ,"Meowth"    ,"Normal"  ,"None"    ,290,40 ,45 ,35 ,40 ,40 ,90 ,1,false,0       ,.6    , [1,10]), new p(
-		53     ,"Persian"   ,"Normal"  ,"None"    ,440,65 ,70 ,60 ,65 ,65 ,115,1,false,52      ,0     , [1,10]), new p(
-		54     ,"Psyduck"   ,"Water"   ,"None"    ,320,50 ,52 ,48 ,65 ,50 ,55 ,1,false,0       ,.6    , [1,10]), new p(
-		55     ,"Golduck"   ,"Water"   ,"None"    ,500,80 ,82 ,78 ,95 ,80 ,85 ,1,false,54      ,0     , [1,10]), new p(
-		56     ,"Mankey"    ,"Fighting","None"    ,305,40 ,80 ,35 ,35 ,45 ,70 ,1,false,0       ,.5    , [1,10]), new p(
-		57     ,"Primeape"  ,"Fighting","None"    ,455,65 ,105,60 ,60 ,70 ,95 ,1,false,56      ,0     , [1,10]), new p(
-		58     ,"Growlithe" ,"Fire"    ,"None"    ,350,55 ,70 ,45 ,70 ,50 ,60 ,1,false,0       ,.3    , [1,10]), new p(
-		59     ,"Arcanine"  ,"Fire"    ,"None"    ,555,90 ,110,80 ,100,80 ,95 ,1,false,58      ,0     , [1,10]), new p(
-		60     ,"Poliwag"   ,"Water"   ,"None"    ,300,40 ,50 ,40 ,40 ,40 ,90 ,1,false,0       ,.65   , [1,10]), new p(
-		61     ,"Poliwhirl" ,"Water"   ,"None"    ,385,65 ,65 ,65 ,50 ,50 ,90 ,1,false,60      ,0     , [1,10]), new p(
-		62     ,"Poliwrath" ,"Water"   ,"Fighting",510,90 ,95 ,95 ,70 ,90 ,70 ,1,false,61      ,0     , [1,10]), new p(
-		63     ,"Abra"      ,"Psychic" ,"None"    ,310,25 ,20 ,15 ,105,55 ,90 ,1,false,0       ,.4    , [1,10]), new p(
-		64     ,"Kadabra"   ,"Psychic" ,"None"    ,400,40 ,35 ,30 ,120,70 ,105,1,false,63      ,0     , [1,10]), new p(
-		65     ,"Alakazam"  ,"Psychic" ,"None"    ,500,55 ,50 ,45 ,135,95 ,120,1,false,64      ,0     , [1,10]), new p(
-		66     ,"Machop"    ,"Fighting","None"    ,305,70 ,80 ,50 ,35 ,35 ,35 ,1,false,0       ,.6    , [1,10]), new p(
-		67     ,"Machoke"   ,"Fighting","None"    ,405,80 ,100,70 ,50 ,60 ,45 ,1,false,66      ,0     , [1,10]), new p(
-		68     ,"Machamp"   ,"Fighting","None"    ,505,90 ,130,80 ,65 ,85 ,55 ,1,false,67      ,0     , [1,10]), new p(
-		69     ,"Bellsprout","Grass"   ,"Poison"  ,300,50 ,75 ,35 ,70 ,30 ,40 ,1,false,0       ,.7    , [1,10]), new p(
-		70     ,"Weepinbell","Grass"   ,"Poison"  ,390,65 ,90 ,50 ,85 ,45 ,55 ,1,false,69      ,0     , [1,10]), new p(
-		71     ,"Victreebel","Grass"   ,"Poison"  ,490,80 ,105,65 ,100,70 ,70 ,1,false,70      ,0     , [1,10]), new p(
-		72     ,"Tentacool" ,"Water"   ,"Poison"  ,335,40 ,40 ,35 ,50 ,100,70 ,1,false,0       ,.9    , [1,10]), new p(
-		73     ,"Tentacruel","Water"   ,"Poison"  ,515,80 ,70 ,65 ,80 ,120,100,1,false,72      ,0     , [1,10]), new p(
-		74     ,"Geodude"   ,"Rock"    ,"Ground"  ,300,40 ,80 ,100,30 ,30 ,20 ,1,false,0       ,.7    , [1,10]), new p(
-		75     ,"Graveler"  ,"Rock"    ,"Ground"  ,390,55 ,95 ,115,45 ,45 ,35 ,1,false,74      ,0     , [1,10]), new p(
-		76     ,"Golem"     ,"Rock"    ,"Ground"  ,495,80 ,120,130,55 ,65 ,45 ,1,false,75      ,0     , [1,10]), new p(
-		77     ,"Ponyta"    ,"Fire"    ,"None"    ,410,50 ,85 ,55 ,65 ,65 ,90 ,1,false,0       ,.6    , [1,10]), new p(
-		78     ,"Rapidash"  ,"Fire"    ,"None"    ,500,65 ,100,70 ,80 ,80 ,105,1,false,77      ,0     , [1,10]), new p(
-		79     ,"Slowpoke"  ,"Water"   ,"Psychic" ,315,90 ,65 ,65 ,40 ,40 ,15 ,1,false,0       ,.5    , [1,10]), new p(
-		80     ,"Slowbro"   ,"Water"   ,"Psychic" ,490,95 ,75 ,110,100,80 ,30 ,1,false,79      ,0     , [1,10]), new p(
-		81     ,"Magnemite" ,"Electric","Steel"   ,325,25 ,35 ,70 ,95 ,55 ,45 ,1,false,0       ,.3    , [1,10]), new p(
-		82     ,"Magneton"  ,"Electric","Steel"   ,465,50 ,60 , 95,120,70 ,70 ,1,false,81      ,0     , [1,10]), new p(
-		83     ,"Farfetch'd","Normal"  ,"Flying"  ,352,52 ,65 ,55 ,58 ,62 ,60 ,1,false,0       ,.6    , [1,10]), new p(
-		84     ,"Doduo"     ,"Normal"  ,"Flying"  ,310,35 ,85 ,45 ,35 ,35 ,75 ,1,false,0       ,.6    , [1,10]), new p(
-		85     ,"Dodrio"    ,"Normal"  ,"Flying"  ,460,60 ,110,70 ,60 ,60 ,100,1,false,84      ,0     , [1,10]), new p(
-		86     ,"Seel"      ,"Water"   ,"None"    ,325,65 ,45 ,55 ,45 ,70 ,45 ,1,false,0       ,.5    , [1,10]), new p(
-		87     ,"Dewgong"   ,"Water"   ,"Ice"     ,475,90 ,70 ,80 ,70 ,95 ,70 ,1,false,86      ,0     , [1,10]), new p(
-		88     ,"Grimer"    ,"Poison"  ,"None"    ,325,80 ,80 ,50 ,40 ,50 ,25 ,1,false,0       ,.8    , [1,10]), new p(
-		89     ,"Muk"       ,"Poison"  ,"None"    ,500,105,105,75 ,65 ,100,50 ,1,false,88      ,0     , [1,10]), new p(
-		90     ,"Shellder"  ,"Water"   ,"None"    ,305,30 ,65 ,100,45 ,25 ,40 ,1,false,0       ,.4    , [1,10]), new p(
-		91     ,"Cloyster"  ,"Water"   ,"Ice"     ,525,50 ,95 ,180,85 ,45 ,70 ,1,false,90      ,0     , [1,10]), new p(
-		92     ,"Gastly"    ,"Ghost"   ,"Poison"  ,310,30 ,35 ,30 ,100,35 ,80 ,1,false,0       ,.25   , [1,10]), new p(
-		93     ,"Haunter"   ,"Ghost"   ,"Poison"  ,405,45 ,50 ,45 ,115,55 ,95 ,1,false,92      ,0     , [1,10]), new p(
-		94     ,"Gengar"    ,"Ghost"   ,"Poison"  ,500,60 ,65 ,60 ,130,75 ,110,1,false,93      ,0     , [1,10]), new p(
-		95     ,"Onix"      ,"Rock"    ,"Ground"  ,385,35 ,45 ,160,30 ,45 ,70 ,1,false,0       ,.5    , [1,10]), new p(
-		96     ,"Drowzee"   ,"Psychic" ,"None"    ,328,60 ,48 ,45 ,43 ,90 ,42 ,1,false,0       ,.4    , [1,10]), new p(
-		97     ,"Hypno"     ,"Psychic" ,"None"    ,483,85 ,73 ,70 ,73 ,115,67 ,1,false,96      ,0     , [1,10]), new p(
-		98     ,"Krabby"    ,"Water"   ,"None"    ,325,30 ,105,90 ,25 ,25 ,50 ,1,false,0       ,.65   , [1,10]), new p(
-		99     ,"Kingler"   ,"Water"   ,"None"    ,475,55 ,130,115,50 ,50 ,75 ,1,false,98      ,0     , [1,10]), new p(
-		100    ,"Voltorb"   ,"Electric","None"    ,330,40 ,30 ,50 ,55 ,55 ,100,1,false,0       ,.5    , [1,10]), new p(
-		101    ,"Electrode" ,"Electric","None"    ,480,60 ,50 ,70 ,80 ,80 ,140,1,false,100     ,0     , [1,10]), new p(
-		102    ,"Exeggcute" ,"Grass"   ,"Psychic" ,325,60 ,40 ,80 ,60 ,45 ,40 ,1,false,0       ,.4    , [1,10]), new p(
-		103    ,"Exeggutor" ,"Grass"   ,"Psychic" ,520,95 ,95 ,85 ,125,65 ,55 ,1,false,102     ,0     , [1,10]), new p(
-		104    ,"Cubone"    ,"Ground"  ,"None"    ,320,50 ,50 ,95 ,40 ,50 ,35 ,1,false,0       ,.3    , [1,10]), new p(
-		105    ,"Marowak"   ,"Ground"  ,"None"    ,425,60 ,80 ,110,50 ,80 ,45 ,1,false,104     ,0     , [1,10]), new p(
-		106    ,"Hitmonlee" ,"Fighting","None"    ,455,50 ,120,53 ,35 ,110,87 ,1,false,236     ,.1    , [1,10]), new p(
-		107    ,"Hitmonchan","Fighting","None"    ,455,50 ,105,79 ,35 ,110,76 ,1,false,236     ,.1    , [1,10]), new p(
-		108    ,"Lickitung" ,"Normal"  ,"None"    ,385,90 ,55 ,75 ,60 ,75 ,30 ,1,false,0       ,.4    , [1,10]), new p(
-		109    ,"Koffing"   ,"Poison"  ,"None"    ,340,40 ,65 ,95 ,60 ,45 ,35 ,1,false,0       ,.5    , [1,10]), new p(
-		110    ,"Weezing"   ,"Poison"  ,"None"    ,490,65 ,90 ,120,85 ,70 ,60 ,1,false,109     ,0     , [1,10]), new p(
-		111    ,"Rhyhorn"   ,"Ground"  ,"Rock"    ,345,80 ,85 ,95 ,30 ,30 ,25 ,1,false,0       ,.4    , [1,10]), new p(
-		112    ,"Rhydon"    ,"Ground"  ,"Rock"    ,485,105,130,120,45 ,45 ,40 ,1,false,112     ,0     , [1,10]), new p(
-		113    ,"Chansey"   ,"Normal"  ,"None"    ,450,250,5  ,5  ,35 ,105,50 ,1,false,/*440*/0,.1    , [1,10]), new p(
-		114    ,"Tangela"   ,"Grass"   ,"None"    ,435,65 ,55 ,115,100,40 ,60 ,1,false,0       ,.6    , [1,10]), new p(
-		115    ,"Kangaskhan","Normal"  ,"None"    ,490,105,95 ,80 ,40 ,80 ,90 ,1,false,0       ,.4    , [1,10]), new p(
-		116    ,"Horsea"    ,"Water"   ,"None"    ,295,30 ,40 ,70 ,70 ,25 ,60 ,1,false,0       ,.4    , [1,10]), new p(
-		117    ,"Seadra"    ,"Water"   ,"None"    ,440,55 ,65 ,95 ,95 ,45 ,85 ,1,false,116     ,0     , [1,10]), new p(
-		118    ,"Goldeen"   ,"Water"   ,"None"    ,320,45 ,67 ,60 ,35 ,50 ,63 ,1,false,0       ,.8    , [1,10]), new p(
-		119    ,"Seaking"   ,"Water"   ,"None"    ,450,80 ,92 ,65 ,65 ,80 ,68 ,1,false,118     ,0     , [1,10]), new p(
-		120    ,"Staryu"    ,"Water"   ,"None"    ,340,30 ,45 ,55 ,70 ,55 ,85 ,1,false,0       ,.5    , [1,10]), new p(
-		121    ,"Starmie"   ,"Water"   ,"Psychic" ,520,60 ,75 ,85 ,100,85 ,115,1,false,120     ,0     , [1,10]), new p(
-		122    ,"Mr. Mime"  ,"Psychic" ,"Fairy"   ,460,40 ,45 ,65 ,100,120,90 ,1,false,/*439*/0,.1    , [1,10]), new p(
-		123    ,"Scyther"   ,"Bug"     ,"Flying"  ,500,70 ,110,80 ,55 ,80 ,105,1,false,0       ,.5    , [1,10]), new p(
-		124    ,"Jynx"      ,"Ice"     ,"Psychic" ,455,65 ,50 ,35 ,115,95 ,95 ,1,false,238     ,.1    , [1,10]), new p(
-		125    ,"Electabuzz","Electric","None"    ,490,65 ,83 ,57 ,95 ,85 ,105,1,false,239     ,.1    , [1,10]), new p(
-		126    ,"Magmar"    ,"Fire"    ,"None"    ,495,65 ,95 ,57 ,100,85 ,93 ,1,false,240     ,.1    , [1,10]), new p(
-		127    ,"Pinsir"    ,"Bug"     ,"None"    ,500,65 ,125,100,55 ,70 ,85 ,1,false,0       ,.3    , [1,10]), new p(
-		128    ,"Tauros"    ,"Normal"  ,"None"    ,490,75 ,100,95 ,40 ,70 ,110,1,false,0       ,.4    , [1,10]), new p(
-		129    ,"Magikarp"  ,"Water"   ,"None"    ,200,20 ,10 ,55 ,15 ,20 ,80 ,1,false,0       ,.9    , [1,10]), new p(
-		130    ,"Gyarados"  ,"Water"   ,"Flying"  ,540,95 ,125,79 ,60 ,100,81 ,1,false,129     ,0     , [1,10]), new p(
-		131    ,"Lapras"    ,"Water"   ,"Ice"     ,535,130,85 ,80 ,85 ,95 ,60 ,1,false,0       ,.1    , [1,10]), new p(
-		132    ,"Ditto"     ,"Normal"  ,"None"    ,288,48 ,48 ,48 ,48 ,48 ,48 ,1,false,0       ,.05   , [1,10]), new p(
-		133    ,"Eevee"     ,"Normal"  ,"None"    ,325,55 ,55 ,50 ,45 ,65 ,55 ,1,false,0       ,.3    , [1,10]), new p(
-		134    ,"Vaporeon"  ,"Water"   ,"None"    ,525,130,65 ,60 ,110,95 ,65 ,1,false,134     ,0     , [1,10]), new p(
-		135    ,"Jolteon"   ,"Electric","None"    ,525,65 ,65 ,60 ,110,95 ,130,1,false,134     ,0     , [1,10]), new p(
-		136    ,"Flareon"   ,"Fire"    ,"None"    ,525,65 ,130,60 ,95 ,110,65 ,1,false,134     ,0     , [1,10]), new p(
-		137    ,"Porygon"   ,"Normal"  ,"None"    ,395,65 ,60 ,70 ,85 ,75 ,40 ,1,false,0       ,.05   , [1,10]), new p(
-		138    ,"Omanyte"   ,"Rock"    ,"Water"   ,355,35 ,40 ,100,90 ,55 ,35 ,1,false,-1      ,.1    , [1,10]), new p(
-		139    ,"Omastar"   ,"Rock"    ,"Water"   ,495,70 ,60 ,125,115,70 ,55 ,1,false,138     ,0     , [1,10]), new p(
-		140    ,"Kabuto"    ,"Rock"    ,"Water"   ,355,30 ,80 ,90 ,55 ,45 ,55 ,1,false,-1      ,.1    , [1,10]), new p(
-		141    ,"Kabutops"  ,"Rock"    ,"Water"   ,495,60 ,115,105,65 ,70 ,80 ,1,false,140     ,0     , [1,10]), new p(
-		142    ,"Aerodactyl","Rock"    ,"Flying"  ,515,80 ,105,65 ,60 ,75 ,130,1,false,-1      ,.1    , [1,10]), new p(
-		143    ,"Snorlax"   ,"Normal"  ,"None"    ,540,160,110,65 ,65 ,110,30 ,1,false,/*446*/0,.1    , [1,10]), new p(
-		144    ,"Articuno"  ,"Ice"     ,"Flying"  ,580,90 ,85 ,100,95 ,125,85 ,1,true ,0       ,.05   , [1,10]), new p(
-		145    ,"Zapdos"    ,"Electric","Flying"  ,580,90 ,90 ,85 ,125,90 ,100,1,true ,0       ,.05   , [1,10]), new p(
-		146    ,"Moltres"   ,"Fire"    ,"Flying"  ,580,90 ,100,90 ,125,85 ,90 ,1,true ,0       ,.05   , [1,10]), new p(
-		147    ,"Dratini"   ,"Dragon"  ,"None"    ,300,41 ,64 ,45 ,50 ,50 ,50 ,1,false,0       ,.1    , [1,10]), new p(
-		148    ,"Dragonair" ,"Dragon"  ,"None"    ,420,61 ,84 ,65 ,70 ,70 ,70 ,1,false,147     ,0     , [1,10]), new p(
-		149    ,"Dragonite" ,"Dragon"  ,"Flying"  ,600,91 ,134,95 ,100,100,80 ,1,false,148     ,0     , [1,10]), new p(
-		150    ,"Mewtwo"    ,"Psychic" ,"None"    ,680,106,110,90 ,154,90 ,130,1,true ,0       ,.05   , [1,10]), new p(
-		151    ,"Mew"       ,"Psychic" ,"None"    ,600,100,100,100,100,100,100,1,true ,0       ,.05)/*, new p(
+		1      ,"Bulbasaur" ,"Grass"   ,"Poison"  ,318,45 ,49 ,49 ,65 ,65 ,45 ,1,false,0       ,.05   , [1 ,15,56,36]), new p(
+		2      ,"Ivysaur"   ,"Grass"   ,"Poison"  ,405,60 ,62 ,63 ,80 ,80 ,60 ,1,false,1       ,0     , [1 ,15,56,36,17]), new p(
+		3      ,"Venusaur"  ,"Grass"   ,"Poison"  ,525,80 ,82 ,83 ,100,100,80 ,1,false,2       ,0     , [1 ,15,56,36,17,32]), new p(
+		4      ,"Charmander","Fire"    ,"None"    ,309,39 ,52 ,43 ,60 ,50 ,65 ,1,false,0       ,.05   , [8 ,95,37]), new p(
+		5      ,"Charmeleon","Fire"    ,"None"    ,405,58 ,64 ,58 ,80 ,65 ,80 ,1,false,4       ,0     , [8 ,95,37,38]), new p(
+		6      ,"Charizard" ,"Fire"    ,"Flying"  ,534,78 ,84 ,78 ,109,85 ,100,1,false,5       ,0     , [18,95,37,38,14,85]), new p(
+		7      ,"Squirtle"  ,"Water"   ,"None"    ,314,44 ,48 ,65 ,50 ,64 ,43 ,1,false,0       ,.05   , [26,18,39,78]), new p(
+		8      ,"Wartortle" ,"Water"   ,"None"    ,405,59 ,63 ,80 ,65 ,80 ,58 ,1,false,7       ,0     , [28,18,39,78,45]), new p(
+		9      ,"Blastoise" ,"Water"   ,"None"    ,530,79 ,83 ,100,85 ,105,78 ,1,false,8       ,0     , [28,18,39,78,45,40]), new p(
+		10     ,"Caterpie"  ,"Bug"     ,"None"    ,195,45 ,30 ,35 ,20 ,20 ,45 ,1,false,0       ,.9    , [1 ,11,34]), new p(
+		11     ,"Metapod"   ,"Bug"     ,"None"    ,205,50 ,20 ,55 ,25 ,25 ,30 ,1,false,10      ,0     , [1 ,11,34]), new p(
+		12     ,"Butterfree","Bug"     ,"Flying"  ,395,60 ,45 ,50 ,90 ,80 ,70 ,1,false,11      ,0     , [1 ,11,34,13]), new p(
+		13     ,"Weedle"    ,"Bug"     ,"Poison"  ,195,40 ,35 ,30 ,20 ,20 ,50 ,1,false,0       ,.9    , [1 ,11]), new p(
+		14     ,"Kakuna"    ,"Bug"     ,"Poison"  ,205,45 ,25 ,50 ,25 ,25 ,35 ,1,false,13      ,0     , [1 ,11,33]), new p(
+		15     ,"Beedrill"  ,"Bug"     ,"Poison"  ,395,65 ,90 ,40 ,45 ,80 ,75 ,1,false,14      ,0     , [1 ,11,33,85]), new p(
+		16     ,"Pidgey"    ,"Normal"  ,"Flying"  ,251,40 ,45 ,40 ,35 ,35 ,56 ,1,false,0       ,.7    , [8 ,16,48]), new p(
+		17     ,"Pidgeotto" ,"Normal"  ,"Flying"  ,349,63 ,60 ,55 ,50 ,50 ,71 ,1,false,16      ,0     , [8 ,16,48]), new p(
+		18     ,"Pidgeot"   ,"Normal"  ,"Flying"  ,479,83 ,80 ,75 ,70 ,70 ,101,1,false,17      ,0     , [8 ,16,48,49]), new p(
+		19     ,"Rattata"   ,"Normal"  ,"None"    ,253,30 ,56 ,35 ,25 ,35 ,72 ,1,false,0       ,.9    , [8 ,11,25]), new p(
+		20     ,"Raticate"  ,"Normal"  ,"None"    ,413,55 ,81 ,60 ,50 ,70 ,97 ,1,false,19      ,0     , [8 ,11,25,93]), new p(
+		21     ,"Spearow"   ,"Normal"  ,"Flying"  ,262,40 ,60 ,30 ,31 ,31 ,70 ,1,false,0       ,.7    , [90,95,13]), new p(
+		22     ,"Fearow"    ,"Normal"  ,"Flying"  ,442,65 ,90 ,65 ,61 ,61 ,100,1,false,21      ,0     , [90,95,13,14]), new p(
+		23     ,"Ekans"     ,"Poison"  ,"None"    ,288,35 ,60 ,44 ,40 ,54 ,55 ,1,false,0       ,.5    , [80,28,36]), new p(
+		24     ,"Arbok"     ,"Poison"  ,"None"    ,438,60 ,85 ,69 ,65 ,79 ,80 ,1,false,23      ,0     , [80,28,36,35]), new p(
+		25     ,"Pikachu"   ,"Electric","None"    ,320,35 ,55 ,40 ,50 ,50 ,90 ,1,false,172     ,.1    , [26,77,58]), new p(
+		26     ,"Raichu"    ,"Electric","None"    ,485,60 ,90 ,55 ,90 ,80 ,110,1,false,25      ,0     , [26,77,58,59]), new p(
+		27     ,"Sandshrew" ,"Ground"  ,"None"    ,300,50 ,75 ,85 ,20 ,30 ,40 ,1,false,0       ,.5    , [11,95,51]), new p(
+		28     ,"Sandslash" ,"Ground"  ,"None"    ,450,75 ,100,110,45 ,55 ,65 ,1,false,27      ,0     , [11,95,51,63]), new p(
+		29     ,"Nidoran♀"  ,"Poison"  ,"None"    ,275,55 ,47 ,52 ,40 ,40 ,41 ,1,false,0       ,.45   , [11,95,32]), new p(
+		30     ,"Nidorina"  ,"Poison"  ,"None"    ,365,70 ,62 ,67 ,55 ,55 ,56 ,1,false,29      ,0     , [11,95,32]), new p(
+		31     ,"Nidoqueen" ,"Poison"  ,"Ground"  ,505,90 ,92 ,87 ,75 ,85 ,76 ,1,false,30      ,0     , [11,95,32,62]), new p(
+		32     ,"Nidoran♂"  ,"Poison"  ,"None"    ,273,46 ,57 ,40 ,40 ,40 ,50 ,1,false,0       ,.45   , [11,95,32]), new p(
+		33     ,"Nidorino"  ,"Poison"  ,"None"    ,365,61 ,72 ,57 ,55 ,55 ,65 ,1,false,32      ,0     , [11,95,32]), new p(
+		34     ,"Nidoking"  ,"Poison"  ,"Ground"  ,505,81 ,102,77 ,85 ,75 ,85 ,1,false,33      ,0     , [11,95,32,62]), new p(
+		35     ,"Clefairy"  ,"Fairy"   ,"None"    ,323,70 ,45 ,48 ,60 ,65 ,35 ,1,false,173     ,.1    , [1 ,16,15]), new p(
+		36     ,"Clefable"  ,"Fairy"   ,"None"    ,483,95 ,70 ,73 ,95 ,90 ,60 ,1,false,35      ,0     , [1 ,16,15]), new p(
+		37     ,"Vulpix"    ,"Fire"    ,"None"    ,299,38 ,41 ,40 ,50 ,65 ,65 ,1,false,0       ,.3    , [66,90,37]), new p(
+		38     ,"Ninetales" ,"Fire"    ,"None"    ,505,73 ,76 ,75 ,81 ,100,100,1,false,37      ,0     , [66,90,37,57]), new p(
+		39     ,"Jigglypuff","Normal"  ,"Fairy"   ,270,115,45 ,20 ,45 ,25 ,20 ,1,false,174     ,.1    , [1 ,16,15]), new p(
+		40     ,"Wigglytuff","Normal"  ,"Fairy"   ,435,140,70 ,45 ,85 ,50 ,45 ,1,false,39      ,0     , [1 ,16,15]), new p(
+		41     ,"Zubat"     ,"Poison"  ,"Flying"  ,245,40 ,45 ,35 ,30 ,40 ,55 ,1,false,0       ,.85   , [11,8,12]), new p(
+		42     ,"Golbat"    ,"Poison"  ,"Flying"  ,455,75 ,80 ,70 ,65 ,75 ,90 ,1,false,41      ,0     , [11,8,12,36]), new p(
+		43     ,"Oddish"    ,"Grass"   ,"Poison"  ,320,45 ,50 ,55 ,75 ,65 ,30 ,1,false,0       ,.7    , [1 ,16,52]), new p(
+		44     ,"Gloom"     ,"Grass"   ,"Poison"  ,395,60 ,65 ,70 ,85 ,75 ,40 ,1,false,43      ,0     , [1 ,16,52,72]), new p(
+		45     ,"Vileplume" ,"Grass"   ,"Poison"  ,490,75 ,80 ,85 ,110,90 ,50 ,1,false,44      ,0     , [1 ,16,52,72,55]), new p(
+		46     ,"Paras"     ,"Bug"     ,"Grass"   ,285,35 ,70 ,55 ,45 ,55 ,25 ,1,false,0       ,.5    , [30,27,84]), new p(
+		47     ,"Parasect"  ,"Bug"     ,"Grass"   ,405,60 ,95 ,80 ,60 ,80 ,30 ,1,false,46      ,0     , [30,27,84,53]), new p(
+		48     ,"Venonat"   ,"Bug"     ,"Poison"  ,305,60 ,55 ,50 ,40 ,55 ,45 ,1,false,0       ,.6    , [16,27,32]), new p(
+		49     ,"Venomoth"  ,"Bug"     ,"Poison"  ,450,70 ,65 ,60 ,90 ,75 ,90 ,1,false,48      ,0     , [16,27,32]), new p(
+		50     ,"Diglett"   ,"Ground"  ,"None"    ,265,10 ,55 ,25 ,35 ,45 ,95 ,1,false,0       ,.65   , [23,30,63]), new p(
+		51     ,"Dugtrio"   ,"Ground"  ,"None"    ,405,35 ,80 ,50 ,50 ,70 ,120,1,false,50      ,0     , [23,30,63,62]), new p(
+		52     ,"Meowth"    ,"Normal"  ,"None"    ,290,40 ,45 ,35 ,40 ,40 ,90 ,1,false,0       ,.6    , [90,95,25]), new p(
+		53     ,"Persian"   ,"Normal"  ,"None"    ,440,65 ,70 ,60 ,65 ,65 ,115,1,false,52      ,0     , [90,95,25]), new p(
+		54     ,"Psyduck"   ,"Water"   ,"None"    ,320,50 ,52 ,48 ,65 ,50 ,55 ,1,false,0       ,.6    , [1,16,86]), new p(
+		55     ,"Golduck"   ,"Water"   ,"None"    ,500,80 ,82 ,78 ,95 ,80 ,85 ,1,false,54      ,0     , [1,16,86,41]), new p(
+		56     ,"Mankey"    ,"Fighting","None"    ,305,40 ,80 ,35 ,35 ,45 ,70 ,1,false,0       ,.5    , [67,29,19]), new p(
+		57     ,"Primeape"  ,"Fighting","None"    ,455,65 ,105,60 ,60 ,70 ,95 ,1,false,56      ,0     , [67,29,19,50]), new p(
+		58     ,"Growlithe" ,"Fire"    ,"None"    ,350,55 ,70 ,45 ,70 ,50 ,60 ,1,false,0       ,.3    , [27,16,37]), new p(
+		59     ,"Arcanine"  ,"Fire"    ,"None"    ,555,90 ,110,80 ,100,80 ,95 ,1,false,58      ,0     , [27,16,37,74]), new p(
+		60     ,"Poliwag"   ,"Water"   ,"None"    ,300,40 ,50 ,40 ,40 ,40 ,90 ,1,false,0       ,.65   , [18,16,45]), new p(
+		61     ,"Poliwhirl" ,"Water"   ,"None"    ,385,65 ,65 ,65 ,50 ,50 ,90 ,1,false,60      ,0     , [18,16,45]), new p(
+		62     ,"Poliwrath" ,"Water"   ,"Fighting",510,90 ,95 ,95 ,70 ,90 ,70 ,1,false,61      ,0     , [18,16,45,50]), new p(
+		63     ,"Abra"      ,"Psychic" ,"None"    ,310,25 ,20 ,15 ,105,55 ,90 ,1,false,0       ,.4    , [15,64]), new p(
+		64     ,"Kadabra"   ,"Psychic" ,"None"    ,400,40 ,35 ,30 ,120,70 ,105,1,false,63      ,0     , [15,64,44]), new p(
+		65     ,"Alakazam"  ,"Psychic" ,"None"    ,500,55 ,50 ,45 ,135,95 ,120,1,false,64      ,0     , [15,64,44,65]), new p(
+		66     ,"Machop"    ,"Fighting","None"    ,305,70 ,80 ,50 ,35 ,35 ,35 ,1,false,0       ,.6    , [29,2]), new p(
+		67     ,"Machoke"   ,"Fighting","None"    ,405,80 ,100,70 ,50 ,60 ,45 ,1,false,66      ,0     , [29,2]), new p(
+		68     ,"Machamp"   ,"Fighting","None"    ,505,90 ,130,80 ,65 ,85 ,55 ,1,false,67      ,0     , [29,2,4]), new p(
+		69     ,"Bellsprout","Grass"   ,"Poison"  ,300,50 ,75 ,35 ,70 ,30 ,40 ,1,false,0       ,.7    , [28,8,53]), new p(
+		70     ,"Weepinbell","Grass"   ,"Poison"  ,390,65 ,90 ,50 ,85 ,45 ,55 ,1,false,69      ,0     , [28,8,53,17]), new p(
+		71     ,"Victreebel","Grass"   ,"Poison"  ,490,80 ,105,65 ,100,70 ,70 ,1,false,70      ,0     , [28,8,53,17,72]), new p(
+		72     ,"Tentacool" ,"Water"   ,"Poison"  ,335,40 ,40 ,35 ,50 ,100,70 ,1,false,0       ,.9    , [28,16,32,76]), new p(
+		73     ,"Tentacruel","Water"   ,"Poison"  ,515,80 ,70 ,65 ,80 ,120,100,1,false,72      ,0     , [28,16,32,76]), new p(
+		74     ,"Geodude"   ,"Rock"    ,"Ground"  ,300,40 ,80 ,100,30 ,30 ,20 ,1,false,0       ,.7    , [16,83,61,87]), new p(
+		75     ,"Graveler"  ,"Rock"    ,"Ground"  ,390,55 ,95 ,115,45 ,45 ,35 ,1,false,74      ,0     , [16,83,61,87]), new p(
+		76     ,"Golem"     ,"Rock"    ,"Ground"  ,495,80 ,120,130,55 ,65 ,45 ,1,false,75      ,0     , [16,83,61,87,62]), new p(
+		77     ,"Ponyta"    ,"Fire"    ,"None"    ,410,50 ,85 ,55 ,65 ,65 ,90 ,1,false,0       ,.6    , [66,77,37]), new p(
+		78     ,"Rapidash"  ,"Fire"    ,"None"    ,500,65 ,100,70 ,80 ,80 ,105,1,false,77      ,0     , [66,77,37,38]), new p(
+		79     ,"Slowpoke"  ,"Water"   ,"Psychic" ,315,90 ,65 ,65 ,40 ,40 ,15 ,1,false,0       ,.5    , [1 ,26,39,64]), new p(
+		80     ,"Slowbro"   ,"Water"   ,"Psychic" ,490,95 ,75 ,110,100,80 ,30 ,1,false,79      ,0     , [1 ,26,39,64,65]), new p(
+		81     ,"Magnemite" ,"Electric","Steel"   ,325,25 ,35 ,70 ,95 ,55 ,45 ,1,false,0       ,.3    , [16,83,58]), new p(
+		82     ,"Magneton"  ,"Electric","Steel"   ,465,50 ,60 , 95,120,70 ,70 ,1,false,81      ,0     , [16,83,58,94]), new p(
+		83     ,"Farfetch'd","Normal"  ,"Flying"  ,352,52 ,65 ,55 ,58 ,62 ,60 ,1,false,0       ,.6    , [8 ,95,13]), new p(
+		84     ,"Doduo"     ,"Normal"  ,"Flying"  ,310,35 ,85 ,45 ,35 ,35 ,75 ,1,false,0       ,.6    , [23,66,40]), new p(
+		85     ,"Dodrio"    ,"Normal"  ,"Flying"  ,460,60 ,110,70 ,60 ,60 ,100,1,false,84      ,0     , [23,66,40,49]), new p(
+		86     ,"Seel"      ,"Water"   ,"None"    ,325,65 ,45 ,55 ,45 ,70 ,45 ,1,false,0       ,.5    , [26,16,41]), new p(
+		87     ,"Dewgong"   ,"Water"   ,"Ice"     ,475,90 ,70 ,80 ,70 ,95 ,70 ,1,false,86      ,0     , [26,16,41,46]), new p(
+		88     ,"Grimer"    ,"Poison"  ,"None"    ,325,80 ,80 ,50 ,40 ,50 ,25 ,1,false,0       ,.8    , [15,72]), new p(
+		89     ,"Muk"       ,"Poison"  ,"None"    ,500,105,105,75 ,65 ,100,50 ,1,false,88      ,0     , [15,72,71]), new p(
+		90     ,"Shellder"  ,"Water"   ,"None"    ,305,30 ,65 ,100,45 ,25 ,40 ,1,false,0       ,.4    , [1 ,15,39]), new p(
+		91     ,"Cloyster"  ,"Water"   ,"Ice"     ,525,50 ,95 ,180,85 ,45 ,70 ,1,false,90      ,0     , [1 ,15,39,40,42]), new p(
+		92     ,"Gastly"    ,"Ghost"   ,"Poison"  ,310,30 ,35 ,30 ,100,35 ,80 ,1,false,0       ,.25   , [18,23,70]), new p(
+		93     ,"Haunter"   ,"Ghost"   ,"Poison"  ,405,45 ,50 ,45 ,115,55 ,95 ,1,false,92      ,0     , [18,23,70,82]), new p(
+		94     ,"Gengar"    ,"Ghost"   ,"Poison"  ,500,60 ,65 ,60 ,130,75 ,110,1,false,93      ,0     , [18,23,70,82,47]), new p(
+		95     ,"Onix"      ,"Rock"    ,"Ground"  ,385,35 ,45 ,160,30 ,45 ,70 ,1,false,0       ,.5    , [16,23,61,92]), new p(
+		96     ,"Drowzee"   ,"Psychic" ,"None"    ,328,60 ,48 ,45 ,43 ,90 ,42 ,1,false,0       ,.4    , [26,64]), new p(
+		97     ,"Hypno"     ,"Psychic" ,"None"    ,483,85 ,73 ,70 ,73 ,115,67 ,1,false,96      ,0     , [26,64,82]), new p(
+		98     ,"Krabby"    ,"Water"   ,"None"    ,325,30 ,105,90 ,25 ,25 ,50 ,1,false,0       ,.65   , [8 ,15,9]), new p(
+		99     ,"Kingler"   ,"Water"   ,"None"    ,475,55 ,130,115,50 ,50 ,75 ,1,false,98      ,0     , [8 ,15,9,88]), new p(
+		100    ,"Voltorb"   ,"Electric","None"    ,330,40 ,30 ,50 ,55 ,55 ,100,1,false,0       ,.5    , [1 ,68]), new p(
+		101    ,"Electrode" ,"Electric","None"    ,480,60 ,50 ,70 ,80 ,80 ,140,1,false,100     ,0     , [1 ,68,89]), new p(
+		102    ,"Exeggcute" ,"Grass"   ,"Psychic" ,325,60 ,40 ,80 ,60 ,45 ,40 ,1,false,0       ,.4    , [23,52,44]), new p(
+		103    ,"Exeggutor" ,"Grass"   ,"Psychic" ,520,95 ,95 ,85 ,125,65 ,55 ,1,false,102     ,0     , [23,52,44,69]), new p(
+		104    ,"Cubone"    ,"Ground"  ,"None"    ,320,50 ,50 ,95 ,40 ,50 ,35 ,1,false,0       ,.3    , [26,95,91]), new p(
+		105    ,"Marowak"   ,"Ground"  ,"None"    ,425,60 ,80 ,110,50 ,80 ,45 ,1,false,104     ,0     , [26,95,91,73]), new p(
+		106    ,"Hitmonlee" ,"Fighting","None"    ,455,50 ,120,53 ,35 ,110,87 ,1,false,236     ,.1    , [23,16,19,21,81]), new p(
+		107    ,"Hitmonchan","Fighting","None"    ,455,50 ,105,79 ,35 ,110,76 ,1,false,236     ,.1    , [23,16,50,4 ,87]), new p(
+		108    ,"Lickitung" ,"Normal"  ,"None"    ,385,90 ,55 ,75 ,60 ,75 ,30 ,1,false,0       ,.4    , [1 ,27,70,51]), new p(
+		109    ,"Koffing"   ,"Poison"  ,"None"    ,340,40 ,65 ,95 ,60 ,45 ,35 ,1,false,0       ,.5    , [16,15,71]), new p(
+		110    ,"Weezing"   ,"Poison"  ,"None"    ,490,65 ,90 ,120,85 ,70 ,60 ,1,false,109     ,0     , [16,15,71,89]), new p(
+		111    ,"Rhyhorn"   ,"Ground"  ,"Rock"    ,345,80 ,85 ,95 ,30 ,30 ,25 ,1,false,0       ,.4    , [26,29,61,24]), new p(
+		112    ,"Rhydon"    ,"Ground"  ,"Rock"    ,485,105,130,120,45 ,45 ,40 ,1,false,112     ,0     , [26,29,61,24,78]), new p(
+		113    ,"Chansey"   ,"Normal"  ,"None"    ,450,250,5  ,5  ,35 ,105,50 ,1,false,/*440*/0,.1    , [1 ,26,69,51]), new p(
+		114    ,"Tangela"   ,"Grass"   ,"None"    ,435,65 ,55 ,115,100,40 ,60 ,1,false,0       ,.6    , [28,15,80,17,53]), new p(
+		115    ,"Kangaskhan","Normal"  ,"None"    ,490,105,95 ,80 ,40 ,80 ,90 ,1,false,0       ,.4    , [23,27,20,31]), new p(
+		116    ,"Horsea"    ,"Water"   ,"None"    ,295,30 ,40 ,70 ,70 ,25 ,60 ,1,false,0       ,.4    , [26,30,39]), new p(
+		117    ,"Seadra"    ,"Water"   ,"None"    ,440,55 ,65 ,95 ,95 ,45 ,85 ,1,false,116     ,0     , [26,30,39,40]), new p(
+		118    ,"Goldeen"   ,"Water"   ,"None"    ,320,45 ,67 ,60 ,35 ,50 ,63 ,1,false,0       ,.8    , [1 ,96,97]), new p(
+		119    ,"Seaking"   ,"Water"   ,"None"    ,450,80 ,92 ,65 ,65 ,80 ,68 ,1,false,118     ,0     , [1 ,96,97,24]), new p(
+		120    ,"Staryu"    ,"Water"   ,"None"    ,340,30 ,45 ,55 ,70 ,55 ,85 ,1,false,0       ,.5    , [1 ,26,86,64]), new p(
+		121    ,"Starmie"   ,"Water"   ,"Psychic" ,520,60 ,75 ,85 ,100,85 ,115,1,false,120     ,0     , [1 ,26,86,40,64,65]), new p(
+		122    ,"Mr. Mime"  ,"Psychic" ,"Fairy"   ,460,40 ,45 ,65 ,100,120,90 ,1,false,/*439*/0,.1    , [15,1 ,44,3 ]), new p(
+		123    ,"Scyther"   ,"Bug"     ,"Flying"  ,500,70 ,110,80 ,55 ,80 ,105,1,false,0       ,.5    , [66,95,85,33]), new p(
+		124    ,"Jynx"      ,"Ice"     ,"Psychic" ,455,65 ,50 ,35 ,115,95 ,95 ,1,false,238     ,.1    , [1 ,26,43,44]), new p(
+		125    ,"Electabuzz","Electric","None"    ,490,65 ,83 ,57 ,95 ,85 ,105,1,false,239     ,.1    , [1 ,26,7 ,59]), new p(
+		126    ,"Magmar"    ,"Fire"    ,"None"    ,495,65 ,95 ,57 ,100,85 ,93 ,1,false,240     ,.1    , [1 ,26,5 ,38]), new p(
+		127    ,"Pinsir"    ,"Bug"     ,"None"    ,500,65 ,125,100,55 ,70 ,85 ,1,false,0       ,.3    , [15,29,34,81]), new p(
+		128    ,"Tauros"    ,"Normal"  ,"None"    ,490,75 ,100,95 ,40 ,70 ,110,1,false,0       ,.4    , [27,26,20,51]), new p(
+		129    ,"Magikarp"  ,"Water"   ,"None"    ,200,20 ,10 ,55 ,15 ,20 ,80 ,1,false,0       ,.9    , [96,97]), new p(
+		130    ,"Gyarados"  ,"Water"   ,"Flying"  ,540,95 ,125,79 ,60 ,100,81 ,1,false,129     ,0     , [30,23,35,40,14]), new p(
+		131    ,"Lapras"    ,"Water"   ,"Ice"     ,535,130,85 ,80 ,85 ,95 ,60 ,1,false,0       ,.1    , [27,23,75,41,46]), new p(
+		132    ,"Ditto"     ,"Normal"  ,"None"    ,288,48 ,48 ,48 ,48 ,48 ,48 ,1,false,0       ,.05   , [96,94]), new p(
+		133    ,"Eevee"     ,"Normal"  ,"None"    ,325,55 ,55 ,50 ,45 ,65 ,55 ,1,false,0       ,.3    , [26,66,25]), new p(
+		134    ,"Vaporeon"  ,"Water"   ,"None"    ,525,130,65 ,60 ,110,95 ,65 ,1,false,134     ,0     , [16,40,75]), new p(
+		135    ,"Jolteon"   ,"Electric","None"    ,525,65 ,65 ,60 ,110,95 ,130,1,false,134     ,0     , [16,60,47]), new p(
+		136    ,"Flareon"   ,"Fire"    ,"None"    ,525,65 ,130,60 ,95 ,110,65 ,1,false,134     ,0     , [16,74,57]), new p(
+		137    ,"Porygon"   ,"Normal"  ,"None"    ,395,65 ,60 ,70 ,85 ,75 ,40 ,1,false,0       ,.05   , [83,77,68,47,94]), new p(
+		138    ,"Omanyte"   ,"Rock"    ,"Water"   ,355,35 ,40 ,100,90 ,55 ,35 ,1,false,-1      ,0     , [1 ,10]), new p(
+		139    ,"Omastar"   ,"Rock"    ,"Water"   ,495,70 ,60 ,125,115,70 ,55 ,1,false,138     ,0     , [1 ,10]), new p(
+		140    ,"Kabuto"    ,"Rock"    ,"Water"   ,355,30 ,80 ,90 ,55 ,45 ,55 ,1,false,-1      ,0     , [1 ,10]), new p(
+		141    ,"Kabutops"  ,"Rock"    ,"Water"   ,495,60 ,115,105,65 ,70 ,80 ,1,false,140     ,0     , [1 ,10]), new p(
+		142    ,"Aerodactyl","Rock"    ,"Flying"  ,515,80 ,105,65 ,60 ,75 ,130,1,false,-1      ,0     , [1 ,10]), new p(
+		143    ,"Snorlax"   ,"Normal"  ,"None"    ,540,160,110,65 ,65 ,110,30 ,1,false,/*446*/0,.1    , [27,29,87,51]), new p(
+		144    ,"Articuno"  ,"Ice"     ,"Flying"  ,580,90 ,85 ,100,95 ,125,85 ,1,true ,0       ,.05   , [95,67,43,42,85]), new p(
+		145    ,"Zapdos"    ,"Electric","Flying"  ,580,90 ,90 ,85 ,125,90 ,100,1,true ,0       ,.05   , [95,67,59,60,85]), new p(
+		146    ,"Moltres"   ,"Fire"    ,"Flying"  ,580,90 ,100,90 ,125,85 ,90 ,1,true ,0       ,.05   , [95,67,74,38,85]), new p(
+		147    ,"Dratini"   ,"Dragon"  ,"None"    ,300,41 ,64 ,45 ,50 ,50 ,50 ,1,false,0       ,.1    , [1 ,86,97]), new p(
+		148    ,"Dragonair" ,"Dragon"  ,"None"    ,420,61 ,84 ,65 ,70 ,70 ,70 ,1,false,147     ,0     , [1 ,93,47]), new p(
+		149    ,"Dragonite" ,"Dragon"  ,"Flying"  ,600,91 ,134,95 ,100,100,80 ,1,false,148     ,0     , [67,30,85,93,98]), new p(
+		150    ,"Mewtwo"    ,"Psychic" ,"None"    ,680,106,110,90 ,154,90 ,130,1,true ,0       ,.05   , [77,29,82,65,21]), new p(
+		151    ,"Mew"       ,"Psychic" ,"None"    ,600,100,100,100,100,100,100,1,true ,0       ,.05   , z)/*, new p(
 		152    ,"Chikorita" ,"Grass"   ,"None"    ,318,45 ,49 ,65 ,49 ,65 ,45 ,2,false,0       ,0     , [1,10]), new p(
 		153    ,"Bayleef"   ,"Grass"   ,"None"    ,405,60 ,62 ,80 ,63 ,80 ,60 ,2,false,152     ,0     , [1,10]), new p(
 		154    ,"Meganium"  ,"Grass"   ,"None"    ,525,80 ,82 ,100,83 ,100,80 ,2,false,153     ,0     , [1,10]), new p(
