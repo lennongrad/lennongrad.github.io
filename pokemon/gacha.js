@@ -96,6 +96,21 @@ var setInfo = function(){/*
     }
 }
 
+var setPair = function(numb){
+    if(numb % 2 == 0){
+        return [numb, numb + 1]
+    }
+    return [numb - 1, numb];
+}
+
+var getPair = function(numb, which){
+    var temp = setPair(numb);
+    if((temp[0] == numb && which) || (temp[1] == numb && !which)){
+        return temp[0];
+    }
+    return temp[1];
+}
+
 function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -709,7 +724,7 @@ function Box(width, height, place, prefix, direction, levelBase, catchable){
     
     this.bouncey = 0;
     if(prefix.substring(0,1) == "F"){
-        this.bouncey = 50 * ((prefix.substring(1) - 1) % 2);
+        this.bouncey = ((50 * ((prefix.substring(1) - 1) % 2)) + (setPair(Number(this.prefix.substring(1)) - 1)[1] * 10)) % 100;
     }
 
     this.contains = [];
@@ -986,21 +1001,6 @@ var numberBerries = 1;
 
 var shakeOn = false;
 
-var setPair = function(numb){
-    if(numb % 2 == 0){
-        return [numb, numb + 1]
-    }
-    return [numb - 1, numb];
-}
-
-var getPair = function(numb, which){
-    var temp = setPair(numb);
-    if((temp[0] == numb && which) || (temp[1] == numb && !which)){
-        return temp[0];
-    }
-    return temp[1];
-}
-
 var itemSwitch = function(){
     itemShow++;
     if(itemShow > 1){
@@ -1054,6 +1054,15 @@ $(document).mouseup(function(){
         if(hover == "M" && mixer.willAllowAdd(1)){
             mixer.add(toMove);
         } else if(hover == "M" && !mixer.willAllowAdd(1)){
+            var temp = mixer.contains[0];
+            mixer.remove(0); 
+            holder.remove(selected.substring(4).split(" ")[1] - 1)
+            mixer.add(toMove)
+            holder.add(temp);
+            renderMen();    
+            setTimeout(function(){
+                renderMen();
+            }, 50);
             return;
         }
 
@@ -1071,6 +1080,12 @@ $(document).mouseup(function(){
             fighting[setPair(hover.substring(1) - 1)[0]].bouncey = 0; fighting[setPair(hover.substring(1) - 1)[1]].bouncey = 50; 
             fighting[setPair(hover.substring(1) - 1)[0]].contains[0].hp = fighting[setPair(hover.substring(1) - 1)[0]].contains[0].stats[0]; 
             fighting[setPair(hover.substring(1) - 1)[1]].contains[0].hp = fighting[setPair(hover.substring(1) - 1)[1]].contains[0].stats[0]; 
+            renderMen();    
+            setTimeout(function(){
+                renderMen();
+            }, 50);
+            selected = "";
+            revive(hover.substring(1) - 1);
             return;
         }
 
@@ -1136,6 +1151,8 @@ var revive = function(reviving){
     fighting[setPair(reviving)[1]].contains[0].hp = fighting[setPair(reviving)[1]].contains[0].stats[0];
     fighting[setPair(reviving)[0]].contains[0].tCharge = 0;
     fighting[setPair(reviving)[1]].contains[0].tCharge = 0;
+    fighting[setPair(reviving)[0]].bouncey = 0;
+    fighting[setPair(reviving)[1]].bouncey = 50;
 }
 
 var scale = 1;
@@ -1481,6 +1498,9 @@ var renderAll = function(){
         if(i % 2 == 1){
             fighting[i].allowHover = false;
         }
+        if("POKE" + fighting[i].prefix + " 1" == selected || "POKE" + fighting[getPair(i, false)].prefix + " 1" == selected){
+            continue;
+        }
         if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1 && fighting[setPair(i)[0]].contains[0].hp > 0 && document.getElementById("POKE" + fighting[i].prefix + " 1") != undefined){
             fighting[i].bouncey+=.75;
             if(fighting[i].bouncey > 100){
@@ -1596,6 +1616,7 @@ var renderAll = function(){
                 document.getElementById("POKE" + "H " + (holder.contains.length)).style.display = "inline";
             }
             document.getElementById("shakeBehind").style.display = "none";
+            renderMen();
             saveGame();
         }
     }
@@ -1604,4 +1625,4 @@ var renderAll = function(){
 updateItems();
 setInterval(function(){
     renderAll();
-}, 30)
+}, 45)

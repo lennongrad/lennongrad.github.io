@@ -87,21 +87,21 @@ var types = [{
 		,{id:13,name:"wing-attack"   ,type:"Flying"  ,power:60 ,accuracy:100,pp:35}
 		,{id:14,name:"fly"           ,type:"Flying"  ,power:90 ,accuracy:95 ,pp:15}
 		,{id:15,name:"bind"          ,type:"None"    ,power:15 ,accuracy:85 ,pp:20}
-		,{id:16,name:"slam"          ,type:"None"    ,power:80 ,accuracy:75 ,pp:20}
+		,{id:16,name:"slam"          ,type:"None"    ,power:40 ,accuracy:75 ,pp:20}
 		,{id:17,name:"vine-whip"     ,type:"Grass"   ,power:45 ,accuracy:100,pp:25}
-		,{id:18,name:"stomp"         ,type:"None"    ,power:65 ,accuracy:100,pp:20}
+		,{id:18,name:"stomp"         ,type:"None"    ,power:50 ,accuracy:100,pp:20}
 		,{id:19,name:"double-kick"   ,type:"Fighting",power:30 ,accuracy:100,pp:30}
 		,{id:20,name:"mega-kick"     ,type:"Normal"  ,power:120,accuracy:75 ,pp:5}
 		,{id:21,name:"jump-kick"     ,type:"Fighting",power:100,accuracy:95 ,pp:10}
 		,{id:22,name:"rolling-kick"  ,type:"Fighting",power:60 ,accuracy:85 ,pp:15}
-		,{id:23,name:"headbutt"      ,type:"None"    ,power:70 ,accuracy:100,pp:15}
+		,{id:23,name:"headbutt"      ,type:"None"    ,power:45 ,accuracy:100,pp:15}
 		,{id:24,name:"horn-attack"   ,type:"Normal"  ,power:65 ,accuracy:100,pp:25}
 		,{id:25,name:"fury-attack"   ,type:"Normal"  ,power:15 ,accuracy:85 ,pp:20}
 		,{id:26,name:"tackle"        ,type:"None"    ,power:40 ,accuracy:100,pp:35}
-		,{id:27,name:"body-slam"     ,type:"None"    ,power:85 ,accuracy:100,pp:15}
-		,{id:28,name:"wrap"          ,type:"None"    ,power:15 ,accuracy:90 ,pp:20}
-		,{id:29,name:"take-down"     ,type:"None"    ,power:90 ,accuracy:85 ,pp:20}
-		,{id:30,name:"thrash"        ,type:"None"    ,power:120,accuracy:100,pp:10}
+		,{id:27,name:"body-slam"     ,type:"None"    ,power:55 ,accuracy:100,pp:15}
+		,{id:28,name:"wrap"          ,type:"None"    ,power:25 ,accuracy:90 ,pp:20}
+		,{id:29,name:"take-down"     ,type:"None"    ,power:90 ,accuracy:50 ,pp:20}
+		,{id:30,name:"thrash"        ,type:"None"    ,power:120,accuracy:20,pp:10}
 		,{id:31,name:"double-edge"   ,type:"Normal"  ,power:120,accuracy:100,pp:15}
 		,{id:32,name:"poison-sting"  ,type:"Poison"  ,power:15 ,accuracy:100,pp:35}
 		,{id:33,name:"twineedle"     ,type:"Bug"     ,power:25 ,accuracy:100,pp:20}
@@ -138,7 +138,7 @@ var types = [{
 		,{id:64,name:"confusion"     ,type:"Psychic" ,power:50 ,accuracy:100,pp:25}
 		,{id:65,name:"psychic"       ,type:"Psychic" ,power:90 ,accuracy:100,pp:10}
 		,{id:66,name:"quick-attack"  ,type:"None"    ,power:40 ,accuracy:100,pp:30}
-		,{id:67,name:"rage"          ,type:"None"    ,power:20 ,accuracy:100,pp:20}
+		,{id:67,name:"rage"          ,type:"None"    ,power:30 ,accuracy:100,pp:20}
 		,{id:68,name:"self-destruct" ,type:"Normal"    ,power:200,accuracy:100,pp:5}
 		,{id:69,name:"egg-bomb"      ,type:"Normal"  ,power:100,accuracy:75 ,pp:10}
 		,{id:70,name:"lick"          ,type:"Ghost"   ,power:30 ,accuracy:100,pp:30}
@@ -148,10 +148,10 @@ var types = [{
 		,{id:74,name:"fire-blast"    ,type:"Fire"    ,power:110,accuracy:85 ,pp:5}
 		,{id:75,name:"waterfall"     ,type:"Water"   ,power:80 ,accuracy:100,pp:15}
 		,{id:76,name:"clamp"         ,type:"Water"   ,power:35 ,accuracy:85 ,pp:15}
-		,{id:77,name:"swift"         ,type:"None"    ,power:60 ,accuracy:0  ,pp:20}
+		,{id:77,name:"swift"         ,type:"None"    ,power:50 ,accuracy:100  ,pp:20}
 		,{id:78,name:"skull-bash"    ,type:"Normal"  ,power:130,accuracy:100,pp:10}
 		,{id:79,name:"spike-cannon"  ,type:"Normal"  ,power:20 ,accuracy:100,pp:15}
-		,{id:80,name:"constrict"     ,type:"None"    ,power:10 ,accuracy:100,pp:35}
+		,{id:80,name:"constrict"     ,type:"None"    ,power:20 ,accuracy:100,pp:35}
 		,{id:81,name:"high-jump-kick",type:"Fighting",power:130,accuracy:90 ,pp:10}
 		,{id:82,name:"dream-eater"   ,type:"Psychic" ,power:100,accuracy:100,pp:15}
 		,{id:83,name:"barrage"       ,type:"None"    ,power:15 ,accuracy:85 ,pp:20}
@@ -166,7 +166,7 @@ var types = [{
 		,{id:92,name:"rock-slide"    ,type:"Rock"    ,power:75 ,accuracy:90 ,pp:10}
 		,{id:93,name:"hyper-fang"    ,type:"Normal"  ,power:80 ,accuracy:90 ,pp:15}
 		,{id:94,name:"tri-attack"    ,type:"Normal"  ,power:80 ,accuracy:100,pp:10}
-		,{id:95,name:"slash"         ,type:"None"    ,power:70 ,accuracy:100,pp:20}
+		,{id:95,name:"slash"         ,type:"None"    ,power:50 ,accuracy:100,pp:20}
 		,{id:96,name:"flail"         ,type:"None"    ,power:0 ,accuracy:100,pp:20}
 		,{id:97,name:"splash"         ,type:"Water"    ,power:0 ,accuracy:100,pp:20}
 		,{id:98,name:"outrage"         ,type:"Dragon"    ,power:200 ,accuracy:100,pp:20}]
