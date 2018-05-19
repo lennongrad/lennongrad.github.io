@@ -284,3 +284,289 @@
     <script src="gacha.js"></script>
 </body>
 </html>
+<!DOCTYPE html>
+<html> 
+<head>
+    <title>Pokémon: Catch 'Em!</title>
+    <base href="pokemon/" target="_blank">
+    <meta name="description" content="A fun game!">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@brockdilley" />
+    <meta name="twitter:title" content="Pokémon: Catch Em" />
+    <meta name="twitter:description" content="Catch Pokémon and have them battle automatically! <br>Catch Em All!" />
+    <meta name="twitter:image" content="https://i.imgur.com/LG0k3wB.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="gacha.css">
+    <link rel="icon" href="catchem.ico" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script id="dexRow0" type="text/x-handlebars-template">
+        <td class="row box"> <div><img src="{{src}}"/></div> </td>
+        <td class="row" style="width:100px; background-color:{{type1color}}"> <div>{{type1}}</div> </td>
+        <td class="row" style="width:100px; background-color:{{type2color}}"> <div>{{type2}}</div> </td>
+        <td class="row"> <div>{{name}}</div> </td>
+        <td class="row"> <div>{{1}}</div> </td>
+        <td class="row"> <div>{{2}}</div> </td>
+        <td class="row"> <div>{{3}}</div> </td>
+        <td class="row"> <div>{{4}}</div> </td>
+        <td class="row"> <div>{{5}}</div> </td>
+        <td class="row"> <div>{{6}}</div> </td>
+        <td class="row"> <div>{{rarity}}</div> </td>
+    </script>
+
+    <script id="dexRow1" type="text/x-handlebars-template">
+        <td class="row box"> <div><img src="{{src}}"/></div> </td>
+        <td class="row" colspan=2 style="background-color:{{type1color}}"> <div>{{type1}}</div> </td>
+        <td class="row"> <div>{{name}}</div> </td>
+        <td class="row"> <div>{{1}}</div> </td>
+        <td class="row"> <div>{{2}}</div> </td>
+        <td class="row"> <div>{{3}}</div> </td>
+        <td class="row"> <div>{{4}}</div> </td>
+        <td class="row"> <div>{{5}}</div> </td>
+        <td class="row"> <div>{{6}}</div> </td>
+        <td class="row"> <div>{{rarity}}</div> </td>
+    </script>
+
+    <script id="fakeRow" type="text/x-handlebars-template">
+        <td class="fakerow box"> <div><img src="{{src}}"/></div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>{{name}}</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+        <td class="fakerow"> <div>???</div> </td>
+    </script>
+
+    <script id="dumbRow" type="text/x-handlebars-template">
+        <td class="dumbrow box"> <div><img src="icons/pokemon/unknown.png"/></div> </td>
+        <td class="dumbrow" class="width:100px"> <div>???</div> </td>
+        <td class="dumbrow" class="width:100px"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+        <td class="dumbrow"> <div>???</div> </td>
+    </script>
+
+    <script id="wrap" type="text/x-handlebars-template">
+                <div id="dead{{3}}" class="dead" style="pointer-events:none; opacity: 0">
+                       <image draggable=false onclick="revive({{1}})" class="revive icon" src="icons/dream-world/revive.png"/>
+                </div>
+                <div id="F{{1}}" class="fBox pInv"  style="background-image: url(backBattle{{4}}.png);display: block; left: 20px"></div>
+                <div id="F{{2}}" class="fBox pInv"  style="background-image: url(backBattle{{4}}.png); left: 144px"></div>
+                <div class="barHold" style="left: 33px;">
+                    <div class="top"><span id="nick{{1}}"></span><div id="level{{1}}"></div></div>
+                    <div id="HF{{1}}" class="healthBar"></div>
+                    <div id="TF{{1}}" class="typeBar"></div></div>
+                <div class="barHold" style="left: 157px;">
+                    <div class="top"><span id="nick{{2}}"></span><div id="level{{2}}"></div></div>
+                    <div id="HF{{2}}" class="healthBar"></div>
+                    <div id="TF{{2}}" class="typeBar"></div>
+                </div>
+                <div id="N{{1}}" class="number"></div>
+                <div id="N{{2}}" class="number"></div>
+                <img id="I{{1}}" class="itemAppear"/>
+                <img id="I{{2}}" class="itemAppear"/>
+    </script>
+
+    <script id="buy" type="text/x-handlebars-template">
+            <tr>
+                <td class="bImage"  id="buy{{name}}" rowspan=2><image draggable="false" class="icon" src="{{dream}}"/></td>
+                <td class="bName">{{name}}</td>
+            </tr><tr>
+                <td class="bCost">{{cost}}</td>
+            </tr>
+    </script>
+
+    <script id="berryTemp" type="text/x-handlebars-template">
+        <div class="bInv" id="berry{{1}}" style="display: block;">
+                <div class="name"></div>
+                <div class="taste">
+                        <div class="sour"></div>
+                        <div class="bitter"></div>
+                        <div class="sweet"></div>
+                        <div class="dry"></div>
+                        <div class="spicy"></div>
+                </div>
+                <img draggable="false" src="none.png" onclick="mixSet[{{1}}] = -1" class="berry">
+            </div>
+    </script>
+
+    <script id="moveTemp0" type="text/x-handlebars-template">
+        <table style="background-color: {{bg}}; border: 3px solid {{border}}; width: 300px">
+                <tr><td>{{name}}</td><td>Lvl. {{level}}</td><td>{{top}}/{{bottom}}</td></tr>
+                <tr><td colspan=4></td></tr>
+                <tr><td>{{type}}</td><td>POW: {{pow}}</td><td>ACC: {{acc}}%</td></tr>
+        </table>
+    </script>
+
+    <script id="moveTemp1" type="text/x-handlebars-template">
+        <table style="background-color: {{bg}}; border: 3px solid {{border}}; width: 300px">
+                <tr><td>{{name}}</td><td>Lvl. {{level}}</td><td>{{top}}/{{bottom}}</td></tr>
+                <tr><td colspan=3></td></tr>
+                <tr><td>POW: {{pow}}</td><td colspan=2>ACC: {{acc}}%</td></tr>
+        </table>
+    </script>
+</head>
+<body>
+        <div id="foreground" style=" display: none; align-items: center;position: absolute; left: 0px; top: 0px; width:100%; height:100%; z-index: 15;background-color: #111111;  background-size: cover;">
+            <div style="color: white;  text-align: center; margin-top: 0%; margin-left: auto; margin-right:auto; transform: scale(2)">
+                <img src="https://i.ytimg.com/vi/blRyUbnfc60/hqdefault.jpg"/>
+                <h1>HEWWO!!!</h1>
+                </br> We don't currently support mobile browsers. Sorry!
+            </div>
+        </div>
+
+        <img id="bry" draggable="false" style="z-index: 15; display:none"/>
+        <img id="shake" style="z-index: 15; display:none"/>
+        <img id="shakeBehind" style="opacity:0; position: absolute; z-index:14"/>
+        <div id="TEMP" style="z-index:4; position: fixed; top: 0; left: 0;"></div>
+
+        <table  oncontextmenu="lastSelected = ''; return false;" cellspacing=0 style="table-layout: fixed; position: absolute; top: 0; left:0; width: 100%; height:100%; background-color:black;">
+                <tr>
+                        <td class="heading" style="width: 100%; height: 10px; text-align: center">
+                            <img src="catchem_logo.png" style="display:inline-block; height:50px;">
+                            <div id="currents">
+                                <div class="setCurrent" id="setCurrent0" onclick="current = 0; renderPoke(); ">Fields</div>
+                                <div class="setCurrent" id="setCurrent1" onclick="current = 1; renderPoke(); ">Pokédex</div>
+                                <div class="setCurrent" id="setCurrent2" onclick="current = 2; renderPoke(); ">Box</div>
+                                <div class="setCurrent" id="setCurrent3" onclick="current = 3; renderPoke(); ">Items</div>
+                                <div class="setCurrent" id="setCurrent4" onclick="current = 4; renderPoke(); ">Analyzer</div>
+                            </div>
+                        </td>
+
+                        <td class="heading" id="itemSwitch" style="width: 130px" onclick="itemSwitch()">
+                            Berry
+                        </td>
+                </tr>
+                <tr>
+                        <td colspan=1  style="overflow-y: hidden; height:80%; min-width: 0;; text-align: center; background-color: #111111">   
+                            <div id="main0" class="main" onmouseover="autoMove()" style="display: block">       
+                            </div>
+                            <div id="main1" class="main" style="overflow-y: scroll;display: none">
+                                <table cellspacing=0 id="dexTab">
+                                    <tr style="background-color: var(--grey0)">
+                                        <td></td>
+                                        <td colspan=2>Typing</td>
+                                        <td>Name</td>
+                                        <td style="width:55px">HP</td>
+                                        <td style="width:55px">Atk</td>
+                                        <td style="width:55px">Def</td>
+                                        <td style="width:55px">Sp. Atk</td>
+                                        <td style="width:55px">Sp. Def</td>
+                                        <td style="width:55px">Speed</td>
+                                        <td>Rarity</td></tr>
+                                </table>
+                            </div>
+                            <div id="main2" onmouseover="hover = '0'" class="main" style="overflow: scroll; display: flex">
+                                <div id="boxes" style="display: inline-block"></div>
+                            </div>
+                            <div id="main3" class="main" style="overflow-y: scroll; text-align: center; display: block">
+                                <div id="buyField" style="display: none" onclick="buyField()">15</div>  <br>
+                                    <div class="storefront" id="storefront1">
+                                        <div class="head">Balls</div>
+                                    </div>
+                                    <div class="storefront" id="storefront0">
+                                        <div class="head">Berries</div>
+                                    </div>
+                            </div>
+                            <div id="main4" onmouseover="hover = 'M'" class="main" style="overflow: scroll;">
+                                    <table style="margin-left: auto; margin-right: auto; margin-bottom: 30px; height: 200px; display: block; width:700px">
+                                        <tr>
+                                            <td></td><td id="moves0" style="height: 100%; width: 350px; overflow-y: scroll"></td><td id="moves1" style="height: 100%; width: 350px; overflow-y: scroll"></td>
+                                        </tr>
+                                    </table>
+                                         
+                                    <div class="pInv" onmouseover="hover = 'M'" id="pokeMixer" style="display: block; margin-left: auto; margin-right:auto;"></div>
+                                    
+                                        <table id="tab4" onmouseover="hover = 'M'" class="storefront" style="background-color: transparent; text-align: center;" cellspacing="0px">
+                                            <tr>
+                                                <td></td>
+                                                <td colspan=16 id="longbar">
+                                                        <div style="border-top-left-radius: 3px; border-bottom-left-radius: 3px;" class="sour"></div>
+                                                        <div class="bitter"></div>
+                                                        <div class="sweet"></div>
+                                                        <div class="dry"></div>
+                                                        <div style="border-top-right-radius: 3px; border-bottom-right-radius: 3px;" class="spicy"></div>
+                                                    </td>
+                                            </tr>
+                                            <tr id="frow">
+                                                    <td></td>
+                                                    <td class="vertbar"></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="vertbar"></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="vertbar"></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="vertbar"></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="vertbar"></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="vertbar"></td>
+                                                    <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td><div class="more" onclick="numberBerries--">-</div></td>
+                                                <td><div id="amtBerry">3</div></td>
+                                                <td><div class="more" onclick="numberBerries++">+</div></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan=3><div id="mixClick" onclick="addHapp()">Mix</div></td>
+                                            </tr>
+                                            <tr>
+                                            </tr>
+                                                    <tr>
+                                                <td colspan=25 id="costs">
+                                                    
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div id="bonuses"></div>
+                            </div>
+                        </td>
+                        <td id="itemSpace" style=" text-align: center; overflow-x: hidden; max-height: 80%; ">
+                            <div id="itemPlace" style="overflow-y: scroll; height: 100%; width: 100%">
+
+                            </div>
+                        </td>
+                </tr>
+                <tr> 
+                        <td colspan=1 class="pInv" onmouseover="hover = 'H'" id="pokeHolder" style="display: table-cell;">
+                            <div id="holden" class="pInv"  style="display: block"></div>
+                            </td>
+                        <td style="overflow-x: auto; background-color: var(--grey4)">
+                            <div id="moneyCount"> <span id="coinsCount">6000</span> </div>
+                            <div id="resetButton" onclick="if(confirm('Are you sure you want to delete your memory, including all of your Pokémon?')){localStorage.clear(); window.location.reload()}"><br>Reset<br>Memory</div>
+                        </td>
+                </tr>
+                <tr>
+                    <td colspan=3 id="version" style="height:17px; font-size:15px; color:white;  text-align: right; padding-right: 15px">
+                        Version β2
+                    </td>
+                </tr>
+        </table>
+
+    <div oncontextmenu="lastSelected = ''; return false;" id="info">
+            <div id="nickShow" style="font-weight:bold"></div>
+            <div id="statsShow"></div>
+    </div>
+
+    <script src="pokeData.js"></script>
+    <script src="gacha.js"></script>
+</body>
+</html>
