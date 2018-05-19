@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title id="title">SpaceStar</title>
+    <meta name="description" content="A space shooter game">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@brockdilley" />
+    <meta name="twitter:title" content="SpaceStar" />
+    <meta name="twitter:description" content="Have fun blasting aliens in space, with knockback" />
+    <link rel="icon" href="spacestar.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <!-- <link rel="icon" href="faviconspacers.ico" type="image/x-icon"><script> -->
+</script>
+</head>
+<body>
+    <div id="all" oncontextmenu="return false;"></div>
+    <div id="death" style="display:none" oncontextmenu="return false;"><div style="max-width: 250px">
+        <div style="color: white; font-size:40px; ">YOU DIED!</div><br>
+        <div style="color: white; font-size:30px; ">Kills: <span id="kills"></span></div><br>
+        <div onclick="window.location.reload()" style="color: black;background-color: turquoise; font-family: Arial; cursor: pointer; font-size:30px; line-height: 100px; height:100px;">Restart</div></div>
+    </div>
+    <img id="ship" src="galaga.png" style="width: 20px; height: 20px; position:absolute; transform: scale(2); image-rendering: pixelated; border-radius: 20px">
+
+    <script src="test.js"></script>
+    <link rel="stylesheet" type="text/css" href="test.css">
+</body>
+</html>
