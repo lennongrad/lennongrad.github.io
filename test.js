@@ -68,10 +68,14 @@ hasDied = false;
 
 var numberStars = 100;
 var numberEnemies = 50;
+var initialBullets = 6;
+var timeFrame = 35;
 
 if(window.mobilecheck()){
     numberStars = 30;
-    numberEnemies = 20;
+    numberEnemies = 10;
+    initialBullets = 3;
+    timeFrame = 30;
 }
 
 var colors = ["Red", "Blue", "White"];
@@ -181,7 +185,7 @@ function Ship(a,b,c){
     this.bullets = [];
     this.shielded = 1;
 
-    for(var i = 0; i < 6; i++){
+    for(var i = 0; i < initialBullets; i++){
         this.bullets.push(new Bullet(i));
     }
 
@@ -280,7 +284,7 @@ function Enemy(a,b,c,d){
     
     this.bullets = [];
 
-    for(var i = 0; i < 2; i++){
+    for(var i = 0; i < initialBullets / 3; i++){
         this.bullets.push(new Bullet(i));
     }
 
@@ -291,8 +295,8 @@ function Enemy(a,b,c,d){
     document.body.appendChild(this.elem);
 
     this.move = function(){
-        this.pos[x] += this.v[x];
-        this.pos[y] += this.v[y];
+        this.pos[x] += this.v[x] * (timeFrame / 35);
+        this.pos[y] += this.v[y] * (timeFrame / 35);
         for(var i = 0; i < this.bullets.length; i++){
             this.bullets[i].move()
         }
@@ -430,4 +434,4 @@ setInterval(function(){
     if(repeater % 100 == 0 && Math.random() > .5 && powers.length < 3){
         powers.push(new Power());
     }
-},35)
+},timeFrame)
