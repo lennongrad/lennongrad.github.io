@@ -24,12 +24,23 @@ document.onmouseup = function(e) {
     }
 }   
 
-var remove = function(id) {
-    var elem = document.getElementById(id);
+var remove = function(elem) {
     if(elem != null){
         return elem.parentNode.removeChild(elem);
     }
 }
+
+$(document)
+        .on('touchstart', function (event) {
+            mouseDown = true;
+            mouse = [event.originalEvent.touches[0].clientX,event.originalEvent.touches[0].clientY];
+        })
+        .on('touchmove', function (event) {
+            mouse = [event.originalEvent.touches[0].clientX,event.originalEvent.touches[0].clientY];
+        })
+        .on('touchend', function () {
+            mouseDown = false;
+        });
 
 function halfside(e) {
     return (1 * e) + (2 * e * Math.random());
@@ -48,24 +59,27 @@ function isCollide(a, b) {
 }
 
 hasDied = false;
-var die = function(){
-    document.getElementById("death").style.display = "flex";
-    document.getElementById("kills").innerHTML = killed;
-    hasDied = true;
-}
 
 var numberStars = 100;
 
 var colors = ["Red", "Blue", "White"];
 function getRandColor() { return colors[Math.floor(colors.length * Math.random())] };
 
-var types = {BEE: "bee", CRAB: "crab", NAMCO: "namco", FLYER: "flyer", FLYERHURT: "flyerHurt"}
+var types = {BEE: "bee", CRAB: "crab", FLYER: "flyer", FLYERHURT: "flyerhurt"}
+var pointValues = {"bee": 100, "crab": 160, "flyer": 200, "flyerhurt": 400}
 function getRandType() {
-    switch(Math.floor(4 * Math.random())){
+    switch(Math.floor(3 * Math.random())){
         case 0: return types.BEE;
         case 1: return types.CRAB;
-        case 2: return types.NAMCO;
-        case 3: return types.FLYER;
+        case 2: return types.FLYER;
+    }
+}
+
+var powerTypes = {BULLET: "bullet", SHIELDED: "shielded"}
+function getRandPower(){
+    switch(Math.floor(2 * Math.random())){
+        case 0: return powerTypes.BULLET
+        case 1: return powerTypes.SHIELDED
     }
 }
 
@@ -74,6 +88,7 @@ var gravity = G.UP;
 var gravityMod = 4 * Math.random() + 3;
 
 var killed = 0;
+var points = 0;
 
 function Star(starID) {
     this.color = getRandColor();
@@ -105,18 +120,17 @@ function Star(starID) {
     }
 }
 
-function Bullet(id){
+function Bullet(a){
     this.x = -50;
     this.y = -50;
     this.xv = 0;
     this.yv = 0;
-    this.id = id;
+    this.id = a;
     this.angle = 0;
     this.dep = false;
 
     this.elem = document.createElement("DIV");
     this.elem.className = "bullet";
-    this.elem.id = this.id;
     this.elem.setAttribute("draggable",false)
     document.body.appendChild(this.elem);
 
@@ -131,18 +145,18 @@ function Bullet(id){
 
     this.move = function(){
         if(this.dep){
-            document.getElementById(this.id).style.display = "none";
+            this.elem.style.display = "none";
             return;
         }
-        if(this.x > $(window).width() || this.x < -10 || this.y > $(window).height() || this.y < -10){
+        if(this.x > dim[x] || this.x < -10 || this.y > dim[y] || this.y < -10){
             this.dep = true;
         } else {
-            document.getElementById(this.id).style.display = "block";
+            this.elem.style.display = "block";
             this.x += this.xv;
             this.y += this.yv;
-            document.getElementById(this.id).style.left = this.x + "px";
-            document.getElementById(this.id).style.top = this.y + "px";
-            document.getElementById(this.id).style.transform = "rotate(" + (this.angle + Math.PI / -2) + "rad)";
+            this.elem.style.left = this.x + "px";
+            this.elem.style.top = this.y + "px";
+            this.elem.style.transform = "rotate(" + (this.angle + Math.PI / -2) + "rad)";
         }
     }
 }
@@ -153,6 +167,7 @@ function Ship(a,b,c){
     this.elem = c;
     this.angle = 0;
     this.bullets = [];
+    this.shielded = 1;
 
     for(var i = 0; i < 6; i++){
         this.bullets.push(new Bullet(i));
@@ -167,6 +182,12 @@ function Ship(a,b,c){
 
         this.pos[x] = Math.min(Math.max(20, this.pos[x]), dim[x] - 50)
         this.pos[y] = Math.min(Math.max(50, this.pos[y]), dim[y] - 50)
+
+        if(this.shielded > 0){
+            this.elem.className = "shielded"
+        } else {
+            this.elem.className = ""
+        }
         
         this.angle = Math.atan((mouse[y] - this.pos[y]) / (mouse[x] - this.pos[x]));
         if(Math.sign(mouse[x] - this.pos[0]) == -1){
@@ -179,6 +200,26 @@ function Ship(a,b,c){
 
         for(var i = 0; i < this.bullets.length; i++){
             this.bullets[i].move()
+        }
+        
+        for(i in enemies){
+            for(e in enemies[i].bullets){
+                if(!enemies[i].bullets[e].dep && isCollide(this.elem, enemies[i].bullets[e].elem)){
+                    ship.die()
+                    enemies[i].bullets[e].dep = true;
+                }
+            }
+        }
+
+        for(i in powers){
+            if(isCollide(powers[i].elem, this.elem)){
+                switch(powers[i].power){
+                    case powerTypes.BULLET: this.bullets.push(new Bullet(this.bullets.length)); break;
+                    case powerTypes.SHIELDED: this.shielded++; break;
+                }
+                remove(powers[i].elem);
+                powers.splice(i);
+            }
         }
     }
 
@@ -199,15 +240,37 @@ function Ship(a,b,c){
         this.v[x] -= 1 * Math.cos(this.angle)
         this.v[y] -= 1 * Math.sin(this.angle)
     }
+
+    this.die = function(){
+        this.shielded--;
+        if(this.shielded > -1){
+            return;
+        }
+        document.getElementById("death").style.display = "flex";
+        document.getElementById("kills").innerHTML = killed;
+        document.getElementById("points").innerHTML = points;
+        hasDied = true;
+        for(i in enemies){
+            if(enemies[i].counter == 0){
+                enemies[i].elem.src = "explosion.gif"
+            }
+        }
+    }
 }
 
-function Enemy(a,b,c){
+function Enemy(a,b,c,d){
     this.pos = [a * Math.cos(b) + ship.pos[x],a * Math.sin(b) + ship.pos[y]]
     this.v = [-10 * Math.cos(b),-10 * Math.sin(b)]
     this.angle = b;
-    this.type = getRandType().toLowerCase();
+    this.type = d;
     this.dead = false;
     this.counter = 0;
+    
+    this.bullets = [];
+
+    for(var i = 0; i < 2; i++){
+        this.bullets.push(new Bullet(i));
+    }
 
     this.elem = document.createElement("img");
     this.elem.className = "enemy";
@@ -218,32 +281,83 @@ function Enemy(a,b,c){
     this.move = function(){
         this.pos[x] += this.v[x];
         this.pos[y] += this.v[y];
+        for(var i = 0; i < this.bullets.length; i++){
+            this.bullets[i].move()
+        }
         
         if(this.elem != undefined && !this.dead){
+            if(Math.random() > .98 && this.type == "crab"){
+                this.shoot()
+            }
             this.elem.src = this.type + ".png";
             this.elem.style.left = this.pos[x] - 10 + "px";
             this.elem.style.top = this.pos[y] - 10 + "px";
             this.elem.style.transform = "scale(3) rotate(" + (this.angle + Math.PI / -2) + "rad)";
 
+            if(this.type == types.BEE){
+                this.elem.style.transform =  "scale(3) rotate(" + (this.angle + Math.PI / -2) + "rad) translateX(" + (30 * Math.cos(repeater / 7)) + "px)"
+            }
+
             for(var i = 0; i < ship.bullets.length; i++){
                 if(isCollide(ship.bullets[i].elem, this.elem)){
-                    this.dead = true;
-                    this.elem.style.transform = "scale(6)"
-                    this.elem.src = "explosion.gif"
-                    killed++;
                     ship.bullets[i].dep = true;
+                    if(this.type == "flyer"){
+                        this.v[x] *= 1.75;
+                        this.v[y] *= 1.75;
+                        this.type = "flyerhurt";
+                        return;
+                    }
+                    this.die();
                 }
             }
             if(isCollide(ship.elem, this.elem)){
-                die();
+                ship.die();
+                this.die();
             }
         } else if(this.elem != undefined){
-            this.counter++;
+            this.counter+=2;
             if(this.counter == 30){
                 this.elem.src = "";
+                for(i in this.bullets){
+                    remove(this.bullets[i].elem)
+                }
+                bullets = [];
             }
         }
 
+    }
+
+    this.die = function(){this.dead = true;
+        this.elem.style.transform = "scale(6)"
+        this.elem.src = "explosion.gif"
+        killed++;
+        points += pointValues[this.type]
+    }
+
+    this.shoot = function(){
+        if(this.bullets.filter(x => x.dep).length == 0){
+            return;
+        }
+        var current = 0;
+        current = this.bullets.filter(x => x.dep)[0].id
+        this.bullets[current].set(this.pos[0] - 7, this.pos[1] - 13, this.angle);
+    }
+}
+
+function Power(){
+    this.pos = [Math.random() * (dim[x] - 200) + 100, Math.random() * (dim[y] - 200) + 100];
+    this.color = getRandColor();
+    this.power = getRandPower();
+
+    this.elem = document.createElement("DIV");
+    this.elem.className = "power";
+    this.elem.style.backgroundColor = this.color;
+    this.elem.style.left = this.pos[x] + "px"
+    this.elem.style.top = this.pos[y] + "px"
+    document.body.appendChild(this.elem);
+
+    this.move = function(){
+        this.elem.style.transform = "scale(" + (Math.cos(repeater / 10) * 3) + ")"
     }
 }
 
@@ -258,15 +372,18 @@ var enemies = [];
 
 var summon = function(){
     var tempAngle = Math.random() * 2 * Math.PI;
+    var tempType = getRandType().toLowerCase();
     while(Math.random() > .5){
-        enemies.push(new Enemy(Math.max(dim[x],dim[y]) * .8, tempAngle, enemies.length))
+        enemies.push(new Enemy(Math.max(dim[x],dim[y]) * .8, tempAngle, enemies.length, tempType))
         if(enemies.length > 50){
-            remove(enemies[0].elem.id)
+            remove(enemies[0].elem)
             enemies.shift();
         }
         tempAngle += Math.PI / 3;
     }
 }
+
+var powers = [];
 
 var repeater = 0;
 setInterval(function(){
@@ -290,7 +407,15 @@ setInterval(function(){
         enemies[i].move();
     }
 
+    for (i = 0; i < powers.length; i++) {
+        powers[i].move();
+    }
+
     if(repeater % 20 == 0 || (repeater % 5 == 0 && Math.random() < Math.max(.2, Math.tanh(killed / 100)))){
         summon()
+    }
+
+    if(repeater % 100 == 0 && Math.random() > .5 && powers.length < 3){
+        powers.push(new Power());
     }
 },35)

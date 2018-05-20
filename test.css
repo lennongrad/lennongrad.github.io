@@ -12,6 +12,12 @@
     transition: transform .05s
 }
 
+.shielded{
+    background-color: rgba(20,20,255,.7);
+    padding:10px;
+    border-radius:100%;
+}
+
 .enemy{
     position: absolute;
     width: 10px;
@@ -25,6 +31,15 @@
     width:1px;
     height:1px;
     background-color:white;
+    pointer-events: none;
+}
+
+.power{
+    position:fixed;
+    width:30px;
+    height:30px;
+    border-radius: 100%;
+    z-index:-1;
     pointer-events: none;
 }
 
