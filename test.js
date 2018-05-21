@@ -66,14 +66,14 @@ function isCollide(a, b) {
 
 hasDied = false;
 
-var numberStars = 100;
+var numberStars = 200;
 var numberEnemies = 50;
 var initialBullets = 6;
 var timeFrame = 35;
 
 if(window.mobilecheck()){
     numberStars = 30;
-    numberEnemies = 10;
+    numberEnemies = 30;
     initialBullets = 3;
     timeFrame = 30;
 }
@@ -110,7 +110,7 @@ function Star(starID) {
     this.color = getRandColor();
     this.pos = [dim[x] * Math.random(), dim[y] * Math.random()];
     this.id = starID;
-    this.speed = [Math.random() + .2, Math.random() + .2];
+    this.speed = [Math.random() + 1.2, Math.random() + 1.2];
 
     var newStar = document.createElement("DIV");
     newStar.className = "star";
@@ -193,11 +193,18 @@ function Ship(a,b,c){
         this.pos[x] += this.v[x];
         this.pos[y] += this.v[y];
 
+        switch(gravity){
+            case G.RIGHT: this.pos[x] -= gravityMod; break;
+            case G.UP: this.pos[y] += gravityMod; break;
+            case G.LEFT: this.pos[x] += gravityMod; break;
+            case G.DOWN: this.pos[y] -= gravityMod;  break;
+        }
+
         if(this.pos[x] > dim[x] - 50 || this.pos[x] < 20){ this.v[x] *= -.9}
         if(this.pos[y] > dim[y] - 50 || this.pos[y] < 50){ this.v[y] *= -.9}
 
-        this.pos[x] = Math.min(Math.max(20, this.pos[x]), dim[x] - 50)
-        this.pos[y] = Math.min(Math.max(50, this.pos[y]), dim[y] - 50)
+        this.pos[x] = Math.min(Math.max(21, this.pos[x]), dim[x] - 50 - gravityMod)
+        this.pos[y] = Math.min(Math.max(51, this.pos[y]), dim[y] - 50 - gravityMod)
 
         if(this.shielded > 0){
             this.elem.className = "shielded"
@@ -234,7 +241,7 @@ function Ship(a,b,c){
                     case powerTypes.SHIELDED: this.shielded++; break;
                 }
                 remove(powers[i].elem);
-                powers.splice(i);
+                powers.splice(i,1);
             }
         }
     }
@@ -244,8 +251,8 @@ function Ship(a,b,c){
         if(this.bullets.filter(x => x.dep).length == 0){
             return;
         }
-        this.v[x] += 1 * Math.cos(this.angle)
-        this.v[y] += 1 * Math.sin(this.angle)
+        this.v[x] += .5 * Math.cos(this.angle)
+        this.v[y] += .5 * Math.sin(this.angle)
         var current = 0;
         current = this.bullets.filter(x => x.dep)[0].id
         this.bullets[current].set(this.pos[0] - 7, this.pos[1] - 13, this.angle);
@@ -271,13 +278,24 @@ function Ship(a,b,c){
                 enemies[i].elem.src = "explosion.gif"
             }
         }
+        if (typeof(Storage) !== "undefined") {
+            if(typeof(localStorage.getItem("score")) == "string"){
+                localStorage.setItem("score", localStorage.getItem("score") + "," + points)
+            } else {
+                localStorage.setItem("score", points)
+            }
+            var scores = localStorage.getItem("score").split(",");
+            for(var i = 0; i < scores.length; i++){
+                document.getElementById("scoreboard").innerHTML += "#" + (i + 1) + ": " + scores.sort(function(a,b){return a - b}).reverse()[i] + "<br>"
+            }
+        }
     }
 }
 
-function Enemy(a,b,c,d){
-    this.pos = [a * Math.cos(b) + ship.pos[x],a * Math.sin(b) + ship.pos[y]]
-    this.v = [-10 * Math.cos(b),-10 * Math.sin(b)]
-    this.angle = b;
+function Enemy(c,d){
+    this.pos = [Math.random() * dim[x], -200]
+    this.v = [1 - (2 * Math.random()),3]
+    this.angle = 3 / 2 * Math.PI;
     this.type = d;
     this.dead = false;
     this.counter = 0;
@@ -297,6 +315,14 @@ function Enemy(a,b,c,d){
     this.move = function(){
         this.pos[x] += this.v[x] * (timeFrame / 35);
         this.pos[y] += this.v[y] * (timeFrame / 35);
+
+        switch(gravity){
+            case G.RIGHT: this.pos[x] -= gravityMod * 1.8; break;
+            case G.UP: this.pos[y] += gravityMod * 1.8; break;
+            case G.LEFT: this.pos[x] += gravityMod * 1.8; break;
+            case G.DOWN: this.pos[y] -= gravityMod * 1.8;  break;
+        }
+
         for(var i = 0; i < this.bullets.length; i++){
             this.bullets[i].move()
         }
@@ -346,7 +372,11 @@ function Enemy(a,b,c,d){
     this.die = function(){this.dead = true;
         this.elem.style.transform = "scale(6)"
         this.elem.src = "explosion.gif"
+        gravityMod += .1;
         killed++;
+        if(Math.random() > .6 && powers.length < 3){
+            powers.push(new Power());
+        }
         points += pointValues[this.type]
     }
 
@@ -362,8 +392,12 @@ function Enemy(a,b,c,d){
 
 function Power(){
     this.pos = [Math.random() * (dim[x] - 200) + 100, Math.random() * (dim[y] - 200) + 100];
-    this.color = getRandColor();
     this.power = getRandPower();
+    this.color = getRandColor();
+    switch(this.power){
+        case powerTypes.BULLET: this.color = "white"; break;
+        case powerTypes.SHIELDED: this.color = "blue"; break;
+    }
 
     this.elem = document.createElement("DIV");
     this.elem.className = "power";
@@ -373,6 +407,16 @@ function Power(){
     document.body.appendChild(this.elem);
 
     this.move = function(){
+
+        switch(gravity){
+            case G.RIGHT: this.pos[x] -= gravityMod * .6; break;
+            case G.UP: this.pos[y] += gravityMod * .6; break;
+            case G.LEFT: this.pos[x] += gravityMod * .6; break;
+            case G.DOWN: this.pos[y] -= gravityMod * .6;  break;
+        }
+        
+        this.elem.style.left = this.pos[x] + "px"
+        this.elem.style.top = this.pos[y] + "px"
         this.elem.style.transform = "scale(" + (Math.cos(repeater / 10) * 3) + ")"
     }
 }
@@ -387,15 +431,13 @@ for (i = 0; i < numberStars; i++){
 var enemies = [];
 
 var summon = function(){
-    var tempAngle = Math.random() * 2 * Math.PI;
     var tempType = getRandType().toLowerCase();
     while(Math.random() > .5){
-        enemies.push(new Enemy(Math.max(dim[x],dim[y]) * .8, tempAngle, enemies.length, tempType))
+        enemies.push(new Enemy(enemies.length, tempType))
         if(enemies.length > numberEnemies){
             remove(enemies[0].elem)
             enemies.shift();
         }
-        tempAngle += Math.PI / 3;
     }
 }
 
@@ -425,13 +467,13 @@ setInterval(function(){
 
     for (i = 0; i < powers.length; i++) {
         powers[i].move();
+        if(powers[i].pos[x] < 0 || powers[i].pos[x] > dim[x] || powers[i].pos[y] < 0 || powers[i].pos[y] > dim[y]){
+            remove(powers[i].elem)
+            powers.splice(i, 1)
+        }
     }
 
-    if(repeater % 20 == 0 || (repeater % 5 == 0 && Math.random() < Math.max(.2, Math.tanh(killed / 100)))){
+    if(repeater % 12 == 0 || (repeater % 3 == 0 && Math.random() < Math.max(.2, Math.tanh(killed / 100)))){
         summon()
-    }
-
-    if(repeater % 100 == 0 && Math.random() > .5 && powers.length < 3){
-        powers.push(new Power());
     }
 },timeFrame)
