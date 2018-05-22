@@ -104,6 +104,7 @@ var gravity = G.UP;
 var gravityMod = 4 * Math.random() + 3;
 
 var killed = 0;
+var shot = 0;
 var points = 0;
 
 function Star(starID) {
@@ -256,6 +257,7 @@ function Ship(a,b,c){
         var current = 0;
         current = this.bullets.filter(x => x.dep)[0].id
         this.bullets[current].set(this.pos[0] - 7, this.pos[1] - 13, this.angle);
+        shot++;
     }
 
     this.boost = function(){
@@ -272,6 +274,7 @@ function Ship(a,b,c){
         document.getElementById("death").style.display = "flex";
         document.getElementById("kills").innerHTML = killed;
         document.getElementById("points").innerHTML = points;
+        document.getElementById("acc").innerHTML = Math.ceil(100 * killed / shot);
         hasDied = true;
         for(i in enemies){
             if(enemies[i].counter == 0){
@@ -284,9 +287,9 @@ function Ship(a,b,c){
             } else {
                 localStorage.setItem("score", points)
             }
-            var scores = localStorage.getItem("score").split(",");
-            for(var i = 0; i < scores.length; i++){
-                document.getElementById("scoreboard").innerHTML += "#" + (i + 1) + ": " + scores.sort(function(a,b){return a - b}).reverse()[i] + "<br>"
+            var scores = localStorage.getItem("score").split(",").sort(function(a,b){return a - b}).filter(function(item, pos, ary) {return !pos || item != ary[pos - 1];}).reverse();
+            for(var i = 0; i < scores.length && i < 16; i++){
+                document.getElementById("scoreboard").innerHTML += "#" + (i + 1) + ": " + scores[i] + "<br>"
             }
         }
     }
@@ -349,12 +352,12 @@ function Enemy(c,d){
                         this.type = "flyerhurt";
                         return;
                     }
-                    this.die();
+                    this.die(true);
                 }
             }
             if(isCollide(ship.elem, this.elem)){
                 ship.die();
-                this.die();
+                this.die(false);
             }
         } else if(this.elem != undefined){
             this.counter+=2;
@@ -369,11 +372,12 @@ function Enemy(c,d){
 
     }
 
-    this.die = function(){this.dead = true;
+    this.die = function(a){
+        this.dead = true;
         this.elem.style.transform = "scale(6)"
         this.elem.src = "explosion.gif"
         gravityMod += .1;
-        killed++;
+        if(a) killed++
         if(Math.random() > .6 && powers.length < 3){
             powers.push(new Power());
         }
