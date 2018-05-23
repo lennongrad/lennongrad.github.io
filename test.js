@@ -30,6 +30,35 @@ document.onmouseup = function(e) {
     }
 }   
 
+var holdLeft = false;
+var holdUp = false;
+var holdRight = false;
+var holdDown = false;
+document.addEventListener('keydown', function (event) {
+    switch(event.keyCode){
+        case 39: 
+        case 68: holdLeft = true; break;
+        case 38: 
+        case 87: holdUp = true; break;
+        case 37: 
+        case 65: holdRight = true; break;
+        case 40: 
+        case 83: holdDown = true; break;
+    }
+});
+document.addEventListener('keyup', function (event) {
+    switch(event.keyCode){
+        case 39: 
+        case 68: holdLeft = false; break;
+        case 38: 
+        case 87: holdUp = false; break;
+        case 37: 
+        case 65: holdRight = false; break;
+        case 40: 
+        case 83: holdDown = false; break;
+    }
+});
+
 var remove = function(elem) {
     if(elem != null){
         return elem.parentNode.removeChild(elem);
@@ -118,8 +147,9 @@ function Star(starID) {
     newStar.id = "STAR" + starID;
     newStar.style.backgroundColor = this.color;
     document.body.appendChild(newStar);
-
-    this.moment = function () {
+}
+Star.prototype = {
+    moment : function () {
         switch(gravity){
             case G.RIGHT: this.pos[x] += this.speed[x] * gravityMod; break;
             case G.UP: this.pos[y] -= this.speed[y] * gravityMod; break;
@@ -150,17 +180,17 @@ function Bullet(a){
     this.elem.className = "bullet";
     this.elem.setAttribute("draggable",false)
     document.body.appendChild(this.elem);
-
-    this.set = function(a,b,c){
+}
+Bullet.prototype = {
+    set : function(a,b,c){
         this.dep = false;
         this.x = a;
         this.y = b;
         this.xv = -30 * Math.cos(c);
         this.yv = -30 * Math.sin(c);
         this.angle = c;
-    }
-
-    this.move = function(){
+    },
+    move : function(){
         if(this.dep){
             this.elem.style.display = "none";
             return;
@@ -185,12 +215,15 @@ function Ship(a,b,c){
     this.angle = 0;
     this.bullets = [];
     this.shielded = 1;
+    this.dist = 0;
 
     for(var i = 0; i < initialBullets; i++){
         this.bullets.push(new Bullet(i));
     }
+}
+Ship.prototype = {
+    move : function(){
 
-    this.move = function(){
         this.pos[x] += this.v[x];
         this.pos[y] += this.v[y];
 
@@ -219,6 +252,25 @@ function Ship(a,b,c){
         }
         this.angle += Math.PI;
 
+        this.dist = Math.sqrt(Math.pow(mouse[x] - this.pos[x],2) + Math.pow(mouse[y] - this.pos[y],2))
+
+        var tempAngle = 0;
+        if(holdUp || holdDown || holdLeft || holdRight){
+            if(holdRight){ tempAngle = 0}
+            if(holdUp){ tempAngle = Math.PI / 2}
+            if(holdLeft){ tempAngle = Math.PI}
+            if(holdDown){ tempAngle = Math.PI * 3 / 2}
+            if((holdUp && holdRight)){ tempAngle = Math.PI / 4}
+            if((holdUp && holdLeft)){ tempAngle = Math.PI * 3 / 4}
+            if((holdDown && holdRight)){ tempAngle = Math.PI * 7 / 4}
+            if((holdDown && holdLeft)){ tempAngle = Math.PI * 5 / 4}
+            this.boost(tempAngle, 1)
+            if(!mouseDown && !rightDown){
+                this.angle = tempAngle
+            }
+        }
+        this.elem.style.transform = "scale(2) rotate(" + (this.angle + Math.PI / -2) + "rad)";
+
         this.elem.style.left = this.pos[x] - 10 + "px";
         this.elem.style.top = this.pos[y] - 10 + "px";
 
@@ -245,10 +297,9 @@ function Ship(a,b,c){
                 powers.splice(i,1);
             }
         }
-    }
+    },
 
-    this.shoot = function(){
-        this.elem.style.transform = "scale(2) rotate(" + (this.angle + Math.PI / -2) + "rad)";
+    shoot : function(){
         if(this.bullets.filter(x => x.dep).length == 0){
             return;
         }
@@ -258,15 +309,14 @@ function Ship(a,b,c){
         current = this.bullets.filter(x => x.dep)[0].id
         this.bullets[current].set(this.pos[0] - 7, this.pos[1] - 13, this.angle);
         shot++;
-    }
+    },
 
-    this.boost = function(){
-        this.elem.style.transform = "scale(2) rotate(" + (this.angle + Math.PI / -2) + "rad)";
-        this.v[x] -= 1 * Math.cos(this.angle)
-        this.v[y] -= 1 * Math.sin(this.angle)
-    }
+    boost : function(a, b){
+        this.v[x] -= b * Math.cos(a)
+        this.v[y] -= b * Math.sin(a)
+    },
 
-    this.die = function(){
+    die : function(){
         this.shielded--;
         if(this.shielded > -1){
             return;
@@ -314,8 +364,9 @@ function Enemy(c,d){
     this.elem.id = "enemy" + c;
     this.elem.setAttribute("draggable",false)
     document.body.appendChild(this.elem);
-
-    this.move = function(){
+}
+Enemy.prototype = {
+    move : function(){
         this.pos[x] += this.v[x] * (timeFrame / 35);
         this.pos[y] += this.v[y] * (timeFrame / 35);
 
@@ -370,9 +421,8 @@ function Enemy(c,d){
             }
         }
 
-    }
-
-    this.die = function(a){
+    },
+    die : function(a){
         this.dead = true;
         this.elem.style.transform = "scale(6)"
         this.elem.src = "explosion.gif"
@@ -382,9 +432,8 @@ function Enemy(c,d){
             powers.push(new Power());
         }
         points += pointValues[this.type]
-    }
-
-    this.shoot = function(){
+    },
+    shoot : function(){
         if(this.bullets.filter(x => x.dep).length == 0){
             return;
         }
@@ -409,8 +458,9 @@ function Power(){
     this.elem.style.left = this.pos[x] + "px"
     this.elem.style.top = this.pos[y] + "px"
     document.body.appendChild(this.elem);
-
-    this.move = function(){
+}
+Power.prototype = {
+    move : function(){
 
         switch(gravity){
             case G.RIGHT: this.pos[x] -= gravityMod * .6; break;
@@ -456,7 +506,7 @@ setInterval(function(){
     }
 
     if(rightDown){
-        ship.boost();
+        ship.boost(ship.angle, Math.tanh(ship.dist/1000 + Math.PI / 4) + .5);
     }
 
     ship.move();
