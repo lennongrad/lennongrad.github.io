@@ -75,7 +75,14 @@ $(document)
         })
         .on('touchend', function () {
             mouseDown = false;
+            rightDown = false;
         });
+
+$("#ship")
+                .on('touchstart', function (event) {
+                    rightDown = true;
+                    mouseDown = false;
+                })
 
 function halfside(e) {
     return (1 * e) + (2 * e * Math.random());
@@ -99,12 +106,26 @@ var numberStars = 200;
 var numberEnemies = 50;
 var initialBullets = 6;
 var timeFrame = 35;
+var starSize = 1;
 
 if(window.mobilecheck()){
-    numberStars = 30;
-    numberEnemies = 30;
+    numberStars = 20;
+    numberEnemies = 20;
     initialBullets = 3;
     timeFrame = 30;
+    var starSize = 2;
+} else {
+    
+    document.getElementById("ship").style.pointerEvents = "none"
+}
+
+var quad = [];
+var l = 5;
+for(var i = 0; i < l; i++){
+    quad[i] = []
+    for(var e = 0; e < l; e++){
+        quad[i][e] = [[],[]]
+    }
 }
 
 var colors = ["Red", "Blue", "White"];
@@ -145,6 +166,7 @@ function Star(starID) {
     var newStar = document.createElement("DIV");
     newStar.className = "star";
     newStar.id = "STAR" + starID;
+    newStar.style.transform = "scale(" + starSize + ")"
     newStar.style.backgroundColor = this.color;
     document.body.appendChild(newStar);
 }
@@ -168,10 +190,8 @@ Star.prototype = {
 }
 
 function Bullet(a){
-    this.x = -50;
-    this.y = -50;
-    this.xv = 0;
-    this.yv = 0;
+    this.pos = [-50,-50]
+    this.v = [0, 0]
     this.id = a;
     this.angle = 0;
     this.dep = false;
@@ -184,10 +204,10 @@ function Bullet(a){
 Bullet.prototype = {
     set : function(a,b,c){
         this.dep = false;
-        this.x = a;
-        this.y = b;
-        this.xv = -30 * Math.cos(c);
-        this.yv = -30 * Math.sin(c);
+        this.pos[x] = a;
+        this.pos[y] = b;
+        this.v[x] = -30 * Math.cos(c);
+        this.v[y] = -30 * Math.sin(c);
         this.angle = c;
     },
     move : function(){
@@ -195,16 +215,17 @@ Bullet.prototype = {
             this.elem.style.display = "none";
             return;
         }
-        if(this.x > dim[x] || this.x < -10 || this.y > dim[y] || this.y < -10){
+        if(this.pos[x] > dim[x] || this.pos[x] < -10 || this.pos[y] > dim[y] || this.pos[y] < -10){
             this.dep = true;
         } else {
             this.elem.style.display = "block";
-            this.x += this.xv;
-            this.y += this.yv;
-            this.elem.style.left = this.x + "px";
-            this.elem.style.top = this.y + "px";
+            this.pos[x] += this.v[x];
+            this.pos[y] += this.v[y];
+            this.elem.style.left = this.pos[x] + "px";
+            this.elem.style.top = this.pos[y] + "px";
             this.elem.style.transform = "rotate(" + (this.angle + Math.PI / -2) + "rad)";
         }
+        return !(this.pos[x] > dim[x] || this.pos[x] < 0 || this.pos[y] > dim[y] || this.pos[y] < 0);
     }
 }
 
@@ -275,15 +296,8 @@ Ship.prototype = {
         this.elem.style.top = this.pos[y] - 10 + "px";
 
         for(var i = 0; i < this.bullets.length; i++){
-            this.bullets[i].move()
-        }
-        
-        for(i in enemies){
-            for(e in enemies[i].bullets){
-                if(!enemies[i].bullets[e].dep && isCollide(this.elem, enemies[i].bullets[e].elem)){
-                    ship.die()
-                    enemies[i].bullets[e].dep = true;
-                }
+            if(this.bullets[i].move()){
+                quad[Math.floor(this.bullets[i].pos[x] / dim[x] * l)][Math.floor(this.bullets[i].pos[y] / dim[y] * l)][0].push(this.bullets[i]);
             }
         }
 
@@ -303,8 +317,8 @@ Ship.prototype = {
         if(this.bullets.filter(x => x.dep).length == 0){
             return;
         }
-        this.v[x] += .5 * Math.cos(this.angle)
-        this.v[y] += .5 * Math.sin(this.angle)
+        //this.v[x] += .5 * Math.cos(this.angle)
+        //this.v[y] += .5 * Math.sin(this.angle)
         var current = 0;
         current = this.bullets.filter(x => x.dep)[0].id
         this.bullets[current].set(this.pos[0] - 7, this.pos[1] - 13, this.angle);
@@ -321,10 +335,12 @@ Ship.prototype = {
         if(this.shielded > -1){
             return;
         }
+        var accur = Math.ceil(100 * killed / Math.max(1,shot))
+        points = Math.ceil(points * (1 + accur / 100));
         document.getElementById("death").style.display = "flex";
         document.getElementById("kills").innerHTML = killed;
         document.getElementById("points").innerHTML = points;
-        document.getElementById("acc").innerHTML = Math.ceil(100 * killed / shot);
+        document.getElementById("acc").innerHTML = accur;
         hasDied = true;
         for(i in enemies){
             if(enemies[i].counter == 0){
@@ -378,7 +394,9 @@ Enemy.prototype = {
         }
 
         for(var i = 0; i < this.bullets.length; i++){
-            this.bullets[i].move()
+            if(this.bullets[i].move()){
+                quad[Math.floor(this.bullets[i].pos[x] / dim[x] * l)][Math.floor(this.bullets[i].pos[y] / dim[y] * l)][1].push(this.bullets[i]);
+            }
         }
         
         if(this.elem != undefined && !this.dead){
@@ -394,18 +412,6 @@ Enemy.prototype = {
                 this.elem.style.transform =  "scale(3) rotate(" + (this.angle + Math.PI / -2) + "rad) translateX(" + (30 * Math.cos(repeater / 7)) + "px)"
             }
 
-            for(var i = 0; i < ship.bullets.length; i++){
-                if(isCollide(ship.bullets[i].elem, this.elem)){
-                    ship.bullets[i].dep = true;
-                    if(this.type == "flyer"){
-                        this.v[x] *= 1.75;
-                        this.v[y] *= 1.75;
-                        this.type = "flyerhurt";
-                        return;
-                    }
-                    this.die(true);
-                }
-            }
             if(isCollide(ship.elem, this.elem)){
                 ship.die();
                 this.die(false);
@@ -420,7 +426,7 @@ Enemy.prototype = {
                 bullets = [];
             }
         }
-
+        return !(this.pos[x] > dim[x] || this.pos[x] < 0 || this.pos[y] > dim[y] || this.pos[y] < 0)
     },
     die : function(a){
         this.dead = true;
@@ -506,17 +512,40 @@ setInterval(function(){
     }
 
     if(rightDown){
-        ship.boost(ship.angle, Math.tanh(ship.dist/1000 + Math.PI / 4) + .5);
+        ship.boost(ship.angle, Math.tanh(ship.dist/1000 + Math.PI / 4) * 2 - .5);
     }
 
+    quad = quad.map(z => z.map(e => e.map(i => [])))
     ship.move();
     
     for (i = 0; i < stars.length; i++) {
         stars[i].moment();
     }
 
+        //[Math.floor(ship.pos[x] / dim[x] * 10), Math.floor(ship.pos[y] / dim[y] * 10)]
     for (i = 0; i < enemies.length; i++) {
-        enemies[i].move();
+        if(enemies[i].move()){
+            for(var f = 0; f < quad[Math.floor(enemies[i].pos[x] / dim[x] * l)][Math.floor(enemies[i].pos[y] / dim[y] * l)][0].length; f++){
+                var bul = quad[Math.floor(enemies[i].pos[x] / dim[x] * l)][Math.floor(enemies[i].pos[y] / dim[y] * l)][0][f];
+                if(isCollide(bul.elem, enemies[i].elem)){
+                    bul.dep = true;
+                    if(enemies[i].type == "flyer"){
+                        enemies[i].v[x] *= 1.75;
+                        enemies[i].v[y] *= 1.75;
+                        enemies[i].type = "flyerhurt";
+                        return;
+                    }
+                    enemies[i].die(true);
+                }
+            }
+        }
+    }
+    for(var f = 0; f < quad[Math.floor(ship.pos[x] / dim[x] * l)][Math.floor(ship.pos[y] / dim[y] * l)][1].length; f++){
+        var bul = quad[Math.floor(ship.pos[x] / dim[x] * l)][Math.floor(ship.pos[y] / dim[y] * l)][1][f];
+        if(isCollide(bul.elem, ship.elem)){
+            bul.dep = true;
+            ship.die();
+        }
     }
 
     for (i = 0; i < powers.length; i++) {

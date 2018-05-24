@@ -8,7 +8,6 @@
 }
 
 #ship{
-    pointer-events: none;
     transition: transform .05s
 }
 
