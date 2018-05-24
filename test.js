@@ -72,6 +72,7 @@ $(document)
         })
         .on('touchmove', function (event) {
             mouse = [event.originalEvent.touches[0].clientX,event.originalEvent.touches[0].clientY];
+            event.preventDefault()
         })
         .on('touchend', function () {
             mouseDown = false;
