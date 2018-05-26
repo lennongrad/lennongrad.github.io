@@ -3,13 +3,13 @@ var y = 1;
 var dim = [$(window).width(),$(window).height()];
 var mouse = [x,y]
 
-
 httpRequest = new XMLHttpRequest();
+httpRequest.withCredentials = true; 
 httpRequest.onreadystatechange = function(){
 
 };
 if (location.hostname === "" || location.hostname === "localhost"){
-    httpRequest.open('GET', "spacestar.xml", true);
+    httpRequest.open('GET', 'http://localhost/spacestar.xml', true);
 } else {
     httpRequest.open('GET', 'http://www.lennongrad.com/spacestar.xml', true);
 }
