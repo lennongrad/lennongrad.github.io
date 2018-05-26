@@ -3,7 +3,7 @@ var y = 1;
 var dim = [$(window).width(),$(window).height()];
 var mouse = [x,y]
 
-httpRequest = new XMLHttpRequest();
+/*httpRequest = new XMLHttpRequest();
 httpRequest.withCredentials = true; 
 httpRequest.onreadystatechange = function(){
 
@@ -13,7 +13,7 @@ if (location.hostname === "" || location.hostname === "localhost"){
 } else {
     httpRequest.open('GET', 'http://www.lennongrad.com/spacestar.xml', true);
 }
-httpRequest.send();
+httpRequest.send();*/
 
 document.onmousemove = function(event){
     mouse = [event.clientX,event.clientY];
