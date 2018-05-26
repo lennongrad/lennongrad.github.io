@@ -3,6 +3,13 @@ var y = 1;
 var dim = [$(window).width(),$(window).height()];
 var mouse = [x,y]
 
+httpRequest = new XMLHttpRequest();
+httpRequest.onreadystatechange = function(a){
+
+};
+httpRequest.open('GET', 'http://www.lennongrad.com/spacestar.xml', true);
+httpRequest.send();
+
 document.onmousemove = function(event){
     mouse = [event.clientX,event.clientY];
 }
@@ -72,7 +79,6 @@ $(document)
         })
         .on('touchmove', function (event) {
             mouse = [event.originalEvent.touches[0].clientX,event.originalEvent.touches[0].clientY];
-            event.preventDefault()
         })
         .on('touchend', function () {
             mouseDown = false;

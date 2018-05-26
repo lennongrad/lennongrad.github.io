@@ -64,9 +64,8 @@
     text-align: center;
 }
 
-html, body{
+body{
     overflow: hidden;
     background-color: black;
     user-select: none;
-    position: relative;
 }

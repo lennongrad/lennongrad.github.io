@@ -1051,19 +1051,10 @@ $(document).mouseup(function(){
             return;
         }
         
-        if(hover == "M" && mixer.willAllowAdd(1)){
+        if(hover == "M" && mixer.willAllowAdd(1) && selected.substring(4).split(" ")[0].substring(0,1) != "M"){
             mixer.add(toMove);
-        } else if(hover == "M" && !mixer.willAllowAdd(1)){
-            var temp = mixer.contains[0];
-            mixer.remove(0); 
-            holder.remove(selected.substring(4).split(" ")[1] - 1)
-            mixer.add(toMove)
-            holder.add(temp);
-            renderMen();    
-            setTimeout(function(){
-                renderMen();
-            }, 50);
-            return;
+        } else if(hover == "M" && selected.substring(4).split(" ")[0].substring(0,1) == "M"){
+            return
         }
 
         if(hover.substring(0,1) == "F" && fighting[hover.substring(1) - 1].willAllowAdd(1)){
