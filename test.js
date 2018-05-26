@@ -3,11 +3,16 @@ var y = 1;
 var dim = [$(window).width(),$(window).height()];
 var mouse = [x,y]
 
+
 httpRequest = new XMLHttpRequest();
-httpRequest.onreadystatechange = function(a){
+httpRequest.onreadystatechange = function(){
 
 };
-httpRequest.open('GET', 'http://www.lennongrad.com/spacestar.xml', true);
+if (location.hostname === "" || location.hostname === "localhost"){
+    httpRequest.open('GET', "spacestar.xml", true);
+} else {
+    httpRequest.open('GET', 'http://www.lennongrad.com/spacestar.xml', true);
+}
 httpRequest.send();
 
 document.onmousemove = function(event){
