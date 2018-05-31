@@ -1,4 +1,11 @@
-#chartdiv {
-    width: 100%;
-    height: 500px;
-  }
+.electron{
+  position: absolute;
+  border-radius: 100%;
+  display: inline-block;
+  background-color: #66FF66
+}
+
+.atom{
+  border-radius: 10%;
+  position: absolute
+}
