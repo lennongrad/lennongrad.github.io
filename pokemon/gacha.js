@@ -1,5 +1,6 @@
 var version = "C2";
 document.getElementById("version").innerHTML = "Version " + version;
+
 var LEFT = 0;
 var RIGHT = 1;
 var BERRY = 0;
@@ -1493,7 +1494,7 @@ var renderAll = function(){
             continue;
         }
         if(fighting[setPair(i)[0]].contains.length == 1 && fighting[setPair(i)[1]].contains.length == 1 && fighting[setPair(i)[0]].contains[0].hp > 0 && document.getElementById("POKE" + fighting[i].prefix + " 1") != undefined){
-            fighting[i].bouncey+=.75;
+            fighting[i].bouncey+=.4;
             if(fighting[i].bouncey > 100){
                 fighting[i].bouncey = 0;
             }
@@ -1508,7 +1509,7 @@ var renderAll = function(){
             } else if (fighting[i].bouncey > 35 && fighting[i].bouncey < 45){
                 document.getElementById("POKE" + fighting[i].prefix + " 1").childNodes[0].style.transform += "translate(" + (Math.cos(fighting[i].bouncey * 1.5) * 5) + "px, 0)"
 
-                if(fighting[i].bouncey == 36 + 1.5){
+                if(fighting[i].bouncey < 35.5 && fighting[i].bouncey > 35){
                     var damaged = fighting[getPair(i, true)].contains[0].attack(fighting[getPair(i, false)].contains[0]);
                     fighting[getPair(i, false)].dmg = "-" + fighting[getPair(i, false)].contains[0].defend(damaged[0]);
                     fighting[getPair(i, false)].dmgFly = 0;
@@ -1542,7 +1543,7 @@ var renderAll = function(){
                         var found = getMon(fighting[setPair(i)[1]].catchable, fighting[setPair(i)[1]].levelBase, 1, 1);
                         fighting[setPair(i)[1]].contains.push(new Pokemon("", found[0], (.0001 > Math.random()), found[1], false, Math.floor(Math.random() * 25),0,0))
                     }
-                    renderMen()
+                    //renderMen()
                 }
 
             } else {
@@ -1592,7 +1593,7 @@ var renderAll = function(){
     }
 
     if(shakeOn){
-        scale = scale + 7;
+        scale = scale + 4;
         $('#shake').css('transform', 'scale(' + (.15 + Math.abs(.5 - (scale / 100))) + ')')
         document.getElementById("shake").style.opacity = 2 - (scale / 100);
     
@@ -1616,4 +1617,4 @@ var renderAll = function(){
 updateItems();
 setInterval(function(){
     renderAll();
-}, 45)
+}, 15)
