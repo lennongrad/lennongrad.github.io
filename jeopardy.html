@@ -4,6 +4,7 @@
 </head>
 <body>
         <input type="text" id="a">
+        <input type="text" id="c">
         <div id="b"></div>
     <script>
         pD = [,{name:"Bulbasaur"}
@@ -813,7 +814,30 @@
 ,{name:"Stakataka"}
 ,{name:"Blacephalon"}
 ,{name:"Zeraora"}]
-        var a = function(b){
+        var letter = function(x){
+            x = x.split("").map(function(z){return z.toUpperCase()})
+            var final = Array(26).fill(0)
+            for(var i = 0; i < x.length; i++){
+                if(x[i] != "-")
+                final[x[i].charCodeAt(0) - 65]++
+            }
+            return final
+        }
+
+        var comp = function(x,y){
+            x = letter(x)
+            y = letter(y)
+            var final = true
+            for(var i = 0; i < x.length; i++){
+                if(y[i] > x[i] && x[i] != 0){
+                    final = false
+                }
+            }
+            return final
+        }
+
+        var a = function(b,x){
+            x = x.split(" ").map(function(z){return z.toUpperCase()})
             b = b.split(" ").reduce(function(c,d){return c + d})
             var c = []
             for(var i = 1; i < pD.length; i++){
@@ -823,9 +847,9 @@
             }
             var d = []
             for(var i = 0; i < c.length; i++){
-                var end = true;
+                var end = comp(b,c[i])
                 for(var e = 0; e < c[i].length; e++){
-                    if(c[i][e].toUpperCase() != b[e].toUpperCase() && b[e] != "-"){
+                    if((c[i][e].toUpperCase() != b[e].toUpperCase() && b[e] != "-") || (x.includes(c[i][e].toUpperCase()))){
                         end = false
                     }
                 }
@@ -835,10 +859,9 @@
             }
             return d
         }
-        document.getElementById('a').onkeydown = function(event) {
+        document.body.onkeydown = function(event) {
             if (event.keyCode == 13) {
-                var f = a(document.getElementById('a').value)
-                console.log(f)
+                var f = a(document.getElementById('a').value, document.getElementById('c').value)
                 document.getElementById("b").innerHTML = "";
                 for(var i = 0; i < f.length; i++){
                     document.getElementById("b").innerHTML += "<br>" + f[i]
