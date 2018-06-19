@@ -27,7 +27,11 @@ document.onmousedown = function(e) {
         drawPoints()
     }
     if(e.which == 3){
-        points.push(new Point(mouse, pointTypes.power,getRandomColour()))
+        var final = getRandomColour()
+        while(final.hsl().s > .9){
+            final = getRandomColour()
+        }
+        points.push(new Point(mouse, pointTypes.power,final))
         drawPoints()
     }
 }
@@ -37,20 +41,34 @@ document.onmouseup = function() {
 
 var holdCtrl = false;
 var holdShift = false;
+var holdSpace = false;
+var holdAlt = false;
 document.addEventListener('keydown', function (event) {
     if (event.keyCode == 17) {
         holdCtrl = true;
+        points = []
+        document.getElementById("whole").innerHTML = ""
     }
     if (event.keyCode == 16) {
         holdShift = true;
         genRandomPoint()
         drawPoints()
     }
+    if (event.keyCode == 32) {
+        holdSpace = true;
+    }
+    if (event.keyCode == 66) {
+        holdAlt = true;
+    }
+    if (event.keyCode == 13) {
+        points = points.map(function(a){var b = a; b.colour.val = {r: 255, g: 255, b: 255}; return b})
+    }
 });
 document.addEventListener('keyup', function (event) {
     holdCtrl = false;
     holdShift = false;
-    lastSelected = "";
+    holdAlt = false;
+    holdSpace = false;
 });
 
 var distance = function(p1, p2){
@@ -65,6 +83,30 @@ class Colour{
     value(){
         return "rgb(" + this.val.r + "," + this.val.g + "," + this.val.b + ")"
     }
+
+    hsl(){
+        var adj = {r: this.val.r / 255, g: this.val.g / 255, b: this.val.b / 255}
+        var max = Math.max(adj.r, adj.g, adj.b)
+        var min = Math.min(adj.r, adj.g, adj.b)
+        var h, s, l = (max + min) / 2;
+      
+        if (max == min) {
+          h = s = 0; // achromatic
+        } else {
+          var d = max - min;
+          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      
+          switch (max) {
+            case adj.r: h = (adj.g - adj.b) / d + (adj.g < adj.b ? 6 : 0); break;
+            case adj.g: h = (adj.b - adj.r) / d + 2; break;
+            case adj.b: h = (adj.r - adj.g) / d + 4; break;
+          }
+      
+          h /= 6;
+        }
+      
+        return {h: h, s: s, l: l};
+    }
 }
 
 var add = function(x,y,b1,b2){
@@ -73,6 +115,8 @@ var add = function(x,y,b1,b2){
     if(b1 == undefined || b2 == undefined){
         return new Colour((x.r + y.r) / 2,(x.g + y.g) / 2,(x.b + y.b) / 2)
     } else {
+        b1 = Math.max(0, b1)
+        b2 = Math.max(0, b2)
         return new Colour(
             (b1 * x.r + b2 * y.r) / (b1 + b2),
             (b1 * x.g + b2 * y.g) / (b1 + b2),
@@ -89,15 +133,21 @@ class Point{
         this.p = p;
         this.type = type
         this.colour = new Colour(255,255,255)
+        this.connections = 0
         this.constColour = constColour_
         this.elem = document.createElement("DIV")
         this.elem.className = "point"
-        document.body.appendChild(this.elem)
+        document.getElementById("whole").appendChild(this.elem)
     }
 
     draw(){
         if(this.constColour != undefined && this.type == pointTypes.power){
-            this.colour = this.constColour
+            this.colour.val = this.constColour.val
+        }
+        if(holdAlt){
+            this.elem.className = "point glow" 
+        } else {
+            this.elem.className = "point"
         }
         this.elem.style.left = this.p.x + "px"
         this.elem.style.top = this.p.y + "px"
@@ -110,12 +160,15 @@ class Point{
 }
 
 var drawPoints = function(){
+    points = points.map(function(a){var b = a; b.connections = 0; return b})
     ctx.clearRect(0,0,canvas.width,canvas.height)
     for(var i = 0; i < points.length; i++){
         for(var e = i + 1; e < points.length; e++){
             if(distance(points[e].p, points[i].p) < 300){
-                points[e].colour = add(points[e].colour, points[i].colour,900,1)
-                points[i].colour = add(points[e].colour, points[i].colour,1,900)
+                points[e].connections++
+                points[i].connections++
+                points[e].colour = add(points[e].colour, points[i].colour,distance(points[e].p, points[i].p) * 4 + (80 * points[i].connections),1)
+                points[i].colour = add(points[e].colour, points[i].colour,1,distance(points[e].p, points[i].p) * 4 + (80 * points[e].connections))
                 ctx.beginPath();
                 ctx.moveTo(points[e].p.x + 5,points[e].p.y + 5);
                 ctx.lineTo(points[i].p.x + 5,points[i].p.y + 5);
@@ -148,7 +201,11 @@ var genRandomPoint = function(type,amt,constColour){
     }
     for(var i = 0; i < e; i++){
         if(constColour != undefined){
-            constColour = getRandomColour()
+            var final = getRandomColour()
+            while(final.hsl().s > .9){
+                final = getRandomColour()
+            }
+            constColour = final 
         }
         points.push(new Point({x: 10 + Math.random() * ($(window).width() - 20), y: 10 + Math.random() * ($(window).height() - 20)}, type, constColour))
     }
