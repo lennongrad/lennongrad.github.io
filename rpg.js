@@ -151,7 +151,8 @@ var people = {
     hayden: new Unit("Hayden", "Student"),
     lorenzo: new Unit("Lorenzo", "Musician"),
     nick: new Unit("Nick", "Programmer"),
-    rick: new Unit("Rick", "Artist")
+    rick: new Unit("Rick", "Artist"),
+    paige: new Unit("Paige", "Cutie")
 }
 
 var recruit = function(){
