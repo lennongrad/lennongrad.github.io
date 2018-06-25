@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html> 
+<head>
+    <title>RPG</title>
+    <!-- <meta name="description" content="A fun game!">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@brockdilley" />
+    <meta name="twitter:title" content="Pokémon: Catch Em" />
+    <meta name="twitter:description" content="Catch Pokémon and have them battle automatically! <br>Catch Em All!" />
+    <link rel="icon" href="catchem.ico" type="image/x-icon">
+    <meta name="twitter:image" content="https://i.imgur.com/LG0k3wB.png" /-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="rpg.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+</head>
+<body oncontextmenu="return false">
+    <template id="unit_data_temp">
+            <div class="unit_data">
+                <div class="unit_portrait">
+                    <img src="rpg\nick.png">
+                </div>
+                <table>
+                    <tr>
+                        <td colspan=2><span class="unit_name">Nick</span> <span class="unit_level">(Lvl. 3 Programmer)</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan=2 class="unit_status">
+                            <div class="status_atk">ATK +10</div>
+                            <div class="status_poison">Poison</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="unit_health_bar"><div style="width: 100%"></div><span>Health</span></td>
+                        <td class="unit_health_number">69 / 420</td>
+                    </tr>
+                    <tr>
+                        <td class="unit_tech_bar"><div style="width: 90%"></div><span>Tech</span></td>
+                        <td class="unit_tech_number">69 / 420</td>
+                    </tr>
+                    <tr>
+                        <td class="unit_speed_bar"><div style="width: 10%"></div><span>Speed</span></td>
+                        <td class="unit_speed_number">69</td>
+                    </tr>
+                </table>
+                <div class="unit_experience">
+                    <div class="unit_experience_bar" style="height:69%"></div>
+                </div>
+                <div class="unit_inspiration">
+                    <div class="unit_inspiration_bar" style="height:85%"></div>
+                </div>
+            </div>
+    </template>
+    <div style="width: 200px; height:150px; background-color: #6666FF; border-radius: 20px; position: absolute; right: 300px; top: 300px; text-align: center; line-height: 150px" onclick="recruit()">Recruit Now</div>
+    <div id="footer"><a href="https://zieghost.deviantart.com">Check out Ziegs' sweet art pad he made the art here i love him</a></div>
+    <div id="back"></div>
+    <script src="rpg.js"></script>
+    <script>
+        var bArray = [];
+        var sArray = [2,3]
+        $(document).ready(function($){
+            for (var i = sArray.sort().reverse()[0] - 1; i < 11 - sArray.sort().reverse()[0]; i++) {
+                bArray.push(i);
+            }
+        })
+        
+        setInterval(function(){
+            if($(".unit_experience_bar").height() / 100 < Math.random()){
+                return
+            }
+            var size = randomValue(sArray)
+            $('.unit_experience_bar').append('<div class="individual-bubble" style="bottom:0%; left: ' + randomValue(bArray) + 'px; width: ' + size + 'px; height:' + size + 'px;"></div>');
+            $('.unit_inspiration_bar').append('<div class="individual-bubble" style="bottom:0%; left: ' + randomValue(bArray) + 'px; width: ' + size + 'px; height:' + size + 'px;"></div>');
+            $('.individual-bubble').animate({
+               'bottom': '97%',
+                'opacity' : '-=0.7'
+            }, 4000, function(){
+                $(this).remove()
+            });
+        }, 450)
+    </script>
+</body>
+</html>

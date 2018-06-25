@@ -1,0 +1,177 @@
+.unit_data{
+    text-align:left;
+    display:block;
+    margin-bottom: 6px;
+    height:115px;
+    background-color: rgba(255, 255, 255, 0.7);
+    width:437px;
+    border:5px solid white;
+    opacity:.72;
+    transition: opacity .4s;
+    border-top-left-radius: 100px;
+    border-bottom-left-radius: 100px;
+    user-select:none;
+    cursor: pointer
+}
+
+.unit_data:hover{
+    opacity:1
+}
+
+.unit_data table{
+    display: inline-block;
+    text-align:center;
+    height:105px;
+    width: 282px;
+    margin-top:5px;
+    margin-bottom:5px;
+}
+
+.unit_health_bar, .unit_tech_bar, .unit_speed_bar{
+    text-align:left; 
+    display: inline-block;
+    width: 210px;
+    background-color: #333333;
+    border-radius: 8px;
+    height:12px;
+    padding:2px;
+}
+
+.unit_health_bar div, .unit_tech_bar div, .unit_speed_bar div{
+    height:12px;
+    border-radius: 8px;
+    transition: width 1s
+}
+
+.unit_health_bar span, .unit_tech_bar span, .unit_speed_bar span{
+    position: relative;
+    bottom:16px;
+    left:5px;
+    font-size: 12px;
+    font-variant: small-caps;
+    color: white;
+}
+
+.unit_health_bar div{
+    background-color: rgb(240, 40, 40)
+}
+
+.unit_tech_bar div{
+    background-color: rgb(5, 185, 5)
+}
+
+.unit_speed_bar div{
+    background-color: rgb(10, 167, 179)
+}
+
+.unit_experience{
+    display: inline-block;
+    position:relative;
+    background-color: #333333;
+    width:15px;
+    height:100%;
+}
+
+.unit_experience_bar{
+    margin-left:2px;
+    width:11px;
+    position: absolute;
+    bottom:2px;
+    background-color: rgb(34, 192, 255);
+    transition: height 1s
+}
+
+.unit_inspiration{
+    display: inline-block;
+    position:relative;
+    background-color: #333333;
+    width:15px;
+    height:100%;
+}
+
+.unit_inspiration_bar{
+    margin-left:2px;
+    width:11px;
+    position: absolute;
+    bottom:2px;
+    background-color: rgb(214, 188, 41);
+    transition: height 1s
+}
+
+.unit_status{
+    height:20px
+}
+
+.unit_status div{
+    display:inline-block;
+    height:14px;
+    padding: 3px;
+    border-radius:5px;
+    font-size: 16px;
+    margin-left: 3px;
+    font-variant: small-caps;
+}
+
+.unit_portrait{
+    display:inline-block;
+    width: 110px;
+}
+
+.unit_portrait:hover{
+    opacity: 1;
+}
+
+.unit_portrait img{
+    width: 115px;
+    height:115px;
+    border-radius: 100%;
+}
+
+.unit_level, .unit_health_number, .unit_tech_number, .unit_speed_number{
+    font-size: small;
+    font-variant: small-caps;
+    width:100%;
+}
+
+#back{
+    position: fixed;
+    z-index:-5;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background: linear-gradient(#DDDDDD, #AAAAAA) no-repeat
+}
+
+.status_poison{
+    background-color: rgb(204, 102, 204)
+}
+
+.status_atk{
+    background-color: rgb(233, 88, 88)
+}
+    
+.individual-bubble {
+    position: absolute;
+    border-radius: 100%;
+    background-color: #ffffff;
+    z-index: 1;
+}
+
+#footer{
+    position: absolute;
+    left:0;
+    bottom:0;
+    width: 100%;
+    height: 20px;
+    background-color: black;
+    color:white;
+}
+
+a:visited{
+    color:white
+}
+
+body{
+    font-family:Arial;
+}
