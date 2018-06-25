@@ -70,10 +70,11 @@ var statuses = ["Poison", "ATK"]
 class Unit{
     constructor(name_, class_){
         this.name = name_
-        this.classes = [
-            {class: class_, level: Math.ceil(Math.random() * 100)}
-        ]
-        this.activeClass = 0;
+        this.classes = []
+        for(var i in class_){
+            this.classes.push({class: class_[i], level: Math.ceil(Math.random() * 100)})
+        }
+        this.activeClass = Math.floor(Math.random() * this.classes.length);
 
         this.experience = Math.random() * 100;
         this.inspiration = Math.random() * 100;
@@ -143,16 +144,16 @@ class Unit{
 }
 
 var people = {
-    jasper: new Unit("Jasper", "Smasher"),
-    tucker: new Unit("Tucker", "Animator"),
-    mason: new Unit("Mason", "Teacher"),
-    sam: new Unit("Sam", "Baller"),
-    bean: new Unit("Bean", "Spriter"),
-    hayden: new Unit("Hayden", "Student"),
-    lorenzo: new Unit("Lorenzo", "Musician"),
-    nick: new Unit("Nick", "Programmer"),
-    rick: new Unit("Rick", "Artist"),
-    paige: new Unit("Paige", "Cutie")
+    jasper: new Unit("Jasper",   ["Artist", "Writer", "Admin"]),
+    tucker: new Unit("Tucker",   ["Artist", "Writer", "Animator", "Voice Actor", "Fortniter"]),
+    mason: new Unit("Mason",     ["Artist", "Writer", "Student", "Teacher", "Fortniter"]),
+    sam: new Unit("Sam",         ["Artist", "Baller"]),
+    bean: new Unit("Bean",       ["Artist", "Programmer", "Spriter"]),
+    hayden: new Unit("Hayden",   ["Artist", "Student", "Pro Smasher"]),
+    lorenzo: new Unit("Lorenzo", ["Artist", "Programmer", "Animator", "Spriter", "Musician"]),
+    nick: new Unit("Nick",       ["Artist", "Spriter", "Musician", "Programmer"]),
+    rick: new Unit("Rick",       ["Artist", "Spriter"]),
+    paige: new Unit("Paige",     ["Artist", "Spriter", "Programmer"])
 }
 
 var recruit = function(){
