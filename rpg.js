@@ -29,6 +29,9 @@ document.onmouseup = function() {
     mouseDown = false;
 }     
 
+var active = 0
+var party = [];
+
 var holdCtrl = false;
 var holdShift = false;
 var holdSpace = false;
@@ -97,14 +100,43 @@ class Unit{
         }
 
         this.recruited = false
+        this.coords = {x: undefined, y: undefined}
 
         this.dataElem = document.getElementById("unit_data_temp").content.cloneNode(true).querySelector("div")
+        this.dataElem.onclick = function(){
+            var temp = party.map(function(a){return a.dataElem}).indexOf(this)
+            if(temp != undefined){
+                active = temp
+                console.log(temp)
+            }
+            updateBoard()
+        }
+        this.spriteElem = document.createElement("IMG")
+        this.spriteElem.className = "sprite_ally"
+        this.spriteElem.src = "rpg/ally.gif"
+        this.spriteElem.onclick = function(){
+            var temp = party.map(function(a){return a.spriteElem}).indexOf(this)
+            if(temp != undefined){
+                active = temp
+                console.log(temp)
+            }
+        }
+        
         this.updateCondition()
         this.updateData()
     }
 
     updateData(){
+        var partyPosition = party.indexOf(this)
+        console.log(this)
         this.dataElem.getElementsByClassName("unit_portrait")[0].getElementsByTagName("img")[0].src = "rpg/" + this.name.toLowerCase() + ".png"
+        if(partyPosition != undefined){
+            switch(partyPosition){
+                case 0: this.spriteElem.style.filter = ""; break;
+                case 1: this.spriteElem.style.filter = "grayscale(.4) hue-rotate(30deg)"; break;
+                case 2: this.spriteElem.style.filter = "grayscale(1)"; break;
+            }
+        }
 
         this.dataElem.getElementsByClassName("unit_health_bar")[0].getElementsByTagName("div")[0].style.width = (this.health / this.stats.maxHealth * 100) + "%"
         this.dataElem.getElementsByClassName("unit_tech_bar")[0].getElementsByTagName("div")[0].style.width = (this.tech / this.stats.maxTech * 100) + "%"
@@ -143,7 +175,7 @@ class Unit{
     }
 }
 
-var people = {
+var allies = {
     jasper: new Unit("Jasper",   ["Artist", "Writer", "Admin"]),
     tucker: new Unit("Tucker",   ["Artist", "Writer", "Animator", "Voice Actor", "Fortniter"]),
     mason: new Unit("Mason",     ["Artist", "Writer", "Student", "Teacher", "Fortniter"]),
@@ -156,14 +188,78 @@ var people = {
     paige: new Unit("Paige",     ["Artist", "Spriter", "Programmer"])
 }
 
-var recruit = function(){
-    var x = Object.keys(people)
-    var y
+var recruit = function(person){
+    var x = Object.keys(allies)
+    var y = allies[x[Math.floor(Math.random() * x.length)]]
     var z = 0
-    do{
-        y = people[x[Math.floor(Math.random() * x.length)]]
+    if(person != undefined){
+        y = allies[person]
+    }
+    while(y.recruited && z < 10){
+        y = allies[x[Math.floor(Math.random() * x.length)]]
         z++
-    }while(y.recruited && z < 10)
+    }
+    if(z > 8){
+        return;
+    }
     y.recruited = true
     document.body.appendChild(y.dataElem)
+    party.push(y)
+    y.updateData()
 }
+
+var board = Array(6)
+for(var i = 0; i < 6; i++){
+     board[i] = []
+}
+for(var i = 0; i < 3; i++){
+    var trow = document.createElement("TR")
+    for(var e = 0; e < 6; e++){
+        board[e][i] = document.createElement("TD")
+        if(e < 3){
+            board[e][i].className = "platform_ally"
+        } else {
+            board[e][i].className = "platform_enemy"
+        }
+        board[e][i].setAttribute("x", e)
+        board[e][i].setAttribute("y", i)
+        board[e][i].onclick = function(){
+            var tC = {x: this.getAttribute("x"), y: this.getAttribute("y")}
+            if(getBoard(tC.x, tC.y) == undefined && tC.x < 3){
+                party[active].coords = {x: tC.x, y: tC.y};
+            }
+            updateBoard()
+        }
+        trow.appendChild(board[e][i])
+    }   
+    document.getElementById("battle").appendChild(trow)
+}
+
+var updateBoard = function(){
+    for(var i = 0; i < party.length; i++){
+        var tC = party[i].coords
+        if(tC.x != undefined && tC.y != undefined){
+            board[tC.x][tC.y].innerHTML = ""
+            board[tC.x][tC.y].appendChild(party[i].spriteElem)
+        }
+        party[i].spriteElem.style.filter = ""
+        party[i].updateData()
+    }
+    party[active].spriteElem.style.filter += " drop-shadow(0px 0px 5px white) drop-shadow(0px 0px 5px white)"
+}
+
+var getBoard = function(x,y){
+    for(var i = 0; i < party.length; i++){
+        if(party[i].coords.x == x && party[i].coords.y == y){
+            return party[i]
+        }
+    }
+    return undefined
+}
+
+
+recruit("bean"); recruit(); recruit(); 
+party[0].coords = {x: 0, y: 0} 
+party[1].coords = {x: 0, y: 1} 
+party[2].coords = {x: 0, y: 2}
+updateBoard()

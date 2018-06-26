@@ -53,8 +53,9 @@
                 </div>
             </div>
     </template>
-    <div style="width: 200px; height:150px; background-color: #6666FF; border-radius: 20px; position: absolute; right: 300px; top: 300px; text-align: center; line-height: 150px" onclick="recruit()">Recruit Now</div>
-    <div id="footer"><a href="https://zieghost.deviantart.com">Check out Ziegs' sweet art pad he made the art here i love him</a></div>
+    <table id="battle">
+    </table>
+    <div id="footer"><a href="https://zieghost.deviantart.com">Check out Ziegs!</a></div>
     <div id="back"></div>
     <script src="rpg.js"></script>
     <script>
@@ -67,9 +68,6 @@
         })
         
         setInterval(function(){
-            if($(".unit_experience_bar").height() / 100 < Math.random()){
-                return
-            }
             var size = randomValue(sArray)
             $('.unit_experience_bar').append('<div class="individual-bubble" style="bottom:0%; left: ' + randomValue(bArray) + 'px; width: ' + size + 'px; height:' + size + 'px;"></div>');
             $('.unit_inspiration_bar').append('<div class="individual-bubble" style="bottom:0%; left: ' + randomValue(bArray) + 'px; width: ' + size + 'px; height:' + size + 'px;"></div>');

@@ -2,16 +2,16 @@
     text-align:left;
     display:block;
     margin-bottom: 6px;
-    height:115px;
+    height:100px;
     background-color: rgba(255, 255, 255, 0.7);
-    width:437px;
+    width:427px;
     border:5px solid white;
     opacity:.72;
     transition: opacity .4s;
     border-top-left-radius: 100px;
     border-bottom-left-radius: 100px;
     user-select:none;
-    cursor: pointer
+    cursor: pointer;
 }
 
 .unit_data:hover{
@@ -21,10 +21,11 @@
 .unit_data table{
     display: inline-block;
     text-align:center;
-    height:105px;
+    border-spacing:0px;
+    height:96px;
     width: 282px;
-    margin-top:5px;
-    margin-bottom:5px;
+    margin-top:2px;
+    margin-bottom:2px;
 }
 
 .unit_health_bar, .unit_tech_bar, .unit_speed_bar{
@@ -33,12 +34,12 @@
     width: 210px;
     background-color: #333333;
     border-radius: 8px;
-    height:12px;
+    height:10px;
     padding:2px;
 }
 
 .unit_health_bar div, .unit_tech_bar div, .unit_speed_bar div{
-    height:12px;
+    height:10px;
     border-radius: 8px;
     transition: width 1s
 }
@@ -104,17 +105,16 @@
 
 .unit_status div{
     display:inline-block;
-    height:14px;
+    height:13px;
     padding: 3px;
     border-radius:5px;
-    font-size: 16px;
+    font-size: 13px;
     margin-left: 3px;
     font-variant: small-caps;
 }
 
 .unit_portrait{
     display:inline-block;
-    width: 110px;
 }
 
 .unit_portrait:hover{
@@ -122,15 +122,20 @@
 }
 
 .unit_portrait img{
-    width: 115px;
-    height:115px;
+    width: 100px;
+    height:100px;
     border-radius: 100%;
+}
+
+.unit_name{
+    font-size:15px;
 }
 
 .unit_level, .unit_health_number, .unit_tech_number, .unit_speed_number{
     font-size: small;
     font-variant: small-caps;
     width:100%;
+    font-size:12px;
 }
 
 #back{
@@ -167,6 +172,46 @@
     height: 20px;
     background-color: black;
     color:white;
+}
+
+#battle{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    border-collapse: separate;
+    border-spacing: 10px;
+}
+
+#battle td{
+    width:80px;
+    height:64px;
+    border: 2px solid black;
+    border-radius: 2px;
+    image-rendering: pixelated;
+    background-size: 100%;
+    cursor: pointer
+}
+
+#battle td:hover {
+    transform: scale(1.1);
+    -webkit-transform: scale(1.1);
+    transition: transform .1s
+}
+
+.platform_ally{
+    background: url("rpg/platform_ally.png");
+}
+.platform_enemy{
+    background: url("rpg/platform_enemy.png");
+}
+
+.sprite_ally{
+    position: absolute;
+    transform: translateY(-80px);
+    width: 80px;
+    height:80px;
 }
 
 a:visited{
