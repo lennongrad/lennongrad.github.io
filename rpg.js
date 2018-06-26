@@ -277,6 +277,11 @@ for(var i = 0; i < 3; i++){
 }
 
 var updateBoard = function(){
+    for(var i = 0; i < board.length; i++){
+        for(var e = 0; e < board[i].length; e++){
+            board[i][e].setAttribute("move", "false")
+        }
+    }
     for(var i = 0; i < party.length; i++){
         var tC = party[i].coords
         if(tC.x != undefined && tC.y != undefined){
@@ -313,6 +318,10 @@ var getBoard = function(x,y){
         }
     }
     return undefined
+}
+
+var attack = function(){
+    board.map(function(a){return a.filter(function(a){return a.getAttribute("x") > party[active].coords.x && a.getAttribute("y") == party[active].coords.y})}).forEach(function(a){a.forEach(function(b){b.setAttribute("move", "true")})})
 }
 
 
