@@ -1,3 +1,9 @@
+#enemy_data_holder{
+    position: fixed;
+    right: 0px;
+    top: 8px;
+}
+
 .unit_data{
     text-align:left;
     display:block;
@@ -14,6 +20,14 @@
     cursor: pointer;
 }
 
+.unit_data_enemy{
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-top-right-radius: 100px;
+    border-bottom-right-radius: 100px;
+    width: 387px;
+}
+
 .unit_data:hover{
     opacity:1
 }
@@ -26,6 +40,10 @@
     width: 282px;
     margin-top:2px;
     margin-bottom:2px;
+}
+
+.unit_data_enemy table{
+    width: 282px;
 }
 
 .unit_health_bar, .unit_tech_bar, .unit_speed_bar{
@@ -181,7 +199,7 @@
     -webkit-transform: translateX(-50%) translateY(-50%);
     transform: translateX(-50%) translateY(-50%);
     border-collapse: separate;
-    border-spacing: 10px;
+    border-spacing: 12px;
 }
 
 #battle td{
@@ -191,7 +209,7 @@
     border-radius: 2px;
     image-rendering: pixelated;
     background-size: 100%;
-    cursor: pointer
+    cursor: pointer;
 }
 
 #battle td:hover {
@@ -212,6 +230,27 @@
     transform: translateY(-80px);
     width: 80px;
     height:80px;
+}
+
+[src^="rpg/enemy_sprite"]{
+    transform: translateY(-70px)
+}
+
+[move="true"]{
+    animation-duration: .3s;
+    animation-name: upDown;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    position: relative;
+}
+
+@keyframes upDown {
+    0% {
+        top: 2px
+    }
+    100% {
+        top: -2px
+    }
 }
 
 a:visited{
