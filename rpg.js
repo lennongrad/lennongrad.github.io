@@ -122,7 +122,7 @@ class Unit{
             this.spriteElem.src = "rpg/ally_sprite_" + "bean" + ".gif"
         } else {
             this.dataElem = document.getElementById("unit_data_temp_enemy").content.cloneNode(true).querySelector("div")
-            this.spriteElem.src = "rpg/enemy_sprite_" + this.name + ".gif"
+            this.spriteElem.src = "rpg/enemy_sprite_" + this.name.toLowerCase() + ".gif"
             this.speed = 0;
         }
         this.dataElem.onclick = function(){
