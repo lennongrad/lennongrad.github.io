@@ -233,7 +233,52 @@
 }
 
 [src^="rpg/enemy_sprite"]{
+    position: absolute;
     transform: translateY(-70px)
+}
+
+[hit="right"],[hit="left"]{
+}
+
+[hit="right"]{
+    animation: hitRight .5s 1, hit .2s 2
+}
+
+[hit="left"]{
+    animation: hitLeft .5s 1, hit .2s 2
+}
+
+@keyframes hit{
+    0% {
+        filter: grayscale(0) 
+    }
+    45%{
+        filter: grayscale(0) 
+    }
+    46%{
+        filter: grayscale(1) brightness(1000%) 
+    }
+    100%{
+        filter: grayscale(1) brightness(1000%) 
+    }
+}
+
+@keyframes hitRight{
+    0%{
+        margin-left: 0px;
+    }
+    100%{
+        margin-left: 10px
+    }
+}
+
+@keyframes hitLeft{
+    0%{
+        margin-right: 0px;
+    }
+    100%{
+        margin-right: 10px
+    }
 }
 
 [move="true"]{

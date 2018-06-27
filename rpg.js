@@ -77,7 +77,11 @@ var copyInstance = function(original) {
       original
     );
     return copied;
-  }
+}
+
+var toFile = function(a){
+    return a.toLowerCase().replace(/ /g,"_")
+}
 
 var statuses = ["Poison", "ATK"]
 
@@ -122,7 +126,7 @@ class Unit{
             this.spriteElem.src = "rpg/ally_sprite_" + "bean" + ".gif"
         } else {
             this.dataElem = document.getElementById("unit_data_temp_enemy").content.cloneNode(true).querySelector("div")
-            this.spriteElem.src = "rpg/enemy_sprite_" + this.name.toLowerCase() + ".gif"
+            this.spriteElem.src = "rpg/enemy_sprite_" + toFile(this.name) + ".gif"
             this.speed = 0;
         }
         this.dataElem.onclick = function(){
@@ -145,13 +149,10 @@ class Unit{
 
     updateData(){
         var partyPosition = party.indexOf(this)
-        if(partyPosition != undefined){
-            switch(partyPosition){
-                case 0: this.spriteElem.style.filter = ""; break;
-                case 1: this.spriteElem.style.filter = "grayscale(.4) hue-rotate(30deg)"; break;
-                case 2: this.spriteElem.style.filter = "grayscale(1)"; break;
-            }
+        if(this.alignment && partyPosition > -1){
+            this.spriteElem.src = "rpg/ally_sprite_" + "bean" + "_" + partyPosition + ".gif"
         }
+        this.spriteElem.removeAttribute("hit")
 
         this.dataElem.getElementsByClassName("unit_health_bar")[0].getElementsByTagName("div")[0].style.width = (this.health / this.stats.maxHealth * 100) + "%"
         this.dataElem.getElementsByClassName("unit_tech_bar")[0].getElementsByTagName("div")[0].style.width = (this.tech / this.stats.maxTech * 100) + "%"
@@ -164,7 +165,7 @@ class Unit{
         this.dataElem.getElementsByClassName("unit_status")[0].innerHTML = ""
         for(var i = 0; i < this.statuses.length; i++){
             var newStatus = document.createElement("div")
-            newStatus.className = "status_" + this.statuses[i].type.toLowerCase()
+            newStatus.className = "status_" + toFile(this.statuses[i].type)
             newStatus.innerHTML = this.statuses[i].type
             if(this.statuses[i].type == "ATK"){
                 newStatus.innerHTML += "+" + this.statuses[i].modifier   
@@ -177,9 +178,9 @@ class Unit{
             this.dataElem.getElementsByClassName("unit_level")[0].innerHTML = "(Lvl. " + this.classes[this.activeClass].level + " " + this.classes[this.activeClass].class + ")"
             this.dataElem.getElementsByClassName("unit_experience_bar")[0].style.height = this.experience + "%"
             this.dataElem.getElementsByClassName("unit_inspiration_bar")[0].style.height = this.inspiration + "%"
-            this.dataElem.getElementsByClassName("unit_portrait")[0].getElementsByTagName("img")[0].src = "rpg/ally_portrait_" + this.name.toLowerCase() + ".png"
+            this.dataElem.getElementsByClassName("unit_portrait")[0].getElementsByTagName("img")[0].src = "rpg/ally_portrait_" + toFile(this.name) + ".png"
         } else {
-            this.dataElem.getElementsByClassName("unit_portrait")[0].getElementsByTagName("img")[0].src = "rpg/enemy_portrait_" + this.name.toLowerCase() + ".png"
+            this.dataElem.getElementsByClassName("unit_portrait")[0].getElementsByTagName("img")[0].src = "rpg/enemy_portrait_" + toFile(this.name) + ".png"
         }
     }
 
@@ -216,7 +217,9 @@ var allies = {
 }
 
 var enemies = {
-    met: new Unit("Met", false)
+    met: new Unit("Met", false),
+    meta: new Unit("Met Alpha", false),
+    metb: new Unit("Met Beta", false)
 }
 
 var recruit = function(person){
@@ -320,8 +323,13 @@ var getBoard = function(x,y){
     return undefined
 }
 
-var attack = function(){
+var preview = function(){
     board.map(function(a){return a.filter(function(a){return a.getAttribute("x") > party[active].coords.x && a.getAttribute("y") == party[active].coords.y})}).forEach(function(a){a.forEach(function(b){b.setAttribute("move", "true")})})
+}
+
+var attack = function(){
+    updateBoard()
+    board.map(function(a){return a.filter(function(a){return a.getAttribute("x") > party[active].coords.x && a.getAttribute("y") == party[active].coords.y})}).forEach(function(a){a.forEach(function(b){if(b.childNodes[0] != undefined){b.childNodes[0].setAttribute("hit","right")}})})
 }
 
 
@@ -329,8 +337,11 @@ recruit("bean"); recruit(); recruit();
 party[0].coords = {x: 0, y: 0} 
 party[1].coords = {x: 0, y: 1} 
 party[2].coords = {x: 0, y: 2}
-spawn(); spawn(); spawn();
+spawn(); spawn(); spawn(); spawn(); spawn(); spawn();
 enemy_group[0].coords = {x: 5, y: 0}
 enemy_group[1].coords = {x: 5, y: 1}
 enemy_group[2].coords = {x: 5, y: 2}
+enemy_group[3].coords = {x: 4, y: 1}
+enemy_group[4].coords = {x: 4, y: 2}
+enemy_group[5].coords = {x: 3, y: 2}
 updateBoard()
