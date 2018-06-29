@@ -126,7 +126,7 @@ class Move{
         this.dataElem.getElementsByClassName("move_power")[0].getElementsByTagName("span")[0].innerHTML = this.power
         this.dataElem.getElementsByClassName("move_tech")[0].getElementsByTagName("span")[0].innerHTML = this.tech
         this.dataElem.getElementsByClassName("move_speed")[0].getElementsByTagName("span")[0].innerHTML = this.speed
-        this.dataElem.getElementsByClassName("move_element")[0].getElementsByTagName("img")[0].src = "rpg/move_element_" + this.element + ".png"
+        this.dataElem.getElementsByClassName("move_element")[0].getElementsByTagName("img")[0].src = "rpg/move_element_" + toFile(this.element) + ".png"
 
         if(party != undefined && party[active] != undefined){
             var position = party[active].moves.map(a => a.move).indexOf(this)
