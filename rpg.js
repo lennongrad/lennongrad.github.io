@@ -32,6 +32,7 @@ document.onmouseup = function() {
 var active = 0
 var party = [];
 var enemy_group = [];
+var animating = false
 
 var holdCtrl = false;
 var holdShift = false;
@@ -53,6 +54,12 @@ document.addEventListener('keydown', function (event) {
     if (event.keyCode == 13) {
         //
     }
+    if (event.keyCode > 48 && event.keyCode < 53) {
+        var x = event.keyCode - 49
+        if(party[active].moves.length > x){
+            party[active].attack(x)
+        }
+    }
 });
 document.addEventListener('keyup', function (event) {
     holdCtrl = false;
@@ -67,6 +74,18 @@ var distance = function(p1, p2){
 
 var randomValue = function(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
+}
+
+var spawnWarning = function(reset){
+    $("#warning").stop(true,true)
+    if(reset){
+        document.getElementById("warning").style.opacity = "0"
+    } else {
+        document.getElementById("warning").style.opacity = "1"
+        $("#warning").animate({
+            'opacity': "0"
+         }, 7500)
+    }
 }
 
 var copyInstance = function(original) {
@@ -84,9 +103,136 @@ var toFile = function(a){
 }
 
 var statuses = ["Poison", "ATK"]
+var styles = {straight: "straight", straight_pierce: "straight_pierce", all_opponents: "all_opponents", all_same: "all_same", self: "self"}
+
+class Move{
+    constructor(name_, description_, power_, tech_, speed_, style_, element_){
+        this.name = name_
+        this.description = description_
+        this.power = power_
+        this.tech = tech_
+        this.speed = speed_
+        this.element = element_
+        this.style = style_
+
+        this.dataElem = document.getElementById("move_data_temp").content.cloneNode(true).querySelector("div")
+        this.updateData()
+    }
+    
+    updateData(){
+        this.dataElem.getElementsByClassName("move_name")[0].innerHTML = this.name
+        this.dataElem.getElementsByClassName("move_description")[0].innerHTML = this.description
+        this.dataElem.getElementsByClassName("move_icon")[0].getElementsByTagName("img")[0].src = "rpg/" + this.style + ".png"
+        this.dataElem.getElementsByClassName("move_power")[0].getElementsByTagName("span")[0].innerHTML = this.power
+        this.dataElem.getElementsByClassName("move_tech")[0].getElementsByTagName("span")[0].innerHTML = this.tech
+        this.dataElem.getElementsByClassName("move_speed")[0].getElementsByTagName("span")[0].innerHTML = this.speed
+        this.dataElem.getElementsByClassName("move_element")[0].getElementsByTagName("img")[0].src = "rpg/move_element_" + this.element + ".png"
+
+        if(party != undefined && party[active] != undefined){
+            var position = party[active].moves.map(a => a.move).indexOf(this)
+            this.dataElem.onclick = function(){
+                party[active].attack(position)
+            }
+        }
+        return this.dataElem
+    }
+
+    target(unit){
+        var final = [];
+        var badMult = 1;
+        if(!unit.alignment){
+            badMult = -1
+        }
+        switch(this.style){
+            case styles.straight:
+            var exit = false
+            for(var i = unit.coords.x; i < board.length && i > -1 && !exit; i += (1 * badMult)){
+                if(getBoard(i, unit.coords.y) != undefined && getBoard(i, unit.coords.y).alignment != unit.alignment){
+                    final.push({x: i, y: unit.coords.y})
+                    exit = true
+                }
+            } 
+            break;
+            
+            case styles.straight_pierce:
+            for(var i = unit.coords.x; i < board.length && i > -1; i += (1 * badMult)){
+                if(getBoard(i, unit.coords.y) != undefined && getBoard(i, unit.coords.y).alignment != unit.alignment){
+                    final.push({x: i, y: unit.coords.y})
+                }
+            } 
+            break;
+            
+            case styles.all_opponents:
+            if(unit.alignment){
+                for(var i = 0; i < enemy_group.length; i++){
+                    final.push(enemy_group[i].coords)
+                }
+            } else {
+                for(var i = 0; i < party.length; i++){
+                    final.push(party[i].coords)
+                }
+            }
+            break;
+
+            case styles.all_same:
+            if(unit.alignment){
+                for(var i = 0; i < party.length; i++){
+                    final.push(party[i].coords)
+                }
+            } else {
+                for(var i = 0; i < enemy_group.length; i++){
+                    final.push(enemy_group[i].coords)
+                }
+            }
+            break;
+
+            case styles.self:
+            final.push(unit.coords)
+            break;
+        }
+        return final
+    }
+
+    attack(unit){
+        var targets = this.target(unit)
+        for(var i = 0; i < targets.length; i++){
+            var target = getBoard(targets[i].x, targets[i].y)
+            this.hit(unit, target)
+        }
+    }
+
+    hit(unit, target){
+        var damage = this.power
+        if(unit.alignment){
+            damage += unit.classes[unit.activeClass].level
+        } else {
+            damage /= 5
+        }
+        var bullet = document.createElement("DIV")
+        bullet.className = "bullet"
+        bullet.style.left = unit.spriteElem.getBoundingClientRect().left + 55 + "px"
+        bullet.style.top = unit.spriteElem.getBoundingClientRect().top + 45 + "px"
+        document.body.appendChild(bullet)
+        $(bullet).animate({
+           'left': target.spriteElem.getBoundingClientRect().left + "px"
+        }, 250, function(){
+            target.health -= damage
+            target.hitAnimation()
+            $(this).remove()
+        })
+        target.updateCondition()
+        updateData()
+        updateBoard()
+    }
+}
+
+var moves = {
+    shot: new Move("Shot", "Damage 1 ahead", 30, 0, 30, styles.straight, "Neutral"),
+    beam: new Move("Multi-Shot", "Damage all ahead", 10, 5, 30, styles.straight_pierce, "Neutral")
+}
 
 class Unit{
-    constructor(name_, alignment_, class_){
+    constructor(name_, alignment_, class_, moves_){
         this.name = name_
         this.alignment = alignment_;
 
@@ -94,8 +240,13 @@ class Unit{
         this.inspiration = Math.random() * 100;
         
         this.stats = {
-            maxHealth: Math.random() * 300,
-            maxTech: Math.random() * 300
+            maxHealth: Math.random() * 100 + 100,
+            maxTech: Math.random() * 100 + 100
+        }
+
+        this.moves = []
+        for(var i = 0; i < moves_.length; i++){
+            this.moves.push({move: moves_[i], level: 1, position: i, preview: false})
         }
 
         this.health = this.stats.maxHealth
@@ -119,7 +270,7 @@ class Unit{
             this.dataElem = document.getElementById("unit_data_temp").content.cloneNode(true).querySelector("div")
             this.classes = []
             for(var i in class_){
-                this.classes.push({class: class_[i], level: Math.ceil(Math.random() * 100)})
+                this.classes.push({class: class_[i], level: Math.ceil(Math.random() * 10)})
             }
             this.activeClass = Math.floor(Math.random() * this.classes.length);
             //this.spriteElem.src = "rpg/ally_sprite_" + name + ".gif"
@@ -127,12 +278,14 @@ class Unit{
         } else {
             this.dataElem = document.getElementById("unit_data_temp_enemy").content.cloneNode(true).querySelector("div")
             this.spriteElem.src = "rpg/enemy_sprite_" + toFile(this.name) + ".gif"
-            this.speed = 0;
+            this.speed = 30 * Math.random();
         }
         this.dataElem.onclick = function(){
             var temp = party.map(function(a){return a.dataElem}).indexOf(this)
             if(temp != undefined){
                 active = temp
+                party.forEach(function(a,b){if(b != active){a.dataElem.style.transform = "translateX(0)"}})
+                party[active].dataElem.style.transform = "translateX(20px)"
             }
             updateBoard()
         }
@@ -140,6 +293,8 @@ class Unit{
             var temp = party.map(function(a){return a.spriteElem}).indexOf(this)
             if(temp != undefined){
                 active = temp
+                party.forEach(function(a,b){if(b != active){a.dataElem.style.transform = "translateX(0)"}})
+                party[active].dataElem.style.transform = "translateX(20px)"
             }
         }
         
@@ -148,19 +303,21 @@ class Unit{
     }
 
     updateData(){
+        this.updateCondition()
         var partyPosition = party.indexOf(this)
         if(this.alignment && partyPosition > -1){
             this.spriteElem.src = "rpg/ally_sprite_" + "bean" + "_" + partyPosition + ".gif"
         }
-        this.spriteElem.removeAttribute("hit")
 
         this.dataElem.getElementsByClassName("unit_health_bar")[0].getElementsByTagName("div")[0].style.width = (this.health / this.stats.maxHealth * 100) + "%"
-        this.dataElem.getElementsByClassName("unit_tech_bar")[0].getElementsByTagName("div")[0].style.width = (this.tech / this.stats.maxTech * 100) + "%"
-        this.dataElem.getElementsByClassName("unit_speed_bar")[0].getElementsByTagName("div")[0].style.width = (this.speed) + "%"
-
         this.dataElem.getElementsByClassName("unit_health_number")[0].innerHTML = Math.ceil(this.health) + " / " + Math.ceil(this.stats.maxHealth)
-        this.dataElem.getElementsByClassName("unit_tech_number")[0].innerHTML = Math.ceil(this.tech) + " / " + Math.ceil(this.stats.maxTech)
-        this.dataElem.getElementsByClassName("unit_speed_number")[0].innerHTML = Math.ceil(this.speed)
+
+        if(this.alignment){
+            this.dataElem.getElementsByClassName("unit_tech_bar")[0].getElementsByTagName("div")[0].style.width = (this.tech / this.stats.maxTech * 100) + "%"
+            this.dataElem.getElementsByClassName("unit_tech_number")[0].innerHTML = Math.ceil(this.tech) + " / " + Math.ceil(this.stats.maxTech)
+            this.dataElem.getElementsByClassName("unit_speed_bar")[0].getElementsByTagName("div")[0].style.width = (this.speed) + "%"
+            this.dataElem.getElementsByClassName("unit_speed_number")[0].innerHTML = Math.ceil(this.speed)
+        }
         
         this.dataElem.getElementsByClassName("unit_status")[0].innerHTML = ""
         for(var i = 0; i < this.statuses.length; i++){
@@ -182,6 +339,7 @@ class Unit{
         } else {
             this.dataElem.getElementsByClassName("unit_portrait")[0].getElementsByTagName("img")[0].src = "rpg/enemy_portrait_" + toFile(this.name) + ".png"
         }
+        return this.dataElem
     }
 
     updateCondition(){
@@ -193,6 +351,21 @@ class Unit{
                 }
             }
         }
+        if(this.health <= 0){
+            this.health = 0
+        }
+        if(this.tech <= 0){
+            this.tech = 0
+        }
+        if(this.speed <= 0){
+            this.speed = 0
+        }
+        if(this.health > this.stats.maxHealth){
+            this.health = this.stats.maxHealth
+        }
+        if(this.tech > this.stats.maxTech){
+            this.tech = this.stats.maxTech
+        }
     }
 
     copy(){
@@ -201,25 +374,80 @@ class Unit{
         final.spriteElem = this.spriteElem.cloneNode(true)
         return final
     }
+
+    deathCheck(){
+        if(this.health < 1){
+            genExplosion(this.spriteElem.getBoundingClientRect().left + 50, this.spriteElem.getBoundingClientRect().top + 50)
+            if(this.alignment){
+                party.splice(party.indexOf(this),1)
+            } else {
+                enemy_group.splice(enemy_group.indexOf(this),1)
+            }
+            updateBoard()
+        }
+    }
+
+    hitAnimation(){
+        animating = true;
+        this.spriteElem.removeAttribute("hit")
+        if(this.alignment){
+            this.spriteElem.setAttribute("hit", "left")
+        } else{
+            this.spriteElem.setAttribute("hit", "right")
+        }
+        var temp = this
+        setTimeout(function(){
+            animating = false
+            clearAnimation()
+            temp.deathCheck()
+        }, 800)
+    }
+
+    attack(move){
+        if(this.tech >= this.moves[move].move.tech && this.speed >= this.moves[move].move.speed){
+            if(this.alignment){
+                spawnWarning(true)
+            }
+        } else {
+            if(this.alignment){
+                spawnWarning(false)
+            }
+            this.moves[move].preview = false
+            return;
+        }
+        if(!animating && (!this.alignment || this.moves[move].preview)){
+            this.tech -= this.moves[move].move.tech
+            this.speed -= this.moves[move].move.speed
+            this.moves[move].move.attack(this)
+            this.moves[move].preview = false
+            spawnWarning(true)
+        } else if(!animating){
+            for(var i = 0; i < this.moves.length; i++){
+                this.moves[i].preview = false
+            }
+            this.moves[move].preview = true;
+            preview(this.moves[move].move.target(this))
+        }
+    }
 }
 
 var allies = {
-    jasper: new Unit("Jasper", true,   ["Artist", "Writer", "Admin"]),
-    tucker: new Unit("Tucker", true,   ["Artist", "Writer", "Animator", "Voice Actor", "Fortniter"]),
-    mason: new Unit("Mason", true,     ["Artist", "Writer", "Student", "Teacher", "Fortniter"]),
-    sam: new Unit("Sam", true,         ["Artist", "Baller"]),
-    bean: new Unit("Bean", true,       ["Artist", "Programmer", "Spriter"]),
-    hayden: new Unit("Hayden", true,   ["Artist", "Student", "Pro Smasher"]),
-    lorenzo: new Unit("Lorenzo", true, ["Artist", "Programmer", "Animator", "Spriter", "Musician"]),
-    nick: new Unit("Nick", true,       ["Artist", "Spriter", "Musician", "Programmer"]),
-    rick: new Unit("Rick", true,       ["Artist", "Spriter"]),
-    paige: new Unit("Paige", true,     ["Artist", "Spriter", "Programmer"])
+    jasper: new Unit("Jasper", true,   ["Artist", "Writer", "Admin"]                               ,[moves.shot, moves.beam]),
+    tucker: new Unit("Tucker", true,   ["Artist", "Writer", "Animator", "Voice Actor", "Fortniter"],[moves.shot, moves.beam]),
+    mason: new Unit("Mason", true,     ["Artist", "Writer", "Student", "Teacher", "Fortniter"]     ,[moves.shot, moves.beam]),
+    sam: new Unit("Sam", true,         ["Artist", "Baller"]                                        ,[moves.shot, moves.beam]),
+    bean: new Unit("Bean", true,       ["Artist", "Programmer", "Spriter"]                         ,[moves.beam, moves.shot]),
+    hayden: new Unit("Hayden", true,   ["Artist", "Student", "Pro Smasher"]                        ,[moves.shot, moves.beam]),
+    lorenzo: new Unit("Lorenzo", true, ["Artist", "Programmer", "Animator", "Spriter", "Musician"] ,[moves.shot, moves.beam]),
+    nick: new Unit("Nick", true,       ["Artist", "Spriter", "Musician", "Programmer"]             ,[moves.shot, moves.beam]),
+    rick: new Unit("Rick", true,       ["Artist", "Spriter"]                                       ,[moves.shot, moves.beam]),
+    paige: new Unit("Paige", true,     ["Artist", "Spriter", "Programmer"]                         ,[moves.shot, moves.beam])
 }
 
 var enemies = {
-    met: new Unit("Met", false),
-    meta: new Unit("Met Alpha", false),
-    metb: new Unit("Met Beta", false)
+    met: new Unit("Met", false,[],[moves.shot]),
+    meta: new Unit("Met Alpha", false,[],[moves.shot]),
+    metb: new Unit("Met Beta", false,[],[moves.shot])
 }
 
 var recruit = function(person){
@@ -237,9 +465,9 @@ var recruit = function(person){
         return;
     }
     y.recruited = true
-    document.body.appendChild(y.dataElem)
+    document.getElementById("ally_data_holder").appendChild(y.dataElem)
     party.push(y)
-    y.updateData()
+    updateData()
 }
 
 var spawn = function(person){
@@ -270,7 +498,8 @@ for(var i = 0; i < 3; i++){
         board[e][i].onclick = function(){
             var tC = {x: this.getAttribute("x"), y: this.getAttribute("y")}
             if(getBoard(tC.x, tC.y) == undefined && tC.x < 3){
-                party[active].coords = {x: tC.x, y: tC.y};
+                party[active].coords = {x: Number(tC.x), y: Number(tC.y)};
+                party[active].moves.forEach(a => a.preview = false)
             }
             updateBoard()
         }
@@ -283,6 +512,7 @@ var updateBoard = function(){
     for(var i = 0; i < board.length; i++){
         for(var e = 0; e < board[i].length; e++){
             board[i][e].setAttribute("move", "false")
+            board[i][e].innerHTML = ""
         }
     }
     for(var i = 0; i < party.length; i++){
@@ -292,7 +522,6 @@ var updateBoard = function(){
             board[tC.x][tC.y].appendChild(party[i].spriteElem)
         }
         party[i].spriteElem.style.filter = ""
-        party[i].updateData()
     }
     for(var i = 0; i < enemy_group.length; i++){
         var tC = enemy_group[i].coords
@@ -300,17 +529,23 @@ var updateBoard = function(){
             board[tC.x][tC.y].innerHTML = ""
             board[tC.x][tC.y].appendChild(enemy_group[i].spriteElem)
         }
-        enemy_group[i].updateData()
     }
+    document.getElementById("move_data_holder").innerHTML = ""
+    for(var i = 0; i < party[active].moves.length; i++){
+        document.getElementById("move_data_holder").appendChild(party[active].moves[i].move.updateData())
+     }
     party[active].spriteElem.style.filter += " drop-shadow(0px 0px 5px white) drop-shadow(0px 0px 5px white)"
+    updateData()
 }
 
 var updateData = function(){
+    document.getElementById("ally_data_holder").innerHTML = ""
+    document.getElementById("enemy_data_holder").innerHTML = ""
     for(var i = 0; i < party.length; i++){
-        party[i].updateData()
+        document.getElementById("ally_data_holder").appendChild(party[i].updateData())
     }
     for(var i = 0; i < enemy_group.length; i++){
-        enemy_group[i].updateData()
+        document.getElementById("enemy_data_holder").appendChild(enemy_group[i].updateData())
     }
 }
 
@@ -320,18 +555,28 @@ var getBoard = function(x,y){
             return party[i]
         }
     }
+    for(var i = 0; i < enemy_group.length; i++){
+        if(enemy_group[i].coords.x == x && enemy_group[i].coords.y == y){
+            return enemy_group[i]
+        }
+    }
     return undefined
 }
 
-var preview = function(){
-    board.map(function(a){return a.filter(function(a){return a.getAttribute("x") > party[active].coords.x && a.getAttribute("y") == party[active].coords.y})}).forEach(function(a){a.forEach(function(b){b.setAttribute("move", "true")})})
-}
-
-var attack = function(){
+var preview = function(target){
     updateBoard()
-    board.map(function(a){return a.filter(function(a){return a.getAttribute("x") > party[active].coords.x && a.getAttribute("y") == party[active].coords.y})}).forEach(function(a){a.forEach(function(b){if(b.childNodes[0] != undefined){b.childNodes[0].setAttribute("hit","right")}})})
+    var hit = board.map(a => a.filter(b => target.some(c => c.x == b.getAttribute("x") && c.y == b.getAttribute("y"))))
+    hit.forEach(a => a.forEach(b => b.setAttribute("move", "true")))
 }
 
+var clearAnimation = function(){
+    for(var i = 0; i < party.length; i++){
+        party[i].spriteElem.removeAttribute("hit")
+    }
+    for(var i = 0; i < enemy_group.length; i++){
+        enemy_group[i].spriteElem.removeAttribute("hit")
+    }
+}
 
 recruit("bean"); recruit(); recruit(); 
 party[0].coords = {x: 0, y: 0} 
@@ -345,3 +590,83 @@ enemy_group[3].coords = {x: 4, y: 1}
 enemy_group[4].coords = {x: 4, y: 2}
 enemy_group[5].coords = {x: 3, y: 2}
 updateBoard()
+
+
+var bArray = [];
+var sArray = [2,3]
+$(document).ready(function($){
+    for (var i = sArray.sort().reverse()[0] - 1; i < 11 - sArray.sort().reverse()[0]; i++) {
+        bArray.push(i);
+    }
+})
+
+setInterval(function(){
+    var size = randomValue(sArray)
+    $('.unit_experience_bar').append('<div class="individual-bubble" style="bottom:0%; left: ' + randomValue(bArray) + 'px; width: ' + size + 'px; height:' + size + 'px;"></div>');
+    $('.unit_inspiration_bar').append('<div class="individual-bubble" style="bottom:0%; left: ' + randomValue(bArray) + 'px; width: ' + size + 'px; height:' + size + 'px;"></div>');
+    $('.individual-bubble').animate({
+       'bottom': '97%',
+        'opacity' : '-=0.9'
+    }, 4000, function(){
+        $(this).remove()
+    });
+}, 450)
+
+setInterval(function(){
+    for(var i = 0; i < party.length; i++){
+        party[i].speed += .08
+        if(party[i].speed > 100){
+            party[i].speed = 100
+            party[i].tech += .02
+            if(party[i].tech > party[i].stats.maxTech){
+                party[i].tech = party[i].stats.maxTech
+            }
+        }
+    }
+    for(var i = 0; i < enemy_group.length; i++){
+        enemy_group[i].speed += .02 + (.05 * Math.random())
+        enemy_group[i].attack(Math.floor(Math.random() * enemy_group[i].moves.length))
+        if(enemy_group[i].speed > 100){
+            enemy_group[i].speed = 100
+            enemy_group[i].tech += .1
+            if(enemy_group[i].tech > enemy_group[i].stats.maxTech){
+                enemy_group[i].tech = enemy_group[i].stats.maxTech
+            }
+        }
+    }
+    updateData()
+}, 10)
+
+// https://codepen.io/alexlyul/pen/ZoxdpR?page=1&
+let flakes = [], curTime = 0;
+function setup() {
+  createCanvas(window.innerWidth, window.innerHeight);
+}
+
+function draw() {
+    clear()
+  curTime++;
+  for(let i = 0; i < flakes.length; i++) {
+    flakes[i].pos.add(flakes[i].vel);
+    flakes[i].size--;
+    if(flakes[i].size > 0) {
+      stroke(flakes[i].color);
+      strokeWeight(flakes[i].size);
+      point(flakes[i].pos.x, flakes[i].pos.y);
+    } else {
+      flakes.splice(i, 1);
+    }
+  }
+}
+
+function genExplosion(x, y) {
+  let i = 25;
+  while(i--) {
+    flakes.push({
+      color: color(color('hsl(' + floor(random(349)) + ', 100%, 50%)')),
+      pos: createVector(x, y),
+      vel: p5.Vector.fromAngle(random(2*PI)).mult(random(10)),
+      size: random(50)
+    });
+  }
+}

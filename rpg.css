@@ -4,6 +4,78 @@
     top: 8px;
 }
 
+#ally_data_holder{
+    position: fixed;
+    left: 0px;
+    top: 8px;
+}
+
+#move_data_holder{
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index:5;
+}
+
+.move_data{
+    display: inline-block;
+    background-color: #282828;
+    border-radius: 4px;
+    color: white;
+    margin-left: 5px;
+    margin-right:5px;
+    width: 270px;
+    text-align: center;
+    border: 6px solid #1A1A1A;
+    cursor: pointer;
+    user-select: none;
+    z-index:5;
+}
+
+.move_data div{
+    display: inline-block;
+    background-color: #444444;
+    border-radius: 4px;
+    line-height: 28px;
+    height: 28px;
+    padding: 1px;
+    width: 60px;
+    text-align: left;
+}
+
+.move_data img{
+    border-radius: 4px;
+}
+
+.move_data div span{
+    margin:auto;
+    height:28px;
+    display: inline-block;
+    width:30px;
+    text-align: center;
+    vertical-align: top;
+}
+
+.move_data div img{
+    width: 28px;
+    height: 28px;
+    image-rendering: pixelated;
+}
+
+.move_element{
+    text-align: center !important;
+    background-color: #282828 !important;
+}
+
+.move_info{
+    width:100%;
+}
+
+.move_name{
+    font-weight: bold;
+}
+
 .unit_data{
     text-align:left;
     display:block;
@@ -13,7 +85,8 @@
     width:427px;
     border:5px solid white;
     opacity:.72;
-    transition: opacity .4s;
+    transform: translateX(0);
+    transition: opacity .4s, transform .5s;
     border-top-left-radius: 100px;
     border-bottom-left-radius: 100px;
     user-select:none;
@@ -25,7 +98,8 @@
     border-bottom-left-radius: 0px;
     border-top-right-radius: 100px;
     border-bottom-right-radius: 100px;
-    width: 387px;
+    width: 353px;
+    height: 66px;
 }
 
 .unit_data:hover{
@@ -44,6 +118,7 @@
 
 .unit_data_enemy table{
     width: 282px;
+    height: 60px;
 }
 
 .unit_health_bar, .unit_tech_bar, .unit_speed_bar{
@@ -145,6 +220,11 @@
     border-radius: 100%;
 }
 
+.unit_data_enemy .unit_portrait img{
+    width: 66px;
+    height: 66px;
+}
+
 .unit_name{
     font-size:15px;
 }
@@ -197,9 +277,10 @@
     left: 50%;
     top: 50%;
     -webkit-transform: translateX(-50%) translateY(-50%);
-    transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%) translateZ(50%);
     border-collapse: separate;
     border-spacing: 12px;
+    perspective-origin: left;
 }
 
 #battle td{
@@ -208,8 +289,10 @@
     border: 2px solid black;
     border-radius: 2px;
     image-rendering: pixelated;
+    -webkit-image-rendering: pixelated;
     background-size: 100%;
     cursor: pointer;
+    perspective:200px;
 }
 
 #battle td:hover {
@@ -230,6 +313,17 @@
     transform: translateY(-80px);
     width: 80px;
     height:80px;
+}
+
+.bullet{
+    position: absolute;
+    width: 30px;
+    height: 24px;
+    border: 2px solid black;
+    border-radius: 100%;
+    background-color: white;
+    left: 10px;
+    top: 10px;
 }
 
 [src^="rpg/enemy_sprite"]{
@@ -298,10 +392,47 @@
     }
 }
 
+@keyframes gyrate{
+    0%{
+        transform: scale(1)
+    }
+    100%{
+        transform: scale(1.05)
+    }
+}
+
+#warning{
+    position: fixed;
+    bottom: 40px;
+    left: 20px;
+    background-color: green;
+    color: white;
+    border: 4px solid darkgreen;
+    border-radius: 6px;
+    text-align: center;
+    width: 400px;
+    padding: 10px;
+    
+    animation-duration: .5s;
+    animation-name: gyrate;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
 a:visited{
     color:white
 }
 
+.p5Canvas{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+}
+
 body{
     font-family:Arial;
+    overflow: hidden
 }

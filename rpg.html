@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="rpg.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/p5.js"></script>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 </head>
@@ -69,50 +70,39 @@
                         <td class="unit_health_bar"><div style="width: 100%"></div><span>Health</span></td>
                         <td class="unit_health_number">69 / 420</td>
                     </tr>
-                    <tr>
-                        <td class="unit_tech_bar"><div style="width: 90%"></div><span>Tech</span></td>
-                        <td class="unit_tech_number">69 / 420</td>
-                    </tr>
-                    <tr>
-                        <td class="unit_speed_bar"><div style="width: 10%"></div><span>Speed</span></td>
-                        <td class="unit_speed_number">69</td>
-                    </tr>
                 </table>
                 <div class="unit_portrait">
                     <img src="rpg\nick.png">
                 </div>
             </div>
     </template>
-    <div id="enemy_data_holder">
-
+    <template id="move_data_temp">
+        <div class="move_data">
+            <table>
+                <tr>
+                    <td class="move_icon"><img src="rpg/straight.png"/> </td>
+                    <td class="move_info"><span class="move_name">Shot</span><br><span class="move_description">Damage 1 ahead</span></td>
+                </tr>
+                <tr><td colspan=2>
+                    <div class="move_power"><img src="rpg/move_power.png"/><span>999</span></div>
+                    <div class="move_tech"><img src="rpg/move_tech.png"/><span>99</span></div>
+                    <div class="move_speed"><img src="rpg/move_speed.png"/><span>9</span></div>
+                    <div class="move_element"><img src="rpg/move_element_neutral.png"/></div>
+                </td></tr>
+            </table>
+        </div>
+    </template>
+    <div id="move_data_holder">
     </div>
-    <div style="position: fixed; left: 20px; bottom: 100px; width: 250px; height: 150px; line-height: 150px; border: 2px solid black; font-size: 20px; text-align: center; background-color: cyan; color: black; border-radius: 15px" onclick="preview()">Preview</div>
-    <div style="position: fixed; left: 320px; bottom: 100px; width: 250px; height: 150px; line-height: 150px; border: 2px solid black; font-size: 20px; text-align: center; background-color: red; color: black; border-radius: 15px" onclick="attack()">Attack</div>
+    <div id="ally_data_holder"></div>
+    <div id="enemy_data_holder"></div>
+    <div id="warning" style="opacity: 0" onclick="spawnWarning(true)">
+        <span style="font-weight: bold">--- WARNING ---</span><br>This Move takes up more Tech or Speed than the Unit currently has available.
+    </div>
     <table id="battle">
     </table>
     <div id="footer"><a href="https://zieghost.deviantart.com">Check out Ziegs!</a></div>
     <div id="back"></div>
     <script src="rpg.js"></script>
-    <script>
-        var bArray = [];
-        var sArray = [2,3]
-        $(document).ready(function($){
-            for (var i = sArray.sort().reverse()[0] - 1; i < 11 - sArray.sort().reverse()[0]; i++) {
-                bArray.push(i);
-            }
-        })
-        
-        setInterval(function(){
-            var size = randomValue(sArray)
-            $('.unit_experience_bar').append('<div class="individual-bubble" style="bottom:0%; left: ' + randomValue(bArray) + 'px; width: ' + size + 'px; height:' + size + 'px;"></div>');
-            $('.unit_inspiration_bar').append('<div class="individual-bubble" style="bottom:0%; left: ' + randomValue(bArray) + 'px; width: ' + size + 'px; height:' + size + 'px;"></div>');
-            $('.individual-bubble').animate({
-               'bottom': '97%',
-                'opacity' : '-=0.7'
-            }, 4000, function(){
-                $(this).remove()
-            });
-        }, 450)
-    </script>
 </body>
 </html>
