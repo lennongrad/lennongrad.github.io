@@ -670,3 +670,6 @@ function genExplosion(x, y) {
     });
   }
 }
+
+party.forEach(function(a,b){if(b != active){a.dataElem.style.transform = "translateX(0)"}})
+party[active].dataElem.style.transform = "translateX(20px)"
