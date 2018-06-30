@@ -26,11 +26,16 @@
     margin-left: 5px;
     margin-right:5px;
     width: 270px;
+    height:107px;
     text-align: center;
     border: 6px solid #1A1A1A;
     cursor: pointer;
     user-select: none;
     z-index:5;
+}
+
+.move_data_bottom{
+    height:39px;
 }
 
 .move_data div{
@@ -75,6 +80,10 @@
 
 .move_info{
     width:100%;
+}
+
+.move_icon{
+    height:62px;
 }
 
 .move_name{
@@ -140,7 +149,7 @@
 .unit_health_bar div, .unit_tech_bar div, .unit_speed_bar div{
     height:10px;
     border-radius: 8px;
-    transition: width 1s
+    transition: width 10s
 }
 
 .unit_health_bar span, .unit_tech_bar span, .unit_speed_bar span{
@@ -336,6 +345,54 @@
     top: 10px;
 }
 
+.beam{
+    position: absolute;
+    height: 20px;
+    width: 200%;
+    opacity: .75;
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px 5px turquoise;
+    
+    animation-duration: .5s;
+    animation-name: beam;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+@keyframes beam{
+    0%{
+        transform: scaleY(1)
+    }
+    50%{
+        transform: scaleY(1.5)
+    }
+    100%{
+        transform: scaleY(1)
+    }
+}
+
+.heart{
+    position: absolute;
+    image-rendering: pixelated;
+    
+    animation-duration: 1s;
+    animation-name: heart;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+@keyframes heart{
+    0%{
+        transform: scale(1);
+        opacity: 1
+    }
+    100%{
+        transform: scale(5);
+        opacity: 0
+    }
+}
+
 [src^="rpg/enemy_sprite"]{
     position: absolute;
     transform: translateY(-70px)
@@ -440,7 +497,7 @@
 }
 
 a:visited{
-    color:white
+    color:white;
 }
 
 .p5Canvas{

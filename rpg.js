@@ -135,7 +135,7 @@ var statuses = ["Poison", "STR+", "STR-", "VIT+", "VIT-", "STM+", "STM-", "AGI+"
 var styles = {straight: "straight", straight_pierce: "straight_pierce", all_opponents: "all_opponents", all_same: "all_same", self: "self"}
 
 class Move{
-    constructor(name_, description_, power_, tech_, speed_, style_, element_){
+    constructor(name_, description_, power_, tech_, speed_, style_, element_, properties_, animation_, effect_){
         this.name = name_
         this.description = description_
         this.power = power_
@@ -143,6 +143,9 @@ class Move{
         this.speed = speed_
         this.element = element_
         this.style = style_
+        this.properties = properties_
+        this.animation = animation_
+        this.effect = effect_
 
         this.dataElem = document.getElementById("move_data_temp").content.cloneNode(true).querySelector("div")
         this.updateData()
@@ -225,22 +228,43 @@ class Move{
     attack(unit){
         var targets = this.target(unit)
         var exp = 0
+        if(targets.length != 0){
+            this.effect(unit, targets)
+        }
         for(var i = 0; i < targets.length; i++){
             var target = getBoard(targets[i].x, targets[i].y)
-            exp += this.hit(unit, target)
+            exp += this.hit(unit, target, targets.length)
         }
         return {targets: targets.length > 0, exp: exp}
     }
 
-    hit(unit, target){
+    hit(unit, target, targetLength){
         var experience = 0
         unit.updateStats()
         target.updateStats()
         var damage = this.power
-        damage *= unit.stats.strength / target.stats.vitality
-        if(target.alignment){
+        if(this.properties.heal != true){
+            damage *= unit.stats.strength / target.stats.vitality
+        }
+        if(this.properties.split){
+            damage /= targetLength
+        }
+        if(target.alignment && this.properties.heal != true){
             damage /= 4
         }
+        this.animation(unit, target, damage)
+        if(target.health - damage <= 0){
+            experience += target.stats.maxHealth / unit.classes[unit.activeClass].level * 2.5
+        }
+        target.updateCondition()
+        updateData()
+        updateBoard()
+        return experience
+    }
+}
+
+var moves = {
+    shot: new Move("Shot", "Damage 1 ahead", 30, 0, 30, styles.straight, "Neutral", {}, function(unit, target, damage){
         var bullet = document.createElement("DIV")
         bullet.className = "bullet"
         bullet.style.left = unit.spriteElem.getBoundingClientRect().left + 55 + "px"
@@ -253,19 +277,51 @@ class Move{
             target.hitAnimation()
             $(this).remove()
         })
-        if(target.health - damage <= 0){
-            experience += target.stats.maxHealth / unit.classes[unit.activeClass].level * 2.5
-        }
-        target.updateCondition()
-        updateData()
-        updateBoard()
-        return experience
-    }
-}
-
-var moves = {
-    shot: new Move("Shot", "Damage 1 ahead", 30, 0, 30, styles.straight, "Neutral"),
-    beam: new Move("Multi-Shot", "Damage all ahead", 10, 5, 30, styles.straight_pierce, "Neutral")
+    }, function(){}),
+    multishot: new Move("Multi-Shot", "Damage all ahead", 15, 5, 30, styles.straight_pierce, "Neutral", {}, function(unit, target, damage){
+        var bullet = document.createElement("DIV")
+        bullet.className = "bullet"
+        bullet.style.left = unit.spriteElem.getBoundingClientRect().left + 55 + "px"
+        bullet.style.top = unit.spriteElem.getBoundingClientRect().top + 45 + "px"
+        document.body.appendChild(bullet)
+        $(bullet).animate({
+           'left': target.spriteElem.getBoundingClientRect().left + "px"
+        }, 250, function(){
+            target.health -= damage
+            target.hitAnimation()
+            $(this).remove()
+        })
+    }, function(){}),
+    beam: new Move("Beam", "Damage all ahead (split)", 35, 6, 30, styles.straight_pierce, "Neutral", {split: true}, function(unit, target, damage){
+        setTimeout(function(){
+            target.health -= damage
+            target.hitAnimation()
+        }, 150)
+    }, function(unit, targets){
+        var beam = document.createElement("DIV")
+        beam.className = "beam"
+        beam.style.left = unit.spriteElem.getBoundingClientRect().left + 75 + "px"
+        if(!unit.alignment){
+            beam.style.left = unit.spriteElem.getBoundingClientRect().left - ($(window).width() * 2) + "px"
+        } 
+        beam.style.top = unit.spriteElem.getBoundingClientRect().top + 45 + "px"
+        document.body.appendChild(beam)
+        setTimeout(function(){
+            $(beam).remove()
+        }, 500)
+    }),
+    heal_all: new Move("Heal All", "Heals all Allies", 15, 5, 30, styles.all_same, "Neutral", {heal: true}, function(unit, target, damage){
+        var heart = document.createElement("IMG")
+        heart.className = "heart"
+        heart.src = "rpg/heal_heart.png"
+        heart.style.left = target.spriteElem.getBoundingClientRect().left + 30 + "px"
+        heart.style.top = target.spriteElem.getBoundingClientRect().top + 45 + "px"
+        document.body.appendChild(heart)
+        setTimeout(function(){
+            target.health += damage
+            $(heart).remove()
+        }, 1000)
+    }, function(){ })
 }
 
 class Skill{
@@ -288,13 +344,9 @@ class Class{
         this.moves = moves_
     }
 
-    statBonus(level, main, base){
+    statBonus(level, main, unit){
         var final = {}
-        if(base != undefined){
-            final = base
-        } else {
-            final = {maxHealth: 0, maxTech: 0, strength: 0, vitality: 0, stamina: 0, agility: 0}
-        }
+        final = {maxHealth: 0, maxTech: 0, strength: 0, vitality: 0, stamina: 0, agility: 0}
         var keys = Object.keys(final)
         var basis = level + Math.floor(level / 10) * 5
         if(main){
@@ -303,20 +355,50 @@ class Class{
         for(var i = 0; i < keys.length; i++){
             final[keys[i]] = Math.ceil(final[keys[i]] + basis * this.stats[keys[i]])
         }
+        if(unit.alignment){
+            final.maxHealth *= 3
+        }
         return final;
     }
 }
 
 var classes = {
-    gamer: new Class("Gamer",           {maxHealth: .4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, [skills.test], [moves.shot, moves.beam]),
-    writer: new Class("Writer",         {maxHealth: .4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, [skills.test], [moves.shot, moves.beam]),
-    animator: new Class("Animator",     {maxHealth: .4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, [skills.test], [moves.shot, moves.beam]),
-    student: new Class("Student",       {maxHealth: .4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, [skills.test], [moves.shot, moves.beam]),
-    spriter: new Class("Spriter",       {maxHealth: .4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, [skills.test], [moves.shot, moves.beam]),
-    programmer: new Class("Programmer", {maxHealth: .4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, [skills.test], [moves.shot, moves.beam]),
-    musician: new Class("Musician",     {maxHealth: .4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, [skills.test], [moves.shot, moves.beam]),
-    artist: new Class("Artist",         {maxHealth: .4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, [skills.test], [moves.shot, moves.beam]),
-    met: new Class("Met",               {maxHealth: .4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, [skills.test], [moves.shot, moves.beam])
+    gamer: new Class("Gamer",           
+        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        [skills.test], 
+        [moves.shot, moves.beam]),
+    writer: new Class("Writer",         
+        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        [skills.test], 
+        [moves.shot, moves.beam]),
+    animator: new Class("Animator",     
+        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        [skills.test], 
+        [moves.shot, moves.beam]),
+    student: new Class("Student",       
+        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        [skills.test], 
+        [moves.shot, moves.beam]),
+    spriter: new Class("Spriter",       
+        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        [skills.test], 
+        [moves.shot, moves.beam]),
+    programmer: new Class("Programmer", 
+        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1},
+        [skills.test], 
+        [moves.shot, moves.beam, moves.heal_all]),
+    musician: new Class("Musician",     
+        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        [skills.test], 
+        [moves.shot, moves.beam]),
+    artist: new Class("Artist",         
+        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        [skills.test], 
+        [moves.shot, moves.beam]),
+    met: new Class("Met",               
+        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        [skills.test], 
+        [moves.shot])
 }
 
 class Unit{
@@ -405,7 +487,7 @@ class Unit{
     updateStats(){
         var final = this.base
         for(var i = 0; i < this.classes.length; i++){
-            final = addObj(final, this.classes[i].class.statBonus(this.classes[i].level, i == this.activeClass))
+            final = addObj(final, this.classes[i].class.statBonus(this.classes[i].level, i == this.activeClass, this))
         }
         this.stats = final
     }
@@ -437,7 +519,7 @@ class Unit{
         this.dataElem.getElementsByClassName("unit_name")[0].innerHTML = this.name
         if(this.alignment){
             this.dataElem.getElementsByClassName("unit_level")[0].innerHTML = "(Lvl. " + this.classes[this.activeClass].level + " " + this.classes[this.activeClass].class.name + ")"
-            this.dataElem.getElementsByClassName("unit_experience_bar")[0].style.height = Math.max(5, this.classes[this.activeClass].experience / expCap(this.classes[this.activeClass].level) * 100) + "%"
+            this.dataElem.getElementsByClassName("unit_experience_bar")[0].style.height = Math.min(96, 100 * (Math.max(.05, this.classes[this.activeClass].experience / expCap(this.classes[this.activeClass].level)))) + "%"
             this.dataElem.getElementsByClassName("unit_inspiration_bar")[0].style.height = Math.max(5, this.inspiration) + "%"
             this.dataElem.getElementsByClassName("unit_portrait")[0].getElementsByTagName("img")[0].src = "rpg/ally_portrait_" + toFile(this.name) + ".png"
         } else {
@@ -482,9 +564,10 @@ class Unit{
         }
         for(var i = 0; i < this.classes.length; i++){
             if(this.classes[i].experience > expCap(this.classes[i].level)){
-                this.classes[i].experience = 0
+                this.classes[i].experience -= expCap(this.classes[i].level)
                 this.classes[i].level += 1
                 this.updateStats()
+                this.health = this.stats.maxHealth
             }
         }
     }
@@ -557,20 +640,20 @@ class Unit{
 }
 
 var expCap = function(level){
-    return 100 * Math.pow(level, .75)
+    return 100 * Math.pow(level, .78)
 }
 
 var allies = {
     jasper: new Unit("Jasper", true,   ["Artist", "Writer", "Gamer"]       ,{maxHealth: 15, maxTech: 05, strength: 30, vitality: 25, stamina: 5, agility: 10}),
     tucker: new Unit("Tucker", true,   ["Student", "Writer", "Animator"]   ,{maxHealth: 15, maxTech: 20, strength: 10, vitality: 15, stamina: 15, agility: 10}),
     mason: new Unit("Mason", true,     ["Artist", "Writer", "Student"]     ,{maxHealth: 15, maxTech: 05, strength: 20, vitality: 35, stamina: 10, agility: 05}),
-    sam: new Unit("Sam", true,         ["Artist", "Spriter", "Gamer"]      ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}),
-    bean: new Unit("Bean", true,       ["Artist", "Programmer", "Spriter"] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}),
+    sam: new Unit("Sam", true,         ["Artist", "Spriter", "Gamer"]      ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}), //
+    bean: new Unit("Bean", true,       ["Artist", "Programmer", "Spriter"] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}), //
     hayden: new Unit("Hayden", true,   ["Artist", "Student", "Gamer"]      ,{maxHealth: 27, maxTech: 14, strength: 13, vitality: 15, stamina: 08, agility: 13}),
     lorenzo: new Unit("Lorenzo", true, ["Artist", "Writer", "Musician"]    ,{maxHealth: 10, maxTech: 36, strength: 05, vitality: 13, stamina: 10, agility: 14}),
-    nick: new Unit("Nick", true,       ["Artist", "Musician", "Programmer"],{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}),
-    rick: new Unit("Rick", true,       ["Artist", "Spriter", "Gamer"]      ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}),
-    paige: new Unit("Paige", true,     ["Artist", "Spriter", "Programmer"] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15})
+    nick: new Unit("Nick", true,       ["Artist", "Musician", "Programmer"],{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}), //
+    rick: new Unit("Rick", true,       ["Artist", "Spriter", "Gamer"]      ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}), //
+    paige: new Unit("Paige", true,     ["Artist", "Spriter", "Programmer"] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15})  //
 }
 
 var enemies = {
@@ -665,10 +748,12 @@ var updateBoard = function(){
         }
     }
     document.getElementById("move_data_holder").innerHTML = ""
-    for(var i = 0; i < party[active].moves.length; i++){
-        document.getElementById("move_data_holder").appendChild(party[active].moves[i].move.updateData())
-     }
-    party[active].spriteElem.style.filter += " drop-shadow(0px 0px 5px white) drop-shadow(0px 0px 5px white)"
+    if(party[active] != undefined){
+        for(var i = 0; i < party[active].moves.length; i++){
+            document.getElementById("move_data_holder").appendChild(party[active].moves[i].move.updateData())
+        }
+        party[active].spriteElem.style.filter += " drop-shadow(0px 0px 5px white) drop-shadow(0px 0px 5px white)"
+    }
     updateData()
 }
 
