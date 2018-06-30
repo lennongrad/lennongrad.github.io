@@ -68,11 +68,17 @@
     background-color: #282828 !important;
 }
 
+.move_element img{
+    width: 34px !important;
+    height: 32px !important;
+}
+
 .move_info{
     width:100%;
 }
 
 .move_name{
+    font-family: MoonBold;
     font-weight: bold;
 }
 
@@ -250,8 +256,12 @@
     background-color: rgb(204, 102, 204)
 }
 
-.status_atk{
+.status_str\+, .status_vit\+, .status_stm\+, .status_agi\+{
     background-color: rgb(233, 88, 88)
+}
+
+.status_str\-, .status_vit\-, .status_stm\-, .status_agi\-{
+    background-color: rgb(91, 88, 233)
 }
     
 .individual-bubble {
@@ -417,6 +427,16 @@
     animation-name: gyrate;
     animation-iteration-count: infinite;
     animation-direction: alternate;
+}
+
+@font-face{
+    font-family: "Moon";
+    src: url('Moon Light.otf')
+}
+
+@font-face{
+    font-family: "MoonBold";
+    src: url('Moon Bold.otf')
 }
 
 a:visited{
