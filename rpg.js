@@ -62,7 +62,9 @@ var keys = {
 }
 
 document.addEventListener('keydown', function (event) {
-    console.log(event.keyCode)
+    if(party.length < 1){
+        return;
+    }
     switch(event.keyCode){
         case keys.characterA: active = 0; updateBoard(); updateData(); break;
         case keys.characterB: active = 1; updateBoard(); updateData(); break;
@@ -96,7 +98,7 @@ var randomValue = function(arr) {
 
 var newMessage = function(msg){
     var full = false
-    if([].slice.call(document.getElementById("message_holder").childNodes[1].childNodes).filter(a => a.nodeName == "SPAN") > 40){
+    if([].slice.call(document.getElementById("message_holder").childNodes[1].childNodes).filter(a => a.nodeName == "SPAN").length > 40){
         full = true
         $([].slice.call(document.getElementById("message_holder").childNodes[1].childNodes).filter(a => a.nodeName == "SPAN")[0]).remove()
     }
@@ -783,8 +785,6 @@ for(var i = 0; i < 3; i++){
 }
 
 var updateBoard = function(){
-    party.forEach(function(a,b){if(b != active){a.dataElem.style.transform = "translateX(0)"}})
-    party[active].dataElem.style.transform = "translateX(20px)"
     for(var i = 0; i < board.length; i++){
         for(var e = 0; e < board[i].length; e++){
             board[i][e].setAttribute("move", "false")
@@ -808,6 +808,8 @@ var updateBoard = function(){
     }
     document.getElementById("move_data_holder").innerHTML = ""
     if(party[active] != undefined){
+        party.forEach(function(a,b){if(b != active){a.dataElem.style.transform = "translateX(0)"}})
+        party[active].dataElem.style.transform = "translateX(20px)"
         for(var i = 0; i < party[active].moves.length; i++){
             document.getElementById("move_data_holder").appendChild(party[active].moves[i].move.updateData())
         }
