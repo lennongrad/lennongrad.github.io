@@ -70,19 +70,19 @@ document.addEventListener('keydown', function (event) {
         case keys.characterB: active = 1; updateBoard(); updateData(); break;
         case keys.characterC: active = 2; updateBoard(); updateData(); break;
         case keys.move1: 
-            if(party[active].moves.length >= 0){
+            if(party[active].moves.length > 0){
                 party[active].attack(0)
             }; break;
         case keys.move2: 
-            if(party[active].moves.length >= 1){
+            if(party[active].moves.length > 1){
                 party[active].attack(1)
             }; break;
         case keys.move3: 
-        if(party[active].moves.length >= 2){
+        if(party[active].moves.length > 2){
             party[active].attack(2)
         }; break;
         case keys.move4: 
-            if(party[active].moves.length >= 3){
+            if(party[active].moves.length > 3){
                 party[active].attack(3)
             }; break;
     }
@@ -103,6 +103,7 @@ var newMessage = function(msg){
         $([].slice.call(document.getElementById("message_holder").childNodes[1].childNodes).filter(a => a.nodeName == "SPAN")[0]).remove()
     }
     $(document.getElementById("message_holder").childNodes[1]).append("<span>" + msg + "</span>")
+    document.getElementById("message_holder").scrollTop = 600
     return full
 }
 
@@ -161,7 +162,7 @@ var addObj = function(a,b,c,d){
     return final
 }
 
-var statuses = ["Poison", "STR+", "STR-", "VIT+", "VIT-", "STM+", "STM-", "AGI+", "AGI-"]
+var statuses = ["Poison", "Burn", "Depressed", "Dizzy", "Shocked", "STR+", "STR-", "VIT+", "VIT-", "STM+", "STM-", "AGI+", "AGI-"]
 var styles = {straight: "straight", straight_pierce: "straight_pierce", all_opponents: "all_opponents", all_same: "all_same", self: "self"}
 
 class Move{
@@ -301,7 +302,7 @@ class Move{
 }
 
 var moves = {
-    shot: new Move("Shot", "Damage 1 ahead", 30, 0, 30, styles.straight, "Neutral", {}, function(unit, target, damage){
+    shot: new Move("Shot", "Damage 1 ahead", 30, 0, 20, styles.straight, "Neutral", {}, function(unit, target, damage){
         var bullet = document.createElement("DIV")
         bullet.className = "bullet"
         bullet.style.left = unit.spriteElem.getBoundingClientRect().left + 55 + "px"
@@ -316,7 +317,7 @@ var moves = {
             $(this).remove()
         })
     }, function(){}),
-    multishot: new Move("Multi-Shot", "Damage all ahead", 15, 5, 30, styles.straight_pierce, "Neutral", {}, function(unit, target, damage){
+    multishot: new Move("Multi-Shot", "Damage all ahead", 15, 5, 20, styles.straight_pierce, "Neutral", {}, function(unit, target, damage){
         var bullet = document.createElement("DIV")
         bullet.className = "bullet"
         bullet.style.left = unit.spriteElem.getBoundingClientRect().left + 55 + "px"
@@ -330,7 +331,53 @@ var moves = {
             $(this).remove()
         })
     }, function(){}),
-    beam: new Move("Beam", "Damage all ahead (split)", 35, 6, 30, styles.straight_pierce, "Neutral", {split: true}, function(unit, target, damage){
+    poison_needle: new Move("Poison Needle", "Poison 1 ahead", 5, 6, 25, styles.straight, "Earth", {}, function(unit, target, damage){
+        var bullet = document.createElement("DIV")
+        bullet.className = "bullet poison_bullet"
+        bullet.style.left = unit.spriteElem.getBoundingClientRect().left + 55 + "px"
+        bullet.style.top = unit.spriteElem.getBoundingClientRect().top + 45 + "px"
+        document.body.appendChild(bullet)
+        $(bullet).animate({
+           'left': target.spriteElem.getBoundingClientRect().left + "px"
+        }, 250, function(){
+            target.health -= damage
+            target.statuses.push({type: "Poison", length: 4000})
+            target.hitAnimation()
+            $(this).remove()
+        })
+    }, function(){}),
+    sick_burn: new Move("Sick Burn", "Burn 1 ahead", 5, 6, 25, styles.straight, "Fire", {}, function(unit, target, damage){
+        var bullet = document.createElement("DIV")
+        bullet.className = "bullet burn_bullet"
+        bullet.style.left = unit.spriteElem.getBoundingClientRect().left + 55 + "px"
+        bullet.style.top = unit.spriteElem.getBoundingClientRect().top + 45 + "px"
+        document.body.appendChild(bullet)
+        $(bullet).animate({
+           'left': target.spriteElem.getBoundingClientRect().left + "px",
+           'height': "35px"
+        }, 250, function(){
+            target.health -= damage
+            target.statuses.push({type: "Burn", length: 2500})
+            target.hitAnimation()
+            $(this).remove()
+        })
+    }, function(){}),
+    power_spark: new Move("Power Spark", "Shock 1 ahead", 5, 6, 25, styles.straight, "Electric", {}, function(unit, target, damage){
+        var bullet = document.createElement("DIV")
+        bullet.className = "bullet shocked_bullet"
+        bullet.style.left = unit.spriteElem.getBoundingClientRect().left + 55 + "px"
+        bullet.style.top = unit.spriteElem.getBoundingClientRect().top + 45 + "px"
+        document.body.appendChild(bullet)
+        $(bullet).animate({
+           'left': target.spriteElem.getBoundingClientRect().left + "px"
+        }, 250, function(){
+            target.health -= damage
+            target.statuses.push({type: "Shocked", length: 900})
+            target.hitAnimation()
+            $(this).remove()
+        })
+    }, function(){}),
+    beam: new Move("Beam", "Damage all ahead (split)", 35, 6, 20, styles.straight_pierce, "Neutral", {split: true}, function(unit, target, damage){
         setTimeout(function(){
             target.health -= damage
             target.hitAnimation()
@@ -401,11 +448,11 @@ var classes = {
     gamer: new Class("Gamer",           
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
-        [moves.shot, moves.beam]),
+        [moves.shot, moves.beam, moves.sick_burn]),
     writer: new Class("Writer",         
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
-        [moves.shot, moves.beam]),
+        [moves.shot, moves.beam, moves.heal_all]),
     animator: new Class("Animator",     
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
@@ -417,11 +464,11 @@ var classes = {
     spriter: new Class("Spriter",       
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
-        [moves.shot, moves.beam]),
+        [moves.shot, moves.beam, moves.poison_needle]),
     programmer: new Class("Programmer", 
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1},
         [skills.test], 
-        [moves.shot, moves.beam, moves.heal_all]),
+        [moves.shot, moves.beam, moves.power_spark]),
     musician: new Class("Musician",     
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
@@ -433,7 +480,7 @@ var classes = {
     met: new Class("Met",               
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
-        [moves.shot])
+        [moves.shot, moves.power_spark])
 }
 
 class Unit{
@@ -484,7 +531,8 @@ class Unit{
             }
             this.statuses.push({
                 type: randomValue(statuses),
-                modifier: Math.ceil(Math.random() * 4) * mod
+                modifier: Math.ceil(Math.random() * 4) * mod,
+                length: Math.random() * 10000
             })
         }
         this.statuses = [] // for now
@@ -494,6 +542,8 @@ class Unit{
 
         this.spriteElem = document.createElement("IMG")
         this.spriteElem.className = "sprite_ally"
+        this.maskElem = document.createElement("DIV")
+        this.maskElem.className = "mask"
         if(alignment_){
             this.dataElem = document.getElementById("unit_data_temp").content.cloneNode(true).querySelector("div")
             //this.spriteElem.src = "rpg/ally_sprite_" + name + ".gif"
@@ -535,16 +585,24 @@ class Unit{
     updateData(){
         this.updateCondition()
 
+        $(this.maskElem).css('-webkit-mask-image',"url('" + this.spriteElem.src + "')")
+        if(!this.alignment){
+            this.maskElem.style.top = "-36px"
+        }
         this.dataElem.getElementsByClassName("unit_health_bar")[0].getElementsByTagName("div")[0].style.width = (this.health / this.stats.maxHealth * 100) + "%"
         this.dataElem.getElementsByClassName("unit_health_number")[0].innerHTML = Math.ceil(this.health) + " / " + Math.ceil(this.stats.maxHealth)
         
         this.dataElem.getElementsByClassName("unit_status")[0].innerHTML = ""
+        this.maskElem.style.opacity = "0"
         for(var i = 0; i < this.statuses.length; i++){
             var newStatus = document.createElement("div")
             newStatus.className = "status_" + toFile(this.statuses[i].type)
             newStatus.innerHTML = this.statuses[i].type
             if(toBase(this.statuses[i].type) != this.statuses[i].type){
                 newStatus.innerHTML += Math.abs(this.statuses[i].modifier)
+            } else {
+                this.maskElem.style.opacity = ".6";
+                this.maskElem.className = "mask status_" + toFile(this.statuses[i].type)
             }
             this.dataElem.getElementsByClassName("unit_status")[0].appendChild(newStatus)
         }
@@ -594,7 +652,7 @@ class Unit{
                     this.statuses.splice(i,1)
                     return;
                 }
-            }
+            } 
         }
         if(this.health <= 0){
             this.health = 0
@@ -627,6 +685,8 @@ class Unit{
         var final = copyInstance(this)
         final.dataElem = this.dataElem.cloneNode(true)
         final.spriteElem = this.spriteElem.cloneNode(true)
+        final.maskElem = this.maskElem.cloneNode(true)
+        this.statuses = []
         return final
     }
 
@@ -651,16 +711,18 @@ class Unit{
     hitAnimation(){
         animating = true;
         this.spriteElem.removeAttribute("hit")
+        this.maskElem.removeAttribute("hit")
         if(this.alignment){
             this.spriteElem.setAttribute("hit", "left")
+            this.maskElem.setAttribute("hit", "left")
         } else{
             this.spriteElem.setAttribute("hit", "right")
+            this.maskElem.setAttribute("hit", "right")
         }
         var temp = this
         setTimeout(function(){
             animating = false
             clearAnimation()
-            temp.deathCheck()
         }, 800)
     }
 
@@ -796,6 +858,7 @@ var updateBoard = function(){
         if(tC.x != undefined && tC.y != undefined){
             board[tC.x][tC.y].innerHTML = ""
             board[tC.x][tC.y].appendChild(party[i].spriteElem)
+            board[tC.x][tC.y].appendChild(party[i].maskElem)
         }
         party[i].spriteElem.removeAttribute("glow")
     }
@@ -804,6 +867,7 @@ var updateBoard = function(){
         if(tC.x != undefined && tC.y != undefined){
             board[tC.x][tC.y].innerHTML = ""
             board[tC.x][tC.y].appendChild(enemy_group[i].spriteElem)
+            board[tC.x][tC.y].appendChild(enemy_group[i].maskElem)
         }
     }
     document.getElementById("move_data_holder").innerHTML = ""
@@ -860,9 +924,11 @@ var preview = function(target){
 var clearAnimation = function(){
     for(var i = 0; i < party.length; i++){
         party[i].spriteElem.removeAttribute("hit")
+        party[i].maskElem.removeAttribute("hit")
     }
     for(var i = 0; i < enemy_group.length; i++){
         enemy_group[i].spriteElem.removeAttribute("hit")
+        enemy_group[i].maskElem.removeAttribute("hit")
     }
 }
 
@@ -889,6 +955,15 @@ setInterval(function(){
 
 setInterval(function(){
     for(var i = 0; i < party.length; i++){
+        if(party[i].statuses.map(a => a.type).indexOf("Poison") != -1){
+            party[i].health -= .01
+        }
+        if(party[i].statuses.map(a => a.type).indexOf("Burn") != -1){
+            party[i].health -= .005
+        }
+        if(party[i].statuses.map(a => a.type).indexOf("Shocked") != -1){
+            party[i].speed -= party[i].stats.stamina / 500
+        }
         party[i].speed += party[i].stats.stamina / 250
         if(party[i].speed > 100){
             party[i].speed = 100
@@ -897,8 +972,18 @@ setInterval(function(){
                 party[i].tech = party[i].stats.maxTech
             }
         }
+        for(var e = 0; e < party[i].statuses.length; e++){
+            party[i].statuses[e].length -= 1
+            if(party[i].statuses[e].length < 1){
+                party[i].statuses.splice(e,1)
+            }
+        }
+        party[i].deathCheck()
     }
     for(var i = 0; i < enemy_group.length; i++){
+        if(enemy_group[i].statuses.map(a => a.type).indexOf("Poison") != -1){
+            enemy_group[i].health -= .01
+        }
         enemy_group[i].speed += enemy_group[i].stats.stamina / 300 + (.05 * Math.random())
         enemy_group[i].attack(Math.floor(Math.random() * enemy_group[i].moves.length))
         if(enemy_group[i].speed > 100){
@@ -908,6 +993,7 @@ setInterval(function(){
                 enemy_group[i].tech = enemy_group[i].stats.maxTech
             }
         }
+        enemy_group[i].deathCheck()
     }
     if(enemy_group.length == 0){
         currentLevel += 1

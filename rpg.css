@@ -273,7 +273,23 @@
 }
 
 .status_poison{
-    background-color: rgb(204, 102, 204)
+    background-color: rgb(189, 72, 189)
+}
+
+.status_burn{
+    background-color: rgb(189, 119, 72)
+}
+
+.status_depressed{
+    background-color: rgb(74, 72, 189)
+}
+
+.status_dizzy{
+    background-color: rgb(189, 187, 72)
+}
+
+.status_shocked{
+    background-color: rgb(72, 189, 130)
 }
 
 .status_str\+, .status_vit\+, .status_stm\+, .status_agi\+{
@@ -339,14 +355,6 @@
     background: url("rpg/platform_enemy.png");
 }
 
-.sprite_ally{
-    position: absolute;
-    top: -46px;
-    width: 80px;
-    height:80px;
-    transition: filter .2s
-}
-
 .bullet{
     position: absolute;
     width: 30px;
@@ -356,6 +364,27 @@
     background-color: white;
     left: 10px;
     top: 10px;
+}
+
+.poison_bullet{
+    background-color: purple;
+    height: 10px;
+}
+
+.burn_bullet{
+    background-color: orange;
+    border: none;
+    filter: drop-shadow(0px 0px 5px orange) drop-shadow(0px 0px 5px orange) drop-shadow(0px 0px 5px orange);
+    height: 15px;
+    width: 15px;
+}
+
+.shocked_bullet{
+    background-color: yellow;
+    border: none;
+    filter: drop-shadow(0px 0px 5px yellow) drop-shadow(0px 0px 5px yellow) drop-shadow(0px 0px 5px yellow);
+    height: 15px;
+    width: 15px;
 }
 
 .beam{
@@ -406,9 +435,30 @@
     }
 }
 
+.sprite_ally{
+    position: absolute;
+    top: -46px;
+    width: 80px;
+    height:80px;
+    transition: filter .2s
+}
+
 [src^="rpg/enemy_sprite"]{
     position: absolute;
     top: -36px;
+}
+
+.mask{
+    position: absolute;
+    top: -46px;
+    z-index: 10;
+    width: 80px;
+    height: 80px; 
+    pointer-events: none;
+    -webkit-mask-image: url(rpg/enemy_sprite_met.gif); 
+    -webkit-mask-mode: alpha;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
 }
 
 [hit="right"],[hit="left"]{
@@ -448,10 +498,10 @@
 
 @keyframes hitLeft{
     0%{
-        margin-right: 0px;
+        margin-left: 0px;
     }
     100%{
-        margin-right: 10px
+        margin-left: -10px
     }
 }
 
