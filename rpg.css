@@ -2,20 +2,23 @@
     position: fixed;
     right: 0px;
     top: 8px;
+    transform-origin: top right;
 }
 
 #ally_data_holder{
     position: fixed;
     left: 0px;
     top: 8px;
+    transform-origin: top left;
 }
 
 #move_data_holder{
     position: fixed;
     bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
+    text-align: center;
+    width: 100%;
     z-index:5;
+    transform-origin: bottom center;
 }
 
 [glow="true"]{ 

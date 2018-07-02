@@ -13,7 +13,19 @@ document.onmousemove = function(event){
 if(window.mobilecheck()){
 }
 
+var resize = function(){
+    document.getElementById("ally_data_holder").style.transform = ""
+    document.getElementById("enemy_data_holder").style.transform = ""
+    document.getElementById("move_data_holder").style.transform = ""
+    if((document.getElementById("move_data_holder").getBoundingClientRect().height / $(window).height()) > .15){
+        document.getElementById("move_data_holder").style.transform = "scale(" + (.15 / (document.getElementById("move_data_holder").getBoundingClientRect().height / $(window).height())) + ")"
+    }
+    document.getElementById("ally_data_holder").style.transform = "scale(" + (.25 / (document.getElementById("ally_data_holder").getBoundingClientRect().width / $(window).width())) + ")"
+    document.getElementById("enemy_data_holder").style.transform = "scale(" + (.2 / (document.getElementById("enemy_data_holder").getBoundingClientRect().width / $(window).width())) + ")"
+}
+resize()
 $(window).resize(function(){
+    resize()
 })
 
 var mouseDown = false;
