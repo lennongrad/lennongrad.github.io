@@ -21,7 +21,7 @@ var resize = function(){
         document.getElementById("move_data_holder").style.transform = "scale(" + (.15 / (document.getElementById("move_data_holder").getBoundingClientRect().height / $(window).height())) + ")"
     }
     document.getElementById("ally_data_holder").style.transform = "scale(" + (.25 / (document.getElementById("ally_data_holder").getBoundingClientRect().width / $(window).width())) + ")"
-    document.getElementById("enemy_data_holder").style.transform = "scale(" + (.2 / (document.getElementById("enemy_data_holder").getBoundingClientRect().width / $(window).width())) + ")"
+    document.getElementById("enemy_data_holder").style.transform = "translateX(50%) scale(" + (.2 / (document.getElementById("enemy_data_holder").getBoundingClientRect().width / $(window).width())) + ")"
 }
 resize()
 $(window).resize(function(){
@@ -45,40 +45,45 @@ var active = 0
 var party = [];
 var enemy_group = [];
 var animating = false
-var enemyActive = 0
+var enemyActive = -1
 
-var holdCtrl = false;
-var holdShift = false;
-var holdSpace = false;
-var holdAlt = false;
+var keys = {
+    characterA: 81,
+    characterB: 87,
+    characterC: 69,
+    move1: 49,
+    move2: 50,
+    move3: 51,
+    move4: 52,
+    moveUp: 87,
+    moveDown: 83,
+    moveLeft: 65,
+    moveRight: 68
+}
+
 document.addEventListener('keydown', function (event) {
-    if (event.keyCode == 17) {
-        holdCtrl = true;
+    console.log(event.keyCode)
+    switch(event.keyCode){
+        case keys.characterA: active = 0; updateBoard(); updateData(); break;
+        case keys.characterB: active = 1; updateBoard(); updateData(); break;
+        case keys.characterC: active = 2; updateBoard(); updateData(); break;
+        case keys.move1: 
+            if(party[active].moves.length >= 0){
+                party[active].attack(0)
+            }; break;
+        case keys.move2: 
+            if(party[active].moves.length >= 1){
+                party[active].attack(1)
+            }; break;
+        case keys.move3: 
+        if(party[active].moves.length >= 2){
+            party[active].attack(2)
+        }; break;
+        case keys.move4: 
+            if(party[active].moves.length >= 3){
+                party[active].attack(3)
+            }; break;
     }
-    if (event.keyCode == 16) {
-        holdShift = true;
-    }
-    if (event.keyCode == 32) {
-        holdSpace = true;
-    }
-    if (event.keyCode == 66) {
-        holdAlt = true;
-    }
-    if (event.keyCode == 13) {
-        //
-    }
-    if (event.keyCode > 48 && event.keyCode < 53) {
-        var x = event.keyCode - 49
-        if(party[active].moves.length > x){
-            party[active].attack(x)
-        }
-    }
-});
-document.addEventListener('keyup', function (event) {
-    holdCtrl = false;
-    holdShift = false;
-    holdAlt = false;
-    holdSpace = false;
 });
 
 var distance = function(p1, p2){
@@ -87,6 +92,16 @@ var distance = function(p1, p2){
 
 var randomValue = function(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
+}
+
+var newMessage = function(msg){
+    var full = false
+    if([].slice.call(document.getElementById("message_holder").childNodes[1].childNodes).filter(a => a.nodeName == "SPAN") > 40){
+        full = true
+        $([].slice.call(document.getElementById("message_holder").childNodes[1].childNodes).filter(a => a.nodeName == "SPAN")[0]).remove()
+    }
+    $(document.getElementById("message_holder").childNodes[1]).append("<span>" + msg + "</span>")
+    return full
 }
 
 var spawnWarning = function(reset){
@@ -376,9 +391,6 @@ class Class{
         for(var i = 0; i < keys.length; i++){
             final[keys[i]] = Math.ceil(final[keys[i]] + basis * this.stats[keys[i]])
         }
-        if(unit.alignment){
-            final.maxHealth *= 3
-        }
         return final;
     }
 }
@@ -440,6 +452,9 @@ class Unit{
         this.activeClass = Math.floor(Math.random() * this.classes.length);
 
         this.stats = {}
+        if(this.alignment){
+            this.base.maxHealth *= 2.5
+        }
         this.updateStats()
 
         var moves_ = [];
@@ -491,8 +506,6 @@ class Unit{
                 var temp = party.map(function(a){return a.dataElem}).indexOf(this)
                 if(temp != undefined){
                     active = temp
-                    party.forEach(function(a,b){if(b != active){a.dataElem.style.transform = "translateX(0)"}})
-                    party[active].dataElem.style.transform = "translateX(20px)"
                 }
                 updateBoard()
             }
@@ -500,9 +513,8 @@ class Unit{
                 var temp = party.map(function(a){return a.spriteElem}).indexOf(this)
                 if(temp != undefined){
                     active = temp
-                    party.forEach(function(a,b){if(b != active){a.dataElem.style.transform = "translateX(0)"}})
-                    party[active].dataElem.style.transform = "translateX(20px)"
                 }
+                updateBoard()
             }
         } 
         
@@ -536,23 +548,12 @@ class Unit{
         }
 
         if(!this.alignment){
-            this.dataElem.onmouseover = function(){
-                var temp = enemy_group.map(function(a){return a.dataElem}).indexOf(this)
-                if(temp != undefined){
-                    enemyActive = temp
-                }
-            }
-            this.dataElem.onmouseout = function(){
-                enemyActive = -1
-            }
             this.spriteElem.onmouseover = function(){
                 var temp = enemy_group.map(function(a){return a.spriteElem}).indexOf(this)
                 if(temp != undefined){
-                    enemyActive = temp
+                    enemyActive = temp;
+                    updateDataReplace()
                 }
-            }
-            this.spriteElem.onmouseout = function(){
-                enemyActive = -1
             }
         }
 
@@ -609,9 +610,11 @@ class Unit{
             this.tech = this.stats.maxTech
         }
         for(var i = 0; i < this.classes.length; i++){
-            if(this.classes[i].experience > expCap(this.classes[i].level)){
+            if(this.alignment && this.classes[i].experience > expCap(this.classes[i].level)){
                 this.classes[i].experience -= expCap(this.classes[i].level)
                 this.classes[i].level += 1
+                newMessage("<b>" + this.name + "</b> has leveled up!")
+                newMessage("<b>" + this.name + "</b> is now Lvl. "  + this.classes[i].level + "!")
                 this.updateStats()
                 this.health = this.stats.maxHealth
             }
@@ -636,6 +639,11 @@ class Unit{
             updateDataReplace()
             updateBoard()
         }
+    }
+
+    die(){
+        this.health = 0
+        this.deathCheck()
     }
 
     hitAnimation(){
@@ -679,15 +687,13 @@ class Unit{
             }
             return;
         }
-        if(!animating && (!this.alignment)){
-            var results = this.moves[move].move.attack(this) 
-            if(results.targets > 0){
-                this.tech -= this.moves[move].move.tech
-                this.speed -= this.moves[move].move.speed
-                this.classes[this.activeClass].experience += results.exp
-            }
-            spawnWarning(true)
+        var results = this.moves[move].move.attack(this) 
+        if(results.targets > 0){
+            this.tech -= this.moves[move].move.tech
+            this.speed -= this.moves[move].move.speed
+            this.classes[this.activeClass].experience += results.exp
         }
+        spawnWarning(true)
         this.updateCondition()
     }
 }
@@ -777,6 +783,8 @@ for(var i = 0; i < 3; i++){
 }
 
 var updateBoard = function(){
+    party.forEach(function(a,b){if(b != active){a.dataElem.style.transform = "translateX(0)"}})
+    party[active].dataElem.style.transform = "translateX(20px)"
     for(var i = 0; i < board.length; i++){
         for(var e = 0; e < board[i].length; e++){
             board[i][e].setAttribute("move", "false")
@@ -803,7 +811,6 @@ var updateBoard = function(){
         for(var i = 0; i < party[active].moves.length; i++){
             document.getElementById("move_data_holder").appendChild(party[active].moves[i].move.updateData())
         }
-        party[active].spriteElem.setAttribute("glow", true)
     }
     updateData()
 }
@@ -823,8 +830,8 @@ var updateDataReplace = function(){
     for(var i = 0; i < party.length; i++){
         document.getElementById("ally_data_holder").appendChild(party[i].updateData())
     }
-    for(var i = 0; i < enemy_group.length; i++){
-        document.getElementById("enemy_data_holder").appendChild(enemy_group[i].updateData())
+    if(enemyActive != -1 && enemy_group[enemyActive] != undefined){
+        document.getElementById("enemy_data_holder").appendChild(enemy_group[enemyActive].updateData())
     }
 }
 
@@ -902,15 +909,18 @@ setInterval(function(){
     }
     if(enemy_group.length == 0){
         currentLevel += 1
+        newMessage("All enemies defeated!")
+        newMessage("On to Round " + currentLevel + "!")
         fillBoard()
     }
     for(var i = 0; i < enemy_group.length; i++){
         enemy_group[i].spriteElem.setAttribute("glow", "false")
-        enemy_group[i].dataElem.style.transform = "translateX(0px)"
     }
-    if(enemyActive != -1){
+    if(enemyActive != -1 && enemy_group[enemyActive] != undefined){
         enemy_group[enemyActive].spriteElem.setAttribute("glow", "true")
-        enemy_group[enemyActive].dataElem.style.transform = "translateX(-20px)"
+    }
+    if(party[active] != undefined){
+        party[active].spriteElem.setAttribute("glow", "true")
     }
     updateData()
 }, 10)
@@ -954,6 +964,7 @@ party[0].coords = {x: 0, y: 0}
 party[1].coords = {x: 0, y: 1} 
 party[2].coords = {x: 0, y: 2}
 
+
 party.forEach(function(a,b){if(b != active){a.dataElem.style.transform = "translateX(0)"}})
 party[active].dataElem.style.transform = "translateX(20px)"
 
@@ -977,3 +988,4 @@ var fillBoard = function(){
     updateDataReplace()
     updateBoard()
 }
+fillBoard()

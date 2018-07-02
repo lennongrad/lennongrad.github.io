@@ -1,8 +1,10 @@
 #enemy_data_holder{
     position: fixed;
-    right: 0px;
+    right: 50%;
+    transform: translateX(50%);
     top: 8px;
     transform-origin: top right;
+    z-index: 2;
 }
 
 #ally_data_holder{
@@ -10,6 +12,7 @@
     left: 0px;
     top: 8px;
     transform-origin: top left;
+    z-index: 2;
 }
 
 #move_data_holder{
@@ -120,11 +123,11 @@
 }
 
 .unit_data_enemy{
-    border-top-left-radius: 0px;
-    border-bottom-left-radius: 0px;
+    border-top-left-radius: 100px;
+    border-bottom-left-radius: 100px;
     border-top-right-radius: 100px;
     border-bottom-right-radius: 100px;
-    width: 353px;
+    width: 373px;
     height: 66px;
 }
 
@@ -144,6 +147,7 @@
 
 .unit_data_enemy table{
     width: 282px;
+    margin-left:20px;
     height: 60px;
 }
 
@@ -160,7 +164,6 @@
 .unit_health_bar div, .unit_tech_bar div, .unit_speed_bar div{
     height:10px;
     border-radius: 8px;
-    transition: width 1s
 }
 
 .unit_health_bar span, .unit_tech_bar span, .unit_speed_bar span{
@@ -168,7 +171,6 @@
     bottom:16px;
     left:5px;
     font-size: 12px;
-    font-variant: small-caps;
     color: white;
 }
 
@@ -229,7 +231,6 @@
     border-radius:5px;
     font-size: 13px;
     margin-left: 3px;
-    font-variant: small-caps;
 }
 
 .unit_portrait{
@@ -257,7 +258,6 @@
 
 .unit_level, .unit_health_number, .unit_tech_number, .unit_speed_number{
     font-size: small;
-    font-variant: small-caps;
     width:100%;
     font-size:12px;
 }
@@ -507,6 +507,53 @@
 @font-face{
     font-family: "MoonBold";
     src: url('Moon Bold.otf')
+}
+
+#message_holder{
+    height: 18vh;
+    width: 20vw;
+    position: fixed;
+    top:20px;
+    right: 20px;
+    padding: 5px;
+    border-radius: 4px;
+    border: 6px solid #1A1A1A;
+    background-color: #282828;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#message_holder div{
+    width: 100%;
+    color: white;
+    text-align: center;
+    display: flex;
+    flex-direction: column; 
+    justify-content: flex-end;
+    min-height: 100%;
+}
+
+#message_holder div span{
+    display: inline-block;
+    width: 100%;
+    color: white;
+    text-align: center;
+}
+
+#message_holder::-webkit-scrollbar {
+    width: 10px;
+}
+
+#message_holder::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+ 
+#message_holder::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+
+#message_holder::-webkit-scrollbar-thumb:hover {
+    background: #555; 
 }
 
 a:visited{
