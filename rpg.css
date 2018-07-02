@@ -18,6 +18,10 @@
     z-index:5;
 }
 
+[glow="true"]{ 
+    filter: drop-shadow(0px 0px 5px white) drop-shadow(0px 0px 5px white) drop-shadow(0px 0px 5px white)
+}
+
 .move_data{
     display: inline-block;
     background-color: #282828;
@@ -32,6 +36,10 @@
     cursor: pointer;
     user-select: none;
     z-index:5;
+}
+
+.move_data:active{
+    transform: translateY(3px)
 }
 
 .move_data_bottom{
@@ -149,7 +157,7 @@
 .unit_health_bar div, .unit_tech_bar div, .unit_speed_bar div{
     height:10px;
     border-radius: 8px;
-    transition: width 10s
+    transition: width 1s
 }
 
 .unit_health_bar span, .unit_tech_bar span, .unit_speed_bar span{
@@ -280,6 +288,7 @@
     z-index: 1;
 }
 
+
 #footer{
     position: fixed;
     z-index: 5;
@@ -329,9 +338,10 @@
 
 .sprite_ally{
     position: absolute;
-    transform: translateY(-80px);
+    top: -46px;
     width: 80px;
     height:80px;
+    transition: filter .2s
 }
 
 .bullet{
@@ -395,7 +405,7 @@
 
 [src^="rpg/enemy_sprite"]{
     position: absolute;
-    transform: translateY(-70px)
+    top: -36px;
 }
 
 [hit="right"],[hit="left"]{

@@ -33,6 +33,7 @@ var active = 0
 var party = [];
 var enemy_group = [];
 var animating = false
+var enemyActive = 0
 
 var holdCtrl = false;
 var holdShift = false;
@@ -166,6 +167,15 @@ class Move{
                 party[active].attack(position)
             }
         }
+        
+        var move = this
+        this.dataElem.onmouseover = function(){
+            preview(move.target(party[active]))
+        }
+        this.dataElem.onmouseout = function(){
+            updateBoard()
+        }
+
         return this.dataElem
     }
 
@@ -253,9 +263,7 @@ class Move{
             damage /= 4
         }
         this.animation(unit, target, damage)
-        if(target.health - damage <= 0){
-            experience += target.stats.maxHealth / unit.classes[unit.activeClass].level * 2.5
-        }
+        experience += target.classes[target.activeClass].level / unit.classes[unit.activeClass].level * 100 * (damage / target.stats.maxHealth)
         target.updateCondition()
         updateData()
         updateBoard()
@@ -270,9 +278,10 @@ var moves = {
         bullet.style.left = unit.spriteElem.getBoundingClientRect().left + 55 + "px"
         bullet.style.top = unit.spriteElem.getBoundingClientRect().top + 45 + "px"
         document.body.appendChild(bullet)
+        var distance = Math.abs(target.spriteElem.getBoundingClientRect().left - unit.spriteElem.getBoundingClientRect().left)
         $(bullet).animate({
            'left': target.spriteElem.getBoundingClientRect().left + "px"
-        }, 250, function(){
+        }, distance / 4, function(){
             target.health -= damage
             target.hitAnimation()
             $(this).remove()
@@ -402,12 +411,15 @@ var classes = {
 }
 
 class Unit{
-    constructor(name_, alignment_, class_, base_){
+    constructor(name_, alignment_, class_, base_, min_, max_){
         this.name = name_
         this.alignment = alignment_;
 
         this.inspiration = 0;
         this.base = base_
+
+        this.levelMin = min_
+        this.levelMax = max_
 
         this.classes = []
         for(var i in class_){
@@ -427,7 +439,7 @@ class Unit{
         moves_ = purgeDuplicates(moves_)
         this.moves = []
         for(var i = 0; i < moves_.length; i++){
-            this.moves.push({move: moves_[i], level: 1, position: i, preview: false})
+            this.moves.push({move: moves_[i], level: 1, position: i})
         }
 
         this.health = this.stats.maxHealth
@@ -462,23 +474,25 @@ class Unit{
             this.spriteElem.src = "rpg/enemy_sprite_" + toFile(this.name) + ".gif"
             this.speed = 30 * Math.random();
         }
-        this.dataElem.onclick = function(){
-            var temp = party.map(function(a){return a.dataElem}).indexOf(this)
-            if(temp != undefined){
-                active = temp
-                party.forEach(function(a,b){if(b != active){a.dataElem.style.transform = "translateX(0)"}})
-                party[active].dataElem.style.transform = "translateX(20px)"
+        if(this.alignment){
+            this.dataElem.onclick = function(){
+                var temp = party.map(function(a){return a.dataElem}).indexOf(this)
+                if(temp != undefined){
+                    active = temp
+                    party.forEach(function(a,b){if(b != active){a.dataElem.style.transform = "translateX(0)"}})
+                    party[active].dataElem.style.transform = "translateX(20px)"
+                }
+                updateBoard()
             }
-            updateBoard()
-        }
-        this.spriteElem.onclick = function(){
-            var temp = party.map(function(a){return a.spriteElem}).indexOf(this)
-            if(temp != undefined){
-                active = temp
-                party.forEach(function(a,b){if(b != active){a.dataElem.style.transform = "translateX(0)"}})
-                party[active].dataElem.style.transform = "translateX(20px)"
+            this.spriteElem.onclick = function(){
+                var temp = party.map(function(a){return a.spriteElem}).indexOf(this)
+                if(temp != undefined){
+                    active = temp
+                    party.forEach(function(a,b){if(b != active){a.dataElem.style.transform = "translateX(0)"}})
+                    party[active].dataElem.style.transform = "translateX(20px)"
+                }
             }
-        }
+        } 
         
         this.updateCondition()
         this.updateData()
@@ -497,13 +511,6 @@ class Unit{
 
         this.dataElem.getElementsByClassName("unit_health_bar")[0].getElementsByTagName("div")[0].style.width = (this.health / this.stats.maxHealth * 100) + "%"
         this.dataElem.getElementsByClassName("unit_health_number")[0].innerHTML = Math.ceil(this.health) + " / " + Math.ceil(this.stats.maxHealth)
-
-        if(this.alignment){
-            this.dataElem.getElementsByClassName("unit_tech_bar")[0].getElementsByTagName("div")[0].style.width = (this.tech / this.stats.maxTech * 100) + "%"
-            this.dataElem.getElementsByClassName("unit_tech_number")[0].innerHTML = Math.ceil(this.tech) + " / " + Math.ceil(this.stats.maxTech)
-            this.dataElem.getElementsByClassName("unit_speed_bar")[0].getElementsByTagName("div")[0].style.width = (this.speed) + "%"
-            this.dataElem.getElementsByClassName("unit_speed_number")[0].innerHTML = Math.ceil(this.speed)
-        }
         
         this.dataElem.getElementsByClassName("unit_status")[0].innerHTML = ""
         for(var i = 0; i < this.statuses.length; i++){
@@ -516,13 +523,40 @@ class Unit{
             this.dataElem.getElementsByClassName("unit_status")[0].appendChild(newStatus)
         }
 
+        if(!this.alignment){
+            this.dataElem.onmouseover = function(){
+                var temp = enemy_group.map(function(a){return a.dataElem}).indexOf(this)
+                if(temp != undefined){
+                    enemyActive = temp
+                }
+            }
+            this.dataElem.onmouseout = function(){
+                enemyActive = -1
+            }
+            this.spriteElem.onmouseover = function(){
+                var temp = enemy_group.map(function(a){return a.spriteElem}).indexOf(this)
+                if(temp != undefined){
+                    enemyActive = temp
+                }
+            }
+            this.spriteElem.onmouseout = function(){
+                enemyActive = -1
+            }
+        }
+
         this.dataElem.getElementsByClassName("unit_name")[0].innerHTML = this.name
         if(this.alignment){
+            this.dataElem.getElementsByClassName("unit_tech_bar")[0].getElementsByTagName("div")[0].style.width = (this.tech / this.stats.maxTech * 100) + "%"
+            this.dataElem.getElementsByClassName("unit_tech_number")[0].innerHTML = Math.ceil(this.tech) + " / " + Math.ceil(this.stats.maxTech)
+            this.dataElem.getElementsByClassName("unit_speed_bar")[0].getElementsByTagName("div")[0].style.width = (this.speed) + "%"
+            this.dataElem.getElementsByClassName("unit_speed_number")[0].innerHTML = Math.ceil(this.speed)
+
             this.dataElem.getElementsByClassName("unit_level")[0].innerHTML = "(Lvl. " + this.classes[this.activeClass].level + " " + this.classes[this.activeClass].class.name + ")"
             this.dataElem.getElementsByClassName("unit_experience_bar")[0].style.height = Math.min(96, 100 * (Math.max(.05, this.classes[this.activeClass].experience / expCap(this.classes[this.activeClass].level)))) + "%"
             this.dataElem.getElementsByClassName("unit_inspiration_bar")[0].style.height = Math.max(5, this.inspiration) + "%"
             this.dataElem.getElementsByClassName("unit_portrait")[0].getElementsByTagName("img")[0].src = "rpg/ally_portrait_" + toFile(this.name) + ".png"
         } else {
+            this.dataElem.getElementsByClassName("unit_level")[0].innerHTML = "(Lvl. " + this.classes[this.activeClass].level + ")"
             this.dataElem.getElementsByClassName("unit_portrait")[0].getElementsByTagName("img")[0].src = "rpg/enemy_portrait_" + toFile(this.name) + ".png"
         }
         return this.dataElem
@@ -587,6 +621,7 @@ class Unit{
             } else {
                 enemy_group.splice(enemy_group.indexOf(this),1)
             }
+            updateDataReplace()
             updateBoard()
         }
     }
@@ -607,6 +642,20 @@ class Unit{
         }, 800)
     }
 
+    move(tC){
+        if(getBoard(tC.x, tC.y) == undefined && tC.x < 3 && this.speed >= this.moveCost(tC)){
+            this.speed -= this.moveCost(tC)
+            party[active].coords = {x: Number(tC.x), y: Number(tC.y)};
+        } 
+        if(this.moveCost(tC) >= this.speed && tC.x < 3){
+            spawnWarning(false)
+        }
+    }
+
+    moveCost(coords){
+        return Math.ceil(distance(this.coords, coords) * 10)
+    }
+
     attack(move){
         if(this.tech >= this.moves[move].move.tech && this.speed >= this.moves[move].move.speed){
             if(this.alignment){
@@ -616,24 +665,16 @@ class Unit{
             if(this.alignment){
                 spawnWarning(false)
             }
-            this.moves[move].preview = false
             return;
         }
-        if(!animating && (!this.alignment || this.moves[move].preview)){
+        if(!animating && (!this.alignment)){
             var results = this.moves[move].move.attack(this) 
             if(results.targets > 0){
                 this.tech -= this.moves[move].move.tech
                 this.speed -= this.moves[move].move.speed
                 this.classes[this.activeClass].experience += results.exp
             }
-            this.moves[move].preview = false
             spawnWarning(true)
-        } else if(!animating){
-            for(var i = 0; i < this.moves.length; i++){
-                this.moves[i].preview = false
-            }
-            this.moves[move].preview = true;
-            preview(this.moves[move].move.target(this))
         }
         this.updateCondition()
     }
@@ -657,9 +698,9 @@ var allies = {
 }
 
 var enemies = {
-    met: new Unit("Met", false,["Met"],        {maxHealth: 16, maxTech: 5, strength: 6, vitality: 10, stamina: 6, agility: 10}),
-    meta: new Unit("Met Alpha", false,["Met"], {maxHealth: 32, maxTech: 10, strength: 9, vitality: 13, stamina: 6, agility: 13}),
-    metb: new Unit("Met Beta", false,["Met"],  {maxHealth: 51, maxTech: 20, strength: 13, vitality: 19, stamina: 6, agility: 17})
+    met: new Unit("Met", false,["Met"],        {maxHealth: 16, maxTech: 5, strength: 6, vitality: 10, stamina: 6, agility: 10}    ,1,100),
+    meta: new Unit("Met Alpha", false,["Met"], {maxHealth: 32, maxTech: 10, strength: 9, vitality: 13, stamina: 6, agility: 13}   ,3,100),
+    metb: new Unit("Met Beta", false,["Met"],  {maxHealth: 51, maxTech: 20, strength: 13, vitality: 19, stamina: 6, agility: 17}  ,5,100)
 }
 
 var recruit = function(person){
@@ -682,19 +723,21 @@ var recruit = function(person){
     updateData()
 }
 
-var spawn = function(person){
+var spawn = function(person, level){
     var x = Object.keys(enemies)
     var y = enemies[x[Math.floor(Math.random() * x.length)]]
     if(person != undefined){
-        y = enemies[person]
+        y = person
     }
     enemy_group.push(y.copy())
+    var monster = enemy_group[enemy_group.length - 1]
     document.getElementById("enemy_data_holder").appendChild(enemy_group[enemy_group.length - 1].dataElem)
     var coords = {x: 3 + Math.floor(Math.random() * 3), y: Math.floor(Math.random() * 3) }
     while(getBoard(coords.x, coords.y) != undefined){
         coords = {x: 3 + Math.floor(Math.random() * 3), y: Math.floor(Math.random() * 3) }
     }
-    enemy_group[enemy_group.length - 1].coords = coords
+    monster.coords = coords
+    monster.classes[monster.activeClass].level = level
 }
 
 var board = Array(6)
@@ -713,11 +756,7 @@ for(var i = 0; i < 3; i++){
         board[e][i].setAttribute("x", e)
         board[e][i].setAttribute("y", i)
         board[e][i].onclick = function(){
-            var tC = {x: this.getAttribute("x"), y: this.getAttribute("y")}
-            if(getBoard(tC.x, tC.y) == undefined && tC.x < 3){
-                party[active].coords = {x: Number(tC.x), y: Number(tC.y)};
-                party[active].moves.forEach(a => a.preview = false)
-            }
+            party[active].move({x: this.getAttribute("x"), y: this.getAttribute("y")})
             updateBoard()
         }
         trow.appendChild(board[e][i])
@@ -738,7 +777,7 @@ var updateBoard = function(){
             board[tC.x][tC.y].innerHTML = ""
             board[tC.x][tC.y].appendChild(party[i].spriteElem)
         }
-        party[i].spriteElem.style.filter = ""
+        party[i].spriteElem.removeAttribute("glow")
     }
     for(var i = 0; i < enemy_group.length; i++){
         var tC = enemy_group[i].coords
@@ -752,12 +791,21 @@ var updateBoard = function(){
         for(var i = 0; i < party[active].moves.length; i++){
             document.getElementById("move_data_holder").appendChild(party[active].moves[i].move.updateData())
         }
-        party[active].spriteElem.style.filter += " drop-shadow(0px 0px 5px white) drop-shadow(0px 0px 5px white)"
+        party[active].spriteElem.setAttribute("glow", true)
     }
     updateData()
 }
 
 var updateData = function(){
+    for(var i = 0; i < party.length; i++){
+        party[i].updateData()
+    }
+    for(var i = 0; i < enemy_group.length; i++){
+        enemy_group[i].updateData()
+    }
+}
+
+var updateDataReplace = function(){
     document.getElementById("ally_data_holder").innerHTML = ""
     document.getElementById("enemy_data_holder").innerHTML = ""
     for(var i = 0; i < party.length; i++){
@@ -817,6 +865,7 @@ setInterval(function(){
     });
 }, 450)
 
+
 setInterval(function(){
     for(var i = 0; i < party.length; i++){
         party[i].speed += party[i].stats.stamina / 250
@@ -842,6 +891,14 @@ setInterval(function(){
     if(enemy_group.length == 0){
         currentLevel += 1
         fillBoard()
+    }
+    for(var i = 0; i < enemy_group.length; i++){
+        enemy_group[i].spriteElem.setAttribute("glow", "false")
+        enemy_group[i].dataElem.style.transform = "translateX(0px)"
+    }
+    if(enemyActive != -1){
+        enemy_group[enemyActive].spriteElem.setAttribute("glow", "true")
+        enemy_group[enemyActive].dataElem.style.transform = "translateX(-20px)"
     }
     updateData()
 }, 10)
@@ -897,12 +954,14 @@ var currentLevel = 1
 var fillBoard = function(){
     var count = enemy_group.length
     while(count < 7 && (count < 4 || Math.random() > .2)){
-        var monster = Math.floor(Math.random() * Object.keys(enemies).length);
-        while(monster * 3 + 1 > currentLevel){
-            monster = Math.floor(Math.random() * Object.keys(enemies).length);
+        var monster = enemies[Object.keys(enemies)[Math.floor(Math.random() * Object.keys(enemies).length)]];
+        var level = Math.max(1, Math.floor(currentLevel - Math.random() * 3))
+        while(monster.levelMin > level || monster.levelMax < level){
+            var monster = enemies[Object.keys(enemies)[Math.floor(Math.random() * Object.keys(enemies).length)]];
         }
-        spawn(Object.keys(enemies)[monster])
+        spawn(monster, level)
         count++
     }
+    updateDataReplace()
     updateBoard()
 }
