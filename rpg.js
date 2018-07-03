@@ -42,6 +42,7 @@ document.onmouseup = function() {
 }     
 
 var active = 0
+var cash = 0
 var party = [];
 var enemy_group = [];
 var animating = false
@@ -449,6 +450,10 @@ var classes = {
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
         [moves.shot, moves.beam, moves.sick_burn]),
+    gamer: new Class("Baller",           
+        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        [skills.test], 
+        [moves.shot, moves.beam]),
     writer: new Class("Writer",         
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
@@ -546,8 +551,7 @@ class Unit{
         this.maskElem.className = "mask"
         if(alignment_){
             this.dataElem = document.getElementById("unit_data_temp").content.cloneNode(true).querySelector("div")
-            //this.spriteElem.src = "rpg/ally_sprite_" + name + ".gif"
-            this.spriteElem.src = "rpg/ally_sprite_" + "bean" + ".gif"
+            this.spriteElem.src = "rpg/ally_sprite_" + this.name + ".gif"
         } else {
             this.dataElem = document.getElementById("unit_data_temp_enemy").content.cloneNode(true).querySelector("div")
             this.spriteElem.src = "rpg/enemy_sprite_" + toFile(this.name) + ".gif"
@@ -755,6 +759,7 @@ class Unit{
         if(results.targets > 0){
             this.tech -= this.moves[move].move.tech
             this.speed -= this.moves[move].move.speed
+            cash += results.exp
             this.classes[this.activeClass].experience += results.exp
         }
         spawnWarning(true)
@@ -767,16 +772,16 @@ var expCap = function(level){
 }
 
 var allies = {
-    jasper: new Unit("Jasper", true,   ["Artist", "Writer", "Gamer"]       ,{maxHealth: 15, maxTech: 05, strength: 30, vitality: 25, stamina: 5, agility: 10}),
-    tucker: new Unit("Tucker", true,   ["Student", "Writer", "Animator"]   ,{maxHealth: 15, maxTech: 20, strength: 10, vitality: 15, stamina: 15, agility: 10}),
-    mason: new Unit("Mason", true,     ["Artist", "Writer", "Student"]     ,{maxHealth: 15, maxTech: 05, strength: 20, vitality: 35, stamina: 10, agility: 05}),
-    sam: new Unit("Sam", true,         ["Artist", "Spriter", "Gamer"]      ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}), //
-    bean: new Unit("Bean", true,       ["Artist", "Programmer", "Spriter"] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}), //
-    hayden: new Unit("Hayden", true,   ["Artist", "Student", "Gamer"]      ,{maxHealth: 27, maxTech: 14, strength: 13, vitality: 15, stamina: 08, agility: 13}),
-    lorenzo: new Unit("Lorenzo", true, ["Artist", "Writer", "Musician"]    ,{maxHealth: 10, maxTech: 36, strength: 05, vitality: 13, stamina: 10, agility: 14}),
-    nick: new Unit("Nick", true,       ["Artist", "Musician", "Programmer"],{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}), //
-    rick: new Unit("Rick", true,       ["Artist", "Spriter", "Gamer"]      ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}), //
-    paige: new Unit("Paige", true,     ["Artist", "Spriter", "Programmer"] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15})  //
+    //jasper: new Unit("Jasper", true,   ["Artist", "Writer", "Gamer"]       ,{maxHealth: 15, maxTech: 05, strength: 30, vitality: 25, stamina: 5, agility: 10}),
+    //tucker: new Unit("Tucker", true,   ["Student", "Writer", "Animator"]   ,{maxHealth: 15, maxTech: 20, strength: 10, vitality: 15, stamina: 15, agility: 10}),
+      mason: new Unit("Mason", true,     ["Artist", "Writer", "Student"]     ,{maxHealth: 15, maxTech: 05, strength: 20, vitality: 35, stamina: 10, agility: 05}),
+    //sam: new Unit("Sam", true,         ["Artist", "Baller", "Gamer"]      ,{maxHealth: 20, maxTech: 05, strength: 32, vitality: 14, stamina: 14, agility: 05}), //
+      bean: new Unit("Bean", true,       ["Artist", "Programmer", "Spriter"] ,{maxHealth: 11, maxTech: 23, strength: 05, vitality: 23, stamina: 13, agility: 17}), 
+    //hayden: new Unit("Hayden", true,   ["Artist", "Student", "Gamer"]      ,{maxHealth: 27, maxTech: 14, strength: 13, vitality: 15, stamina: 08, agility: 13}),
+    //lorenzo: new Unit("Lorenzo", true, ["Artist", "Writer", "Musician"]    ,{maxHealth: 10, maxTech: 36, strength: 05, vitality: 13, stamina: 10, agility: 14}),
+      nick: new Unit("Nick", true,       ["Artist", "Musician", "Programmer"],{maxHealth: 18, maxTech: 20, strength: 16, vitality: 06, stamina: 08, agility: 22})//, 
+    //rick: new Unit("Rick", true,       ["Artist", "Spriter", "Gamer"]      ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}), //
+    //paige: new Unit("Paige", true,     ["Artist", "Spriter", "Programmer"] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15})  //
 }
 
 var enemies = {
@@ -799,6 +804,16 @@ var recruit = function(person){
     if(z > 8){
         return;
     }
+    switch(party.length){
+        case 0: y = allies.bean; break;
+        case 1: y = allies.mason; break;
+        case 2: y = allies.nick; break;
+    }
+    var coords = {x: Math.floor(Math.random() * board.length / 2), y: Math.floor(Math.random() * board[0].length) }
+    while(getBoard(coords.x, coords.y) != undefined){
+        coords = {x: Math.floor(Math.random() * board.length / 2), y: Math.floor(Math.random() * board[0].length) }
+    }
+    y.coords = coords
     y.recruited = true
     document.getElementById("ally_data_holder").appendChild(y.dataElem)
     party.push(y)
@@ -814,37 +829,42 @@ var spawn = function(person, level){
     enemy_group.push(y.copy())
     var monster = enemy_group[enemy_group.length - 1]
     document.getElementById("enemy_data_holder").appendChild(enemy_group[enemy_group.length - 1].dataElem)
-    var coords = {x: 3 + Math.floor(Math.random() * 3), y: Math.floor(Math.random() * 3) }
+    var coords = {x: board.length / 2 + Math.floor(Math.random() * board.length / 2), y: Math.floor(Math.random() * board[0].length) }
     while(getBoard(coords.x, coords.y) != undefined){
-        coords = {x: 3 + Math.floor(Math.random() * 3), y: Math.floor(Math.random() * 3) }
+        coords = {x: board.length / 2 + Math.floor(Math.random() * board.length / 2), y: Math.floor(Math.random() * board[0].length) }
     }
     monster.coords = coords
     monster.classes[monster.activeClass].level = level
 }
 
-var board = Array(6)
-for(var i = 0; i < 6; i++){
-     board[i] = []
+var board = []
+var createBoard = function(width, height){
+    document.getElementById("battle").innerHTML = ""
+    board = Array(width * 2)
+    for(var i = 0; i < width * 2; i++){
+         board[i] = []
+    }
+    for(var i = 0; i < height; i++){
+        var trow = document.createElement("TR")
+        for(var e = 0; e < width * 2; e++){
+            board[e][i] = document.createElement("TD")
+            if(e < width){
+                board[e][i].className = "platform_ally"
+            } else {
+                board[e][i].className = "platform_enemy"
+            }
+            board[e][i].setAttribute("x", e)
+            board[e][i].setAttribute("y", i)
+            board[e][i].onclick = function(){
+                party[active].move({x: this.getAttribute("x"), y: this.getAttribute("y")})
+                updateBoard()
+            }
+            trow.appendChild(board[e][i])
+        }   
+        document.getElementById("battle").appendChild(trow)
+    }
 }
-for(var i = 0; i < 3; i++){
-    var trow = document.createElement("TR")
-    for(var e = 0; e < 6; e++){
-        board[e][i] = document.createElement("TD")
-        if(e < 3){
-            board[e][i].className = "platform_ally"
-        } else {
-            board[e][i].className = "platform_enemy"
-        }
-        board[e][i].setAttribute("x", e)
-        board[e][i].setAttribute("y", i)
-        board[e][i].onclick = function(){
-            party[active].move({x: this.getAttribute("x"), y: this.getAttribute("y")})
-            updateBoard()
-        }
-        trow.appendChild(board[e][i])
-    }   
-    document.getElementById("battle").appendChild(trow)
-}
+createBoard(2,3)
 
 var updateBoard = function(){
     for(var i = 0; i < board.length; i++){
@@ -888,6 +908,8 @@ var updateData = function(){
     for(var i = 0; i < enemy_group.length; i++){
         enemy_group[i].updateData()
     }
+    document.getElementById("currentLevel").innerHTML = "Round " + currentLevel
+    document.getElementById("currentCash").innerHTML = "$" + Math.floor(cash) / 100
 }
 
 var updateDataReplace = function(){
@@ -999,6 +1021,15 @@ setInterval(function(){
         currentLevel += 1
         newMessage("All enemies defeated!")
         newMessage("On to Round " + currentLevel + "!")
+        if(currentLevel == 4){
+            createBoard(3,3)
+        }
+        if(currentLevel == 7){
+            createBoard(3,4)
+        }
+        if(currentLevel == 10){
+            createBoard(3,5)
+        }
         fillBoard()
     }
     for(var i = 0; i < enemy_group.length; i++){
@@ -1047,24 +1078,14 @@ function genExplosion(x, y) {
   }
 }
 
-recruit("bean"); recruit(); recruit(); 
-party[0].coords = {x: 0, y: 0} 
-party[1].coords = {x: 0, y: 1} 
-party[2].coords = {x: 0, y: 2}
-
-
-party.forEach(function(a,b){if(b != active){a.dataElem.style.transform = "translateX(0)"}})
+recruit(); recruit(); recruit(); 
 party[active].dataElem.style.transform = "translateX(20px)"
-
-for(var i = 0; i < party.length; i++){
-    party[i].spriteElem.src = "rpg/ally_sprite_" + "bean" + "_" + i + ".gif"
-}
-updateBoard()
 
 var currentLevel = 1
 var fillBoard = function(){
     var count = enemy_group.length
-    while(count < 7 && (count < 4 || Math.random() > .2)){
+    var countMax = Math.ceil(board.length * board[0].length / 2 * .75)
+    while(count < countMax && (count < countMax / 2 || Math.random() > .2)){
         var monster = enemies[Object.keys(enemies)[Math.floor(Math.random() * Object.keys(enemies).length)]];
         var level = Math.max(1, Math.floor(currentLevel - Math.random() * 3))
         while(monster.levelMin > level || monster.levelMax < level){
