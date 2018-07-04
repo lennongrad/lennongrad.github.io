@@ -57,10 +57,10 @@ var keys = {
     move2: 50,
     move3: 51,
     move4: 52,
-    moveUp: 87,
-    moveDown: 83,
-    moveLeft: 65,
-    moveRight: 68
+    moveUp: 38,
+    moveDown: 40,
+    moveLeft: 37,
+    moveRight: 39
 }
 
 document.addEventListener('keydown', function (event) {
@@ -87,6 +87,14 @@ document.addEventListener('keydown', function (event) {
             if(party[active].moves.length > 3){
                 party[active].attack(3)
             }; break;
+        case keys.moveUp:
+            party[active].move({x: party[active].coords.x, y: party[active].coords.y - 1}); break;
+        case keys.moveDown:
+        party[active].move({x: party[active].coords.x, y: party[active].coords.y + 1}); break;
+        case keys.moveLeft:
+            party[active].move({x: party[active].coords.x - 1, y: party[active].coords.y}); break;
+        case keys.moveRight:
+        party[active].move({x: party[active].coords.x + 1, y: party[active].coords.y}); break;
     }
 });
 
@@ -824,13 +832,14 @@ class Unit{
     }
 
     move(tC){
-        if(getBoard(tC.x, tC.y) == undefined && tC.x < 3 && this.speed >= this.moveCost(tC)){
+        if(board[tC.x] != undefined && board[tC.x][tC.y] != undefined && getBoard(tC.x, tC.y) == undefined && board[tC.x][tC.y].className == "platform_ally" && this.speed >= this.moveCost(tC)){
             this.speed -= this.moveCost(tC)
             party[active].coords = {x: Number(tC.x), y: Number(tC.y)};
         } 
         if(this.moveCost(tC) >= this.speed && tC.x < 3){
             spawnWarning(false)
         }
+        updateBoard()
     }
 
     moveCost(coords){
@@ -838,11 +847,7 @@ class Unit{
     }
 
     attack(move){
-        if(this.tech >= this.moves[move].move.tech && this.speed >= this.moves[move].move.speed){
-            if(this.alignment){
-                spawnWarning(true)
-            }
-        } else {
+        if(this.tech < this.moves[move].move.tech || this.speed < this.moves[move].move.speed){
             if(this.alignment){
                 spawnWarning(false)
             }
@@ -857,7 +862,6 @@ class Unit{
             }
             this.classes[this.activeClass].experience += results.exp
         }
-        spawnWarning(true)
         this.updateCondition()
     }
 }
