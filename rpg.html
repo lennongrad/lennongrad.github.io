@@ -92,6 +92,15 @@
             </table>
         </div>
     </template>
+    <template id="menu_data_temp">
+        <div class="menu_unit_data">
+            <img class="menu_unit_data_portrait" src="rpg/ally_portrait_nick.png"/>
+            <div class="menu_unit_data_bar"></div>
+            <div class="menu_unit_data_name">Nick</div>
+            <img class="menu_unit_data_sprite" src="rpg/ally_sprite_nick.gif">
+            <div class="menu_unit_data_level">Lvl. 1 Gamer</div>
+        </div>
+    </template>
     <div id="move_data_holder">
     </div>
     <div id="ally_data_holder"></div>
@@ -109,6 +118,33 @@
     </div>
     <table id="battle">
     </table>
+
+    <div id="menu">
+        <div id="menu_header">
+            <table>
+                <tr>
+                    <td></td>
+                    <td>
+                        <div id="menu_header_battle">BATTLE</div>
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+        <div id="battle_menu" class="menu_screen">
+                <div id="battle_menu_left">
+                    <div id="battle_menu_left_header">PARTY</div>
+                    <div id="battle_menu_left_data">
+                    </div>
+                </div>
+                <div id="battle_menu_right">
+                    <div id="battle_menu_right_start" onclick="intro()">CONTINUE</div>
+                    <div id="battle_menu_right_rounds" class="battle_menu_right_counter"><span>Round</span><div>1</div></div>
+                    <div id="battle_menu_right_difficulty" class="battle_menu_right_counter"><span>Difficulty</span> <div>---</div></div>
+                </div>
+        </div>
+    </div>
+
     <div id="footer"><a href="https://zieghost.deviantart.com">Check out Ziegs!</a></div>
     <div id="back"></div>
     <script src="rpg.js"></script>

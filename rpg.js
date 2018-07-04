@@ -42,11 +42,12 @@ document.onmouseup = function() {
 }     
 
 var active = 0
+var enemyActive = -1
+var battleActive = false
 var cash = 0
 var party = [];
 var enemy_group = [];
 var animating = false
-var enemyActive = -1
 
 var keys = {
     characterA: 81,
@@ -95,6 +96,44 @@ var distance = function(p1, p2){
 
 var randomValue = function(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
+}
+
+var getAngle = function(a,b){
+    var angle = Math.atan((a.y - b.y) / (a.x - b.x));
+    if(Math.sign(a.x - b.x) == -1){
+        angle += Math.PI;
+    }
+    angle -= Math.PI;
+    return angle
+}
+
+var intro = function(){
+    animating = true
+    $(".sprite_ally").css("opacity", 0)
+    $("#battle").css("opacity", 0)
+    $("#battle").animate({
+        opacity:1
+    }, 300)
+    $(".sprite_ally").animate({
+        opacity: 1
+    }, 1500, function(){
+        animating = false
+        battleActive = true
+        clearAnimation()
+    })
+    for(var i = 0; i < party.length; i++){
+        party[i].alive = true
+        party[i].speed = 100
+        party[i].health = party[i].stats.maxHealth
+        var coords = {x: Math.floor(Math.random() * board.length / 2), y: Math.floor(Math.random() * board[0].length) }
+        while(getBoard(coords.x, coords.y) != undefined){
+            coords = {x: Math.floor(Math.random() * board.length / 2), y: Math.floor(Math.random() * board[0].length) }
+        }
+        party[i].coords = coords        
+    }
+    enemy_group.forEach(a => a.speed = 0)
+    updateDataReplace()
+    updateBoard()
 }
 
 var newMessage = function(msg){
@@ -163,8 +202,12 @@ var addObj = function(a,b,c,d){
     return final
 }
 
+for(var i = 0; i < 101; i += .75){
+    $("#menu").append("<div class='triangle' style='left:" + (i - .5) + "vw'></div>")
+}
+
 var statuses = ["Poison", "Burn", "Depressed", "Dizzy", "Shocked", "STR+", "STR-", "VIT+", "VIT-", "STM+", "STM-", "AGI+", "AGI-"]
-var styles = {straight: "straight", straight_pierce: "straight_pierce", all_opponents: "all_opponents", all_same: "all_same", self: "self"}
+var styles = {straight: "straight", straight_pierce: "straight_pierce", straight_rows: "straight_rows", all_opponents: "all_opponents", all_same: "all_same", self: "self"}
 
 class Move{
     constructor(name_, description_, power_, tech_, speed_, style_, element_, properties_, animation_, effect_){
@@ -233,6 +276,19 @@ class Move{
                     final.push({x: i, y: unit.coords.y})
                 }
             } 
+            break;
+            
+            case styles.straight_rows:
+            var exit = false
+            for(var e = 0; e < board[0].length; e++){
+                exit = false;
+                for(var i = unit.coords.x; i < board.length && i > -1 && !exit; i += (1 * badMult)){
+                    if(getBoard(i, e) != undefined && getBoard(i, e).alignment != unit.alignment){
+                        final.push({x: i, y: e})
+                        exit = true
+                    }
+                } 
+            }
             break;
             
             case styles.all_opponents:
@@ -318,14 +374,15 @@ var moves = {
             $(this).remove()
         })
     }, function(){}),
-    multishot: new Move("Multi-Shot", "Damage all ahead", 15, 5, 20, styles.straight_pierce, "Neutral", {}, function(unit, target, damage){
+    multishot: new Move("Multi-Shot", "Damage all ahead", 15, 5, 20, styles.straight_rows, "Neutral", {}, function(unit, target, damage){
         var bullet = document.createElement("DIV")
         bullet.className = "bullet"
         bullet.style.left = unit.spriteElem.getBoundingClientRect().left + 55 + "px"
         bullet.style.top = unit.spriteElem.getBoundingClientRect().top + 45 + "px"
         document.body.appendChild(bullet)
         $(bullet).animate({
-           'left': target.spriteElem.getBoundingClientRect().left + "px"
+            'left': target.spriteElem.getBoundingClientRect().left + "px",
+            'top': target.spriteElem.getBoundingClientRect().top + "px"
         }, 250, function(){
             target.health -= damage
             target.hitAnimation()
@@ -449,47 +506,68 @@ var classes = {
     gamer: new Class("Gamer",           
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
-        [moves.shot, moves.beam, moves.sick_burn]),
-    gamer: new Class("Baller",           
+        [   {move: moves.shot, unlockLevel: 1}, 
+            {move: moves.beam, unlockLevel: 2}, 
+            {move: moves.poison_needle, unlockLevel: 4}]),
+    baller: new Class("Baller",           
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
-        [moves.shot, moves.beam]),
+        [   {move: moves.shot, unlockLevel: 1}, 
+            {move: moves.multishot, unlockLevel: 2}, 
+            {move: moves.sick_burn, unlockLevel: 4}]),
     writer: new Class("Writer",         
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
-        [moves.shot, moves.beam, moves.heal_all]),
+        [   {move: moves.shot, unlockLevel: 1}, 
+            {move: moves.beam, unlockLevel: 2}, 
+            {move: moves.heal_all, unlockLevel: 4}]),
     animator: new Class("Animator",     
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
-        [moves.shot, moves.beam]),
+        [   {move: moves.shot, unlockLevel: 1}, 
+            {move: moves.multishot, unlockLevel: 2}, 
+            {move: moves.power_spark, unlockLevel: 4}]),
     student: new Class("Student",       
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
-        [moves.shot, moves.beam]),
+        [   {move: moves.shot, unlockLevel: 1}, 
+            {move: moves.beam, unlockLevel: 2}, 
+            {move: moves.sick_burn, unlockLevel: 4}]),
     spriter: new Class("Spriter",       
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
-        [moves.shot, moves.beam, moves.poison_needle]),
+        [   {move: moves.shot, unlockLevel: 1}, 
+            {move: moves.multishot, unlockLevel: 2}, 
+            {move: moves.sick_burn, unlockLevel: 4}]),
     programmer: new Class("Programmer", 
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1},
         [skills.test], 
-        [moves.shot, moves.beam, moves.power_spark]),
+        [   {move: moves.shot, unlockLevel: 1}, 
+            {move: moves.beam, unlockLevel: 2}, 
+            {move: moves.heal_all, unlockLevel: 4}]),
     musician: new Class("Musician",     
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
-        [moves.shot, moves.beam]),
+        [   {move: moves.shot, unlockLevel: 1}, 
+            {move: moves.beam, unlockLevel: 2}, 
+            {move: moves.poison_needle, unlockLevel: 4}]),
     artist: new Class("Artist",         
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
-        [moves.shot, moves.beam]),
+        [   {move: moves.shot, unlockLevel: 1}, 
+            {move: moves.beam, unlockLevel: 2}, 
+            {move: moves.power_spark, unlockLevel: 4}]),
     met: new Class("Met",               
         {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
         [skills.test], 
-        [moves.shot, moves.power_spark])
+        [   {move: moves.shot, unlockLevel: 1}, 
+            {move: moves.power_spark, unlockLevel: 1}])
 }
 
 class Unit{
     constructor(name_, alignment_, class_, base_, min_, max_){
+        this.alive = true
+
         this.name = name_
         this.alignment = alignment_;
 
@@ -501,7 +579,7 @@ class Unit{
 
         this.classes = []
         for(var i in class_){
-            this.classes.push({class: classes[class_[i].toLowerCase()], level: 1, experience: 0})
+            this.classes.push({class: class_[i], level: 1, experience: 0})
         }
         this.activeClass = Math.floor(Math.random() * this.classes.length);
 
@@ -510,18 +588,6 @@ class Unit{
             this.base.maxHealth *= 2.5
         }
         this.updateStats()
-
-        var moves_ = [];
-        for(var i = 0; i < class_.length; i++){
-            for(var e = 0; e < classes[class_[i].toLowerCase()].moves.length; e++){
-                moves_.push(classes[class_[i].toLowerCase()].moves[e])
-            }
-        }
-        moves_ = purgeDuplicates(moves_)
-        this.moves = []
-        for(var i = 0; i < moves_.length; i++){
-            this.moves.push({move: moves_[i], level: 1, position: i})
-        }
 
         this.health = this.stats.maxHealth
         this.tech = this.stats.maxTech
@@ -552,6 +618,10 @@ class Unit{
         if(alignment_){
             this.dataElem = document.getElementById("unit_data_temp").content.cloneNode(true).querySelector("div")
             this.spriteElem.src = "rpg/ally_sprite_" + this.name + ".gif"
+            this.menuElem = document.getElementById("menu_data_temp").content.cloneNode(true).querySelector("div")
+            this.menuElem.getElementsByClassName("menu_unit_data_name")[0].innerHTML = this.name
+            this.menuElem.getElementsByClassName("menu_unit_data_portrait")[0].src = "rpg/ally_portrait_" + toFile(this.name) + ".png"
+            this.menuElem.getElementsByClassName("menu_unit_data_sprite")[0].src = "rpg/ally_sprite_" + this.name + ".gif"
         } else {
             this.dataElem = document.getElementById("unit_data_temp_enemy").content.cloneNode(true).querySelector("div")
             this.spriteElem.src = "rpg/enemy_sprite_" + toFile(this.name) + ".gif"
@@ -584,6 +654,20 @@ class Unit{
             final = addObj(final, this.classes[i].class.statBonus(this.classes[i].level, i == this.activeClass, this))
         }
         this.stats = final
+
+        this.possibleMoves = [];
+        for(var i = 0; i < this.classes.length; i++){
+            for(var e = 0; e < this.classes[i].class.moves.length; e++){
+                this.possibleMoves.push({move: this.classes[i].class.moves[e].move, unlocked: this.classes[i].class.moves[e].unlockLevel <= this.classes[i].level})
+            }
+        }
+
+        this.moves = []
+        for(var i = 0; i < this.possibleMoves.length && this.moves.length < 4; i++){
+            if(this.possibleMoves[i].unlocked && this.moves.filter(a => a.move == this.possibleMoves[i].move).length < 1){
+                this.moves.push({move: this.possibleMoves[i].move, position: i})
+            }
+        }
     }
 
     updateData(){
@@ -632,6 +716,15 @@ class Unit{
             this.dataElem.getElementsByClassName("unit_experience_bar")[0].style.height = Math.min(96, 100 * (Math.max(.05, this.classes[this.activeClass].experience / expCap(this.classes[this.activeClass].level)))) + "%"
             this.dataElem.getElementsByClassName("unit_inspiration_bar")[0].style.height = Math.max(5, this.inspiration) + "%"
             this.dataElem.getElementsByClassName("unit_portrait")[0].getElementsByTagName("img")[0].src = "rpg/ally_portrait_" + toFile(this.name) + ".png"
+
+            this.menuElem.getElementsByClassName("menu_unit_data_level")[0].innerHTML = "Lvl. " + this.classes[this.activeClass].level + " " + this.classes[this.activeClass].class.name + ""
+            if(party.indexOf(this) != -1){
+                var partyPosition = party.indexOf(this)
+                this.menuElem.onclick = function(){
+                    active = partyPosition
+                    updateMenu()
+                }
+            }
         } else {
             this.dataElem.getElementsByClassName("unit_level")[0].innerHTML = "(Lvl. " + this.classes[this.activeClass].level + ")"
             this.dataElem.getElementsByClassName("unit_portrait")[0].getElementsByTagName("img")[0].src = "rpg/enemy_portrait_" + toFile(this.name) + ".png"
@@ -695,13 +788,15 @@ class Unit{
     }
 
     deathCheck(){
-        if(this.health < 1){
+        if(this.health < 1 && this.alive){
             genExplosion(this.spriteElem.getBoundingClientRect().left + 50, this.spriteElem.getBoundingClientRect().top + 50)
             if(this.alignment){
-                party.splice(party.indexOf(this),1)
+                this.alive = false
+                this.speed = 0
             } else {
                 enemy_group.splice(enemy_group.indexOf(this),1)
             }
+            deathCheck()
             updateDataReplace()
             updateBoard()
         }
@@ -713,7 +808,6 @@ class Unit{
     }
 
     hitAnimation(){
-        animating = true;
         this.spriteElem.removeAttribute("hit")
         this.maskElem.removeAttribute("hit")
         if(this.alignment){
@@ -725,7 +819,6 @@ class Unit{
         }
         var temp = this
         setTimeout(function(){
-            animating = false
             clearAnimation()
         }, 800)
     }
@@ -759,7 +852,9 @@ class Unit{
         if(results.targets > 0){
             this.tech -= this.moves[move].move.tech
             this.speed -= this.moves[move].move.speed
-            cash += results.exp
+            if(this.alignment){
+                cash += results.exp
+            }
             this.classes[this.activeClass].experience += results.exp
         }
         spawnWarning(true)
@@ -774,20 +869,20 @@ var expCap = function(level){
 var allies = {
     //jasper: new Unit("Jasper", true,   ["Artist", "Writer", "Gamer"]       ,{maxHealth: 15, maxTech: 05, strength: 30, vitality: 25, stamina: 5, agility: 10}),
     //tucker: new Unit("Tucker", true,   ["Student", "Writer", "Animator"]   ,{maxHealth: 15, maxTech: 20, strength: 10, vitality: 15, stamina: 15, agility: 10}),
-      mason: new Unit("Mason", true,     ["Artist", "Writer", "Student"]     ,{maxHealth: 15, maxTech: 05, strength: 20, vitality: 35, stamina: 10, agility: 05}),
+      mason: new Unit("Mason", true,     [classes.artist, classes.writer, classes.student]     ,{maxHealth: 15, maxTech: 05, strength: 20, vitality: 35, stamina: 10, agility: 05}),
     //sam: new Unit("Sam", true,         ["Artist", "Baller", "Gamer"]      ,{maxHealth: 20, maxTech: 05, strength: 32, vitality: 14, stamina: 14, agility: 05}), //
-      bean: new Unit("Bean", true,       ["Artist", "Programmer", "Spriter"] ,{maxHealth: 11, maxTech: 23, strength: 05, vitality: 23, stamina: 13, agility: 17}), 
+      bean: new Unit("Bean", true,       [classes.artist, classes.programmer, classes.spriter] ,{maxHealth: 11, maxTech: 23, strength: 05, vitality: 23, stamina: 13, agility: 17}), 
     //hayden: new Unit("Hayden", true,   ["Artist", "Student", "Gamer"]      ,{maxHealth: 27, maxTech: 14, strength: 13, vitality: 15, stamina: 08, agility: 13}),
     //lorenzo: new Unit("Lorenzo", true, ["Artist", "Writer", "Musician"]    ,{maxHealth: 10, maxTech: 36, strength: 05, vitality: 13, stamina: 10, agility: 14}),
-      nick: new Unit("Nick", true,       ["Artist", "Musician", "Programmer"],{maxHealth: 18, maxTech: 20, strength: 16, vitality: 06, stamina: 08, agility: 22})//, 
+      nick: new Unit("Nick", true,       [classes.artist, classes.musician, classes.programmer],{maxHealth: 18, maxTech: 20, strength: 16, vitality: 06, stamina: 08, agility: 22})//, 
     //rick: new Unit("Rick", true,       ["Artist", "Spriter", "Gamer"]      ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}), //
     //paige: new Unit("Paige", true,     ["Artist", "Spriter", "Programmer"] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15})  //
 }
 
 var enemies = {
-    met: new Unit("Met", false,["Met"],        {maxHealth: 16, maxTech: 5, strength: 6, vitality: 10, stamina: 6, agility: 10}    ,1,100),
-    meta: new Unit("Met Alpha", false,["Met"], {maxHealth: 32, maxTech: 10, strength: 9, vitality: 13, stamina: 6, agility: 13}   ,3,100),
-    metb: new Unit("Met Beta", false,["Met"],  {maxHealth: 51, maxTech: 20, strength: 13, vitality: 19, stamina: 6, agility: 17}  ,5,100)
+    met: new Unit("Met", false,[classes.met],        {maxHealth: 16, maxTech: 5, strength: 6, vitality: 10, stamina: 6, agility: 10}    ,1,100),
+    meta: new Unit("Met Alpha", false,[classes.met], {maxHealth: 32, maxTech: 10, strength: 9, vitality: 13, stamina: 6, agility: 13}   ,3,100),
+    metb: new Unit("Met Beta", false,[classes.met],  {maxHealth: 51, maxTech: 20, strength: 13, vitality: 19, stamina: 6, agility: 17}  ,5,100)
 }
 
 var recruit = function(person){
@@ -874,13 +969,15 @@ var updateBoard = function(){
         }
     }
     for(var i = 0; i < party.length; i++){
-        var tC = party[i].coords
-        if(tC.x != undefined && tC.y != undefined){
-            board[tC.x][tC.y].innerHTML = ""
-            board[tC.x][tC.y].appendChild(party[i].spriteElem)
-            board[tC.x][tC.y].appendChild(party[i].maskElem)
+        if(party[i].alive){
+            var tC = party[i].coords
+            if(tC.x != undefined && tC.y != undefined){
+                board[tC.x][tC.y].innerHTML = ""
+                board[tC.x][tC.y].appendChild(party[i].spriteElem)
+                board[tC.x][tC.y].appendChild(party[i].maskElem)
+            }
+            party[i].spriteElem.removeAttribute("glow")
         }
-        party[i].spriteElem.removeAttribute("glow")
     }
     for(var i = 0; i < enemy_group.length; i++){
         var tC = enemy_group[i].coords
@@ -901,6 +998,22 @@ var updateBoard = function(){
     updateData()
 }
 
+var deathCheck = function(){
+    var alive = true
+    for(var i = 0; i < party.length; i++){
+        if(party[i].alive){
+            alive = false
+        }
+    }
+    if(alive){
+        battleActive = false
+        if(currentLevel > 1){
+            currentLevel -= 1
+        }
+        cash *= .5
+    }
+}
+
 var updateData = function(){
     for(var i = 0; i < party.length; i++){
         party[i].updateData()
@@ -916,16 +1029,29 @@ var updateDataReplace = function(){
     document.getElementById("ally_data_holder").innerHTML = ""
     document.getElementById("enemy_data_holder").innerHTML = ""
     for(var i = 0; i < party.length; i++){
-        document.getElementById("ally_data_holder").appendChild(party[i].updateData())
+        if(party[i].alive){
+            document.getElementById("ally_data_holder").appendChild(party[i].updateData())
+        }
     }
     if(enemyActive != -1 && enemy_group[enemyActive] != undefined){
         document.getElementById("enemy_data_holder").appendChild(enemy_group[enemyActive].updateData())
     }
 }
 
+var updateMenu = function(){
+    document.getElementById("battle_menu_left_data").innerHTML = ""
+    for(var i = 0; i < party.length; i++){
+        document.getElementById("battle_menu_left_data").appendChild(party[i].menuElem)
+        party[i].menuElem.style.backgroundColor = ""
+    }
+    if(party[active] != undefined){
+        party[active].menuElem.style.backgroundColor = "#c8c8c8"
+    }
+}
+
 var getBoard = function(x,y){
     for(var i = 0; i < party.length; i++){
-        if(party[i].coords.x == x && party[i].coords.y == y){
+        if(party[i].coords.x == x && party[i].coords.y == y && party[i].alive){
             return party[i]
         }
     }
@@ -944,6 +1070,8 @@ var preview = function(target){
 }
 
 var clearAnimation = function(){
+    $("DIV").finish()
+    $("IMG").finish()
     for(var i = 0; i < party.length; i++){
         party[i].spriteElem.removeAttribute("hit")
         party[i].maskElem.removeAttribute("hit")
@@ -976,72 +1104,82 @@ setInterval(function(){
 
 
 setInterval(function(){
-    for(var i = 0; i < party.length; i++){
-        if(party[i].statuses.map(a => a.type).indexOf("Poison") != -1){
-            party[i].health -= .01
-        }
-        if(party[i].statuses.map(a => a.type).indexOf("Burn") != -1){
-            party[i].health -= .005
-        }
-        if(party[i].statuses.map(a => a.type).indexOf("Shocked") != -1){
-            party[i].speed -= party[i].stats.stamina / 500
-        }
-        party[i].speed += party[i].stats.stamina / 250
-        if(party[i].speed > 100){
-            party[i].speed = 100
-            party[i].tech += .02
-            if(party[i].tech > party[i].stats.maxTech){
-                party[i].tech = party[i].stats.maxTech
+    if(battleActive){
+        document.getElementById("menu").style.display = "none"
+        for(var i = 0; i < party.length; i++){
+            if(party[i].alive){
+                if(party[i].statuses.map(a => a.type).indexOf("Poison") != -1){
+                    party[i].health -= .01
+                }
+                if(party[i].statuses.map(a => a.type).indexOf("Burn") != -1){
+                    party[i].health -= .005
+                }
+                if(party[i].statuses.map(a => a.type).indexOf("Shocked") != -1){
+                    party[i].speed -= party[i].stats.stamina / 500
+                }
+                party[i].speed += party[i].stats.stamina / 250
+                if(party[i].speed > 100){
+                    party[i].speed = 100
+                    party[i].tech += .02
+                    if(party[i].tech > party[i].stats.maxTech){
+                        party[i].tech = party[i].stats.maxTech
+                    }
+                }
+                for(var e = 0; e < party[i].statuses.length; e++){
+                    party[i].statuses[e].length -= 1
+                    if(party[i].statuses[e].length < 1){
+                        party[i].statuses.splice(e,1)
+                    }
+                }
+                party[i].deathCheck()
             }
         }
-        for(var e = 0; e < party[i].statuses.length; e++){
-            party[i].statuses[e].length -= 1
-            if(party[i].statuses[e].length < 1){
-                party[i].statuses.splice(e,1)
+        for(var i = 0; i < enemy_group.length; i++){
+            if(enemy_group[i].statuses.map(a => a.type).indexOf("Poison") != -1){
+                enemy_group[i].health -= .01
             }
-        }
-        party[i].deathCheck()
-    }
-    for(var i = 0; i < enemy_group.length; i++){
-        if(enemy_group[i].statuses.map(a => a.type).indexOf("Poison") != -1){
-            enemy_group[i].health -= .01
-        }
-        enemy_group[i].speed += enemy_group[i].stats.stamina / 300 + (.05 * Math.random())
-        enemy_group[i].attack(Math.floor(Math.random() * enemy_group[i].moves.length))
-        if(enemy_group[i].speed > 100){
-            enemy_group[i].speed = 100
-            enemy_group[i].tech += .1
-            if(enemy_group[i].tech > enemy_group[i].stats.maxTech){
-                enemy_group[i].tech = enemy_group[i].stats.maxTech
+            enemy_group[i].speed += enemy_group[i].stats.stamina / 300 + (.05 * Math.random())
+            enemy_group[i].attack(Math.floor(Math.random() * enemy_group[i].moves.length))
+            if(enemy_group[i].speed > 100){
+                enemy_group[i].speed = 100
+                enemy_group[i].tech += .1
+                if(enemy_group[i].tech > enemy_group[i].stats.maxTech){
+                    enemy_group[i].tech = enemy_group[i].stats.maxTech
+                }
             }
+            enemy_group[i].deathCheck()
         }
-        enemy_group[i].deathCheck()
-    }
-    if(enemy_group.length == 0){
-        currentLevel += 1
-        newMessage("All enemies defeated!")
-        newMessage("On to Round " + currentLevel + "!")
-        if(currentLevel == 4){
-            createBoard(3,3)
+        if(enemy_group.length == 0){
+            currentLevel += 1
+            newMessage("All enemies defeated!")
+            newMessage("On to Round " + currentLevel + "!")
+            if(currentLevel == 4){
+                createBoard(3,3)
+            }
+            if(currentLevel == 7){
+                createBoard(3,4)
+            }
+            if(currentLevel == 10){
+                createBoard(3,5)
+            }
+            fillBoard()
         }
-        if(currentLevel == 7){
-            createBoard(3,4)
+        for(var i = 0; i < enemy_group.length; i++){
+            enemy_group[i].spriteElem.setAttribute("glow", "false")
         }
-        if(currentLevel == 10){
-            createBoard(3,5)
+        if(enemyActive != -1 && enemy_group[enemyActive] != undefined){
+            enemy_group[enemyActive].spriteElem.setAttribute("glow", "true")
         }
-        fillBoard()
+        if(party[active] != undefined){
+            party[active].spriteElem.setAttribute("glow", "true")
+        }
+        updateData()
+    } else if(!animating){
+        document.getElementById("menu").style.display = "block"
+        document.getElementById("battle_menu_right_rounds").getElementsByTagName("DIV")[0].innerHTML = currentLevel
+    } else {
+        document.getElementById("menu").style.display = "none"
     }
-    for(var i = 0; i < enemy_group.length; i++){
-        enemy_group[i].spriteElem.setAttribute("glow", "false")
-    }
-    if(enemyActive != -1 && enemy_group[enemyActive] != undefined){
-        enemy_group[enemyActive].spriteElem.setAttribute("glow", "true")
-    }
-    if(party[active] != undefined){
-        party[active].spriteElem.setAttribute("glow", "true")
-    }
-    updateData()
 }, 10)
 
 // https://codepen.io/alexlyul/pen/ZoxdpR?page=1&
@@ -1098,3 +1236,4 @@ var fillBoard = function(){
     updateBoard()
 }
 fillBoard()
+updateMenu();
