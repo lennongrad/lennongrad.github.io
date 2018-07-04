@@ -1,4 +1,5 @@
 mouse = {x: 0, y: 0}
+var doExplosions = true
 
 window.mobilecheck = function() {
     var check = false;
@@ -11,6 +12,7 @@ document.onmousemove = function(event){
 }
 
 if(window.mobilecheck()){
+    doExplosions = false
 }
 
 var resize = function(){
@@ -1209,6 +1211,9 @@ function draw() {
 }
 
 function genExplosion(x, y) {
+    if(!doExplosions){
+        return
+    }
   let i = 25;
   while(i--) {
     flakes.push({
