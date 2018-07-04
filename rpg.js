@@ -617,11 +617,11 @@ class Unit{
         this.maskElem.className = "mask"
         if(alignment_){
             this.dataElem = document.getElementById("unit_data_temp").content.cloneNode(true).querySelector("div")
-            this.spriteElem.src = "rpg/ally_sprite_" + this.name + ".gif"
+            this.spriteElem.src = "rpg/ally_sprite_" + toFile(this.name) + ".gif"
             this.menuElem = document.getElementById("menu_data_temp").content.cloneNode(true).querySelector("div")
             this.menuElem.getElementsByClassName("menu_unit_data_name")[0].innerHTML = this.name
             this.menuElem.getElementsByClassName("menu_unit_data_portrait")[0].src = "rpg/ally_portrait_" + toFile(this.name) + ".png"
-            this.menuElem.getElementsByClassName("menu_unit_data_sprite")[0].src = "rpg/ally_sprite_" + this.name + ".gif"
+            this.menuElem.getElementsByClassName("menu_unit_data_sprite")[0].src = "rpg/ally_sprite_" + toFile(this.name) + ".gif"
         } else {
             this.dataElem = document.getElementById("unit_data_temp_enemy").content.cloneNode(true).querySelector("div")
             this.spriteElem.src = "rpg/enemy_sprite_" + toFile(this.name) + ".gif"
@@ -1138,7 +1138,7 @@ setInterval(function(){
             if(enemy_group[i].statuses.map(a => a.type).indexOf("Poison") != -1){
                 enemy_group[i].health -= .01
             }
-            enemy_group[i].speed += enemy_group[i].stats.stamina / 300 + (.05 * Math.random())
+            enemy_group[i].speed += enemy_group[i].stats.stamina / 550 + (.05 * Math.random())
             enemy_group[i].attack(Math.floor(Math.random() * enemy_group[i].moves.length))
             if(enemy_group[i].speed > 100){
                 enemy_group[i].speed = 100
