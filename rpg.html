@@ -123,25 +123,106 @@
         <div id="menu_header">
             <table>
                 <tr>
-                    <td></td>
                     <td>
-                        <div id="menu_header_battle">BATTLE</div>
+                        <div id="menu_header_party" onclick="activeLeft = menuSections.battle_left; activeRight = menuSections.party_right">PARTY</div>
                     </td>
-                    <td></td>
+                    <td>
+                        <div id="menu_header_battle" onclick="activeLeft = menuSections.battle_left; activeRight = menuSections.battle_right">BATTLE</div>
+                    </td>
+                    <td>
+                    </td>
                 </tr>
             </table>
         </div>
         <div id="battle_menu" class="menu_screen">
-                <div id="battle_menu_left">
-                    <div id="battle_menu_left_header">PARTY</div>
-                    <div id="battle_menu_left_data">
-                    </div>
+            <div id="battle_menu_left" class="menu_left">
+                <div id="battle_menu_left_header" class="left_header">PARTY</div>
+                <div id="battle_menu_left_data" class="menu_data">
                 </div>
-                <div id="battle_menu_right">
-                    <div id="battle_menu_right_start" onclick="intro()">CONTINUE</div>
-                    <div id="battle_menu_right_rounds" class="battle_menu_right_counter"><span>Round</span><div>1</div></div>
-                    <div id="battle_menu_right_difficulty" class="battle_menu_right_counter"><span>Difficulty</span> <div>---</div></div>
+            </div>
+            <div id="moves_menu_left" class="menu_left">
+                <div id="moves_menu_left_header" class="left_header">PARTY</div>
+                <div id="moves_menu_left_data" class="menu_data">
                 </div>
+            </div>
+            <div id="battle_menu_right" class="menu_right">
+                <div id="battle_menu_right_start" onclick="intro()">CONTINUE</div>
+                <div id="battle_menu_right_rounds" class="battle_menu_right_counter"><span>Round</span><div>1</div></div>
+                <div id="battle_menu_right_difficulty" class="battle_menu_right_counter"><span>Difficulty</span> <div>---</div></div>
+            </div>
+            <div id="party_menu_right" class="menu_right">
+                <div id="party_menu_right_members" class="party_menu_right_select" onclick="activeLeft = menuSections.battle_left; activeRight = menuSections.members_right">Members</div>
+                <div id="party_menu_right_classes" class="party_menu_right_select" onclick="activeLeft = menuSections.battle_left; activeRight = menuSections.classes_right">Classes</div>
+                <div id="party_menu_right_moves" class="party_menu_right_select" onclick="activeLeft = menuSections.moves_left; activeRight = menuSections.moves_right">Moves</div>
+            </div>
+            <div id="members_menu_right" class="menu_right">
+                <div id="members_menu_right_header" class="left_header">MEMBERS</div>
+                <div id="members_menu_right_data" class="menu_data"></div>
+            </div>
+            <div id="classes_menu_right" class="menu_right">
+                <div id="classes_menu_right_header" class="left_header">STATS</div>
+                <table>
+                    <tr>
+                        <td colspan=2></td>
+                        <td><span>MaxHealth</span></td>
+                        <td><span>MaxTech</span></td>
+                        <td><span>Strength</span></td>
+                        <td><span>Vitality</span></td>
+                        <td><span>Stamina</span></td>
+                        <td><span>Agility</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>Base</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                    </tr>
+                    <tr onclick="party[active].activeClass = 0; updateMenu()">
+                        <td>➤</td>
+                        <td>Lvl. 29 Animator</td>
+                        <td>199</td>
+                        <td>299</td>
+                        <td>399</td>
+                        <td>499</td>
+                        <td>599</td>
+                        <td>699</td>
+                    </tr>
+                    <tr onclick="party[active].activeClass = 1; updateMenu()">
+                        <td>➤</td>
+                        <td>Lvl. 2 Writer</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                    </tr>
+                    <tr onclick="party[active].activeClass = 2; updateMenu()">
+                        <td>➤</td>
+                        <td>Lvl. 2 Writer</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>Total</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                    </tr>
+                </table>
+            </div>
+            <div id="moves_menu_right" class="menu_right">
+            </div>
         </div>
     </div>
 

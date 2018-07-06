@@ -51,6 +51,23 @@ var party = [];
 var enemy_group = [];
 var animating = false
 
+var forEach = function(obj,func){
+    Object.entries(obj).map(a => a[1]).forEach(func) 
+}
+
+var menuSections = {
+    battle_left: document.getElementById("battle_menu_left"),
+    moves_left: document.getElementById("moves_menu_left"),
+    battle_right: document.getElementById("battle_menu_right"),
+    party_right: document.getElementById("party_menu_right"),
+    members_right: document.getElementById("members_menu_right"),
+    classes_right: document.getElementById("classes_menu_right"),
+    moves_right: document.getElementById("moves_menu_right")
+}
+
+var activeLeft  = menuSections.battle_left
+var activeRight = menuSections.classes_right
+
 var keys = {
     characterA: 81,
     characterB: 87,
@@ -347,6 +364,9 @@ class Move{
 
     hit(unit, target, targetLength){
         var experience = 0
+        if(unit == undefined || target == undefined){
+            return
+        }
         unit.updateStats()
         target.updateStats()
         var damage = this.power
@@ -389,6 +409,7 @@ var moves = {
         bullet.className = "bullet"
         bullet.style.left = unit.spriteElem.getBoundingClientRect().left + 55 + "px"
         bullet.style.top = unit.spriteElem.getBoundingClientRect().top + 45 + "px"
+        bullet.style.transform = "rotate(" + (getAngle({x: unit.spriteElem.getBoundingClientRect().left, y: unit.spriteElem.getBoundingClientRect().top}, {x: target.spriteElem.getBoundingClientRect().left, y: target.spriteElem.getBoundingClientRect().top}) / Math.PI * 180) + "deg)"
         document.body.appendChild(bullet)
         $(bullet).animate({
             'left': target.spriteElem.getBoundingClientRect().left + "px",
@@ -514,61 +535,61 @@ class Class{
 
 var classes = {
     gamer: new Class("Gamer",           
-        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        {maxHealth: .3, maxTech: .65, strength: .5, vitality: .5, stamina: .1, agility: .95}, 
         [skills.test], 
         [   {move: moves.shot, unlockLevel: 1}, 
             {move: moves.beam, unlockLevel: 2}, 
             {move: moves.poison_needle, unlockLevel: 4}]),
     baller: new Class("Baller",           
-        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        {maxHealth: .5, maxTech: .5, strength: .5, vitality: .5, stamina: .5, agility: .5}, 
         [skills.test], 
         [   {move: moves.shot, unlockLevel: 1}, 
             {move: moves.multishot, unlockLevel: 2}, 
             {move: moves.sick_burn, unlockLevel: 4}]),
     writer: new Class("Writer",         
-        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        {maxHealth: .2, maxTech: .8, strength: .3, vitality: .6, stamina: .5, agility: .6}, 
         [skills.test], 
         [   {move: moves.shot, unlockLevel: 1}, 
             {move: moves.beam, unlockLevel: 2}, 
             {move: moves.heal_all, unlockLevel: 4}]),
     animator: new Class("Animator",     
-        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        {maxHealth: .3, maxTech: .5, strength: .4, vitality: .4, stamina: 1, agility: .4}, 
         [skills.test], 
         [   {move: moves.shot, unlockLevel: 1}, 
             {move: moves.multishot, unlockLevel: 2}, 
             {move: moves.power_spark, unlockLevel: 4}]),
     student: new Class("Student",       
-        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        {maxHealth: 1, maxTech: .6, strength: .3, vitality: .6, stamina: .35, agility: .15}, 
         [skills.test], 
         [   {move: moves.shot, unlockLevel: 1}, 
             {move: moves.beam, unlockLevel: 2}, 
             {move: moves.sick_burn, unlockLevel: 4}]),
     spriter: new Class("Spriter",       
-        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        {maxHealth: .5, maxTech: .95, strength: .75, vitality: .2, stamina: .4, agility: .2}, 
         [skills.test], 
         [   {move: moves.shot, unlockLevel: 1}, 
             {move: moves.multishot, unlockLevel: 2}, 
             {move: moves.sick_burn, unlockLevel: 4}]),
     programmer: new Class("Programmer", 
-        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1},
+        {maxHealth: .4, maxTech: .5, strength: .8, vitality: .5, stamina: .8, agility: 0},
         [skills.test], 
         [   {move: moves.shot, unlockLevel: 1}, 
             {move: moves.beam, unlockLevel: 2}, 
             {move: moves.heal_all, unlockLevel: 4}]),
     musician: new Class("Musician",     
-        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        {maxHealth: .45, maxTech: .35, strength: .6, vitality: .2, stamina: .9, agility: .5}, 
         [skills.test], 
         [   {move: moves.shot, unlockLevel: 1}, 
             {move: moves.beam, unlockLevel: 2}, 
             {move: moves.poison_needle, unlockLevel: 4}]),
     artist: new Class("Artist",         
-        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        {maxHealth: .45, maxTech: 1, strength: .1, vitality: 1, stamina: .2, agility: .25}, 
         [skills.test], 
         [   {move: moves.shot, unlockLevel: 1}, 
             {move: moves.beam, unlockLevel: 2}, 
             {move: moves.power_spark, unlockLevel: 4}]),
     met: new Class("Met",               
-        {maxHealth: 1.4, maxTech: .6, strength: .8, vitality: .6, stamina: .9, agility: 1}, 
+        {maxHealth: 1.4, maxTech: 1.6, strength: 1.8, vitality: 1.6, stamina: 1.9, agility: 1}, 
         [skills.test], 
         [   {move: moves.shot, unlockLevel: 1}, 
             {move: moves.power_spark, unlockLevel: 1}])
@@ -642,7 +663,7 @@ class Unit{
                 var temp = party.map(function(a){return a.dataElem}).indexOf(this)
                 if(temp != undefined){
                     active = temp
-                }
+                } 
                 updateBoard()
             }
             this.spriteElem.onclick = function(){
@@ -732,6 +753,12 @@ class Unit{
                 var partyPosition = party.indexOf(this)
                 this.menuElem.onclick = function(){
                     active = partyPosition
+                    updateMenu()
+                }
+            } else {
+                this.menuElem.onclick = function(){
+                    var temp = Object.entries(allies).map(function(a){return a[1].menuElem}).indexOf(this)
+                    switchParty(Object.entries(allies)[temp][1])
                     updateMenu()
                 }
             }
@@ -834,9 +861,12 @@ class Unit{
     }
 
     move(tC){
-        if(board[tC.x] != undefined && board[tC.x][tC.y] != undefined && getBoard(tC.x, tC.y) == undefined && board[tC.x][tC.y].className == "platform_ally" && this.speed >= this.moveCost(tC)){
+        if(board[tC.x] != undefined && board[tC.x][tC.y] != undefined && getBoard(tC.x, tC.y) == undefined && this.speed >= this.moveCost(tC)){
+            if((board[tC.x][tC.y].className == "platform_ally" && !this.alignment) || (board[tC.x][tC.y].className == "platform_enemy" && this.alignment)){
+                return
+            }
             this.speed -= this.moveCost(tC)
-            party[active].coords = {x: Number(tC.x), y: Number(tC.y)};
+            this.coords = {x: Number(tC.x), y: Number(tC.y)};
         } 
         if(this.moveCost(tC) >= this.speed && tC.x < 3){
             spawnWarning(false)
@@ -853,7 +883,7 @@ class Unit{
             if(this.alignment){
                 spawnWarning(false)
             }
-            return;
+            return true;
         }
         var results = this.moves[move].move.attack(this) 
         if(results.targets > 0){
@@ -863,17 +893,20 @@ class Unit{
                 cash += results.exp
             }
             this.classes[this.activeClass].experience += results.exp
+        } else {
+            return false
         }
         this.updateCondition()
+        return true
     }
 }
 
 var expCap = function(level){
-    return 100 * Math.pow(level, .78)
+    return 100 * Math.pow(level, .7) + 50
 }
 
 var allies = {
-    //jasper: new Unit("Jasper", true,   ["Artist", "Writer", "Gamer"]       ,{maxHealth: 15, maxTech: 05, strength: 30, vitality: 25, stamina: 5, agility: 10}),
+    jasper: new Unit("Jasper", true,     [classes.artist, classes.writer, classes.gamer]     ,{maxHealth: 15, maxTech: 05, strength: 30, vitality: 25, stamina: 5, agility: 10}),
     //tucker: new Unit("Tucker", true,   ["Student", "Writer", "Animator"]   ,{maxHealth: 15, maxTech: 20, strength: 10, vitality: 15, stamina: 15, agility: 10}),
       mason: new Unit("Mason", true,     [classes.artist, classes.writer, classes.student]     ,{maxHealth: 15, maxTech: 05, strength: 20, vitality: 35, stamina: 10, agility: 05}),
     //sam: new Unit("Sam", true,         ["Artist", "Baller", "Gamer"]      ,{maxHealth: 20, maxTech: 05, strength: 32, vitality: 14, stamina: 14, agility: 05}), //
@@ -1028,7 +1061,7 @@ var updateData = function(){
         enemy_group[i].updateData()
     }
     document.getElementById("currentLevel").innerHTML = "Round " + currentLevel
-    document.getElementById("currentCash").innerHTML = "$" + Math.floor(cash) / 100
+    document.getElementById("currentCash").innerHTML = Math.floor(cash) / 100
 }
 
 var updateDataReplace = function(){
@@ -1046,13 +1079,60 @@ var updateDataReplace = function(){
 
 var updateMenu = function(){
     document.getElementById("battle_menu_left_data").innerHTML = ""
-    for(var i = 0; i < party.length; i++){
-        document.getElementById("battle_menu_left_data").appendChild(party[i].menuElem)
-        party[i].menuElem.style.backgroundColor = ""
+    document.getElementById("members_menu_right_data").innerHTML = ""
+    var k = Object.keys(allies)
+    for(var i = 0; i < k.length; i++){
+        allies[k[i]].updateData()
+        if(party.indexOf(allies[k[i]]) != -1){
+            document.getElementById("battle_menu_left_data").appendChild(allies[k[i]].menuElem)
+            allies[k[i]].menuElem.style.backgroundColor = ""
+        } else {
+            document.getElementById("members_menu_right_data").appendChild(allies[k[i]].menuElem)
+            allies[k[i]].menuElem.style.backgroundColor = ""
+        }
     }
     if(party[active] != undefined){
         party[active].menuElem.style.backgroundColor = "#c8c8c8"
     }
+
+    party[active].updateStats()
+    var tr = menuSections.classes_right.getElementsByTagName("TR")[1]
+    tr.getElementsByTagName("TD")[1].innerHTML = Math.floor(party[active].base.maxHealth)
+    tr.getElementsByTagName("TD")[2].innerHTML = Math.floor(party[active].base.maxTech)
+    tr.getElementsByTagName("TD")[3].innerHTML = Math.floor(party[active].base.strength)
+    tr.getElementsByTagName("TD")[4].innerHTML = Math.floor(party[active].base.vitality)
+    tr.getElementsByTagName("TD")[5].innerHTML = Math.floor(party[active].base.stamina)
+    tr.getElementsByTagName("TD")[6].innerHTML = Math.floor(party[active].base.agility)
+    var tr = menuSections.classes_right.getElementsByTagName("TR")[5]
+    tr.getElementsByTagName("TD")[1].innerHTML = Math.floor(party[active].stats.maxHealth)
+    tr.getElementsByTagName("TD")[2].innerHTML = Math.floor(party[active].stats.maxTech)
+    tr.getElementsByTagName("TD")[3].innerHTML = Math.floor(party[active].stats.strength)
+    tr.getElementsByTagName("TD")[4].innerHTML = Math.floor(party[active].stats.vitality)
+    tr.getElementsByTagName("TD")[5].innerHTML = Math.floor(party[active].stats.stamina)
+    tr.getElementsByTagName("TD")[6].innerHTML = Math.floor(party[active].stats.agility)
+    for(var i = 0; i < party[active].classes.length; i++){
+        tr = menuSections.classes_right.getElementsByTagName("TR")[2 + i]
+        var bonus = party[active].classes[i].class.statBonus(party[active].classes[i].level, party[active].activeClass == i)
+        if(party[active].activeClass == i){
+            tr.getElementsByTagName("TD")[0].innerHTML = "➤"
+        } else {
+            tr.getElementsByTagName("TD")[0].innerHTML = ""
+        }
+        tr.getElementsByTagName("TD")[1].innerHTML = "Lvl. " + party[active].classes[i].level + " " + party[active].classes[i].class.name
+        tr.getElementsByTagName("TD")[2].innerHTML = Math.floor(bonus.maxHealth)
+        tr.getElementsByTagName("TD")[3].innerHTML = Math.floor(bonus.maxTech)
+        tr.getElementsByTagName("TD")[4].innerHTML = Math.floor(bonus.strength)
+        tr.getElementsByTagName("TD")[5].innerHTML = Math.floor(bonus.vitality)
+        tr.getElementsByTagName("TD")[6].innerHTML = Math.floor(bonus.stamina)
+        tr.getElementsByTagName("TD")[7].innerHTML = Math.floor(bonus.agility)
+    }
+}
+
+var switchParty = function(replace){
+    if(party[active] == undefined){
+        return
+    }
+    party[active] = replace
 }
 
 var getBoard = function(x,y){
@@ -1123,7 +1203,7 @@ setInterval(function(){
                 if(party[i].statuses.map(a => a.type).indexOf("Shocked") != -1){
                     party[i].speed -= party[i].stats.stamina / 500
                 }
-                party[i].speed += party[i].stats.stamina / 250
+                party[i].speed += Math.pow(party[i].stats.stamina, .6) / 90
                 if(party[i].speed > 100){
                     party[i].speed = 100
                     party[i].tech += .02
@@ -1145,7 +1225,18 @@ setInterval(function(){
                 enemy_group[i].health -= .01
             }
             enemy_group[i].speed += enemy_group[i].stats.stamina / 550 + (.05 * Math.random())
-            enemy_group[i].attack(Math.floor(Math.random() * enemy_group[i].moves.length))
+            if(!enemy_group[i].attack(Math.floor(Math.random() * enemy_group[i].moves.length)) && Math.random() > .95){
+                switch(Math.floor(Math.random() * 4)){
+                    case 0:
+                        enemy_group[i].move({x: enemy_group[i].coords.x, y: enemy_group[i].coords.y - 1}); break;
+                    case 1:
+                        enemy_group[i].move({x: enemy_group[i].coords.x, y: enemy_group[i].coords.y + 1}); break;
+                    case 2:
+                        enemy_group[i].move({x: enemy_group[i].coords.x - 1, y: enemy_group[i].coords.y}); break;
+                    case 3:
+                        enemy_group[i].move({x: enemy_group[i].coords.x + 1, y: enemy_group[i].coords.y}); break;
+                }
+            }
             if(enemy_group[i].speed > 100){
                 enemy_group[i].speed = 100
                 enemy_group[i].tech += .1
@@ -1182,6 +1273,9 @@ setInterval(function(){
         updateData()
     } else if(!animating){
         document.getElementById("menu").style.display = "block"
+        forEach(menuSections, a => a.style.display = "none")
+        activeLeft.style.display = "block"
+        activeRight.style.display = "block"
         document.getElementById("battle_menu_right_rounds").getElementsByTagName("DIV")[0].innerHTML = currentLevel
     } else {
         document.getElementById("menu").style.display = "none"
