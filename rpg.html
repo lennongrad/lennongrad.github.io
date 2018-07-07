@@ -92,6 +92,16 @@
             </table>
         </div>
     </template>
+    <template id="move_menu_temp">
+        <tr>
+            <td>Sick Burn</td>
+            <td>Hit all ahead. Burns.</td>
+            <td>100</td>
+            <td>100</td>
+            <td>100</td>
+            <td><img src="rpg/move_element_neutral.png"/></td>
+        </tr>
+    </template>
     <template id="menu_data_temp">
         <div class="menu_unit_data">
             <img class="menu_unit_data_portrait" src="rpg/ally_portrait_nick.png"/>
@@ -140,11 +150,6 @@
                 <div id="battle_menu_left_data" class="menu_data">
                 </div>
             </div>
-            <div id="moves_menu_left" class="menu_left">
-                <div id="moves_menu_left_header" class="left_header">PARTY</div>
-                <div id="moves_menu_left_data" class="menu_data">
-                </div>
-            </div>
             <div id="battle_menu_right" class="menu_right">
                 <div id="battle_menu_right_start" onclick="intro()">CONTINUE</div>
                 <div id="battle_menu_right_rounds" class="battle_menu_right_counter"><span>Round</span><div>1</div></div>
@@ -153,7 +158,7 @@
             <div id="party_menu_right" class="menu_right">
                 <div id="party_menu_right_members" class="party_menu_right_select" onclick="activeLeft = menuSections.battle_left; activeRight = menuSections.members_right">Members</div>
                 <div id="party_menu_right_classes" class="party_menu_right_select" onclick="activeLeft = menuSections.battle_left; activeRight = menuSections.classes_right">Classes</div>
-                <div id="party_menu_right_moves" class="party_menu_right_select" onclick="activeLeft = menuSections.moves_left; activeRight = menuSections.moves_right">Moves</div>
+                <div id="party_menu_right_moves" class="party_menu_right_select" onclick="activeLeft = menuSections.battle_left; activeRight = menuSections.moves_right">Moves</div>
             </div>
             <div id="members_menu_right" class="menu_right">
                 <div id="members_menu_right_header" class="left_header">MEMBERS</div>
@@ -161,7 +166,7 @@
             </div>
             <div id="classes_menu_right" class="menu_right">
                 <div id="classes_menu_right_header" class="left_header">STATS</div>
-                <table>
+                <table class="menu_table">
                     <tr>
                         <td colspan=2></td>
                         <td><span>MaxHealth</span></td>
@@ -222,6 +227,29 @@
                 </table>
             </div>
             <div id="moves_menu_right" class="menu_right">
+                <div id="moves_menu_right_header" class="left_header">MOVES</div>
+                <table class="menu_table">
+                    <tr>
+                        <td><span></span></td>
+                        <td><span></span></td>
+                        <td><span><img src="rpg/move_power.png"/></span></td>
+                        <td><span><img src="rpg/move_tech.png"/></span></td>
+                        <td><span><img src="rpg/move_speed.png"/></span></td>
+                        <td><span></span></td>
+                    </tr>
+                </table>
+                <table class="menu_table">
+                    <tr>
+                        <td><span></span></td>
+                        <td><span></span></td>
+                        <td><span><img src="rpg/move_power.png"/></span></td>
+                        <td><span><img src="rpg/move_tech.png"/></span></td>
+                        <td><span><img src="rpg/move_speed.png"/></span></td>
+                        <td><span></span></td>
+                    </tr>
+                </table>
+                <div class="moves_menu_tiny_header">EQUIPPED</div>
+                <div class="moves_menu_tiny_header">UNEQUIPPED</div>
             </div>
         </div>
     </div>

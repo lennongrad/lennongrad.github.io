@@ -57,7 +57,6 @@ var forEach = function(obj,func){
 
 var menuSections = {
     battle_left: document.getElementById("battle_menu_left"),
-    moves_left: document.getElementById("moves_menu_left"),
     battle_right: document.getElementById("battle_menu_right"),
     party_right: document.getElementById("party_menu_right"),
     members_right: document.getElementById("members_menu_right"),
@@ -66,7 +65,7 @@ var menuSections = {
 }
 
 var activeLeft  = menuSections.battle_left
-var activeRight = menuSections.classes_right
+var activeRight = menuSections.battle_right
 
 var keys = {
     characterA: 81,
@@ -250,6 +249,7 @@ class Move{
         this.effect = effect_
 
         this.dataElem = document.getElementById("move_data_temp").content.cloneNode(true).querySelector("div")
+        this.menuElem = document.getElementById("move_menu_temp").content.cloneNode(true).querySelector("tr")
         this.updateData()
     }
     
@@ -261,6 +261,13 @@ class Move{
         this.dataElem.getElementsByClassName("move_tech")[0].getElementsByTagName("span")[0].innerHTML = this.tech
         this.dataElem.getElementsByClassName("move_speed")[0].getElementsByTagName("span")[0].innerHTML = this.speed
         this.dataElem.getElementsByClassName("move_element")[0].getElementsByTagName("img")[0].src = "rpg/move_element_" + toFile(this.element) + ".png"
+
+        this.menuElem.getElementsByTagName("TD")[0].innerHTML = this.name
+        this.menuElem.getElementsByTagName("TD")[1].innerHTML = this.description
+        this.menuElem.getElementsByTagName("TD")[2].innerHTML = this.power
+        this.menuElem.getElementsByTagName("TD")[3].innerHTML = this.tech
+        this.menuElem.getElementsByTagName("TD")[4].innerHTML = this.speed
+        this.menuElem.getElementsByTagName("TD")[5].getElementsByTagName("img")[0].src = "rpg/move_element_" + toFile(this.element) + ".png"
 
         if(party != undefined && party[active] != undefined){
             var position = party[active].moves.map(a => a.move).indexOf(this)
@@ -618,6 +625,7 @@ class Unit{
         if(this.alignment){
             this.base.maxHealth *= 2.5
         }
+        this.moves = []
         this.updateStats()
 
         this.health = this.stats.maxHealth
@@ -693,10 +701,11 @@ class Unit{
             }
         }
 
-        this.moves = []
-        for(var i = 0; i < this.possibleMoves.length && this.moves.length < 4; i++){
-            if(this.possibleMoves[i].unlocked && this.moves.filter(a => a.move == this.possibleMoves[i].move).length < 1){
-                this.moves.push({move: this.possibleMoves[i].move, position: i})
+        if(activeRight != menuSections.moves_right){
+            for(var i = 0; i < this.possibleMoves.length && this.moves.length < 4; i++){
+                if(this.possibleMoves[i].unlocked && this.moves.filter(a => a.move == this.possibleMoves[i].move).length < 1){
+                    this.moves.push({move: this.possibleMoves[i].move})
+                }
             }
         }
     }
@@ -1125,6 +1134,33 @@ var updateMenu = function(){
         tr.getElementsByTagName("TD")[5].innerHTML = Math.floor(bonus.vitality)
         tr.getElementsByTagName("TD")[6].innerHTML = Math.floor(bonus.stamina)
         tr.getElementsByTagName("TD")[7].innerHTML = Math.floor(bonus.agility)
+    }
+
+    var tbl = menuSections.moves_right.getElementsByTagName("TABLE")[0]
+    $(tbl).find("tr:gt(0)").remove();
+    for(var i = 0; i < party[active].moves.length; i++){
+        party[active].moves[i].move.menuElem.onclick = function(){
+            if(party[active].moves.length < 2){
+                return
+            }
+            party[active].moves.splice(party[active].moves.map(a => a.move.menuElem).indexOf(this), 1)
+            updateMenu()
+        }
+        tbl.appendChild(party[active].moves[i].move.menuElem)
+    }
+    tbl = menuSections.moves_right.getElementsByTagName("TABLE")[1]
+    $(tbl).find("tr:gt(0)").remove();
+    for(var i = 0; i < party[active].possibleMoves.length; i++){
+        if(party[active].possibleMoves[i].unlocked && party[active].moves.filter(a => a.move == party[active].possibleMoves[i].move).length < 1){
+            party[active].possibleMoves[i].move.menuElem.onclick = function(){
+                if(party[active].moves.length > 2){
+                    return
+                }
+                party[active].moves.push({move: party[active].possibleMoves[party[active].possibleMoves.map(a => a.move.menuElem).indexOf(this)].move})
+                updateMenu()
+            }
+            tbl.appendChild(party[active].possibleMoves[i].move.menuElem)
+        }
     }
 }
 

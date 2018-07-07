@@ -879,7 +879,7 @@ a:visited{
     color: white;
 }
 
-#classes_menu_right table{
+.menu_table{
     position: absolute;
     text-align: center;
     width: 43vw;
@@ -893,7 +893,7 @@ a:visited{
     height: 5vh;
 }
 
-#classes_menu_right tr{
+.menu_table tr{
     transition: background-color .3s
 }
 
@@ -901,7 +901,7 @@ a:visited{
     width: 3vw;
 }
 
-#classes_menu_right tr:first-child td {
+.menu_table tr:first-child td {
     border: none;
 }
 
@@ -911,7 +911,7 @@ a:visited{
     cursor: pointer;
 }
 
-#classes_menu_right td{
+.menu_table td{
     transition: color .3s;
     border-top: 2px solid #DDDDDD;
 }
@@ -920,6 +920,60 @@ a:visited{
     writing-mode: vertical-rl;
     text-align: right;
     transform: rotate(-5deg)
+}
+
+#moves_menu_right td{
+    height: 3vh
+}
+
+#moves_menu_right td:first-child{
+    width: 10vw;
+}
+
+#moves_menu_right td:nth-child(3), #moves_menu_right td:nth-child(4), #moves_menu_right td:nth-child(5), #moves_menu_right td:nth-child(6){
+    width: 3vw;
+}
+
+#moves_menu_right table{
+    height: 3vh;
+    font-size: 1.25vw;
+    table-layout:fixed;
+}
+
+#moves_menu_right table:nth-child(2){
+    top: 15vh;
+}
+
+#moves_menu_right table:nth-child(3){
+    top: 40vh;
+}
+
+.moves_menu_tiny_header{
+    position: absolute;
+    width: 43vw;
+    text-align: center;
+    font-size: 1.5vw;
+    border-bottom: 3px dotted #888888;
+}
+
+.moves_menu_tiny_header:nth-child(4){
+    top: 10vh;
+}
+
+.moves_menu_tiny_header:nth-child(5){
+    top: 35vh;
+}
+
+#moves_menu_right img{
+    width: 1.25vw;
+    height: 1.25vw;
+    image-rendering: pixelated;
+}
+
+#moves_menu_right tr:not(:first-child):hover{
+    background-color: black;
+    color: white;
+    cursor: pointer;
 }
 
 .triangle{
