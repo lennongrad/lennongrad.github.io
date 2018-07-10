@@ -135,6 +135,7 @@ var getAngle = function(a,b){
 
 var intro = function(){
     animating = true
+    document.getElementById("battle_menu_right_start").innerHTML = "CONTINUE"
     $(".sprite_ally").css("opacity", 0)
     $("#battle").css("opacity", 0)
     $("#battle").animate({
