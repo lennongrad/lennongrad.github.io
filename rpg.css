@@ -704,6 +704,10 @@ a:visited{
     display: none;
 }
 
+#members_menu_right{
+    overflow-y: scroll;
+}
+
 .menu_right{
     position: fixed;
     height: 80vh;

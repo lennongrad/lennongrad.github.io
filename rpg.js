@@ -657,11 +657,15 @@ class Unit{
         this.maskElem.className = "mask"
         if(alignment_){
             this.dataElem = document.getElementById("unit_data_temp").content.cloneNode(true).querySelector("div")
-            this.spriteElem.src = "rpg/ally_sprite_" + toFile(this.name) + ".gif"
+            if(toFile(this.name) == "bean" || toFile(this.name) == "nick" || toFile(this.name) == "mason"){
+                this.spriteElem.src = "rpg/ally_sprite_" + toFile(this.name) + ".gif"
+            } else {
+                this.spriteElem.src = "rpg/ally_sprite_" + "jasper" + ".gif"
+            }
             this.menuElem = document.getElementById("menu_data_temp").content.cloneNode(true).querySelector("div")
             this.menuElem.getElementsByClassName("menu_unit_data_name")[0].innerHTML = this.name
             this.menuElem.getElementsByClassName("menu_unit_data_portrait")[0].src = "rpg/ally_portrait_" + toFile(this.name) + ".png"
-            this.menuElem.getElementsByClassName("menu_unit_data_sprite")[0].src = "rpg/ally_sprite_" + toFile(this.name) + ".gif"
+            this.menuElem.getElementsByClassName("menu_unit_data_sprite")[0].src = this.spriteElem.src
         } else {
             this.dataElem = document.getElementById("unit_data_temp_enemy").content.cloneNode(true).querySelector("div")
             this.spriteElem.src = "rpg/enemy_sprite_" + toFile(this.name) + ".gif"
@@ -917,15 +921,17 @@ var expCap = function(level){
 
 var allies = {
     jasper: new Unit("Jasper", true,     [classes.artist, classes.writer, classes.gamer]     ,{maxHealth: 15, maxTech: 05, strength: 30, vitality: 25, stamina: 5, agility: 10}),
-    //tucker: new Unit("Tucker", true,   ["Student", "Writer", "Animator"]   ,{maxHealth: 15, maxTech: 20, strength: 10, vitality: 15, stamina: 15, agility: 10}),
-      mason: new Unit("Mason", true,     [classes.artist, classes.writer, classes.student]     ,{maxHealth: 15, maxTech: 05, strength: 20, vitality: 35, stamina: 10, agility: 05}),
-    //sam: new Unit("Sam", true,         ["Artist", "Baller", "Gamer"]      ,{maxHealth: 20, maxTech: 05, strength: 32, vitality: 14, stamina: 14, agility: 05}), //
-      bean: new Unit("Bean", true,       [classes.artist, classes.programmer, classes.spriter] ,{maxHealth: 11, maxTech: 23, strength: 05, vitality: 23, stamina: 13, agility: 17}), 
-    //hayden: new Unit("Hayden", true,   ["Artist", "Student", "Gamer"]      ,{maxHealth: 27, maxTech: 14, strength: 13, vitality: 15, stamina: 08, agility: 13}),
-    //lorenzo: new Unit("Lorenzo", true, ["Artist", "Writer", "Musician"]    ,{maxHealth: 10, maxTech: 36, strength: 05, vitality: 13, stamina: 10, agility: 14}),
-      nick: new Unit("Nick", true,       [classes.artist, classes.musician, classes.programmer],{maxHealth: 18, maxTech: 20, strength: 16, vitality: 06, stamina: 08, agility: 22})//, 
-    //rick: new Unit("Rick", true,       ["Artist", "Spriter", "Gamer"]      ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}), //
-    //paige: new Unit("Paige", true,     ["Artist", "Spriter", "Programmer"] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15})  //
+    tucker: new Unit("Tucker", true,   [classes.artist, classes.writer, classes.animator]   ,{maxHealth: 15, maxTech: 20, strength: 10, vitality: 15, stamina: 15, agility: 10}),
+    mason: new Unit("Mason", true,     [classes.artist, classes.writer, classes.student]     ,{maxHealth: 15, maxTech: 05, strength: 20, vitality: 35, stamina: 10, agility: 05}),
+    sam: new Unit("Sam", true,         [classes.artist, classes.baller, classes.gamer]      ,{maxHealth: 20, maxTech: 05, strength: 32, vitality: 14, stamina: 14, agility: 05}), //
+    bean: new Unit("Bean", true,       [classes.artist, classes.programmer, classes.spriter] ,{maxHealth: 11, maxTech: 23, strength: 05, vitality: 23, stamina: 13, agility: 17}), 
+    hayden: new Unit("Hayden", true,   [classes.artist, classes.student, classes.gamer]      ,{maxHealth: 27, maxTech: 14, strength: 13, vitality: 15, stamina: 08, agility: 13}),
+    lorenzo: new Unit("Lorenzo", true, [classes.artist, classes.writer, classes.musician]    ,{maxHealth: 10, maxTech: 36, strength: 05, vitality: 13, stamina: 10, agility: 14}),
+    nick: new Unit("Nick", true,       [classes.artist, classes.musician, classes.programmer],{maxHealth: 18, maxTech: 20, strength: 16, vitality: 06, stamina: 08, agility: 22}),
+    rick: new Unit("Rick", true,       [classes.artist, classes.spriter, classes.gamer]      ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}), 
+    paige: new Unit("Paige", true,     [classes.artist, classes.programmer, classes.gamer] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}),
+    cass: new Unit("Cass", true,     [classes.artist, classes.writer, classes.gamer] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}),
+    amy: new Unit("Amy", true,     [classes.artist, classes.animator, classes.gamer] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15})
 }
 
 var enemies = {
