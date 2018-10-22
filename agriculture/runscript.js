@@ -1,10 +1,12 @@
+    var versionNumber = "1.10"
+    
     var debug = false;
 
     var workers_cost_base = 20;
     var workers_cost_mult = 1.6;
     var worker_cost = workers_cost_base;
-    var total_workers = 3;
-    var av_workers = 3;
+    var total_workers = 0
+    var av_workers = 0
 
     var curYPos, curXPos, curDown;
 
@@ -13,15 +15,94 @@
 
     var baseChanceSpinner = .998;
 
+    var building_active_colour = "#eee";
+    var building_inactive_colour = "#7e8c85";
+
+    var tech_active_colour = "#111";
+    var tech_inactive_colour = "#777";
+
+    var hasUnlockedSpecial = false;
+    var hasUnlockedSpecialDebug = false;
+
+    var spinnerAlert = 0
+
+    var helpers = [
+        {condition: function(){return true}, text: "^^^<br>Click on one of the big buttons to accumulate Resources, such as Science. Click multiple times to continue accumulating them. Look on the left side to see how much you have!", posX: "22vw", posY: "22vh"},
+        {condition: function(){return res[4].amt >= tech[0].cost()}, text: ">>><br>Click the turquoise button when you have enough Science to unlock a Technology. This gives you access to new Resources, Buildings, and other features!", posX: "85vw", posY: "10vh"},
+        {condition: function(){return res[0].amt >= worker_cost}, text: ">>><br>Click here to get more Workers when you have enough Food. Unused Workers give you boosts to how many Resources you get per click.", posX: "85vw", posY: "10vh"},
+        {condition: function(){return tech[4].unlocked}, text: "<<<<br>Click here to buy a Building if you have enough Cash. Make sure that you have enough Workers for the new Building. Buildings give you passive amounts of Resources each second while a Worker is assigned to them. You can keep clicking to buy more of the same Building and earn more Resources per second, but this will also require more Workers!", posX: "40vw", posY: "22vh"}
+    ]
+
+    var activeHelper = 0
+
+    function activateHelper(){
+        if(activeHelper < helpers.length && helpers[activeHelper].condition()){
+            spinnerCanBeActive = false
+            document.getElementById("helper").style.opacity = ".8"
+            document.getElementById("helper").style.left = helpers[activeHelper].posX
+            document.getElementById("helper").style.top = helpers[activeHelper].posY
+            document.getElementById("helper").innerHTML = helpers[activeHelper].text
+            document.getElementById("blocker").style.opacity = ".4"
+        }
+    }
+
+    function hideHelper(level){
+        if(level == activeHelper){
+            spinnerCanBeActive = true
+            document.getElementById("helper").style.opacity = "0"
+            document.getElementById("blocker").style.opacity = "0"
+            activeHelper++
+        }
+    }
+    
+    function adjustBrightness(col, amt) {
+        var usePound = false;
+    
+        if (col[0] == "#") {
+            col = col.slice(1);
+            usePound = true;
+        }
+    
+        var R = parseInt(col.substring(0,2),16);
+        var G = parseInt(col.substring(2,4),16);
+        var B = parseInt(col.substring(4,6),16);
+    
+        R = R + amt;
+        G = G + amt;
+        B = B + amt;
+    
+        if (R > 255) R = 255;
+        else if (R < 0) R = 0;
+    
+        if (G > 255) G = 255;
+        else if (G < 0) G = 0;
+    
+        if (B > 255) B = 255;
+        else if (B < 0) B = 0;
+    
+        var RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
+        var GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
+        var BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
+    
+        return (usePound?"#":"") + RR + GG + BB;
+    
+    }
+
+    $(document).ready(function(){
+        spinnerCanBeActive = true;
+        $('#loadingleft').toggle("slide", { direction: "left" }, 1000);
+        $('#loadingright').toggle("slide", { direction: "right" }, 1000);
+    })
+
     window.addEventListener('mousemove', function (e) {
+        curYPos = e.pageY;
+        curXPos = e.pageX - 80;
         if (curDown && !MouseScroller) {
             document.getElementById('page1').scrollTo(document.getElementById('page1').scrollLeft - e.movementX, document.getElementById('page1').scrollTop - e.movementY);
         }
     });
 
     window.addEventListener('mousedown', function (e) {
-        curYPos = e.pageY;
-        curXPos = e.pageX;
         curDown = true;
     });
 
@@ -42,27 +123,121 @@
         }
         return numbo;
     }
-
-    var hasLoaded = false;
-
-    function loaded() {
-        if (!hasLoaded) {
-            spinnerCanBeActive = true;
-            $('#loadingleft').toggle("slide", { direction: "left" }, 1000);
-            $('#loadingright').toggle("slide", { direction: "right" }, 1000);
+    
+    function storageAvailable(type) {
+        try {
+            var storage = window[type],
+                x = '__storage_test__';
+            storage.setItem(x, x);
+            storage.removeItem(x);
+            return true;
         }
-        hasLoaded = true;
+        catch(e) {
+            return e instanceof DOMException && (
+                // everything except Firefox
+                e.code === 22 ||
+                // Firefox
+                e.code === 1014 ||
+                // test name field too, because code might not be present
+                // everything except Firefox
+                e.name === 'QuotaExceededError' ||
+                // Firefox
+                e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+                // acknowledge QuotaExceededError only if there's something already stored
+                storage.length !== 0;
+        }
     }
+
+    function capitalize(str){
+        return str[0].toUpperCase() + str.substring(1);
+    }
+
+
+    function exportStr() {
+        var data = [versionNumber, techUnlocked(), [], [], debug, activeHelper]
+        for(i in res){
+            data[2].push(res[i].toString())
+        }
+        for(i in bldg){
+            data[3].push(bldg[i].toString())
+        }
+
+        return JSON.stringify(data)
+    }
+
+    function importString(str) {
+        var data = JSON.parse(str)
+        if(data[0] != versionNumber){
+            alert("This data is incompatible.")
+            return false
+        }
+        for(i in data[1]){
+            tech[i].unlock(true)
+        }
+        for(i in data[2]){
+            res[i].fromString(data[2][i])
+        }
+        for(i in data[3]){
+            bldg[i].fromString(data[3][i])
+        }
+        debug = data[4]
+        for(var i = 0; i < data[5]; i++){
+            hideHelper(i)
+            activateHelper()
+        }
+        return true
+    }
+
+    function saveData(){
+        if (storageAvailable('localStorage')) {
+            localStorage.setItem("save", exportStr())
+        }
+    }
+
+    function resetData(){
+        if (storageAvailable('localStorage')) {
+            localStorage.removeItem("save")
+            location.reload()
+        }
+    }
+
+    function loadData(str){
+        if (storageAvailable('localStorage')) {
+            localStorage.setItem("save", str)
+            location.reload()
+        } else {
+            importString(str)
+        }
+    }
+    
+    const copyToClipboard = str => {
+        const el = document.createElement('textarea');  // Create a <textarea> element
+        el.value = str;                                 // Set its value to the string that you want copied
+        el.setAttribute('readonly', '');                // Make it readonly to be tamper-proof
+        el.style.position = 'absolute';                 
+        el.style.left = '150vw';                      // Move outside the screen to make it invisible
+        document.body.appendChild(el);                  // Append the <textarea> element to the HTML document
+        const selected =            
+          document.getSelection().rangeCount > 0        // Check if there is any content selected previously
+            ? document.getSelection().getRangeAt(0)     // Store selection if found
+            : false;                                    // Mark as false to know no selection existed before
+        el.select();                                    // Select the <textarea> content
+        document.execCommand('copy');                   // Copy - only works as a result of a user action (e.g. click events)
+        document.body.removeChild(el);                  // Remove the <textarea> element
+        if (selected) {                                 // If a selection existed before copying
+          document.getSelection().removeAllRanges();    // Unselect everything on the HTML document
+          document.getSelection().addRange(selected);   // Restore the original selection
+        }
+    };
 
     function Resource(name, unlocked, color, color2, base, limit) {
         this.name = name;
         this.ps = 0;
-        this.amt = base;
         this.click = 1;
-        this.mult = 1;
         this.unlocked = unlocked;
         this.color = color;
         this.color2 = color2;
+        this.color3 = "#" + adjustBrightness(color2.substring(1), -50)
         this.baselimit = limit;
         this.limit = limit;
 
@@ -73,16 +248,36 @@
 
         this.canUnlock = true;
 
+        this.amt = base;
+        this.bonuses = [];
+
+        this.toString = function(){
+            return JSON.stringify([this.amt, this.bonuses])
+        }
+
+        this.fromString = function(str){
+            var data = JSON.parse(str)
+            this.amt = data[0]
+            this.bonuses = data[1]
+        }
+
         this.toClick = function () {
             this.amt = this.amt + this.click;
             clicker[rcb.get(this.name)] = 0;
             rowclicker[rcb.get(this.name)] = 0;
-            repetir += this.click;
+            specialCounter += this.click;
             last_click = rcb.get(this.name);
-            clickerV[rcb.get(this.name)] = 6;
-            clickerHV[rcb.get(this.name)] = -5 + (10 * Math.random());
-            clickerH[rcb.get(this.name)] = 3;
-            clickerO[rcb.get(this.name)] = 0;
+            
+            var newAppear = $("<div class='appearer' style='left: " + curXPos + "px; top: " + curYPos + "px'>+" + this.click + ' <img src="' + this.name + '.png" class="food-icon">' + "</div>")
+            $("body").append(newAppear)
+            newAppear.animate(
+                {top: curYPos + 100 + "px",
+                left: curXPos + (50 - 100 * Math.random()) + "px",
+                opacity: 0},
+                400, "easeInQuad", function(){
+                    this.remove()
+                }
+            )
         }
 
         this.unlocker = function () {
@@ -98,7 +293,7 @@
             for (var y = 0; y < res.length && gotRate == 0; y++) {
                 if (this.auto[y]) {
                     gotRate = y;
-                    isRate = this.rates[y];
+                    isRate = this.rates[y].rate;
                 }
             }
 
@@ -124,36 +319,38 @@
         switch (costs) {
             case 0:
                 this.costers = [a];
-                this.cost_base = 50;
+                this.cost_base = 20;
                 this.cost_mult = 1.5;
-                this.efficiency = .15;
+                this.efficiency = 1;
                 break;
             case 1:
-                this.costers = [a, 5];
-                this.cost_base = 500;
-                this.cost_mult = 2.1;
-                this.efficiency = 1.6;
+                this.costers = [a];
+                this.cost_base = 600;
+                this.cost_mult = 1.75;
+                this.efficiency = 10;
                 break;
             case 2:
                 this.costers = [a, 5];
-                this.cost_base = 5000;
-                this.cost_mult = 3;
-                this.efficiency = 15.6;
+                this.cost_base = 1500;
+                this.cost_mult = 2;
+                this.efficiency = 100;
                 break;
             case 3:
-                this.costers = [a, 6];
-                this.cost_base = 50000;
-                this.cost_mult = 4.3;
-                this.efficiency = 98.5;
+                this.costers = [a, 5, 6];
+                this.cost_base = 9000;
+                this.cost_mult = 2.25;
+                this.efficiency = 500;
                 break;
             case 4:
-                this.costers = [a, 7];
-                this.cost_base = 500000;
-                this.cost_mult = 6.2;
-                this.efficiency = 567.34;
+                this.costers = [a, 5, 6, 7];
+                this.cost_base = 30000;
+                this.cost_mult = 2.5;
+                this.efficiency = 1500;
                 //this.canUnlock = false;
                 break;
         }
+
+        this.cost_mult += 4
 
         if (cost_base != 0) {
             this.cost_base = cost_base;
@@ -171,11 +368,24 @@
 
         this.fps = 0;
         this.cost = cost_base;
+
         this.amt = 0;
         this.working = 0;
+        this.bonuses = [];
+
+        this.toString = function(){
+            return JSON.stringify([this.amt, this.working, this.bonuses])
+        }
+
+        this.fromString = function(str){
+            var data = JSON.parse(str)
+            this.amt = data[0]
+            this.working = data[1]
+            this.bonuses = data[2]
+        }
 
         this.costfind = function () {
-            this.cost = (this.cost_base * this.cost_mult * (Math.pow(1.10, (this.amt + 1)) - Math.pow(1.10, this.amt))) / 0.15;
+            this.cost = this.cost_base + (this.cost_mult * (Math.pow(1.35, (this.amt + 1)) - Math.pow(1.10, this.amt)));
         }
 
         this.buy = function () {
@@ -186,7 +396,7 @@
                     return;
                 }
                 if (res[this.costers[i]].amt < lesser) {
-                    lesser = res[this.costers[i]].amt;
+                    lesser = this.costers[i];
                     least = i;
                 }
             }
@@ -201,7 +411,7 @@
                     ++this.working;
                 }
                 findPS();
-            } while (res[lesser].amt >= this.cost & all);
+            } while (res[lesser].amt >= this.cost && all);
             init();
         }
 
@@ -233,22 +443,23 @@
     var rcb = new Map();
 
     var res = [];
-    res[0] = new Resource("food", true, "#b6ff9e", "#4fff51", 1000000000000000000);
+    res[0] = new Resource("food", false, "#b6ff9e", "#4fff51", 0);
     res[1] = new Resource("housing", false, "#b6ff9e", "#4fff51", 0);
-    res[2] = new Resource("gold", true, "#fff69e", "#ffc44f", 9000000000000000000000000);
-    res[3] = new Resource("jewel", false, "#fff69e", "#ffc44f", 90000);
-    res[4] = new Resource("science", true, "#9ea7ff", "#4f6fff", 100000000000000000000);
+    res[2] = new Resource("gold", false, "#fff69e", "#ffc44f", .1);
+    res[3] = new Resource("jewel", false, "#fff69e", "#ffc44f", 0);
+    res[4] = new Resource("science", true, "#9ea7ff", "#4f6fff", 0);
     res[5] = new Resource("mineral", false, "#d8c2a4", "#A59989", 0);
     res[6] = new Resource("oil", false, "#d8c2a4", "#A59989", 0);
     res[7] = new Resource("uranium", false, "#d8c2a4", "#A59989", 0);
     res[8] = new Resource("culture", false, "#d19eff", "#ac4fff", 0);
     res[9] = new Resource("political", false, "#d19eff", "#ac4fff", 0);
-    res[10] = new Resource("energy", false, "#9effd9", "#4fffa1", 10000);
+    res[10] = new Resource("energy", false, "#9effd9", "#4fffa1", 0);
     res[11] = new Resource("tradition", false, "#ff8b82", "#ff5d4f", 0);
     res[12] = new Resource("equipment", false, "#ff8b82", "#ff5d4f", 0);
     res[13] = new Resource("unrest", false, "#d19eff", "#", 0);
-    res[14] = new Resource("cash", true, "#d19eff", "#", 0);
+    res[14] = new Resource("cash", false, "#d19eff", "#", 0);
 
+    res[10].canUnlock = false;
     res[3].canUnlock = false;
     res[9].canUnlock = false;
     res[12].canUnlock = false;
@@ -263,25 +474,24 @@ res[7].canUnlock = false;*/
         recon.set(i, res[i].name);
         rcb.set(res[i].name, i);
         for (e = 0; e < res.length; e++) {
-            res[i].rates[e] = 0;
+            res[i].rates[e] = {unlocked: false, rate: 0};
             res[i].auto[e] = false;
         }
     }
 
-    res[0].rates[a] = .5;
-    res[2].rates[a] = 1.3;
-    res[5].rates[a] = 1.1;
-    res[4].rates[a] = 1.05;
-    res[3].rates[a] = 1.5;
-    res[6].rates[a] = 1.2;
-    res[7].rates[a] = 1.45;
-    res[11].rates[9] = 1;
+    res[rcb.get('food')].rates[rcb.get('cash')] = {unlocked: false, isDebug: false, rate: .5}
+    res[rcb.get('gold')].rates[rcb.get('cash')] = {unlocked: false, isDebug: false, rate: 1.3}
+    res[rcb.get('mineral')].rates[rcb.get('cash')] = {unlocked: false, isDebug: false, rate: 1.05}
+    res[rcb.get('oil')].rates[rcb.get('cash')] = {unlocked: false, isDebug: false, rate: 1.1}
+    res[rcb.get('uranium')].rates[rcb.get('cash')] = {unlocked: false, isDebug: false, rate: 1.15}
+    res[rcb.get('cash')].rates[rcb.get('science')] = {unlocked: false, isDebug: false, rate: 1.3}
+    res[rcb.get('cash')].rates[rcb.get('food')] = {unlocked: false, isDebug: false, rate: 1.3}
 
 
     // name, resource, cost_base, cost_mult, efficiency, unlocked
 
     var bldg = [];
-    bldg[0] = new Building("Field", rcb.get('food'), 0, 0, 0, true, 0); // farms
+    bldg[0] = new Building("Field", rcb.get('food'), 0, 0, 0, false, 0); // farms
     bldg[1] = new Building("Farm", rcb.get('food'), 0, 0, 0, false, 1); // silos
     bldg[2] = new Building("Barn", rcb.get('food'), 0, 0, 0, false, 2); // plantations
     bldg[3] = new Building("Plantation", rcb.get('food'), 0, 0, 0, false, 3); // plantations
@@ -294,7 +504,7 @@ res[7].canUnlock = false;*/
     bldg[53] = new Building("b15", rcb.get('housing'), 0, 0, 0, false, 4);
 
     bldg[4] = new Building("Gold Mine", rcb.get('gold'), 0, 0, 0, false, 0); // mines
-    bldg[5] = new Building("Dredger", rcb.get('gold'), 0, 0, 0, false, 1); // banks
+    bldg[5] = new Building("Temple", rcb.get('gold'), 0, 0, 0, false, 1); // banks
     bldg[6] = new Building("Bank", rcb.get('gold'), 0, 0, 0, false, 2); // mints
     bldg[7] = new Building("Mint", rcb.get('gold'), 0, 0, 0, false, 3); // mints
     bldg[54] = new Building("Alchemist", rcb.get('gold'), 0, 0, 0, false, 4);
@@ -361,6 +571,7 @@ res[7].canUnlock = false;*/
 
     bldg[14].plural = "Quarries";
     bldg[8].plural = "Libraries";
+    bldg[11].plural = "Universities";
 
     var unused = [24, 28, 29, 20];
     for (i = 0; i < unused.length; i++) {
@@ -382,11 +593,6 @@ res[7].canUnlock = false;*/
     var clickerHV = [];
     var rowclicker = [];
 
-    var supclick = 1000;
-
-    var source = document.getElementById("entry-template").innerHTML;
-    var template = Handlebars.compile(source);
-
     for (var i = 0; i < b; i++) {
         clicker[i] = 1000;
         clickerV[i] = -1;
@@ -399,28 +605,17 @@ res[7].canUnlock = false;*/
         newcol.id = res[i].name.toLowerCase() + "-column";
         document.getElementById('mainbody').appendChild(newcol);
 
-        source = document.getElementById("entry-template").innerHTML;
-        template = Handlebars.compile(source);
-
-        var context = { type: res[i].name, abr: res[i].name.substring(0, 2) };
-        var html = template(context);
-
         var owos = document.createElement("TR");
-        owos.innerHTML = html;
+        owos.innerHTML = Handlebars.compile(document.getElementById("entry-template").innerHTML)({ type: capitalize(res[i].name), abr: res[i].name.substring(0, 2) });
         owos.className = 'row' + res[i].name;
         document.getElementById('ledgerbody').appendChild(owos);
     
         var newrow = document.createElement("TD");
         newrow.id = "col" + (i + 1);
         newrow.className = "topalign";
-
-        source = document.getElementById("appear-template").innerHTML;
-        template = Handlebars.compile(source);
     
         var newappear = document.createElement("TD");
-        context = { name: res[i].name.toLowerCase(), ide: i, color: res[i].color2 };
-        html = template(context);
-        newappear.innerHTML = html;
+        newappear.innerHTML = Handlebars.compile(document.getElementById("appear-template").innerHTML)({ name: res[i].name.toLowerCase(), ide: i, color: res[i].color2, colordark: res[i].color3 });
         newappear.className = 'clicktd';
         document.getElementById(res[i].name.toLowerCase() + "-column").appendChild(newappear);
         document.getElementById(res[i].name.toLowerCase() + "-column").appendChild(newrow);
@@ -434,23 +629,12 @@ res[7].canUnlock = false;*/
 
     for (var i = 0; i < res.length; i++) {
         for (var e = 0; e < res.length; e++) {
-            if (res[i].rates[e] != 0) {
+            if (res[i].rates[e].rate != 0) {
                 var owos = document.createElement("TR");
                 owos.id = i + "to" + e;
 
-                source = document.getElementById("conv-template").innerHTML;
-                template = Handlebars.compile(source);
-
-                var context = { name1: res[i].name, name2: res[e].name, ide1: i, ide2: e };
-                var html = template(context);
-
-                owos.innerHTML = html;
-
-                if ((into % 2) == 1) {
-                    owos.className = 'row-even';
-                } else {
-                    owos.className = 'row-odd';
-                }
+                owos.innerHTML = Handlebars.compile(document.getElementById("conv-template").innerHTML)({ name1: res[i].name, name2: res[e].name, ide1: i, ide2: e });
+                owos.className = "row-even"
                 into++;
                 document.getElementById('conver').insertBefore(owos, document.getElementById('convanchor'));
             }
@@ -459,15 +643,10 @@ res[7].canUnlock = false;*/
 
 
 
-    source = document.getElementById("bldg-template").innerHTML;
-    template = Handlebars.compile(source);
 
     for (var i = 0; i < bldg.length; i++) {
-        var context = { bldg: bldg[i].name.toLowerCase(), name: bldg[i].name, ide: i };
-        var html = template(context);
-
         var owos = document.createElement("table");
-        owos.innerHTML = html;
+        owos.innerHTML = Handlebars.compile(document.getElementById("bldg-template").innerHTML)({ bldg: bldg[i].name.toLowerCase(), name: bldg[i].name, ide: i });
         if (bldg[i].canShow) { owos.className = 'boxholder'; } else { owos.className = 'fakeholder' };
         owos.id = bldg[i].name.toLowerCase() + "_holder";
         owos.style.background = "url('frontlayer.png'), url('" + bldg[i].name.toLowerCase() + "_back.jpeg') no-repeat center";
@@ -486,277 +665,193 @@ res[7].canUnlock = false;*/
 
     chargeamt = 3;
 
-
-    source = document.getElementById("charge-template").innerHTML;
-    template = Handlebars.compile(source);
-
     for (var i = 0; i < chargeamt; i++) {
-        var context = { chargename: "doogus", chargeid: i };
-        var html = template(context);
-
         var owos = document.createElement("TR");
-        owos.innerHTML = html;
+        owos.innerHTML = Handlebars.compile(document.getElementById("charge-template").innerHTML)({ chargename: "doogus", chargeid: i });
         document.getElementById('chargeanchor').appendChild(owos);
     }
 
-    function Technology(type, level, func, name, descr) {
+    function Technology(type, level, effects, name, descr) {
         this.type = type;
         this.level = level;
-        this.effect = func;
+        this.effects = effects;
         this.descr = descr;
         this.unlocked = false;
         this.name = name;
+
+        this.elem = document.createElement("TR")
+        this.elem.className = "tech-data-row"
+        this.elem.style.backgroundPosition = Math.random() * 1000 + "px " + Math.random() * 1000 + "px"
+        var cells = [document.createElement("TD"), document.createElement("TD"), document.createElement("TD"), document.createElement("TD")]
+        cells[0].innerHTML = '<span class="cost">456.123k</span> <img draggable="false" src="science.png" class="cashicon food-icon" style="vertical-align: middle;">'
+        cells[0].className = "cost-cell"
+        cells[1].innerHTML = this.name
+        cells[1].className = "name-cell"
+        cells[2].innerHTML = this.descr
+        for(i in this.effects){
+            var image = document.createElement("IMG")
+            image.className = "tech-icon"
+            image.onmouseover = function(){showTooltip(this)}
+            image.onmouseleave = function(){hideTooltip()}
+            switch(this.effects[i].type){
+                case UNLOCKBLDG: image.setAttribute("message","<b>Unlock Building</b>: " + capitalize(this.effects[i].bldg)); image.src = "techUnlockBuilding.png"; break;
+                case UNLOCKRES: image.setAttribute("message","<b>Unlock Resource</b>: " + capitalize(this.effects[i].res)); image.src = "techUnlockResource.png"; break;
+                case UNLOCKSPECIAL: image.setAttribute("message","<b>Unlock Special Bar</b>"); image.src = "techUnlockSpecial.png"; break;
+                case UNLOCKRATE: image.setAttribute("message","<b>Unlock Rate: </b>" + capitalize(res[this.effects[i].rate[0]].name) + " to " + capitalize(res[this.effects[i].rate[1]].name)); image.src = "techUnlockRate.png"; break;
+                case UNLOCKPOLICY: image.setAttribute("message","<b>Unlock Policy</b>: " + capitalize(this.effects[i].policy)); image.src = "techUnlockPolicy.png"; break;
+                case BONUSBLDG: image.setAttribute("message","<b>Bonus</b>: " + capitalize(this.effects[i].bldg) + " for " + (100 * this.effects[i].bonus) + "%"); image.src = "techBonusBuilding.png"; break;
+                case BONUSRES: image.setAttribute("message","<b>Bonus</b>: " + capitalize(this.effects[i].res) + " for " + (100 * this.effects[i].bonus) + "%"); image.src = "techBonusResource.png"; break;
+            }
+            cells[3].appendChild(image)
+        }
+        var tech = this
+        this.elem.onclick = function(){tech.unlock()}
+        cells.forEach(function(x){tech.elem.appendChild(x)})
+        document.getElementById("tech-data").appendChild(this.elem)
+
+        this.cost = function(){
+            return techs_cost_base * (Math.pow(1.47, (this.level + 1)) - Math.pow(1.27, this.level)) * (Math.pow(1.45, (techLevel + 1)) - Math.pow(1.3, techLevel));
+        }
+
+        this.unlock = function(ignoreCost){
+            if ((res[this.type == 0 ? 4 : 8].amt >= this.cost() || ignoreCost) && techPossible().includes(Number(this.level))){
+                res[this.type == 0 ? 4 : 8].amt -= this.cost()
+                for(i in this.effects){
+                    switch(this.effects[i].type){
+                        case UNLOCKBLDG: bldg[bs.get(this.effects[i].bldg)].unlocker(); break;
+                        case UNLOCKRES: res[rcb.get(this.effects[i].res)].unlocker(); break;
+                        case BONUSBLDG: bldg[bs.get(this.effects[i].bldg)].bonuses.push({type: "Permanent", detail: "From " + this.name, percent: this.effects[i].bonus}); break;
+                        case BONUSRES: res[rcb.get(this.effects[i].res)].bonuses.push({type: "Permanent", detail: "From " + this.name, percent: this.effects[i].bonus}); break;
+                        case UNLOCKSPECIAL: hasUnlockedSpecial = true; break;
+                        case UNLOCKRATE: res[this.effects[i].rate[0]].rates[this.effects[i].rate[1]].unlocked = true; break;
+                        case UNLOCKPOLICY:
+                        default: console.log("Unknown tech effect: " + this.effects[i].type)
+                    }
+                }
+                techLevel += 1;
+                this.unlocked = true;
+                techSelected = techEarliest()
+                init()
+            }
+    
+        }
     }
 
     var tech = [];
-    var idea = [];
            
-    tech[0] = new Technology(0, 0, function () {
-        bldg[bs.get("farm")].unlocker(); bldg[bs.get("gold mine")].unlocker(); bldg[bs.get("lab")].unlocker();
-    }, "Hi", "HOla");
-    tech[1] = new Technology(0, 0, function () {
-        res[rcb.get("mineral")].unlocker(); bldg[bs.get("barn")].unlocker();
-    }, "Hi", "HOla");
-    tech[2] = new Technology(0, 0, function () {
-        bldg[bs.get("quarry")].unlocker();
-    }, "Hi", "Hola");
+    var UNLOCKBLDG = 0
+    var UNLOCKRES = 1
+    var BONUSBLDG = 2
+    var BONUSRES = 3
+    var UNLOCKSPECIAL = 4
+    var UNLOCKPOLICY = 5
+    var UNLOCKRATE = 6
 
-    var tech_level = 0;
-    var tech_unlocked = [];
-    var tech_possible = [];
-    var tech_max = 13;
-    var earliest_tech = 1;
-    var tech_level_active;
+	tech[0] = new Technology(0 , 0 , [{type: UNLOCKRES     , res: "food"}]       , "Hunting/Gathering", "Allows gathering of Food");
+	tech[1] = new Technology(0 , 1 , [{type: UNLOCKRES     , res: "gold"}]       , "Mining"                , "Allows gathering of Gold");
+	tech[2] = new Technology(0 , 2 , [{type: UNLOCKRES     , res: "cash"}        , {type: UNLOCKRATE  , rate: [2         ,a]}] , "Bartering" , "Allows gathering of Cash");
+	tech[3] = new Technology(0 , 3 , [{type: UNLOCKRATE    , rate: [a            , 0]}]               , "Trading"              , "Allows trading of Cash for Food");
+	tech[4] = new Technology(0 , 4 , [{type: UNLOCKBLDG    , bldg: "field"}]     , "Sedentary Agriculture"                , "Unlocks Field to produce Food every second");
+	tech[5] = new Technology(0 , 5 , [{type: UNLOCKBLDG    , bldg: "gold mine"}  , {type: UNLOCKBLDG  , bldg: "library"}], "Construction" , "Unlocks even more buildings");
+	tech[6] = new Technology(0 , 6 , [{type: UNLOCKSPECIAL}, {type: BONUSRES     , res: "food"        , bonus: .1}]      , "Harvest Celebrations" , "Unlocks the Special Bar in the top-left");
+	tech[7] = new Technology(0 , 7 , [{type: UNLOCKBLDG    , bldg: "farm"}       , {type: UNLOCKRATE  , rate: [0         ,a]}] , "Cities" , "Unlocks the Farm building");
+	tech[8] = new Technology(0 , 8 , [{type: UNLOCKBLDG    , bldg: "temple"}]    , "Taxation"                , "Unlocks the Temple building");
+	tech[9] = new Technology(0 , 9 , [{type: UNLOCKRES     , res: "culture"}     , {type: UNLOCKBLDG  , bldg: "theatre"}], "Recreation", "Allows gathering of Culture");
+	tech[10] = new Technology(0, 10, [{type: UNLOCKBLDG    , bldg: "school"}     , {type: UNLOCKRATE  , rate: [a         ,4]}] , "Education", "Unlocks the School building");
+	tech[11] = new Technology(0, 11, [{type: BONUSRES      , res: "food", bonus: .1}]       , "Shipbuilding"               , "Boosts Food production");
+	tech[12] = new Technology(0, 12, [{type: UNLOCKRES     , res: "mineral"}]    , "Metallurgy"               , "Allows gathering of Minerals");
+	tech[13] = new Technology(0, 13, [{type: UNLOCKBLDG    , bldg: "deposit"}    , {type: BONUSBLDG   , bldg: "farm", bonus: .1}]   , "Feudalism", "Unlocks the Deposit building");
+	tech[14] = new Technology(0, 14, [{type: UNLOCKBLDG    , bldg: "bank"}       , {type: UNLOCKRATE  , rate: [5         ,a]}] , "Charters", "Unlocks the Bank building");
+	tech[15] = new Technology(0, 15, [{type: UNLOCKBLDG    , bldg: "barn"}]      , "Crop Rotation"               , "Unlocks the Barn building");
+	tech[16] = new Technology(0, 16, [{type: UNLOCKBLDG    , bldg: "strip mine"}], "Gunpowder"               , "Unlocks the Strip Mine building");
+	tech[17] = new Technology(0, 17, [{type: UNLOCKBLDG    , bldg: "lab"}        , {type: BONUSRES    , res: "gold", bonus: .3}]    , "Scientific Method", "Unlocks the Lab building");
+	tech[18] = new Technology(0, 18, [{type: UNLOCKRES     , res: "oil"}         , {type: UNLOCKRATE  , rate: [6         ,a]}] , "Biology", "Allows gathering of Oil");
+	tech[19] = new Technology(0, 19, [{type: UNLOCKBLDG    , bldg: "whaler"}     , {type: BONUSRES    , res: "food", bonus: .3}]    , "Reinforced Ships", "Unlocks the Whaler building");
 
-    var techs_cost_base = 20;
-    var techs_cost_mult = 5;
-    var tech_cost = techs_cost_base;
-    var tech_name = 0;
-    var tech_descr = 0;
+    var techLevel = 0;
+    var techSelected;
 
-    for (i = 0; i < tech_max; i++) {a
-        tech_unlocked[i] = false;
-        tech_possible[i] = false;
-    }
+    var techs_cost_base = 26;
+    var techs_visible = 3;
 
-    var idea_level = 0;
-    var idea_unlocked = [];
-    var idea_possible = [];
-    var earliest_idea = 1;
-    var idea_level_active;
-
-    var ideas_cost_base = 20;
-    var ideas_cost_mult = 5;
-    var idea_cost = ideas_cost_base;
-    var idea_name = 0;
-    var idea_descr = 0;
-
-    for (i = 0; i < 12; i++) {
-        idea_unlocked[i] = false;
-        idea_possible[i] = false;
-    }
-
-
-    function techleft() {
-        techpossible();
-        if (tech_possible[tech_level_active - 1]) {
-            --tech_level_active;
-        } else {
-            tech_level_active = earliest_tech;
-        }
-    }
-
-    function techright(go) {
-        techpossible();
-        if (go > tech_level_active * 2) {
-            tech_level_active = earliest;
-        }
-        if (tech_possible[tech_level_active + go]) {
-            tech_level_active += go;
-        } else {
-            techright(go + 1);
-        }
-    }
-
-    function techpossible() {
-        e = false;
-        holt = tech_possible.length + 1;
-        for (i = 0; i < holt; i++) {
-            if (i > 0 && i < tech_level + 4 && !tech_unlocked[i]) {
-                tech_possible[i] = true;
-                if (!e) {
-                    earliest_tech = i;
-                    e = true;
+    function techMove(direction) {
+        var possible = techPossible()
+        switch(direction){
+            case "left":
+                for(var i = possible.length - 1; i >= 0; i--){
+                    if(possible[i] < techSelected){
+                        techSelected = possible[i]
+                        return
+                    }
                 }
-            } else {
-                tech_possible[i] = false;
+                break;
+            case "right":
+                for(i in possible){
+                    if(possible[i] > techSelected){
+                        techSelected = possible[i]
+                        return
+                    }
+                }
+                break;
+            case "earliest": break;
+            case "latest":
+                techSelected = possible[possible.length - 1]
+                return;
+        }
+        techSelected = techEarliest()
+    }
+
+    function techPossible() {
+        var possible = []
+        for(var i = 0; i < tech.length && possible.length < techs_visible; i++){
+            if(!tech[i].unlocked){
+                possible.push(i)
             }
         }
+        return possible
     }
 
-
-    function idealeft() {
-        ideapossible();
-        if (idea_possible[idea_level_active - 1]) {
-            --idea_level_active;
-        } else {
-            idea_level_active = earliest_idea;
-        }
-    }
-
-    function idearight(go) {
-        ideapossible();
-        if (go > idea_level_active * 2) {
-            idea_level_active = earliest;
-        }
-        if (idea_possible[idea_level_active + go]) {
-            idea_level_active += go;
-        } else {
-            idearight(go + 1);
-        }
-    }
-
-    function ideapossible() {
-        e = false;
-        holt = idea_possible.length + 1;
-        for (i = 0; i < holt; i++) {
-            if (i > 0 && i < idea_level + 4 && !idea_unlocked[i]) {
-                idea_possible[i] = true;
-                if (!e) {
-                    earliest_idea = i;
-                    e = true;
-                }
-            } else {
-                idea_possible[i] = false;
+    function techEarliest(){
+        for(i in tech){
+            if(!tech[i].unlocked){
+                return Number(i)
             }
         }
+        return Number(tech.length - 1)
+    }
+    techSelected = Number(techEarliest());
+
+    function techLatest(){
+        for(var i = tech.length - 1; i >= 0; i--){
+            if(!tech[i].unlocked && techPossible().includes(Number(i))){
+                return Number(i)
+            }
+        }
+        return techEarliest()
+    }
+
+    function techUnlocked(){
+        var unlocked = []
+        for(i in tech){
+            if(tech[i].unlocked){
+                unlocked.push(i) 
+            }
+        }
+        return unlocked
     }
 
     var framer = 1;
 
     var all = false;
 
-    function Matrix() {
-        this.a = 1; // identity matrix
-        this.b = 0;
-        this.c = 0;
-        this.d = 1;
-        this.e = 0;
-        this.f = 0;
-    }
-
-    Matrix.prototype = {
-
-        applyToPoint: function (p) {
-            return {
-                x: p.x * this.a + p.y * this.c + this.e + 15,
-                y: p.x * this.b + p.y * this.d + this.f + 15
-            }
-        },
-
-        transform: function (a2, b2, c2, d2, e2, f2) {
-
-            var a1 = this.a,
-                b1 = this.b,
-                c1 = this.c,
-                d1 = this.d,
-                e1 = this.e,
-                f1 = this.f;
-
-            /* matrix order (canvas compatible):
-             * ace
-             * bdf
-             * 001
-             */
-            this.a = a1 * a2 + c1 * b2;
-            this.b = b1 * a2 + d1 * b2;
-            this.c = a1 * c2 + c1 * d2;
-            this.d = b1 * c2 + d1 * d2;
-            this.e = a1 * e2 + c1 * f2 + e1;
-            this.f = b1 * e2 + d1 * f2 + f1;
-        },
-
-        rotate: function (angle) {
-            var cos = Math.cos(angle),
-                sin = Math.sin(angle);
-            this.transform(cos, sin, -sin, cos, 0, 0);
-        },
-
-        scale: function (sx, sy) {
-            this.transform(sx, 0, 0, sy, 0, 0);
-        },
-
-        translate: function (tx, ty) {
-            this.transform(1, 0, 0, 1, tx, ty);
-        },
-
-        reset: function () {
-            this.a = 1; // identity matrix
-            this.b = 1;
-            this.c = 1;
-            this.d = 1;
-            this.e = 1;
-            this.f = 1;
-        }
-    };
-
-    // apply some transformation:
-    var m = new Matrix();     // our manual transformation-matrix
-    m.translate(50, 50);      // center of box
-    m.rotate(.25 * Math.PI);            // some angle in radians
-    m.translate(-50, -50);    // translate back
-
-    var points = [
-        { x: 0, y: 0 },       // upper-left
-        { x: 40, y: 0 },     // upper-right
-        { x: 40, y: 40 },   // bottom-right
-        { x: 0, y: 40 }      // bottom-left
-    ],
-        result = [], i = 0, p;
-
-    // transform points
-    while (p = points[i++]) result.push(m.applyToPoint(p));
-
-    // draw boxes to canvas:
-    var canvas = document.querySelector("canvas");
-    var ctx = document.querySelector("canvas").getContext("2d");
-    ctx.translate(30, 30);    // give some room for rotation for this demo
-
-    drawPolygon(result, "blue");
- 
-    //drawCoord(points[0]);     // plot old point
-    //drawCoord(result[0]);     // plot resulting point
-
-
-    // plot result:
-    function drawPolygon(pts, color) {
-        ctx.beginPath();
-        ctx.strokeStyle = color;
-        ctx.moveTo(pts[0].x, pts[0].y);
-        for (var i = 1, p; p = pts[i++];) ctx.lineTo(p.x, p.y);
-        ctx.closePath();
-        ctx.stroke();
-        ctx.fillStyle = res[currColor].color2;
-        ctx.fill();
-    }
-
-    function drawCoord(p) {
-        ctx.fillText('!');
-    }
-
-    var repetir = 99;
-    var rep_max = 100;
-    var last_click;
-    var supermod = 10;
-
-    var active_colour = "#C5C5C5";
-    var inactive_colour = "#7e8c85";
+    var specialCounter = 99;
+    var specialMax = 100;
+    var last_click = 4;
 
     var flasher = 0;
     var flasher_interval = 70;
 
     var flash_tech = false;
-    var flash_idea = false;
     var flash_worker = false;
 
     var active_page = 2;
@@ -775,11 +870,9 @@ res[7].canUnlock = false;*/
             if (active_page == r) {
                 document.getElementById('page' + r).style.display = "block";
                 document.getElementById(r + 'pageclick').style.background = "#d8d6d6";
-                document.getElementById(r + 'pageclick').style.transform = "scale(1.1,1.1)";
             } else {
                 document.getElementById('page' + r).style.display = "none";
-                document.getElementById(r + 'pageclick').style.background = "white";
-                document.getElementById(r + 'pageclick').style.transform = "scale(.965,.965)";
+                document.getElementById(r + 'pageclick').style.background = "";
             }
         }
     }
@@ -787,7 +880,7 @@ res[7].canUnlock = false;*/
     activatePage();
 
     // Audio
-    var snd = new Audio("click.wav");
+    //var snd = new Audio("click.wav");
     // snd.play();
 
     //document.getElementById('ledgerbody').appendChild( document.getElementsByClassName('rowfood')[0].cloneNode(true) );
@@ -819,29 +912,6 @@ res[7].canUnlock = false;*/
         }
     }
 
-
-    function moveClick() {
-        for (i = 0; i < clicker.length; i++) {
-            clickerV[i] -= .5;
-            if (Math.abs(clicker[i]) < 100) clicker[i] += clickerV[i];
-            if (Math.abs(clickerH[i]) < 100) clickerH[i] += clickerHV[i];
-            clickerO[i] += 2.5;
-            document.getElementById(recon.get(i) + 'appear').style.transform = "translate(" + (clickerH[i] / 3) * -1 + "px, " + (clicker[i] / 3) * -1 + "px)";
-            document.getElementById(recon.get(i) + 'appear').style.opacity = 1 - (clickerO[i] / 100);
-        }
-
-        for (i = 0; i < rowclicker.length; i++) {
-            if (rowclicker[i] > 296) {
-                rowclicker[i] = 296;
-            }
-            rowclicker[i] += 3;
-        }
-
-        clicker[clicker.length - 1] += .5;
-        document.getElementById("superappear").style.transform = "translateY(" + (supclick / 3) * -1 + "px)";
-        document.getElementById('superappear').style.opacity = 1 - (supclick / 100)
-    }
-
     function doFlasher() {
         flasher += .8;
         var flasho = document.getElementsByClassName("flashing");
@@ -859,67 +929,144 @@ res[7].canUnlock = false;*/
         if (!flash_tech) {
             document.getElementById('near_tech').style.display = "none";
         }
-        if (!flash_idea) {
-            document.getElementById('near_idea').style.display = "none";
-        }
         if (!flash_worker) {
             document.getElementById('near_worker').style.display = "none";
         }
     }
 
-    function isUnlocked() {
-        if (!hasLoaded) {
-            return;
+    function hasUnlockedABuilding(){
+        var final = false
+        for(i in bldg){
+            if(bldg[i].unlocked){
+                final = true
+            }
         }
+        return final
+    }
+
+    function init() {
+    
+        for (var i = 0; i < res.length; i++) {
+            for (var e = 0; e < res.length; e++) {
+                if (res[i].rates[e].rate != 0) {
+                    document.getElementById(res[i].name + "_to_" + res[e].name + "_rate").innerHTML = caster(res[i].rates[e].rate, 4);
+                }
+            }
+        }
+    
+        document.getElementById('workers_number').innerHTML = av_workers + " / " + total_workers;
+        document.getElementById('worker_cost').innerHTML = small_int(Math.ceil(worker_cost));
+
+        document.getElementById("unrest-row").style.display = res[13].unlocked ? "" : "none"
+        document.getElementById("cash-row").style.display = res[14].unlocked ? "" : "none"
+        document.getElementById("worker-row").style.display = res[0].unlocked ? "" : "none"
+        document.getElementById("convanchor").style.display = res[0].unlocked ? "" : "none"
+        document.getElementById("2pageclick").style.display = res[8].unlocked ? "" : "none"
+
+        for (i = 0; i < bldg.length; i++) {
+            if (bldg[i].unlocked) {
+                document.getElementById(bldgtxt.get(i) + 's_number').innerHTML = bldg[i].amt;
+                document.getElementById(bldgtxt.get(i) + 's_fps').innerHTML = "(" + small_int(bldg[i].fps) + ' /s)';
+                document.getElementById(bldgtxt.get(i) + '_cost').innerHTML = small_int(Math.ceil(bldg[i].cost));
+                document.getElementById(bldgtxt.get(i) + '_working').innerHTML = bldg[i].working + " / " + bldg[i].amt;
+
+                if (bldg[i].amt != 1) {
+                    document.getElementById(bldgtxt.get(i) + 'plural').innerHTML = bldg[i].plural;
+                } else {
+                    document.getElementById(bldgtxt.get(i) + 'plural').innerHTML = bldg[i].name;
+                }
+            }
+        }
+
+        document.getElementById('tech_level').innerHTML = techSelected + 1;
+        document.getElementById('tech_cost').innerHTML = small_int(Math.ceil(tech[techSelected].cost()));
+        document.getElementById('tech_name').innerHTML = tech[techSelected].name;      
+        document.getElementById('tech_descr').innerHTML = tech[techSelected].descr;
+
+        for(i in tech){
+            tech[i].elem.getElementsByClassName("cost")[0].innerHTML = small_int(Math.ceil(tech[i].cost()))
+            if(tech[i].unlocked){
+                tech[i].elem.setAttribute("status", "completed")
+                tech[i].elem.getElementsByClassName("cost-cell")[0].style.display = "none"
+                tech[i].elem.getElementsByClassName("name-cell")[0].setAttribute("colspan", 2)
+                tech[i].elem.style.opacity = 1
+                tech[i].elem.style.pointerEvents = ""
+                tech[i].elem.style.cursor = ""
+            } else if(techPossible().includes(Number(i))){
+                tech[i].elem.setAttribute("status", "available")
+                tech[i].elem.style.opacity = 1
+                tech[i].elem.style.pointerEvents = ""
+                tech[i].elem.style.cursor = ""
+            } else {
+                tech[i].elem.setAttribute("status", "hidden")
+                tech[i].elem.style.opacity = 1 - (i - techLatest() + 1) * .15
+                if((i - techLatest() + 1) * .15 >= 1){
+                tech[i].elem.style.pointerEvents = "none"
+                tech[i].elem.style.cursor = "default"
+                }
+            }
+        }
+
+        var anyConversions = false
+        for (i = 0; i < res.length; i++) {
+            if (!res[i].unlocked) {
+                for (var e = 0; e < res.length; e++) {
+                    if (res[i].rates[e].rate != 0) {
+                        document.getElementById(i + "to" + e).style.display = "none";
+                    }
+                    if (res[e].rates[i].rate != 0) {
+                        document.getElementById(e + "to" + i).style.display = "none";
+                    }
+                }
+            } else {
+                for (var e = 0; e < res.length; e++) {
+                    if (res[i].rates[e].rate != 0 && res[i].rates[e].unlocked) {
+                        if(res[i].unlocked && res[e].unlocked){
+                            anyConversions = true
+                        }
+                        document.getElementById(i + "to" + e).style.display = "";
+                    }
+                    if (res[e].rates[i].rate != 0 && res[i].rates[e].unlocked) {
+                        if(res[i].unlocked && res[e].unlocked){
+                            anyConversions = true
+                        }
+                        document.getElementById(e + "to" + i).style.display = "";
+                    }
+                }
+            }
+        }
+        
+        document.getElementById("conversion-row").style.display = anyConversions ? "" : "none"
 
         for (i = 0; i < b; i++) {
             if (!res[i].unlocked) {
-                document.getElementById(res[i].name).style.display = "none";
-                document.getElementById(res[i].name.substring(0, 2) + "ps").style.display = "none";
+                document.getElementById(capitalize(res[i].name)).style.display = "none";
                 document.getElementById(res[i].name + '_click').style.display = "none";
                 document.getElementById(res[i].name + '-column').style.backgroundColor = "#dbdbdb";
+                document.getElementById(res[i].name + '-column').style.display = "none";
                 document.getElementsByClassName('row' + res[i].name)[0].style.display = "none";
 
                 var lister = document.getElementsByClassName(res[i].name + "icon");
                 for (r = 0; r < lister.length; r++) {
                     lister[r].src = "empty.png";
                 }
-
-                for (var e = 0; e < res.length; e++) {
-                    if (res[i].rates[e] != 0) {
-                        document.getElementById(i + "to" + e).style.display = "none";
-                    }
-                    if (res[e].rates[i] != 0) {
-                        document.getElementById(e + "to" + i).style.display = "none";
-                    }
-                }
             } else if (i != a) {
-                document.getElementById(res[i].name).style.display = "inline";
-                document.getElementById(res[i].name.substring(0, 2) + "ps").style.display = "inline";
+                document.getElementById(capitalize(res[i].name)).style.display = "inline";
                 document.getElementById(res[i].name + '_click').style.display = "block";
                 document.getElementById(res[i].name + '-column').style.backgroundColor = res[i].color;
                 document.getElementsByClassName('row' + res[i].name)[0].style.backgroundColor = res[i].color;
+                document.getElementById(res[i].name + '-column').style.display = "";
                 document.getElementsByClassName('row' + res[i].name)[0].style.display = "table-row";
 
                 var lister = document.getElementsByClassName(res[i].name + "icon");
                 for (r = 0; r < lister.length; r++) {
                     lister[r].src = res[i].name + ".png";
                 }
-                for (var e = 0; e < res.length; e++) {
-                    if (res[i].rates[e] != 0) {
-                        document.getElementById(i + "to" + e).style.display = "table-row";
-                    }
-                    if (res[e].rates[i] != 0) {
-                        document.getElementById(e + "to" + i).style.display = "table-row";
-                    }
-                }
             }
         
         }
 
-
         if (debug) {
-            loaded();
             spinnerChance = 0;
             for (i = 0; i < bldg.length; i++) {
                 if (!bldg[i].unlocked && bldg[i].canUnlock) {
@@ -931,7 +1078,16 @@ res[7].canUnlock = false;*/
                     res[i].onDebug = true;
                 }
             }
-        
+            for(i in res){
+                for(e in res[i].rates){
+                    if(!res[i].rates[e].unlocked){
+                        res[i].rates[e].unlocked = true
+                        res[i].rates[e].isDebug = true
+                    }
+                }
+            }
+            hasUnlockedSpecial = true
+            hasUnlockedSpecialDebug = true
         } else {
             spinnerChance = baseChanceSpinner;
             for (i = 0; i < bldg.length; i++) {
@@ -942,6 +1098,18 @@ res[7].canUnlock = false;*/
                 if (i < res.length && res[i].onDebug) {
                     res[i].unlocked = false;
                     res[i].onDebug = false;
+                }
+            }
+            if(hasUnlockedSpecialDebug){
+                hasUnlockedSpecialDebug = false
+                hasUnlockedSpecial = false
+            }
+            for(i in res){
+                for(e in res.rates){
+                    if(res[i].rates[e].isDebug){
+                        res[i].rates[e].unlocked = false
+                        res[i].rates[e].isDebug = false
+                    }
                 }
             }
         }
@@ -959,87 +1127,18 @@ res[7].canUnlock = false;*/
         doFlasher();
     }
 
-    function init() {
-        displaytech();
-        displayidea();
-
-        for (i = 0; i < res.length; i++) {
-            if (res[i].amt < 0) {
-                res[i].amt = 0;
-            }
-            if (res[i].unlocked && i < b) {
-                document.getElementById(res[i].name.substring(0, 2) + 'ps').innerHTML = "(" + small_int((res[i].ps)) + ' /s)';
-                document.getElementById(res[i].name).innerHTML = small_int(Math.floor(res[i].amt));
-            }
-            for (e = 0; e < res.length; e++) {
-                if (res[i].auto[e] && res[i].rates[e] != 0) {
-                    document.getElementById(res[i].name + res[e].name + 'convo').innerHTML = '☑';
-                } else if (res[i].rates[e] != 0) {
-                    document.getElementById(res[i].name + res[e].name + 'convo').innerHTML = ' ☐';
-                }
-            }
-        }
-
-        document.getElementById('cash').innerHTML = small_int(Math.floor(res[a].amt));
-        document.getElementById('unrest').innerHTML = small_int(Math.floor(res[b].amt));
-    
-        for (var i = 0; i < res.length; i++) {
-            for (var e = 0; e < res.length; e++) {
-                if (res[i].rates[e] != 0) {
-                    document.getElementById(res[i].name + "_to_" + res[e].name + "_rate").innerHTML = caster(res[i].rates[e], 4);
-                }
-            }
-        }
-    
-        document.getElementById('workers_number').innerHTML = av_workers + " / " + total_workers;
-        document.getElementById('worker_cost').innerHTML = small_int(Math.ceil(worker_cost));
-
-        for (i = 0; i < bldg.length; i++) {
-            if (bldg[i].unlocked) {
-                document.getElementById(bldgtxt.get(i) + 's_number').innerHTML = bldg[i].amt;
-                document.getElementById(bldgtxt.get(i) + 's_fps').innerHTML = "(" + small_int(bldg[i].fps) + ' /s)';
-                document.getElementById(bldgtxt.get(i) + '_cost').innerHTML = small_int(Math.ceil(bldg[i].cost));
-                document.getElementById(bldgtxt.get(i) + '_working').innerHTML = bldg[i].working + " / " + bldg[i].amt;
-
-                if (bldg[i].amt != 1) {
-                    document.getElementById(bldgtxt.get(i) + 'plural').innerHTML = bldg[i].plural;
-                } else {
-                    document.getElementById(bldgtxt.get(i) + 'plural').innerHTML = bldg[i].name;
-                }
-            }
-        }
-
-        document.getElementById('tech_level').innerHTML = tech_level_active;
-        document.getElementById('tech_cost').innerHTML = small_int(Math.ceil(tech_cost));
-
-        document.getElementById('tech_name').innerHTML = tech_name;
-        document.getElementById('tech_descr').innerHTML = tech_descr;
-
-        document.getElementById('idea_level').innerHTML = idea_level_active;
-        document.getElementById('idea_cost').innerHTML = small_int(Math.ceil(idea_cost));
-
-        document.getElementById('idea_name').innerHTML = idea_name;
-        document.getElementById('idea_descr').innerHTML = idea_descr;
-    }
-
     document.addEventListener('keydown', function (event) {
-        if (event.keyCode == 65) {
-            all = !all;
-            alert("[Buy All Buildings] toggled to " + all);
+        if (event.keyCode == 16) {
+            all = true
         }
         else if (event.keyCode == 38) {
             debug = !debug;
         }
+    });
 
-        if (event.keyCode == 83) {
-            techleft();
-        } else if (event.keyCode == 68) {
-            techright(1);
-        } else if (event.keyCode == 48) {
-            res[a].amt *= 100;
-        }
-        else if (event.keyCode > 48 && event.keyCode <= 49 + res.length) {
-            res[event.keyCode - 49].amt *= 100;
+    document.addEventListener('keyup', function (event) {
+        if (event.keyCode == 16) {
+            all = false
         }
     });
 
@@ -1048,12 +1147,15 @@ res[7].canUnlock = false;*/
     }
 
     function converter(first, second) {
-        i = (res[first].amt * res[first].rates[second]);
+        if(res[first].amt == 0){
+            return;
+        }
+        i = (res[first].amt * res[first].rates[second].rate);
         if (i > (res[second].amt * .1)) {
             i /= 100;
         }
         res[second].amt += i;
-        res[first].amt -= i / res[first].rates[second];
+        res[first].amt -= i / res[first].rates[second].rate;
     }
 
     var check_cost = new Array(chargeamt);
@@ -1081,49 +1183,9 @@ res[7].canUnlock = false;*/
         }
     }
 
-    function buytech() {
-        var tempall = true;
-        while (res[4].amt >= tech_cost && tempall) {
-            res[4].amt -= tech_cost;
-            ++tech_level;
-            techcost();
-            unlocktech();
-
-            techpossible();
-            tech_level_active = earliest_tech;
-
-            tempall = all;
-        }
-        init();
-    }
-
-    function techcost() {
-        tech_cost = (techs_cost_base * techs_cost_mult * (Math.pow(1.37, (tech_level + 1)) - Math.pow(1.37, tech_level))) / 0.40;
-    }
-
-    function buyidea() {
-        var tempall = true;
-        while (res[8].amt >= idea_cost && tempall) {
-            res[8].amt -= idea_cost;
-            ++idea_level;
-            ideacost();
-            unlockidea();
-
-            ideapossible();
-            idea_level_active = earliest_idea;
-            tempall = all;
-        }
-        init();
-    }
-
-    function ideacost() {
-        idea_cost = (ideas_cost_base * ideas_cost_mult * (Math.pow(1.37, (idea_level + 1)) - Math.pow(1.37, idea_level))) / 0.40;
-    }
-
-
     function findPS() {
         for (i = 0; i < bldg.length; i++) {
-            bldg[i].fps = bldg[i].working * bldg[i].efficiency * res[bldg[i].resource].mult;
+            bldg[i].fps = Math.pow(bldg[i].working,1.25) * bldg[i].efficiency * (1 + bldg[i].bonuses.reduce(function(x,y){return y.percent + x},0));
         }
 
         for (u = 0; u < b; u++) {
@@ -1134,6 +1196,7 @@ res[7].canUnlock = false;*/
                     res[u].ps += bldg[e].fps;
                 }
             }
+            res[u].ps *= 1 + res[u].bonuses.reduce(function(x,y){return y.percent + x},0)
         }
     }
 
@@ -1148,93 +1211,6 @@ res[7].canUnlock = false;*/
         }
 
         return number;
-    }
-
-    function unlocktech() {
-        if (tech_level_active - 1 < tech.length) {
-            tech[tech_level_active - 1].effect();
-            tech[tech_level_active - 1].unlocked = true;
-        }
-
-        if (tech_level + 1 > tech_unlocked.length) {
-            for (i = 0; i < b; i++) {
-                res[i].mult *= 1 + (.35 * Math.pow(.92, tech_level_active));
-            }
-        }
-
-        tech_unlocked[tech_level_active] = true;
-
-        isUnlocked();
-    }
-
-    function displaytech() {
-        if(tech.length <= tech_level_active) return;
-        tech_name = tech[tech_level_active - 1].name;
-        tech_descr = tech[tech_level_active - 1].descr;
-    }
-
-
-    function unlockidea() {
-
-        switch (idea_level_active) {
-            case 1: bldg[0].efficiency += .1; break;
-            case 2: bldg[6].unlocker(); break;
-            case 3: res[5].unlocker(); bldg[3].unlocker(); bldg[9].unlocker(); break;
-            case 4: bldg[4].unlocker(); break;
-            case 5: bldg[1].unlocker(); bldg[0].efficiency *= 1.5; break;
-            case 6: bldg[2].unlocker(); res[0].rates[a] += .3; break;
-            case 7: bldg[5].unlocker(); bldg[6].efficiency *= 1.25; break;
-            case 8: bldg[7].unlocker(); break;
-            case 9: workers_cost_mult *= .8; workercost(); break;
-            case 10: res[4].unlocker(); break;
-        }
-
-        if (idea_level + 1 > idea_unlocked.length) {
-            res[0].mult += .1;
-            res[1].mult += .1;
-        }
-
-        idea_unlocked[idea_level_active] = true;
-
-        isUnlocked();
-    }
-
-    function displayidea() {
-        switch (idea_level_active) {
-            case 1: idea_name = "Agriculture";
-                idea_descr = "Farms become more efficient";
-                break;
-            case 2: idea_name = "Philosophy";
-                idea_descr = "Allows automated production of Science through Labs";
-                break;
-            case 3: idea_name = "Mining";
-                idea_descr = "Unlocks the Quarry and the Mine";
-                break;
-            case 4: idea_name = "Trade";
-                idea_descr = "Unlocks the Trading Post";
-                break;
-            case 5: idea_name = "Agriculture+";
-                idea_descr = "Unlocks the Silo and makes Farms 50% more efficient";
-                break;
-            case 6: idea_name = "Cash Crops";
-                idea_descr = "Unlocks the Plantation and improves the Food ➩ Cash rate";
-                break;
-            case 7: idea_name = "Central Bank";
-                idea_descr = "Unlocks the Mint and makes Trading Posts 25% more efficient";
-                break;
-            case 8: idea_name = "Public Education";
-                idea_descr = "Unlocks the school to produce more Science";
-                break;
-            case 9: idea_name = "Healthcare";
-                idea_descr = "Food Cost to buy Workers reduced by 20%";
-                break;
-            case 10: idea_name = "Cultural Revolution";
-                idea_descr = "Culture unlocked";
-                break;
-            case 11: idea_name = "Internal Improvements";
-                idea_descr = "GPS and FPS multiplier increased by 10%";
-                break;
-        }
     }
 
     function buyWorker() {
@@ -1254,9 +1230,6 @@ res[7].canUnlock = false;*/
         worker_cost = (workers_cost_base * workers_cost_mult * (Math.pow(1.073, (total_workers - 1)) - Math.pow(1.073, total_workers - 2))) / 0.15;
     }
 
-    tech_level_active = tech_level + 1;
-    idea_level_active = idea_level + 1;
-
     var spinnerActive = false;
     var spinnerCanBeActive = false;
 
@@ -1264,10 +1237,7 @@ res[7].canUnlock = false;*/
     var rotateV = .075;
     var rotateA = .995;
     var rotateSize = 60;
-    var rotatePange = 2;
-
-    canvas.width = rotateSize + 30;
-    canvas.height = rotateSize + 30;
+    var rotatePange = 4;
 
     var spinnerChance = baseChanceSpinner;
 
@@ -1282,11 +1252,11 @@ res[7].canUnlock = false;*/
         document.getElementById("spinner").style.left = locX + "px";
         document.getElementById("spinner").style.top = locY + "px";
 
-        canvas.width = rotateSize + 30;
-        canvas.height = rotateSize + 30;
+        var attempts = 50
         do {
             currColor = Math.floor(b * Math.random())
-        } while (res[currColor].amt == 0 || !res[currColor].unlocked);
+            attempts--
+        } while (!res[currColor].unlocked && attempts >= 0);
         currShape = Math.floor(Math.random() * 3.99);
 
     }
@@ -1294,6 +1264,8 @@ res[7].canUnlock = false;*/
     resetRotate();
 
     function showSpinner() {
+        document.getElementById("spinner").style.backgroundColor = res[currColor].color2;
+        document.getElementById("spinner").style.boxShadow = "0vw 0vw .25vw .25vw " +  res[currColor].color2 + ", 0vw 0vw .5vw .5vw " +  res[currColor].color2
         if (spinnerActive) {
             document.getElementById("spinner").style.display = "block";
         } else {
@@ -1306,60 +1278,114 @@ res[7].canUnlock = false;*/
     function clickSpinner() {
         spinnerActive = !spinnerActive;
         res[currColor].multBy(1 + (rotateSize / 500));
+        spinnerAlert = 1
+        document.getElementById("spinnerAlert").innerHTML = capitalize(res[currColor].name) + " increased by " + (rotateSize / 5) + "%"
+        document.getElementById("spinnerAlert").style.background = 'url("weatheredbackground.png"), ' + res[currColor].color3 + " repeat" ;
         resetRotate();
 
     }
+
+    function showTooltip(elem){
+        document.getElementById("tooltip").innerHTML = elem.getAttribute("message")
+        document.getElementById("tooltip").style.left = elem.getBoundingClientRect().left + elem.getBoundingClientRect().width / 2 + "px"
+        document.getElementById("tooltip").style.top = elem.getBoundingClientRect().top - window.innerHeight / 22 + "px"
+        document.getElementById("tooltip").style.opacity = .92
+    }
+
+    function hideTooltip(){
+        document.getElementById("tooltip").style.opacity = 0
+    }
     
-    var doLoad = 0;
 
     function repeat() {
-        doLoad++;
-        if (doLoad === 300) {
-            loaded();
+        activateHelper()
+
+        for (i = 0; i < res.length; i++) {
+            if (res[i].amt < 0) {
+                res[i].amt = 0;
+            }
+            if (res[i].unlocked && i < b) {
+                document.getElementById(res[i].name.substring(0, 2) + 'ps').innerHTML = "(" + small_int((res[i].ps)) + ' /s)';
+                document.getElementById(capitalize(res[i].name)).innerHTML = small_int(Math.floor(res[i].amt));
+            }
+            for (e = 0; e < res.length; e++) {
+                if (res[i].auto[e] && res[i].rates[e].rate != 0) {
+                    document.getElementById(res[i].name + res[e].name + 'convo').innerHTML = '☑';
+                } else if (res[i].rates[e].rate != 0) {
+                    document.getElementById(res[i].name + res[e].name + 'convo').innerHTML = ' ☐';
+                }
+            }
         }
+        document.getElementById('cash').innerHTML = small_int(Math.floor(res[a].amt));
+        document.getElementById('unrest').innerHTML = small_int(Math.floor(res[b].amt));
 
         showSpinner();
-
-        if (rotateP > rotatePange) {
-            rotateP = 0;
-        }
         rotateP += rotateV;
 
-        if (!(rotateV < .005)) {
+        if (rotateV >= .005) {
             rotateV *= rotateA;
+        }
+
+        if(spinnerAlert >= 0){
+            spinnerAlert -= 0.0025
+            document.getElementById("spinnerAlert").style.opacity = Math.pow(spinnerAlert,1/2);
+            document.getElementById("spinnerAlert").style.bottom = (4 + 2 * spinnerAlert) + "vh";
         }
 
         if (Math.random() > spinnerChance && spinnerCanBeActive) {
             spinnerActive = true;
+        }
+
+        if(hasUnlockedABuilding()){
+            for (i = 0; i < bldg.length; i++) {
+                bldg[i].costfind();
+                for (e = 0; e < bldg[i].costers.length; e++) {
+                    if (res[bldg[i].costers[e]].amt >= bldg[i].cost) {
+                        document.getElementById(bldgtxt.get(i) + "_cost").style.color = building_active_colour;
+                    } else {
+                        document.getElementById(bldgtxt.get(i) + "_cost").style.color = building_inactive_colour;
+                        break;
+                    }
+                }
+            }
+            for (i = 0; i < b; i++) {
+                document.getElementById(res[i].name.substring(0, 2) + "ps").style.display = "inline";
+            }
+        } else {
+            for (i = 0; i < b; i++) {
+                document.getElementById(res[i].name.substring(0, 2) + "ps").style.display = "none";
+            }
         }
     
         for (i = 0; i < b; i++) {
             if (res[i].amt + res[i].ps / (126 / framer) > -1) {
                 res[i].amt += res[i].ps / (126 / framer);
             }
-            res[i].click = 1 + tech_level / 4;
-            document.getElementById(res[i].name + "appear").innerHTML = "+" + res[i].click + ' <img src="' + res[i].name + '.png" class="food-icon">';
+            res[i].click = 1 + (techLevel / 10) + (av_workers / 4);
+            //document.getElementById(res[i].name + "appear").innerHTML = "+" + res[i].click + ' <img src="' + res[i].name + '.png" class="food-icon">';
         }
 
-        if (repetir > rep_max) {
-            repetir = 0;
-            rep_max = Math.ceil(rep_max * 1.1);
-            if (last_click == 1) { last_click = 5 };
-            supclick = 0;
-
-            var rec = (res[last_click].amt * ((res[last_click].click * 20 / rep_max) + 1) - res[last_click].amt);
-            document.getElementById("superappear").innerHTML = "+" + Math.ceil(rec);
-            res[last_click].amt += rec;
-
-            clicker[5] = 0;
+        if(hasUnlockedSpecial){
+            if (specialCounter > specialMax) {
+                specialCounter = 0;
+                specialMax = Math.ceil(specialMax * 1.1);
+                if (last_click == 1) { last_click = 5 };
+    
+                var rec = (res[last_click].amt * ((res[last_click].click * 20 / specialMax) + 1) - res[last_click].amt);
+                res[last_click].amt += rec;
+    
+                clicker[5] = 0;
+            }
+            document.getElementById('specialRow').style.display = "";
+            document.getElementById('special').style.width = (specialCounter / (specialMax + 1)) * 100 + "%";
+            document.getElementById('specialback').style.backgroundColor = res[last_click].color3;
+            document.getElementById('special').style.backgroundColor = res[last_click].color2;
+        } else{
+            document.getElementById('specialRow').style.display = "none";
         }
-        document.getElementById('super').style.width = ((repetir / rep_max) * 200) + "px";
-        document.getElementById('superbox').innerHTML = repetir + " / " + rep_max;
-        supclick++;
+
         findPS();
         workercost();
-        isUnlocked();
-        moveClick();
 
         for (y = 0; y < res.length; y++) {
             for (e = 0; e < res.length; e++) {
@@ -1368,113 +1394,26 @@ res[7].canUnlock = false;*/
                 }
             }
         }
-
-        for (u = 0; u < bldg.length; u++) {
-            bldg[u].costfind();
-        }
-
-        //rotateP = 0;
-        //spinnerActive = true;
     
-        // apply some transformation: 
-        var g = new Matrix();     // our manual transformation-matrix
-        g.translate(rotateSize / 2, rotateSize / 2);      // center of box
-        g.rotate(((rotateP)) * Math.PI);            // some angle in radians
-        g.translate(-rotateSize / 2, -rotateSize / 2);    // translate back
-
-        var pointsa = [];
-    
-        switch (currShape) {
-            case 0: pointsa = [
-                { x: 10, y: 0 },       // upper-left
-                { x: 0, y: 10 },       // upper-left
-                { x: 0, y: rotateSize - 10 },      // bottom-left
-                { x: 10, y: rotateSize },      // bottom-left
-                { x: rotateSize - 10, y: rotateSize },      // bottom-right
-                { x: rotateSize, y: rotateSize - 10 },      // bottom-right
-                { x: rotateSize, y: 10 },      // upper-right
-                { x: rotateSize - 10, y: 0 },      // upper-right
-            ]; break;
-            case 1: /*pointsa = [
-            { x: rotateSize / 2, y: 0 },       // upper-left
-            { x: 0, y: rotateSize - 17 },       // upper-left
-            { x: rotateSize, y: rotateSize - 17 }      // bottom-left
-        ]; break;*/
-            case 2: pointsa = [
-                { x: rotateSize / 4, y: 0 },       // upper-left
-                { x: (3 * rotateSize) / 4, y: 0 },       // upper-left
-                { x: rotateSize, y: rotateSize / 2 },      // bottom-left
-                { x: (3 * rotateSize) / 4, y: rotateSize },       // upper-left
-                { x: rotateSize / 4, y: rotateSize },       // upper-left
-                { x: 0, y: rotateSize / 2 }       // upper-left
-            ]; break;
-            case 3: pointsa = [
-                { x: 0, y: rotateSize / 2 },       // upper-left
-                { x: rotateSize / 4 - 5, y: (3 * rotateSize) / 4 + 5 },       // upper-left
-                { x: rotateSize / 2, y: rotateSize },      // bottom-left
-                { x: (3 * rotateSize) / 4 + 5, y: (3 * rotateSize) / 4 + 5 },       // upper-left
-                { x: rotateSize, y: rotateSize / 2 },       // upper-left
-                { x: (3 * rotateSize) / 4 + 5, y: rotateSize / 4 - 5 },       // upper-left
-                { x: rotateSize / 2, y: 0 },       // upper-left
-                { x: (rotateSize) / 4 - 5, y: rotateSize / 4 - 5 },       // upper-left
-                { x: 0, y: rotateSize / 2 }       // upper-left
-            ]; break;
-        }
-    
-        var result = [], e = 0, o;
-
-
-        // transform points
-        while (o = pointsa[e++]) result.push(g.applyToPoint(o));
-        ctx.clearRect(-200, -200, 500, 500);
-        drawPolygon(result, "black");
-        ctx.font = "50px Georgia";
-        ctx.fillStyle = "white";
-        ctx.fillText("!", 7.5 + (rotateSize / 2), 31 + (rotateSize / 2));
-    
-    
-
-        for (i = 0; i < bldg.length; i++) {
-            for (e = 0; e < bldg[i].costers.length; e++) {
-                if (res[bldg[i].costers[e]].amt >= bldg[i].cost) {
-                    document.getElementById(bldgtxt.get(i) + "_cost").style.color = active_colour;
-                } else {
-                    document.getElementById(bldgtxt.get(i) + "_cost").style.color = inactive_colour;
-                    break;
-                }
-            }
-        }
 
         if (res[0].amt >= worker_cost) {
-            document.getElementById("worker_cost").style.color = active_colour;
+            document.getElementById("worker_cost").style.color = tech_active_colour;
             flash_worker = true;
         } else {
-            document.getElementById("worker_cost").style.color = inactive_colour;
+            document.getElementById("worker_cost").style.color = tech_inactive_colour;
             flash_worker = false;
         }
 
-        if (res[4].amt >= tech_cost) {
-            document.getElementById("tech_cost").style.color = active_colour;
+        if (res[4].amt >= tech[techSelected].cost()) {
+            document.getElementById("tech_cost").style.color = tech_active_colour;
             flash_tech = true;
         } else {
-            document.getElementById("tech_cost").style.color = inactive_colour;
+            document.getElementById("tech_cost").style.color = tech_inactive_colour;
             flash_tech = false;
-        }
-
-        if (res[8].amt >= idea_cost) {
-            document.getElementById("idea_cost").style.color = active_colour;
-            flash_idea = true;
-        } else {
-            document.getElementById("idea_cost").style.color = inactive_colour;
-            flash_idea = false;
         }
 
         init();
         setTimeout(repeat, framer);
-    }
-
-    for (r = 1; r < pages + 1; r++) {
-        document.getElementById("page" + r).style.width = screen.width - (310 * 2) + "px";
     }
 
     //var setter = prompt("hi", "hi");
@@ -1482,44 +1421,14 @@ res[7].canUnlock = false;*/
     //alert(parseInt(setter, 36));
     //alert(setter);
 
-    var exporter = "";
-    function exporto() {
-        alert(doc.dayscale)
-        exporter = "";
-        for (i = 0; i < bldg.length; i++) {
-            exporter += bldg[i].amt + "ȧ";
-            exporter += bldg[i].working + "ȧ";
-            exporter += (bldg[i].efficiency * 1000) + "ȧ";
-            exporter += bldg[i].unlocked + "ȧ";
-            exporter += bldg[i].onDebug + "ȧ";
+
+    if (storageAvailable('localStorage')) {
+        if(localStorage.getItem("save") != undefined){
+            importString(localStorage.getItem("save"))
         }
-        document.getElementById('exp').innerHTML = exporter;
     }
 
-    function importo() {
-        var owo = exporter.split("ȧ");
-
-        for (i = 0; i < bldg.length; i++) {
-            bldg[i].amt = owo[(i * 5)];
-            bldg[i].working = owo[(i * 5) + 1];
-            bldg[i].efficiency = owo[(i * 5) + 2] / 1000;
-            bldg[i].unlocked = owo[(i * 5) + 3];
-            bldg[i].onDebug = owo[(i * 5) + 4];
-        }
-
-
-        /*var stranger = "";
-        for (i = 0; i < owo.length; i++) {
-            if (owo[i] != true && owo[i] != false) {
-                stranger += parseInt(owo[i], 36) + "<br>";
-            } else {
-                stranger += owo[i] + "<br>";
-            }
-        }
-        document.getElementById('imp').innerHTML = stranger;*/
-    }
-
-
+    hideTooltip()
     switchPage(1);
     auto(0, a);
     auto(0, a);
@@ -1528,5 +1437,4 @@ res[7].canUnlock = false;*/
     auto(4, a);
     auto(5, a);
     auto(5, a);
-    init();
     repeat();
