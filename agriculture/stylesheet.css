@@ -664,6 +664,10 @@ body{
     transform: translateX(-50%) translateY(-50%)
 }
 
+#tip{
+    padding: .8vw;
+}
+
 .settings{
     background: url("oldtile.png"), turquoise;
     box-shadow:   inset 0 0 4px 3px #000000;

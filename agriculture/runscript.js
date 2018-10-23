@@ -1,4 +1,4 @@
-    var versionNumber = "1.11"
+    var versionNumber = "1.12"
     
     var debug = false;
 
@@ -25,24 +25,43 @@
     var hasUnlockedSpecialDebug = false;
 
     var spinnerAlert = 0
+    
+    function isJSON(str) {
+        try {
+            return (JSON.parse(str) && !!str);
+        } catch (e) {
+            return false;
+        }
+    }
 
     var helpers = [
-        {condition: function(){return true}, text: "^^^<br>Click on one of the big buttons to accumulate Resources, such as Science. Click multiple times to continue accumulating them. Look on the left side to see how much you have!", posX: "22vw", posY: "22vh"},
+        {condition: function(){return true}, text: "^^^<br>Click on one of the big buttons to accumulate Resources, such as Science. Click multiple times to continue accumulating them. Look on the left side to see how much you have!", posX: "22vw", posY: "22vh", page: 1},
         {condition: function(){return res[4].amt >= tech[0].cost()}, text: ">>><br>Click the turquoise button when you have enough Science to unlock a Technology. This gives you access to new Resources, Buildings, and other features!", posX: "85vw", posY: "10vh"},
         {condition: function(){return res[0].amt >= worker_cost}, text: ">>><br>Click here to get more Workers when you have enough Food. Unused Workers give you boosts to how many Resources you get per click.", posX: "85vw", posY: "10vh"},
-        {condition: function(){return tech[4].unlocked}, text: "<<<<br>Click here to buy a Building if you have enough Cash. Make sure that you have enough Workers for the new Building. Buildings give you passive amounts of Resources each second while a Worker is assigned to them. You can keep clicking to buy more of the same Building and earn more Resources per second, but this will also require more Workers!", posX: "40vw", posY: "22vh"}
+        {condition: function(){return hasUnlockedABuilding() && res[a].amt > 0}, text: "<<<<br>Click here to buy a Building if you have enough Cash. Make sure that you have enough Workers for the new Building. Buildings give you passive amounts of Resources each second while a Worker is assigned to them. You can keep clicking to buy more of the same Building and earn more Resources per second, but this will also require more Workers!", posX: "40vw", posY: "22vh", page: 1}
     ]
+
+    for(i in helpers){
+        helpers[i].finished = false
+    }
 
     var activeHelper = 0
 
     function activateHelper(){
-        if(activeHelper < helpers.length && helpers[activeHelper].condition()){
-            spinnerCanBeActive = false
-            document.getElementById("helper").style.opacity = ".8"
-            document.getElementById("helper").style.left = helpers[activeHelper].posX
-            document.getElementById("helper").style.top = helpers[activeHelper].posY
-            document.getElementById("helper").innerHTML = helpers[activeHelper].text
-            document.getElementById("blocker").style.opacity = ".4"
+        for(var i = 0; i < helpers.length; i++){
+            if(helpers[i].condition() && !helpers[i].finished){
+                activeHelper = i
+                spinnerCanBeActive = false
+                document.getElementById("helper").style.opacity = ".8"
+                document.getElementById("helper").style.left = helpers[activeHelper].posX
+                document.getElementById("helper").style.top = helpers[activeHelper].posY
+                document.getElementById("helper").innerHTML = helpers[activeHelper].text
+                if(helpers[activeHelper].page != undefined){
+                    switchPage(helpers[activeHelper].page)
+                }
+                document.getElementById("blocker").style.opacity = ".4"
+                return
+            }
         }
     }
 
@@ -51,8 +70,47 @@
             spinnerCanBeActive = true
             document.getElementById("helper").style.opacity = "0"
             document.getElementById("blocker").style.opacity = "0"
-            activeHelper++
         }
+        helpers[level].finished = true
+    }
+
+    function randomIndex(arr){
+        return Math.floor(arr.length * Math.random())
+    }
+
+    function randomValue(arr){
+        return arr[randomIndex(arr)]
+    }
+
+    var tips = [
+        "you can go to the 'Research' tab to see all of the Technologies you've completed thus far?",
+        "you can assign Workers onto Buildings by pressing the arrow icons beneath the name?",
+        "you accumulate more Resources per click for each level of Technology you unlock?",
+        "you can turn on Auto-Conversions using the check mark boxes in the top right?",
+        "you can see what each Technology unlocks in the 'Research' tab and hovering over the icons?",
+        "you can Save the game in the 'Settings' tab?",
+        "you can click the arrows next to the Technology buying button to see other available Technologies?",
+        "a flashing icon appears next to the Worker or Technology buttons when you have enough Resources to use them?",
+        "little glowing Events appear with '!' marks around the screen? You can click them to activate special Events!",
+        "you can tell what happens when you click an Event by looking at the bottom of the screen and reading the box?",
+        "you can tell how many Resources you accumulate per click by looking at the numbers that fly off of the button?",
+        "you can see how many Resources you automatically accumulate per second in the Ledger?",
+        "you can see how many Resources you automatically accumulate for each Building per second in its box?",
+        "the 'ps' you see in Building boxes or in the Ledger stands for how many Resources you accumulate 'per second'?",
+        "you can click this very box to move onto the next tip immediately?"
+    ]
+
+    var currentTip = randomIndex(tips)
+    var tipInterval = 0
+
+    function changeTip(){
+        tipInterval = 0
+        var tempTip = randomIndex(tips)
+        while(currentTip == tempTip){
+            tempTip = randomIndex(tips)
+        }
+        currentTip = tempTip
+        document.getElementById("tip").innerHTML = tips[currentTip]
     }
     
     function adjustBrightness(col, amt) {
@@ -154,7 +212,7 @@
 
 
     function exportStr() {
-        var data = [versionNumber, techUnlocked(), [], [], debug, activeHelper]
+        var data = [versionNumber, techUnlocked(), [], [], debug, helpers.map(function(x){return x.finished})]
         for(i in res){
             data[2].push(res[i].toString())
         }
@@ -166,9 +224,13 @@
     }
 
     function importString(str) {
+        if(!isJSON(str)){
+            return false
+        }
         var data = JSON.parse(str)
-        if(data[0] != versionNumber){
+        if(data.length != 6 || data[0] != versionNumber){
             alert("This data is incompatible.")
+            
             return false
         }
         for(i in data[1]){
@@ -181,9 +243,11 @@
             bldg[i].fromString(data[3][i])
         }
         debug = data[4]
-        for(var i = 0; i < data[5]; i++){
-            hideHelper(i)
-            activateHelper()
+        for(var i = 0; i < data[5].length; i++){
+            if(data[5][i]){
+                hideHelper(i)
+                activateHelper()
+            }
         }
         return true
     }
@@ -705,7 +769,7 @@ res[7].canUnlock = false;*/
             cells[3].appendChild(image)
         }
         var tech = this
-        this.elem.onclick = function(){tech.unlock()}
+        this.elem.onclick = function(){tech.unlock(); hideHelper(1)}
         cells.forEach(function(x){tech.elem.appendChild(x)})
         document.getElementById("tech-data").appendChild(this.elem)
 
@@ -999,8 +1063,11 @@ res[7].canUnlock = false;*/
                 tech[i].elem.setAttribute("status", "hidden")
                 tech[i].elem.style.opacity = 1 - (i - techLatest() + 1) * .15
                 if((i - techLatest() + 1) * .15 >= 1){
-                tech[i].elem.style.pointerEvents = "none"
-                tech[i].elem.style.cursor = "default"
+                    tech[i].elem.style.pointerEvents = "none"
+                    tech[i].elem.style.cursor = "default"
+                } else {
+                    tech[i].elem.style.pointerEvents = ""
+                    tech[i].elem.style.cursor = ""
                 }
             }
         }
@@ -1300,10 +1367,12 @@ res[7].canUnlock = false;*/
     //alert(parseInt(setter, 36));
     //alert(setter);
 
-
     if (storageAvailable('localStorage')) {
         if(localStorage.getItem("save") != undefined){
-            importString(localStorage.getItem("save"))
+            if(!importString(localStorage.getItem("save"))){
+                localStorage.removeItem("save")
+                location.reload()
+            }
         }
     }
 
@@ -1319,6 +1388,11 @@ res[7].canUnlock = false;*/
     
     setInterval(function(){
         activateHelper()
+
+        if(tipInterval % 2000 == 0){
+            changeTip()
+        }
+        tipInterval++;
 
         for (i = 0; i < res.length; i++) {
             if (res[i].amt < 0) {
