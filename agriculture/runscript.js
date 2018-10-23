@@ -1,4 +1,4 @@
-    var versionNumber = "1.10"
+    var versionNumber = "1.11"
     
     var debug = false;
 
@@ -710,7 +710,7 @@ res[7].canUnlock = false;*/
         document.getElementById("tech-data").appendChild(this.elem)
 
         this.cost = function(){
-            return techs_cost_base * (Math.pow(1.47, (this.level + 1)) - Math.pow(1.27, this.level)) * (Math.pow(1.45, (techLevel + 1)) - Math.pow(1.3, techLevel));
+            return techs_cost_base * (Math.pow(1.25, (this.level + 1)) - Math.pow(1.21, this.level)) * (Math.pow(1.25, (techLevel + 1)) - Math.pow(1.21, techLevel));
         }
 
         this.unlock = function(ignoreCost){
@@ -771,7 +771,7 @@ res[7].canUnlock = false;*/
     var techLevel = 0;
     var techSelected;
 
-    var techs_cost_base = 26;
+    var techs_cost_base = 50;
     var techs_visible = 3;
 
     function techMove(direction) {
@@ -839,8 +839,6 @@ res[7].canUnlock = false;*/
         }
         return unlocked
     }
-
-    var framer = 1;
 
     var all = false;
 
@@ -1295,9 +1293,31 @@ res[7].canUnlock = false;*/
     function hideTooltip(){
         document.getElementById("tooltip").style.opacity = 0
     }
-    
 
-    function repeat() {
+
+    //var setter = prompt("hi", "hi");
+    //alert(res[2].amt.toString(36) + "ȧ");
+    //alert(parseInt(setter, 36));
+    //alert(setter);
+
+
+    if (storageAvailable('localStorage')) {
+        if(localStorage.getItem("save") != undefined){
+            importString(localStorage.getItem("save"))
+        }
+    }
+
+    hideTooltip()
+    switchPage(1);
+    auto(0, a);
+    auto(0, a);
+    auto(2, a);
+    auto(4, a);
+    auto(4, a);
+    auto(5, a);
+    auto(5, a);
+    
+    setInterval(function(){
         activateHelper()
 
         for (i = 0; i < res.length; i++) {
@@ -1358,8 +1378,8 @@ res[7].canUnlock = false;*/
         }
     
         for (i = 0; i < b; i++) {
-            if (res[i].amt + res[i].ps / (126 / framer) > -1) {
-                res[i].amt += res[i].ps / (126 / framer);
+            if (res[i].amt + res[i].ps / 103 > -1) {
+                res[i].amt += res[i].ps / 103;
             }
             res[i].click = 1 + (techLevel / 10) + (av_workers / 4);
             //document.getElementById(res[i].name + "appear").innerHTML = "+" + res[i].click + ' <img src="' + res[i].name + '.png" class="food-icon">';
@@ -1413,28 +1433,4 @@ res[7].canUnlock = false;*/
         }
 
         init();
-        setTimeout(repeat, framer);
-    }
-
-    //var setter = prompt("hi", "hi");
-    //alert(res[2].amt.toString(36) + "ȧ");
-    //alert(parseInt(setter, 36));
-    //alert(setter);
-
-
-    if (storageAvailable('localStorage')) {
-        if(localStorage.getItem("save") != undefined){
-            importString(localStorage.getItem("save"))
-        }
-    }
-
-    hideTooltip()
-    switchPage(1);
-    auto(0, a);
-    auto(0, a);
-    auto(2, a);
-    auto(4, a);
-    auto(4, a);
-    auto(5, a);
-    auto(5, a);
-    repeat();
+    }, 1)
