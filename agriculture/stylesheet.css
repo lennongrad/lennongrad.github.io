@@ -625,15 +625,31 @@ body{
     height:5vw;
 }
 
-.click:active {
-  transform: scale(.97,.97) translateY(5px);
-}
-
 .clickeer{
     margin-left:auto;
     margin-right:auto;
+    transition: transform .1s;
+   /* box-shadow:   inset 0 0 4px 3px #000000;*/
 }
 
+.clickeer:hover{
+    animation: clickeer .5s ease-in-out infinite alternate-reverse
+}
+
+.click:active {
+    animation: clickeer_active 1s ease-in-out infinite alternate-reverse
+}
+
+@keyframes clickeer{
+    from{transform: rotate(.05rad)}
+    to {transform: rotate(-.05rad)}
+}
+
+@keyframes clickeer_active{
+from{transform: scale(.97,.97) translateY(5px)}
+to {transform: scale(.97,.97) translateY(5px)}
+}
+    
 .convert-button{
     background-color: turquoise;
     display: inline-block;
@@ -710,6 +726,15 @@ body{
   transform: scale(.975,.975);
 }
 
+.column{
+    border-top: 2px solid #dbdbdb;
+    border-bottom: 2px solid #dbdbdb
+}
+
+@keyframes column{
+    from{background-position: 0px 0px}
+    to {background-position: 400px 0px}
+}
 
 .workers-box{
 }

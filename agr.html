@@ -12,17 +12,18 @@
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript" src="jquery.backgroundpos.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
     <script id="entry-template" type="text/x-handlebars-template">
                 <td>
 
                     <div id="{{type}}details" class="tooltip detailer">
                         <img draggable="false" src="{{type}}.png" class="food-icon">
-                        <span class="tooltiptext">{{type}}</span>
+                        <span class="tooltiptext">{{name}}</span>
                     </div>
                 </td>
                 <td style="width: 45%">
-                    <span id="{{type}}" class="text"></span>
+                    <span id="{{name}}" class="text"></span>
                 </td>
                 <td style="width: 45%">
                     <span id="{{abr}}ps" class="text"></span>
@@ -44,7 +45,7 @@
    </script>
 
     <script id="appear-template" type="text/x-handlebars-template">
-                <div onclick="res[{{ide}}].toClick(); hideHelper(0)" id="{{name}}_click" class="clickeer button click" style="background-color:{{color}}; filter: drop-shadow(2px 2px 2px {{colordark}})">
+                <div onclick="res[{{ide}}].toClick(); hideHelper(0)" id="{{name}}_click" class="clickeer button click" style="background: url('weatheredbackground2.png'), {{color}}; filter: drop-shadow(2px 2px 2px {{colordark}})">
                     <img draggable="false" src="{{name}}click.png" class="clicker">
                 </div>
     </script>
@@ -244,7 +245,7 @@
                         <a href="http://lennongrad.com">lennongrad.com</a>
                     </td>
                     <td id="tester">
-                        v1.12 (Rehaul Update)
+                        v1.13 (Rehaul Update)
                     </td>
                     <td>
                         Icons by <a href="http://lorcblog.blogspot.com/">Lorc</a>, <a href="http://delapouite.com/">Delapouite</a>, and <a href="http://blackdogofdoom.blogspot.co.uk/">Felbrigg</a>. Retrieved from <a href="http://game-icons.net">http://game-icons.net</a>.

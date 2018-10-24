@@ -1,4 +1,4 @@
-    var versionNumber = "1.12"
+    var versionNumber = "1.13"
     
     var debug = false;
 
@@ -305,6 +305,8 @@
         this.baselimit = limit;
         this.limit = limit;
 
+        this.speed = 0
+
         this.onDebug = false;
 
         this.rates = [];
@@ -327,6 +329,7 @@
 
         this.toClick = function () {
             this.amt = this.amt + this.click;
+            this.speed += 1
             clicker[rcb.get(this.name)] = 0;
             rowclicker[rcb.get(this.name)] = 0;
             specialCounter += this.click;
@@ -667,10 +670,11 @@ res[7].canUnlock = false;*/
 
         var newcol = document.createElement("TR");
         newcol.id = res[i].name.toLowerCase() + "-column";
+        newcol.className = "column"
         document.getElementById('mainbody').appendChild(newcol);
 
         var owos = document.createElement("TR");
-        owos.innerHTML = Handlebars.compile(document.getElementById("entry-template").innerHTML)({ type: capitalize(res[i].name), abr: res[i].name.substring(0, 2) });
+        owos.innerHTML = Handlebars.compile(document.getElementById("entry-template").innerHTML)({ type: res[i].name, name: capitalize(res[i].name), abr: res[i].name.substring(0, 2) });
         owos.className = 'row' + res[i].name;
         document.getElementById('ledgerbody').appendChild(owos);
     
@@ -1107,7 +1111,7 @@ res[7].canUnlock = false;*/
             if (!res[i].unlocked) {
                 document.getElementById(capitalize(res[i].name)).style.display = "none";
                 document.getElementById(res[i].name + '_click').style.display = "none";
-                document.getElementById(res[i].name + '-column').style.backgroundColor = "#dbdbdb";
+                document.getElementById(res[i].name + '-column').style.background = "url('tubeback.png'), #dbdbdb";
                 document.getElementById(res[i].name + '-column').style.display = "none";
                 document.getElementsByClassName('row' + res[i].name)[0].style.display = "none";
 
@@ -1118,7 +1122,7 @@ res[7].canUnlock = false;*/
             } else if (i != a) {
                 document.getElementById(capitalize(res[i].name)).style.display = "inline";
                 document.getElementById(res[i].name + '_click').style.display = "block";
-                document.getElementById(res[i].name + '-column').style.backgroundColor = res[i].color;
+                document.getElementById(res[i].name + '-column').style.background = "url('tubeback.png'), " + res[i].color;
                 document.getElementsByClassName('row' + res[i].name)[0].style.backgroundColor = res[i].color;
                 document.getElementById(res[i].name + '-column').style.display = "";
                 document.getElementsByClassName('row' + res[i].name)[0].style.display = "table-row";
@@ -1398,6 +1402,10 @@ res[7].canUnlock = false;*/
             if (res[i].amt < 0) {
                 res[i].amt = 0;
             }
+            if(res[i].speed > 0){
+                res[i].speed -= .001
+            }
+            document.getElementById(res[i].name + "-column").style.animation = "column " + (100 / res[i].speed) + "s linear infinite"
             if (res[i].unlocked && i < b) {
                 document.getElementById(res[i].name.substring(0, 2) + 'ps').innerHTML = "(" + small_int((res[i].ps)) + ' /s)';
                 document.getElementById(capitalize(res[i].name)).innerHTML = small_int(Math.floor(res[i].amt));
