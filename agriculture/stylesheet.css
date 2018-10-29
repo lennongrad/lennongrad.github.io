@@ -227,7 +227,7 @@ body{
     background-repeat: repeat;
     z-index: -3;
     filter: blur(.1px);
-    background-image: url("https://66.media.tumblr.com/9683f42a69f90336b59abab4caf6de8d/tumblr_inline_n2598ou0zw1qhwjx8.gif");
+    background-image: url("starback.gif");
     animation: page-back 4s linear infinite
 }
 
@@ -267,24 +267,22 @@ body{
     padding:5px;
 }
 
-#spinner{
+.spinner{
     z-index:5;
     width: 2vw;
     height: 2vw;
     border-radius: 10%;
     position:fixed;
-    background-color: red;
     cursor: pointer;
-    box-shadow:        0vw 0vw .25vw .25vw rgb(255, 0, 0), 0vw 0vw .5vw .5vw rgb(255, 55, 55);
     animation: spinner 2s ease-in-out infinite alternate;
-    transition: filter .2s
+    transition: filter .3s
 }
 
-#spinner:hover{
+.spinner:hover{
     filter: brightness(1.2)
 }
 
-#innerSpinner{
+.innerSpinner{
     width: 2vw;
     height: 2vw;
     line-height: 2vw;

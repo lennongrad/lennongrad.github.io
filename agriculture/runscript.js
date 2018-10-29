@@ -1,4 +1,6 @@
-    var versionNumber = "1.13"
+    var versionNumber = "1.14"
+    var versionTitle = "Rehaul"
+    document.getElementById("tester").innerHTML = versionNumber + " (" + versionTitle + " Update)"
     
     var debug = false;
 
@@ -10,10 +12,8 @@
 
     var curYPos, curXPos, curDown;
 
-    var currShape = 0;
-    var currColor = 0
-
-    var baseChanceSpinner = .998;
+    var spinnerChance = .9998;
+    var spinnersMax = 4
 
     var building_active_colour = "#eee";
     var building_inactive_colour = "#7e8c85";
@@ -25,6 +25,14 @@
     var hasUnlockedSpecialDebug = false;
 
     var spinnerAlert = 0
+
+    function log(value, base){
+        return Math.log(value) / Math.log(base)
+    }
+    
+    function removeElement(element) {
+        element.parentNode.removeChild(element);
+    }
     
     function isJSON(str) {
         try {
@@ -32,6 +40,23 @@
         } catch (e) {
             return false;
         }
+    }
+
+    function getFormsLink(){
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        
+        if(dd<10) {
+            dd = '0'+dd
+        } 
+        
+        if(mm<10) {
+            mm = '0'+mm
+        } 
+        
+        return "https://docs.google.com/forms/d/e/1FAIpQLSe3UH99MOQe87igkASeQK7v2bi1UM8riQxfO_5menJ-3dWkEg/viewform?entry.777934418=" + yyyy + "-" + mm + "-" + dd;
     }
 
     var helpers = [
@@ -101,10 +126,8 @@
     ]
 
     var currentTip = randomIndex(tips)
-    var tipInterval = 0
 
     function changeTip(){
-        tipInterval = 0
         var tempTip = randomIndex(tips)
         while(currentTip == tempTip){
             tempTip = randomIndex(tips)
@@ -329,7 +352,9 @@
 
         this.toClick = function () {
             this.amt = this.amt + this.click;
-            this.speed += 1
+            if(this.speed < 40){
+                this.speed += 1
+            }
             clicker[rcb.get(this.name)] = 0;
             rowclicker[rcb.get(this.name)] = 0;
             specialCounter += this.click;
@@ -1136,7 +1161,6 @@ res[7].canUnlock = false;*/
         }
 
         if (debug) {
-            spinnerChance = 0;
             for (i = 0; i < bldg.length; i++) {
                 if (!bldg[i].unlocked && bldg[i].canUnlock) {
                     bldg[i].unlocked = true;
@@ -1158,7 +1182,6 @@ res[7].canUnlock = false;*/
             hasUnlockedSpecial = true
             hasUnlockedSpecialDebug = true
         } else {
-            spinnerChance = baseChanceSpinner;
             for (i = 0; i < bldg.length; i++) {
                 if (bldg[i].onDebug) {
                     bldg[i].unlocked = false;
@@ -1299,60 +1322,49 @@ res[7].canUnlock = false;*/
         worker_cost = (workers_cost_base * workers_cost_mult * (Math.pow(1.073, (total_workers - 1)) - Math.pow(1.073, total_workers - 2))) / 0.15;
     }
 
-    var spinnerActive = false;
-    var spinnerCanBeActive = false;
+    function Spinner(){
+        this.size = Math.ceil(35 + (20 * Math.random()));
+        this.elem = document.createElement("DIV")
+        this.elem.className = "spinner"
+        this.elem.style.left = (window.innerWidth - (this.size + 30)) * Math.random() + "px";
+        this.elem.style.top = (window.innerHeight - (this.size + 30)) * Math.random() + "px";
+        this.elem.style.width = this.size + "px";
+        this.elem.style.height = this.size + "px";
 
-    var rotateP = 0;
-    var rotateV = .075;
-    var rotateA = .995;
-    var rotateSize = 60;
-    var rotatePange = 4;
+        var innerElem = document.createElement("div")
+        innerElem.className = "innerSpinner"
+        innerElem.innerHTML = "!"
+        innerElem.style.width = this.size + "px";
+        innerElem.style.height = this.size + "px";
+        innerElem.style.lineHeight = this.size + "px";
+        innerElem.style.fontSize = this.size * .8 + "px"
+        this.elem.appendChild(innerElem)
 
-    var spinnerChance = baseChanceSpinner;
+        this.res = res[Math.floor(b * Math.random())]
+        for(var i = 0; i < 50 && !this.res.unlocked; i++){
+            this.res = res[Math.floor(b * Math.random())]
+        }
+        this.elem.style.background = this.res.color2 + " url(bricks.png) " + this.size + "px " + this.size + "px";
+        //this.elem.style.boxShadow = "0vw 0vw .25vw .25vw " +  this.res.color2 + ", 0vw 0vw .5vw .5vw " +  this.res.color2
 
-    function resetRotate() {
-        rotateSize = Math.ceil(65 + (40 * Math.random()));
-        rotateV = .065 + (.05 * Math.random());
-        rotateA = .98 + (.017 * Math.random());
+        this.elem.onclick = function(){
+            var elem = this; 
+            spinners.filter(function(x){return x.elem == elem})[0].click()
+        }
+        document.body.appendChild(this.elem)
 
-        var locX = (window.innerWidth - (rotateSize + 30)) * Math.random();
-        var locY = (window.innerHeight - (rotateSize + 30)) * Math.random();
-
-        document.getElementById("spinner").style.left = locX + "px";
-        document.getElementById("spinner").style.top = locY + "px";
-
-        var attempts = 50
-        do {
-            currColor = Math.floor(b * Math.random())
-            attempts--
-        } while (!res[currColor].unlocked && attempts >= 0);
-        currShape = Math.floor(Math.random() * 3.99);
-
-    }
-
-    resetRotate();
-
-    function showSpinner() {
-        document.getElementById("spinner").style.backgroundColor = res[currColor].color2;
-        document.getElementById("spinner").style.boxShadow = "0vw 0vw .25vw .25vw " +  res[currColor].color2 + ", 0vw 0vw .5vw .5vw " +  res[currColor].color2
-        if (spinnerActive) {
-            document.getElementById("spinner").style.display = "block";
-        } else {
-            document.getElementById("spinner").style.display = "none";
+        this.click = function(){
+            this.res.multBy(1 + (this.size / 500));
+            spinnerAlert = 1.5
+            document.getElementById("spinnerAlert").innerHTML = capitalize(this.res.name) + " increased by " + (this.size / 5) + "%"
+            document.getElementById("spinnerAlert").style.background = 'url("weatheredbackground.png"), ' + this.res.color3 + " repeat";
+            removeElement(this.elem)
+            spinners.splice(spinners.indexOf(this),1)
         }
     }
 
-    var resnow = a;
-
-    function clickSpinner() {
-        spinnerActive = !spinnerActive;
-        res[currColor].multBy(1 + (rotateSize / 500));
-        spinnerAlert = 1
-        document.getElementById("spinnerAlert").innerHTML = capitalize(res[currColor].name) + " increased by " + (rotateSize / 5) + "%"
-        document.getElementById("spinnerAlert").style.background = 'url("weatheredbackground.png"), ' + res[currColor].color3 + " repeat" ;
-        resetRotate();
-
-    }
+    var spinners = []
+    var spinnerCanBeActive = false;
 
     function showTooltip(elem){
         document.getElementById("tooltip").innerHTML = elem.getAttribute("message")
@@ -1389,21 +1401,24 @@ res[7].canUnlock = false;*/
     auto(4, a);
     auto(5, a);
     auto(5, a);
+
+    setInterval(function(){
+        changeTip()
+        saveData()
+    }, 200000)
     
     setInterval(function(){
         activateHelper()
-
-        if(tipInterval % 2000 == 0){
-            changeTip()
-        }
-        tipInterval++;
 
         for (i = 0; i < res.length; i++) {
             if (res[i].amt < 0) {
                 res[i].amt = 0;
             }
             if(res[i].speed > 0){
-                res[i].speed -= .001
+                res[i].speed -= .005
+            }
+            if(res[i].speed < 0){
+                res[i].speed = 0
             }
             document.getElementById(res[i].name + "-column").style.animation = "column " + (100 / res[i].speed) + "s linear infinite"
             if (res[i].unlocked && i < b) {
@@ -1421,21 +1436,14 @@ res[7].canUnlock = false;*/
         document.getElementById('cash').innerHTML = small_int(Math.floor(res[a].amt));
         document.getElementById('unrest').innerHTML = small_int(Math.floor(res[b].amt));
 
-        showSpinner();
-        rotateP += rotateV;
-
-        if (rotateV >= .005) {
-            rotateV *= rotateA;
-        }
-
         if(spinnerAlert >= 0){
-            spinnerAlert -= 0.0025
-            document.getElementById("spinnerAlert").style.opacity = Math.pow(spinnerAlert,1/2);
-            document.getElementById("spinnerAlert").style.bottom = (4 + 2 * spinnerAlert) + "vh";
+            spinnerAlert -= 0.002
+            document.getElementById("spinnerAlert").style.opacity = Math.pow(spinnerAlert,2);
+            document.getElementById("spinnerAlert").style.bottom = 2 + (spinnerAlert < 1 ? 4 * spinnerAlert : 4) + "vh";
         }
 
-        if (Math.random() > spinnerChance && spinnerCanBeActive) {
-            spinnerActive = true;
+        if (spinnerCanBeActive && Math.tanh(1.6 * spinnersMax - spinners.length) * Math.random() > spinnerChance) {
+            spinners.push(new Spinner())
         }
 
         if(hasUnlockedABuilding()){
