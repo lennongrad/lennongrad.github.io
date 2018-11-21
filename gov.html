@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>slashGOV</title>
+    <base href="gov/" target="_blank">
+    <link rel="stylesheet" href="gov.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link href="https://fonts.googleapis.com/css?family=Arvo|Bitter|Crete+Round|Merriweather|Noto+Serif|Roboto+Slab|Slabo+27px" rel="stylesheet">
+    <!--  -------------------------------------LIBRARIES---------------------------------------------------------  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="jquery.backgroundpos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.8/lib/draggable.bundle.js"></script>
+    <!--  -------------------------------------------------------------------------------------------------------  -->
+
+    <script id="template-entry" type="text/x-handlebars-template">
+    </script>
+</head>
+<body>
+    <div id="header"><img src="logo.png"><div>Democracy shines in brightness.</div></div>
+    <div id="bar">
+        <span onclick="switchPage(0)" id="page-selection-1">Home</span>
+        <span onclick="switchPage(1)" id="page-selection-2">TIP-WATCH</span>
+        <span onclick="switchPage(2)" id="page-selection-3">INTRA-VIEWS</span>
+        <span onclick="switchPage(3)" id="page-selection-4">RUMORS</span>
+        <span onclick="switchPage(4)" id="page-selection-5">Links</span>
+    </div>
+    <div class="page" id="page-1">
+        <div id="main-image"><div>A view of the White House, the executive mansion of the President of the United States, located at 1600 Pennsylvania Avenue in Washington, D.C.<br><span class="attribution"><a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA-3.0</a>/<a href="https://en.wikipedia.org/wiki/User:UpstateNYer">Matt H. Wade</a> at Wikipedia</span></div></div>
+        <div class="bar" style="width: 80%"></div>
+        <div id="updates-header">TOP UPDATES</div>
+        <div class="update">
+            <span class="news button top" onclick="switchPage(2); switchInterview(0)">A new interview with President <b>Andrew Cannon</b> is now available in INTRA-VIEWS</span><br>
+            <span class="news button" onclick="switchPage(4);">Visit the Links page for pertinent info on each House Commitee</span>
+            <div class="date">November 27, 2018</div>
+        </div>
+    </div>
+    <div class="page" id="page-2">
+        <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span><i>Tip #420</i> at 8:30 on 20/11/2018</span><p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pulvinar diam nisi, ac pharetra dolor euismod nec. Vivamus ultrices eros velit, at finibus nisl tempus nec. Nulla luctus sem at mi consequat volutpat. Pellentesque eu nisi ut lorem scelerisque tristique eget non sapien. In facilisis sem id lorem pharetra, id volutpat velit interdum."</p></div>
+        <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span><i>Tip #420</i> at 8:30 on 20/11/2018</span><p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pulvinar diam nisi, ac pharetra dolor euismod nec. Vivamus ultrices eros velit, at finibus nisl tempus nec. Nulla luctus sem at mi consequat volutpat. Pellentesque eu nisi ut lorem scelerisque tristique eget non sapien. In facilisis sem id lorem pharetra, id volutpat velit interdum."</p></div>
+    </div>
+    <div class="page" id="page-3">
+        <table><tr><td id="names">
+                <div>
+                    <span activated="true" id="interview-selection-1" onclick="switchInterview(0)">President<br><b>Andrew Cannon</b></span>
+                    <span id="interview-selection-2" onclick="switchInterview(1)">Head of House Commitee<br><b>Emily Emilyson</b></span>
+                    <span id="interview-selection-3" onclick="switchInterview(2)">Head of House Commitee<br><b>Other Emily</b></span>
+                </div>
+            </td><td>
+            <p id="interview-1">
+                    <span class="date">November 16, 2018</span>
+                    <span class="title">VIDEO INTERVIEW</span>
+                    <span class="by">With Andrew Cannon, Brock Dilley</span>
+                    <i>slashGOV</i> was recently given the privelege to have an interview with the President Elect at the time, Andrew Cannon, and we were able to discuss numerous policy issues concerning the recent legalization of marijuana. Read below for an official transcript of the interview or watch the embedded video.<br>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/wzf-JuDWpZk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br>
+                    <b>REPORTER</b>: Wazzup?
+                    <br>
+                    <b>CANNON</b>: Yup!
+            </p>
+                <p id="interview-2">
+                    <span class="date">November 20, 2018</span>
+                    <span class="title">OUR GOALS TONIGHT</span>
+                    <span class="by">By Emily Emilyson</span>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pulvinar diam nisi, ac pharetra dolor euismod nec. Vivamus ultrices eros velit, at finibus nisl tempus nec. Nulla luctus sem at mi consequat volutpat. Pellentesque eu nisi ut lorem scelerisque tristique eget non sapien. In facilisis sem id lorem pharetra, id volutpat velit interdum. In hac habitasse platea dictumst. In vestibulum erat sit amet sollicitudin fermentum. Nam tincidunt imperdiet risus a viverra. Phasellus ac pharetra nisi. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Phasellus a ullamcorper diam, ut efficitur urna. Proin consequat eros gravida tellus blandit semper. Donec nisi purus, porta suscipit varius eu, efficitur vel nisl. Donec tincidunt accumsan augue.
+                    <br><br>
+                    Sed porta tortor blandit imperdiet volutpat. Aliquam sit amet neque vel leo pellentesque efficitur. Morbi non eros lacus. Sed mi augue, porttitor vitae arcu sit amet, egestas placerat risus. Praesent dapibus lorem non nulla interdum, at sollicitudin lacus vehicula. Cras et imperdiet nulla. Donec laoreet purus at velit porttitor, et feugiat est facilisis. Vestibulum nec rhoncus elit. Praesent feugiat nibh nisi, ut ultricies justo rutrum ac. Sed ornare tellus eget magna sodales mollis. Sed laoreet enim vel diam dictum lacinia. Curabitur massa justo, blandit mollis scelerisque eget, scelerisque nec leo.
+                    <br><br>
+                    Mauris vestibulum volutpat arcu nec molestie. Nam eget commodo massa. In dignissim pretium consectetur. Fusce nibh felis, tincidunt sit amet varius at, aliquam ut ex. Maecenas fringilla tellus ac felis bibendum ultrices. Duis mattis eget nulla id dignissim. Proin eu nulla neque. Etiam id cursus lorem, lacinia pulvinar ipsum. Cras consequat odio id dapibus hendrerit. Nulla facilisi. Praesent mi dui, posuere egestas enim et, pulvinar dictum ante. Proin sagittis ipsum vitae consequat efficitur. Nam bibendum a justo a vehicula.
+                    <br><br>
+                    Nullam faucibus aliquet est, at congue justo viverra posuere. Nunc varius accumsan ipsum. Nam tempor et dolor in efficitur. Sed nec urna rhoncus, tempus risus ut, consectetur odio. Mauris vitae posuere neque. In velit ante, malesuada a iaculis eget, elementum a ligula. Vestibulum convallis magna eget est dignissim efficitur. Phasellus non volutpat felis. Pellentesque quis ornare orci, et iaculis turpis. Quisque commodo est augue, vel mollis sem semper sed.
+                    <br><br>
+                    Suspendisse sagittis luctus urna ut rutrum. Vestibulum luctus rhoncus dolor, sit amet condimentum odio lobortis a. Maecenas cursus urna quis neque pretium, non cursus nisl aliquam. Donec porta justo nibh, sit amet hendrerit diam consequat ut. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur porttitor odio nec consequat maximus. Proin sed dapibus elit. Quisque accumsan id sapien eget faucibus. Nullam posuere feugiat leo, ultricies bibendum massa. Pellentesque euismod, dui eu semper tincidunt, turpis ex tempor quam, efficitur faucibus justo massa quis enim. Duis lacinia mi ut mi rutrum vestibulum. Praesent et massa et orci facilisis rhoncus efficitur non ex.
+                    <br><br>
+                    Nunc ex risus, elementum in felis quis, aliquam molestie urna. Fusce ultricies sapien id quam aliquam, sit amet aliquam tellus ullamcorper. Aliquam sodales sapien erat, id viverra velit facilisis et. Etiam convallis nec enim id iaculis. Phasellus urna quam, mollis eget finibus porta, suscipit sed libero. Vivamus libero massa, efficitur eget velit non, tempor vehicula felis. Quisque metus purus, commodo et tempor a, lacinia in dui. Vestibulum et orci porta, blandit purus sit amet, interdum nisl. Etiam ullamcorper congue enim eget ornare. Pellentesque sit amet dapibus augue. Nullam lorem elit, blandit in augue at, elementum sagittis ligula.
+                    <br><br>
+                    Ut vulputate, erat eu tincidunt cursus, ante ex sagittis nibh, sit amet tempus felis elit in nisi. Suspendisse potenti. Etiam non leo at nibh malesuada sollicitudin. Ut ac blandit nulla. Vestibulum pulvinar id nulla in bibendum. Proin vitae eros porta, cursus magna sit amet, scelerisque leo. Vivamus convallis odio orci, nec mattis tellus ornare vel. Donec volutpat luctus congue. Phasellus eu vulputate urna. Nullam pretium a diam quis vestibulum. Aenean risus erat, vulputate sit amet felis faucibus, dignissim pulvinar nibh. Nullam ultricies erat non sapien porttitor consectetur. Sed porttitor metus mi, at feugiat dolor gravida id.
+                </p>
+                <p id="interview-3">
+                    <span class="date">November 20, 2018</span>
+                    <span class="title">OUR GOALS TONIGHT</span>
+                    <span class="by">By Other Emilyson</span>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pulvinar diam nisi, ac pharetra dolor euismod nec. Vivamus ultrices eros velit, at finibus nisl tempus nec. Nulla luctus sem at mi consequat volutpat. Pellentesque eu nisi ut lorem scelerisque tristique eget non sapien. In facilisis sem id lorem pharetra, id volutpat velit interdum. In hac habitasse platea dictumst. In vestibulum erat sit amet sollicitudin fermentum. Nam tincidunt imperdiet risus a viverra. Phasellus ac pharetra nisi. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Phasellus a ullamcorper diam, ut efficitur urna. Proin consequat eros gravida tellus blandit semper. Donec nisi purus, porta suscipit varius eu, efficitur vel nisl. Donec tincidunt accumsan augue.
+                    <br><br>
+                    Sed porta tortor blandit imperdiet volutpat. Aliquam sit amet neque vel leo pellentesque efficitur. Morbi non eros lacus. Sed mi augue, porttitor vitae arcu sit amet, egestas placerat risus. Praesent dapibus lorem non nulla interdum, at sollicitudin lacus vehicula. Cras et imperdiet nulla. Donec laoreet purus at velit porttitor, et feugiat est facilisis. Vestibulum nec rhoncus elit. Praesent feugiat nibh nisi, ut ultricies justo rutrum ac. Sed ornare tellus eget magna sodales mollis. Sed laoreet enim vel diam dictum lacinia. Curabitur massa justo, blandit mollis scelerisque eget, scelerisque nec leo.
+                    <br><br>
+                    Mauris vestibulum volutpat arcu nec molestie. Nam eget commodo massa. In dignissim pretium consectetur. Fusce nibh felis, tincidunt sit amet varius at, aliquam ut ex. Maecenas fringilla tellus ac felis bibendum ultrices. Duis mattis eget nulla id dignissim. Proin eu nulla neque. Etiam id cursus lorem, lacinia pulvinar ipsum. Cras consequat odio id dapibus hendrerit. Nulla facilisi. Praesent mi dui, posuere egestas enim et, pulvinar dictum ante. Proin sagittis ipsum vitae consequat efficitur. Nam bibendum a justo a vehicula.
+                    <br><br>
+                    Nullam faucibus aliquet est, at congue justo viverra posuere. Nunc varius accumsan ipsum. Nam tempor et dolor in efficitur. Sed nec urna rhoncus, tempus risus ut, consectetur odio. Mauris vitae posuere neque. In velit ante, malesuada a iaculis eget, elementum a ligula. Vestibulum convallis magna eget est dignissim efficitur. Phasellus non volutpat felis. Pellentesque quis ornare orci, et iaculis turpis. Quisque commodo est augue, vel mollis sem semper sed.
+                    <br><br>
+                    Suspendisse sagittis luctus urna ut rutrum. Vestibulum luctus rhoncus dolor, sit amet condimentum odio lobortis a. Maecenas cursus urna quis neque pretium, non cursus nisl aliquam. Donec porta justo nibh, sit amet hendrerit diam consequat ut. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur porttitor odio nec consequat maximus. Proin sed dapibus elit. Quisque accumsan id sapien eget faucibus. Nullam posuere feugiat leo, ultricies bibendum massa. Pellentesque euismod, dui eu semper tincidunt, turpis ex tempor quam, efficitur faucibus justo massa quis enim. Duis lacinia mi ut mi rutrum vestibulum. Praesent et massa et orci facilisis rhoncus efficitur non ex.
+                    <br><br>
+                    Nunc ex risus, elementum in felis quis, aliquam molestie urna. Fusce ultricies sapien id quam aliquam, sit amet aliquam tellus ullamcorper. Aliquam sodales sapien erat, id viverra velit facilisis et. Etiam convallis nec enim id iaculis. Phasellus urna quam, mollis eget finibus porta, suscipit sed libero. Vivamus libero massa, efficitur eget velit non, tempor vehicula felis. Quisque metus purus, commodo et tempor a, lacinia in dui. Vestibulum et orci porta, blandit purus sit amet, interdum nisl. Etiam ullamcorper congue enim eget ornare. Pellentesque sit amet dapibus augue. Nullam lorem elit, blandit in augue at, elementum sagittis ligula.
+                    <br><br>
+                    Ut vulputate, erat eu tincidunt cursus, ante ex sagittis nibh, sit amet tempus felis elit in nisi. Suspendisse potenti. Etiam non leo at nibh malesuada sollicitudin. Ut ac blandit nulla. Vestibulum pulvinar id nulla in bibendum. Proin vitae eros porta, cursus magna sit amet, scelerisque leo. Vivamus convallis odio orci, nec mattis tellus ornare vel. Donec volutpat luctus congue. Phasellus eu vulputate urna. Nullam pretium a diam quis vestibulum. Aenean risus erat, vulputate sit amet felis faucibus, dignissim pulvinar nibh. Nullam ultricies erat non sapien porttitor consectetur. Sed porttitor metus mi, at feugiat dolor gravida id.
+                </p>
+        </td></tr></table>
+    </div>
+    <div class="page" id="page-4">
+            <p id="interview-2">
+                <span class="date">November 20, 2018</span>
+                <span class="title">UPCOMING EXECUTE AGREEMENT</span>
+                <span class="by">By Brock Dilley</span>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pulvinar diam nisi, ac pharetra dolor euismod nec. Vivamus ultrices eros velit, at finibus nisl tempus nec. Nulla luctus sem at mi consequat volutpat. Pellentesque eu nisi ut lorem scelerisque tristique eget non sapien. In facilisis sem id lorem pharetra, id volutpat velit interdum. In hac habitasse platea dictumst. In vestibulum erat sit amet sollicitudin fermentum. Nam tincidunt imperdiet risus a viverra. Phasellus ac pharetra nisi. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Phasellus a ullamcorper diam, ut efficitur urna. Proin consequat eros gravida tellus blandit semper. Donec nisi purus, porta suscipit varius eu, efficitur vel nisl. Donec tincidunt accumsan augue.
+            </p>
+            <div class="bar"></div>
+    </div>
+    <div class="page" id="page-5">
+            <div class="update">
+                <div class="date">Small Business</div>
+                <span class="news top">
+                    <b>Zoning</b>: Policies must be implemented that restrict where marijuana dispensaries are allowed to operate. The proposed bill calls for restrictions to be placed on areas containing minors, public property, or "heavy traffic" areas. The bill is unclear on how to define these areas, and what types of measures will be included to ensure that these zones will be properly maintained by the various levels of government.
+                    <p>
+                        <a href="http://tinyurl.com/mj6oco4">tinyurl.com/mj6oco4</a>
+                        <a href="http://tinyurl.com/ya739owz">tinyurl.com/ya739owz</a>
+                        <a href="http://tinyurl.com/ybnuor7t">tinyurl.com/ybnuor7t</a>
+                    </p>
+                </span><br>
+                <span class="news"><b>Licensing</b>: Policies must be implemented that license the production and consumption of marijuana across all 50 states. The proposed bill calls for the mandatory purchase of a federal license by individuals 21 and older. The bill is unclear on how much will be charged and how long the license will be valid before renewal is needed.
+                    <p>
+                        <a href="http://tinyurl.com/mj6oco4">tinyurl.com/mj6oco4</a>
+                        <a href="http://tinyurl.com/ybnuor7t">tinyurl.com/ybnuor7t</a>
+                        <a href="http://tinyurl.com/lf86fqk">tinyurl.com/lf86fqk</a>
+                    </p>
+                </span>
+            </div>
+            <div class="update">
+                <div class="date">Education and Work Force</div>
+                <span class="news top">
+                    <b>Advertising</b>: Policies must be implemented that regulate the format, content, and disclaimers contained within marijuana related ads. The bill is unlcear on which formats will be allowed, and to whom ads can and cannot be targeted.
+                    <p>
+                        <a href="http://tinyurl.com/y7nm7eex">tinyurl.com/y7nm7eex</a>
+                        <a href="http://tinyurl.com/lovqr9l">tinyurl.com/lovqr9l</a>
+                        <a href="http://tinyurl.com/yclz6z57">tinyurl.com/yclz6z57</a>
+                    </p>
+                </span><br>
+                <span class="news"><b>Underage Use</b>: Policies must be implemented that both educate and intervene when youth under the age of 21 illegally use marijuana. The bill is unclear as to which level of government will implement this agenda, what specific aspects will be targeted, and what meausures will be used for underage violators.
+                    <p>
+                        <a href="http://tinyurl.com/mwas4b4">tinyurl.com/mwas4b4</a>
+                        <a href="http://tinyurl.com/ydzyj2bn">tinyurl.com/ydzyj2bn</a>
+                        <a href="http://tinyurl.com/ybdu76nt">tinyurl.com/ybdu76nt</a>
+                    </p>
+                </span>
+                <span class="news"><b>Long-Term Studies</b>: Policies must be implemented that provide funding for specific studies that will reveal the impact of THC on the human body. The bill is unclear as to which level of government will conduct the studies, where the funding will come from, or the types of reports needed to properly gauge the effects on humans.
+                    <p>
+                        <a href="http://tinyurl.com/lmwzggz">tinyurl.com/lmwzggz</a>
+                        <a href="http://tinyurl.com/y9hj3qve">tinyurl.com/y9hj3qve</a>
+                        <a href="http://tinyurl.com/yc2spbgp">tinyurl.com/yc2spbgp</a>
+                    </p>
+                </span>
+            </div>
+            <div class="update">
+                <div class="date">Energy and Commerce</div>
+                <span class="news top">
+                    <b>Tax Rates</b>: Policies must be implemented that standardize the taxes on marijuana across all 50 states, while at the same time ensuring that the rates are both fair and economically beneficial. The bill is unclear as to which types of taxes will be effected, what rates the taxes will be set at, and whether the state and national governments will share in this responsbility.
+                    <p>
+                        <a href="http://tinyurl.com/mllpom8">tinyurl.com/mllpom8</a>
+                        <a href="http://tinyurl.com/y84cwvyv">tinyurl.com/y84cwvyv</a>
+                        <a href="http://tinyurl.com/ybnuor7t">tinyurl.com/ybnuor7t</a>
+                    </p>
+                </span><br>
+                <span class="news"><b>Import/Export</b>: Policies must be implemented that regulate the sale of marijuana across state and international borders. The bill is unclear as to tariff or custom duty rates, cargo weight requirements, and acceptable modes of transporation.
+                    <p>
+                        <a href="http://tinyurl.com/kksflfo">tinyurl.com/kksflfo</a>
+                        <a href="http://tinyurl.com/y8wyudbo">tinyurl.com/y8wyudbo</a>
+                        <a href="http://tinyurl.com/yb2zhveq">tinyurl.com/yb2zhveq</a>
+                    </p>
+                </span>
+            </div>
+    </div>
+    <table id="footer"><tr><td>
+        DISCLAIMER: This site does not represent Allen High School, nor does it claim to report true news stories
+    </td><td>
+        <a href="lennongrad.com">lennongrad.com</a>
+    </td><td>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/CC-BY-SA_icon.svg/150px-CC-BY-SA_icon.svg.png"/> Licensed under <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA-3.0</a>
+    </td></tr></table>
+    
+    <script src="gov.js"></script>
+</body>
+</html>

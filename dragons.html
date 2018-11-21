@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dragons</title>
+    <base href="dragons/" target="_blank">
+    <link rel="stylesheet" href="dragons.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <!-----------------------------------------LIBRARIES------------------------------------------------------------->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.8/lib/draggable.bundle.js"></script>
+    <!--------------------------------------------------------------------------------------------------------------->
+
+    <script id="template-entry" type="text/x-handlebars-template">
+
+    </script>
+</head>
+
+<body>
+    <!----------------------------------------------FREE------------------------------------------------------------->
+    <div id="loadingleft">
+        <div id="logo">Dragon</div> <img src="loading.gif" id="loadingicon" />
+    </div>
+    <div id="loadingright"></div>
+    <div id="tooltip" style="opacity: 0"></div>
+    <div id="drag"></div>
+    <div id="help">
+        <div class="button" id="page-1-selector" onclick="switchPage(0)">Pens</div>
+        <div class="button" id="page-2-selector" onclick="switchPage(1)">???</div>
+        <div class="button" onclick="openSettings()">Settings</div>
+    </div>
+    <!--------------------------------------------------------------------------------------------------------------->
+    <div id="page-1" class="page">
+        <div id="pen-switch">
+            <div id="edit-icon" onclick="activePen.changeName()"><img src="https://vignette.wikia.nocookie.net/howtoprogram/images/8/8d/Pencil-icon.png/revision/latest?cb=20130521031501"/></div>
+        </div>
+        <div id="pen-info">
+            <div><p id="pen-dragon-count">0</p><br><span>DRAGON(S)</span></div>
+            <div><p id="pen-egg-count">0</p><br><span>EGG(S)</span></div>
+            <div class="button" onclick="activePen.sort('isEmpty')">SORT</div>
+            <div class="button" onclick="activePen.changeFrozen()">FREEZE</div>
+        </div>
+        <div id="pen"></div>
+    </div>
+    <div id="page-2" class="page"></div>
+    <div id="bufferBar"></div>
+
+    <script src="dragons.js"></script>
+</body>
+
+</html>

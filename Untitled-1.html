@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agriculture</title>
+    <base href="agriculture/" target="_blank">
+    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="icon" href="faviconagr.ico" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="jquery.backgroundpos.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <script id="entry-template" type="text/x-handlebars-template">
+                <td>
+
+                    <div id="{{type}}details" class="tooltip detailer">
+                        <img draggable="false" src="{{type}}.png" class="food-icon">
+                        <span class="tooltiptext">{{name}}</span>
+                    </div>
+                </td>
+                <td style="width: 45%">
+                    <span id="{{name}}" class="text"></span>
+                </td>
+                <td style="width: 45%">
+                    <span id="{{abr}}ps" class="text"></span>
+                </td>
+    </script>
+
+    <script id="bldg-template" type="text/x-handlebars-template">
+                        <div id="{{bldg}}_header" class="boxholderheader">
+                            <span id="{{bldg}}s_number" class="amt"></span> <span id="{{bldg}}plural">{{name}}s</span>
+                            <br />
+                            <span id="{{bldg}}s_fps" class="fpsamt"></span>
+                            <br />
+                            <span class="button" onclick="bldg[{{ide}}].left()"> ◄ </span> <span id="{{bldg}}_working"></span>
+                            <span class="button" onclick="bldg[{{ide}}].right()"> ► </span>
+                        </div>
+                        <div class="bldgbuy button" onclick="bldg[{{ide}}].buy(); hideHelper(3)">
+                            <span id="{{bldg}}_cost" style="height:20px"></span>
+                            <span style="height:1px; top:3px; position:relative" colspan=2 id="{{ide}}cost"><img draggable="false" src="cash.png" class="cashicon food-icon"></span></div>
+   </script>
+
+    <script id="appear-template" type="text/x-handlebars-template">
+                <div onclick="res[{{ide}}].toClick(); hideHelper(0)" id="{{name}}_click" class="clickeer button click" style="background: url('weatheredbackground2.png'), {{color}}; filter: drop-shadow(2px 2px 2px {{colordark}})">
+                    <img draggable="false" src="{{name}}click.png" class="clicker">
+                </div>
+    </script>
+
+    <script id="conv-template" type="text/x-handlebars-template">
+    
+                            <td>
+                                <div class="tooltip button" onclick="auto({{ide1}},{{ide2}})"><span id="{{name1}}{{name2}}convo">☐</span><span class="tooltiptext convert">Auto-convert {{name1}} to {{name2}}?</span></div>
+                                (<span id="{{name1}}_to_{{name2}}_rate" class="rate"></span>)
+                            </td>
+                            <td>
+                                <div onclick="converter({{ide1}},{{ide2}})" class="convert-button button">
+                                    <div class="tooltip">
+                                        <img draggable="false" src="{{name1}}.png" class="food-icon {{name1}}icon">
+                                    </div>
+                                    <img draggable="false" src="sideswipe.png" class="convert-clicker">
+                                    <div class="tooltip">
+                                        <img draggable="false" src="{{name2}}.png" class="{{name2}}icon food-icon">
+                                    </div>
+                                </div>
+                            </td>
+                            </script>
+
+    <script id="charge-template" type="text/x-handlebars-template">
+                <td class="chargetitle">{{chargename}}<br>
+                            <div  class="convert-button" >
+                                <div class="button charger" onclick="buy_charge({{chargeid}})">
+                                    <span id="charge_cost{{chargeid}}" class="text"></span>
+                                    <img draggable="false" src="energy.png" class="energyicon food-icon">
+                                        
+                                </div>
+                            </div>
+                            </script>
+</head>
+<body>
+
+    <div id="loadingleft"><div id="logo">Agriculture</div> <img src="loading.gif" id="loadingicon"/></div><div id="loadingright"></div>
+
+    <!-- Start of Header div -->
+    <!-- End of Header div -->
+    <!-- Start of Ledger div -->
+    <div id="ledger">
+            <div class="ledgerheader">
+                Ledger
+            </div>
+        <div id="ledgertablecontain">
+        <table  class="ledger">
+            <tbody id="ledgerbody">
+            <tr class="row-odd" id="specialRow">
+                <td colspan="4">
+                    <div id="specialback"><div id="special"></div></div>
+    
+                </td>
+            </tr>
+            <tr class="row-even" id="cash-row">
+                <td style="width:30px; ">
+
+                    <div class="tooltip detailer">
+                        <img draggable="false" src="cash.png" class="cashicon food-icon">
+                        <span class="tooltiptext">Cash</span>
+                    </div>
+                </td>
+                <td colspan=2 style="width:55px">
+                    <span id="cash" class="text"></span><span id="caps" class="text"></span>
+                </td>
+            </tr>
+            <tr class="row-even" id="unrest-row">
+                <td style="width:30px; ">
+
+                    <div class="tooltip detailer">
+                        <img draggable="false" src="unrest.png" class="unresticon food-icon">
+                        <span class="tooltiptext">Unrest</span>
+                    </div>
+                </td>
+                <td colspan=2 style="width:55px">
+                    <span id="unrest" class="text"></span><span id="unps" class="text"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table></div>
+        <div id="header" class="header">
+            <table id="1pageclick" class="button" onclick="switchPage(1)"> <tr><td><img src="page1.png" class="page-icon" /></td><td>Resources</td></tr></table>
+    
+            <table id="2pageclick" class="button" onclick="alert('Sorry, this feature is under construction! Come back soon!'); return; switchPage(2)"> <tr><td><img src="page2.png" class="page-icon" /></td><td>Government</td></tr></table>
+    
+            <table id="4pageclick" class="button" onclick="switchPage(4)"> <tr><td><img src="page4.png" class="page-icon" /></td><td>Research</td></tr></table>
+    
+            <table id="3pageclick" class="button" onclick="switchPage(3)"> <tr><td><img src="page3.png" class="page-icon" /></td><td>Settings</td></tr></table>
+    
+    
+        </div>
+    </div>
+    
+    <div id="page-back"></div>
+    <div id="page1" class="page">
+        <div style="position: absolute; left: 1200px"></div>
+        <table id="main"><tbody id="mainbody"></tbody></table>
+    </div>
+
+    <div class="page" id="page2">
+        <!--<iframe src="spacers.html" id="hi" name="targetframe" allowTransparency="true" scrolling="no" frameborder="0" style="width:100%; height:100%;">
+    </iframe>-->
+
+
+        <div id="charge_box">
+            <table id="chargebox"><tbody id="chargeanchor"></tbody></table>
+        </div>
+    </div>
+
+    <div class="page" id="page3">
+        <div id="exp">
+            <div class="settings button" onclick="alert('Sorry, this feature is under construction! Come back soon!'); return; copyToClipboard(exportStr())">Export</div>
+            <div class="settings button" onclick="alert('Sorry, this feature is under construction! Come back soon!'); return; loadData(prompt('Please give a save data string'))">Import</div>
+            <div class="settings button" onclick="saveData()">Save</div>
+            <div class="settings button" onclick="resetData()">Reset</div>
+        </div>
+    </div>
+
+    <div class="page" id="page4">
+        <table id="tech-data">
+        </table>
+    </div>
+
+    <div id="blocker"></div>
+
+    <div id="tooltip">3333</div>
+    <div id="helper">3333</div>
+
+    <table id="rightside">
+        <tbody id="conver">
+                <tr style="height:40px">
+                    <td colspan="4">
+                        <div class="ledgerheader">
+                            Control
+                        </div>
+                    </td>
+                </tr>
+                        <tr class="row-odd" id="conversion-row">
+                            <td></td>
+                            <td  id="conversionheader">
+                                Conversions
+                            </td>
+                        </tr>
+        <tr class="row-odd" id="convanchor">
+            <td>
+                <div class="flashing" id="near_worker">!</div>
+            </td>
+            <td>
+                Workers
+            </td></tr>
+                        <tr class="row-even" id="worker-row">
+                            <td id="worker_number" class="amt">
+                                <span id="workers_number" class="amt"></span>
+                            </td>
+                            <td class="button convert-button" onclick="buyWorker(); hideHelper(2)">
+                                <p id="worker_cost" class="text"></p>
+                                <img draggable="false" src="food.png" style="vertical-align: middle" class="food-icon">
+                            </td>
+                        </tr>
+        <tr class="row-odd">
+            <td>
+                <div class="flashing" id="near_tech">!</div>
+            </td>
+                            <td id="science_header">
+                                Technology
+                            </td>
+                        </tr>
+                        <tr class="row-even">
+                            <td style="width:110px">
+                                <span class="button depress" onclick="techMove('left')"> ◄ </span> Lvl. <span id="tech_level"></span> <span class="button depress" onclick="techMove('right')"> ► </span>
+                            </td>
+                            <td  class="convert-button" >
+                                <div class="button" onclick="tech[techSelected].unlock(false); hideHelper(1)">
+                                    <span id="tech_cost" class="text"></span>
+                                    <img draggable="false" src="science.png" style="vertical-align: middle"  class="scienceicon food-icon">
+                                        
+                                </div>
+                            </td>
+                        </tr><tr class="row-even"><td><span id="tech_name"></span>:</td><td>
+<span id="tech_descr"></span></td></tr>
+            <tr class="row-odd">
+                <td colspan=2 id="tip-title">Did you know...</td>
+            </tr>
+            <tr class="row-even">
+                <td colspan=2 id="tip" onclick="changeTip()">Lorem ipsum dolor</td>
+            </tr>
+            <tr><td></td></tr>
+    </tbody>
+    </table>
+
+    <div id="spinnerAlert" style="opacity: 0" onclick="spinnerAlert = .01"></div>
+    
+        <!-- Start of Footer div -->
+        <table class="footer">
+                <tr>
+                    <td>
+                        <a href="http://lennongrad.com">lennongrad.com</a>
+                    </td>
+                    <td id="tester">
+                        v1.13 (Rehaul Update)
+                    </td>
+                    <td>
+                        Icons by <a href="http://lorcblog.blogspot.com/">Lorc</a>, <a href="http://delapouite.com/">Delapouite</a>, and <a href="http://blackdogofdoom.blogspot.co.uk/">Felbrigg</a>. Retrieved from <a href="http://game-icons.net">http://game-icons.net</a>.
+                    </td>
+                </tr>
+            </table>
+            <!-- End of Footer div -->
+
+    <span id="cashdetails"><span id="cash_click"><span id="cash-column"><span id="unrestdetails"><span id="unrest_click"><span id="unrest-column"></span></span></span>
+
+    <script src="runscript.js"></script>
+</body>
+</html>
