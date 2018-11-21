@@ -238,6 +238,10 @@ function copyToClipboard(str) {
         document.getSelection().removeAllRanges();           // Unselect everything on the HTML document
         document.getSelection().addRange(selected);          // Restore the original selection
     }
+    $("#copiedMessage").show()
+    setTimeout(function(){
+        $("#copiedMessage").hide()
+    }, 2050)
 };
 
 var pages = [document.getElementById("page-1"), document.getElementById("page-2")]
