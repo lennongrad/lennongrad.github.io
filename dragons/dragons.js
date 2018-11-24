@@ -1,3 +1,4 @@
+// 10521 ALLEN SCHOLARSHIPS
 var versionNumber = "0.0"
 var versionTitle = "Initial"
 //document.getElementById("version-number").innerHTML = versionNumber + " (" + versionTitle + " Update)"
@@ -10,36 +11,52 @@ $(document).ready(function () {
 var cursor = {x: 0, y: 0, active: false};
 
 var settingTypes = {bool: "boolean", percent: "percent", number: "number", key: "key"}
+var settingPages = {gameplay: "gameplay", keybindings: "keybindings"}
+var activeSettingPage = settingPages.gameplay
 
-var trappingKey
+var trappingKey, catchingKey
 
 class Setting{
-    constructor(name, type, defaultState){
+    constructor(name, type, defaultState, page){
         this.name = name
         this.type = type
         this.value = defaultState
+        this.page = page
+        
+        this.elem = document.createElement("div")
+        this.elem.innerHTML = this.name + ": " + this.value
+        this.elem.className = "button"
+
+        var self = this
+        this.elem.onclick = function(){self.change()}
     }
 
     change(to){
-        if(this.type == settingTypes.bool && to == undefined){
-            this.value = !this.value
+        if(to == undefined){
+            if(this.type == settingTypes.bool){
+                this.value = !this.value
+            } else if(this.type = settingTypes.key){
+                catchingKey = this
+            }
         } else {
             this.value = to
+        }
+        if(this.type == settingTypes.key){
+            keys[this.name.toLowerCase()].key = this.value
         }
         this.render()
     }
     
     render(){
-        if(this.type == settingTypes.key){
-            keys[this.name.toLowerCase()].key = this.value
-        }
+        this.elem.innerHTML = this.name + ": " + this.value
+        return this.elem
     }
 }
 
 var settings = {
-    enableDragAndDrop: new Setting("Drag and Drop", settingTypes.bool, false),
-    debug: new Setting("Debug", settingTypes.bool, "false"),
-    shift: new Setting("Shift", settingTypes.key, 16)
+    enableDragAndDrop: new Setting("Drag and Drop", settingTypes.bool, false, settingPages.gameplay),
+    debug: new Setting("Debug", settingTypes.bool, "false", settingPages.gameplay),
+    shift: new Setting("Shift", settingTypes.key, 16,  settingPages.keybindings)
 }
 
 var suffixes = ["", "k", "m", "b", "t", "qu", "qi", "sx", "sp"];
@@ -244,6 +261,7 @@ function copyToClipboard(str) {
     }, 2050)
 };
 
+
 var pages = [document.getElementById("page-1"), document.getElementById("page-2")]
 var activePage = pages[0];
 
@@ -291,6 +309,13 @@ function renderAll(){
     g("pen-dragon-count").innerHTML = activePen.match(["stage", 1]).length
     g("pen-switch").appendChild(editIcon)
     bufferBar.render()
+    
+    g("settings-list").innerHTML = ""
+    for(var i = 0; i < Object.keys(settings).length; i++){
+        if(settings[Object.keys(settings)[i]].page == activeSettingPage){
+            g("settings-list").appendChild(settings[Object.keys(settings)[i]].render())
+        }
+    }
 }
 
 window.addEventListener('mousemove', function (e) {
@@ -306,21 +331,27 @@ window.addEventListener('mousemove', function (e) {
 
 window.addEventListener('mousedown', function (e) {
     cursor.active = true;
+    catchingKey = undefined
 });
 
 window.addEventListener('mouseup', function (e) {
     cursor.active = false;
-    if(lastDragged != undefined && settings.enableDragAndDrop){
+    if(lastDragged != undefined && settings.enableDragAndDrop.value){
         lastDragged.click()
     }
 });
 
 document.addEventListener('keydown', function (event) {
-    for(var i in Object.keys(keys)){
-        if (keys[Object.keys(keys)[i]].key == event.keyCode) {
-            keys[Object.keys(keys)[i]].keydown()
-            keys[Object.keys(keys)[i]].active = true
+    if(catchingKey == undefined){
+        for(var i in Object.keys(keys)){
+            if (keys[Object.keys(keys)[i]].key == event.keyCode) {
+                keys[Object.keys(keys)[i]].keydown()
+                keys[Object.keys(keys)[i]].active = true
+            }
         }
+    } else {
+        catchingKey.change(event.keyCode)
+        catchingKey = undefined
     }
 });
 
@@ -421,7 +452,7 @@ class Slot{
     }
 
     click(skip){
-        if(!settings.enableDragAndDrop && skip){
+        if(!settings.enableDragAndDrop.value && skip){
             return
         }
         if(keys.shift.active){
@@ -443,14 +474,14 @@ class Slot{
                 lastDragged = this
                 g("drag").innerHTML = ""
                 g("drag").appendChild(currentlyDragging.elem)
-            } else if(currentlyDragging != undefined && this.allowTake() && !settings.enableDragAndDrop){
+            } else if(currentlyDragging != undefined && this.allowTake() && !settings.enableDragAndDrop.value){
                 var hold = currentlyDragging
                 currentlyDragging = this.dragon
                 this.dragon = hold
                 lastDragged = this
                 g("drag").innerHTML = ""
                 g("drag").appendChild(currentlyDragging.elem)
-            } else if(currentlyDragging != undefined && this.allowTake() && settings.enableDragAndDrop){
+            } else if(currentlyDragging != undefined && this.allowTake() && settings.enableDragAndDrop.value){
                 lastDragged.dragon = this.dragon
                 this.dragon = currentlyDragging
                 lastDragged = undefined
@@ -652,17 +683,6 @@ activePen = pens[0]
 
 var x = new Dragon("one", 0)
 var y = new Dragon("two", 0, "baby")
-
-
-
-
-
-
-
-
-
-
-
 
 renderAll()
 hideTooltip()

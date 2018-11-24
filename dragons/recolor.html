@@ -33,19 +33,9 @@
     <div id="help">
         <div class="button" id="page-1-selector" onclick="switchPage(0)">Pens</div>
         <div class="button" id="page-2-selector" onclick="switchPage(1)">???</div>
-        <div class="button" onclick="$('#settings-cover').toggle()">Settings</div>
+        <div class="button" onclick="openSettings()">Settings</div>
     </div>
-    <div id="copiedMessage" style="display: none">Copied to clipboard</div>
-    <div id="settings-cover" style="display: none">
-        <div id="settings-box" class="centered">
-            <ul>
-                <li class="button" onclick="activeSettingPage = settingPages.gameplay; renderAll()">Gameplay</li>
-                <li class="button" onclick="activeSettingPage = settingPages.keybindings; renderAll()">Keybindings</li>
-            </ul>
-            <div id="settings-exit" onclick="$('#settings-cover').toggle()" class="button">X</div>
-            <div id="settings-list">            </div>
-        </div>
-    </div>
+    <div id="copiedMessage">Copied to clipboard</div>
     <!--------------------------------------------------------------------------------------------------------------->
     <div id="page-1" class="page">
         <div id="pen-switch">

@@ -26,9 +26,9 @@
     <div id="header"><img src="logo.png"><div>Democracy shines in brightness.</div></div>
     <div id="bar">
         <span onclick="switchPage(0)" id="page-selection-1">Home</span>
-        <span onclick="switchPage(1)" id="page-selection-2">TIP-WATCH</span>
+        <span onclick="switchPage(1)" id="page-selection-2" style="display:none">TIP-WATCH</span>
         <span onclick="switchPage(2)" id="page-selection-3">INTRA-VIEWS</span>
-        <span onclick="switchPage(3)" id="page-selection-4">RUMORS</span>
+        <span onclick="switchPage(3)" id="page-selection-4" style="display:none">RUMORS</span>
         <span onclick="switchPage(4)" id="page-selection-5">Links</span>
     </div>
     <div class="page" id="page-1">
@@ -49,19 +49,55 @@
         <table><tr><td id="names">
                 <div>
                     <span activated="true" id="interview-selection-1" onclick="switchInterview(0)">President<br><b>Andrew Cannon</b></span>
-                    <span id="interview-selection-2" onclick="switchInterview(1)">Head of House Commitee<br><b>Emily Emilyson</b></span>
-                    <span id="interview-selection-3" onclick="switchInterview(2)">Head of House Commitee<br><b>Other Emily</b></span>
+                    <span id="interview-selection-2" onclick="switchInterview(1)" style="display: none">Head of House Commitee<br><b>Emily Emilyson</b></span>
+                    <span id="interview-selection-3" onclick="switchInterview(2)" style="display: none">Head of House Commitee<br><b>Other Emily</b></span>
                 </div>
-            </td><td>
+            </td><td id="content">
             <p id="interview-1">
                     <span class="date">November 16, 2018</span>
                     <span class="title">VIDEO INTERVIEW</span>
                     <span class="by">With Andrew Cannon<!--, Brock Dilley--></span>
                     <i>slashGOV</i> was recently given the privelege to have an interview with the President Elect at the time, Andrew Cannon, and we were able to discuss numerous policy issues concerning the recent legalization of marijuana. Read below for an official transcript of the interview or watch the embedded video.<br>
-                    <iframe width="560" height="315" src="https://www.youtube.com/embed/wzf-JuDWpZk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br>
-                    <b>REPORTER</b>: Wazzup?
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/pDpAdJElsog" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br>
+                    <b>REPORTER</b>: Just to get started... I have to ask, how happy are you that you [the president] won this election?
                     <br>
-                    <b>CANNON</b>: Yup!
+                    <b>CANNON</b>: Well it's always a pleasure to be here, talking to people, talking to you [the media]. As far as winning the election, it's going to be a bit of a mixed feelings from here on in. Of course I'm very excited, it's an amazing opportunity and I thank everyone for it, but it's also going to be a lot of work for me and I signed up for that, but that always dulls the happiness a little bit.
+                    <br>
+                    <b>REPORTER</b>: Getting right to the issues, recently there has been a momentous push to legalize marijuana and it appears to have succeeded. There are many propositions in Congress relating to this. First of all, what is your opinion on the issue?
+                    <br>
+                    <b>CANNON</b>: I do support the issue of marijuana legalization, I won't say quite wholeheartedly because I do support it but I also support regulating it as well; I don't think it should be instantly out there for everybody, but age limits and taxation, things like that, should be implemented to saveguard the nation.
+                    <br>
+                    <b>REPORTER</b>: Now, about some of those policies, you mentioned restrictions. What priority should we have with regulating marijuana? Should we prioritize making sure to not let it get into the hands of minors?
+                    <br>
+                    <b>CANNON</b>: A lot of that comes with education; younger people tend to be less educated on drugs, and so making sure that everyone is of an age where they know what a drug is, what it does to them, so that they can make an informed decision before they affect their lives. Along those lines, it should be kept outside of the hands of minors like with tobacco, and again pinpointing that age is always going to be a bit of an issue. The dispensaries themselves, we should make sure that they know that there is going to be strict punishment for those who give it out more freely.
+                    <br>
+                    <b>REPORTER</b>: How hard do you think it should be to get a license? How long should they last for, and what impact do you think that will have on new small businesses?
+                    <br>
+                    <b>CANNON</b>: As far as getting a license, I think there should be very strict policies. Of course states have their own standards, but because it is something new, I believe it should be very strictly regulated so that we don't have a lot of local illegal product or people that don't educate or screen that customers. We should have regulations and make it, not exactly difficult, but make it a strict process so that only people that really know what they're doing can get a license.
+                    <br>
+                    <b>REPORTER</b>: As you know, tobacco has warning labels on it to ensure that everyone knows what is in it. What about marijuana? What do you think is important to prioritize on these warning labels?
+                    <br>
+                    <b>CANNON</b>: Real estate there is a bit limited there but we should definitely give a synopsis over various general carcinogens, or cancer causing products, that do exist in the smoke there, which is existance in marijuana as well as tobacco which is one of the main health concerns there. One of the other concerns, of course the main things about marijuana, the THC as well as other canabinals, should be included on there as well as how if you have too much of this, it has been linked to signs of anxiety, just to have very strong caution against people having too much.
+                    <br>
+                    <b>REPORTER</b>: As for those people who maybe have too much, or that take it under the legal age limit, do you think we should focus more on education or punishment?
+                    <br>
+                    <b>CANNON</b>: As for that, I do believe that both are very important. Definitely punishing people that let their licenses get too far, letting people under the age, whether they are distributors that didn't take the license well enough, or parents that let it get out of their hands, I do think there should be punishments like revoking the license or keeping them from the product for a certain amount of time.
+                    <br>
+                    <b>REPORTER</b>: We still don't know the full story; we need more research, and the government is looking into providing this research with funds that they have, and I'm wondering, do you think it is even the government's responsbility? Which government, the federal, state, or local governments?
+                    <br>
+                    <b>CANNON</b>: As always I am a very strong proponent of the government protecting its people, it is one of the base things that I want to do this term. Now, along with that, that comes with researching such drugs as marijuana. It should be funded partially by tax revenue from the marijuana, and as it has been shown in Colorado where it has been legalized, that market is massive, and I believe that some of that should go towards researching marijuana to make sure it has been a good choice. I think it will be, I don't think there will be too dangerous effects there, but of course changing dosage amounts will also be something with that. In terms of research, I believe that private companies and distributors of marijuana will also want to help in that to make sure it is the fastest process possible because the faster that we can research marijuana, the faster it can be fully legalized and more open to everybody and that's just more profit for them.
+                    <br>
+                    <b>REPORTER</b>: I'm wondering, do you think its more the responsbility of the federal government, or the state governments, or even the local governments to tax it, and what do you think the tax rates should be, high or low?
+                    <br>
+                    <b>CANNON</b>: So with that I do believe there should be something more akin to tobacco with that where we see with tobacco that there is a federal tax, a state tax, and in some cases a local tax. You get some people paying as much as $7 on the pack just in taxes. Whether that is ridiculous or not, I can't really say. In terms of state and local taxes, it is of course up to state and local jurisdiction, but I do believe that it should air on the higher side.
+                    <br>
+                    <b>REPORTER</b>: Do you think there should any tariffs for transporting marijuana over the border, between states of course, and what do you think about the transportation?
+                    <br>
+                    <b>CANNON</b>: As far as transportation it should be something akin to tobacco because the harmful effects has been shown to be rather close to that of tobacco so I think following similar concerns to that should be good. Of course making it hygienic and free of impurities is also a very powerful thing to do, but in terms of interstate tariffs, there should be some tariff that covers the cost and differences between states.
+                    <br>
+                    <b>REPORTER</b>: To end it all off, do you have any final words for all the great Representatives of Congress?
+                    <br>
+                    <b>CANNON</b>: For the Representatives of Congress, I know it's gonna be a lot of work to get this done and implemented because a lot of states have different varying levels of support for this, but as a nation I think we can come together and get this done as expediently as possible, and I know that they're going to do a great job on these pieces of legislation.
             </p>
                 <p id="interview-2">
                     <span class="date">November 20, 2018</span>
@@ -104,7 +140,7 @@
     <div class="page" id="page-4">
             <p id="interview-2">
                 <span class="date">November 20, 2018</span>
-                <span class="title">UPCOMING EXECUTE AGREEMENT</span>
+                <span class="title">UPCOMING EXECUTIVE AGREEMENT</span>
                 <span class="by"><!--By Brock Dilley--></span>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pulvinar diam nisi, ac pharetra dolor euismod nec. Vivamus ultrices eros velit, at finibus nisl tempus nec. Nulla luctus sem at mi consequat volutpat. Pellentesque eu nisi ut lorem scelerisque tristique eget non sapien. In facilisis sem id lorem pharetra, id volutpat velit interdum. In hac habitasse platea dictumst. In vestibulum erat sit amet sollicitudin fermentum. Nam tincidunt imperdiet risus a viverra. Phasellus ac pharetra nisi. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Phasellus a ullamcorper diam, ut efficitur urna. Proin consequat eros gravida tellus blandit semper. Donec nisi purus, porta suscipit varius eu, efficitur vel nisl. Donec tincidunt accumsan augue.
             </p>
