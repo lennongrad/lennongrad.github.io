@@ -144,12 +144,35 @@ body{
     #bar span {
         font-size: 2.6vw;
     }
-
     
     #names div span{
         font-size: 2.5vw !important;
         height: 11.4vw !important;
     }
+
+    #main-image{
+        width: 80vw !important;
+        height: 45vh !important;
+        background-size: 80vw 45vh !important;
+    }
+
+    #main-image div{
+        width: calc(80vw - 20px) !important;
+    }
+
+    #page-5 a{
+        font-size: 1.6vw !important;
+    }
+
+    iframe{
+        width: 60vw;
+        height: 30vh;
+    }
+}
+
+iframe{
+    width: 40vw;
+    height: 50vh;
 }
 
 #bar span:hover{
