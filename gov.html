@@ -26,7 +26,7 @@
     <div id="header"><img src="logo.png"><div>Democracy shines in brightness.</div></div>
     <div id="bar">
         <span onclick="switchPage(0)" id="page-selection-1">Home</span>
-        <span onclick="switchPage(1)" id="page-selection-2" style="display:none">TIP-WATCH</span>
+        <span onclick="switchPage(1)" id="page-selection-2">TIP-WATCH</span>
         <span onclick="switchPage(2)" id="page-selection-3">INTRA-VIEWS</span>
         <span onclick="switchPage(3)" id="page-selection-4" style="display:none">RUMORS</span>
         <span onclick="switchPage(4)" id="page-selection-5">Links</span>
@@ -36,14 +36,35 @@
         <div class="bar" style="width: 80%"></div>
         <div id="updates-header">TOP UPDATES</div>
         <div class="update">
+            <span class="news button top" onclick="switchPage(1);">Numerous anonymous tips have been submitted from straight inside the House of Representatives</span><br>
+            <span class="news button" onclick="switchPage(4);">Visit the Links page for many new links to outside sources on highly requested topics!</span>
+            <div class="date">November 29, 2018</div>
+        </div>
+        <div class="update">
             <span class="news button top" onclick="switchPage(2); switchInterview(0)">A new interview with President <b>Andrew Cannon</b> is now available in INTRA-VIEWS</span><br>
             <span class="news button" onclick="switchPage(4);">Visit the Links page for pertinent info on each House Commitee</span>
             <div class="date">November 27, 2018</div>
         </div>
     </div>
     <div class="page" id="page-2">
-        <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span><i>Tip #420</i> at 8:30 on 20/11/2018</span><p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pulvinar diam nisi, ac pharetra dolor euismod nec. Vivamus ultrices eros velit, at finibus nisl tempus nec. Nulla luctus sem at mi consequat volutpat. Pellentesque eu nisi ut lorem scelerisque tristique eget non sapien. In facilisis sem id lorem pharetra, id volutpat velit interdum."</p></div>
-        <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span><i>Tip #420</i> at 8:30 on 20/11/2018</span><p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pulvinar diam nisi, ac pharetra dolor euismod nec. Vivamus ultrices eros velit, at finibus nisl tempus nec. Nulla luctus sem at mi consequat volutpat. Pellentesque eu nisi ut lorem scelerisque tristique eget non sapien. In facilisis sem id lorem pharetra, id volutpat velit interdum."</p></div>
+            <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span>
+                <i>Tip #6</i> on 11/27/2018</span><p>"Let us not forget the autonomy of the states; they, and their local municipalities, should be able to set their own tax rates alongside the federal government's rates. Likewise, the federal government should focus on a high, 25% tax rate for retail sale of marijuana, and I refuse to support anything less than 15%. I also believe that medical marijuana should be available strictly upon prescription with a lower rate of 10%, and that recreational marijuana must only be allowed for those who aren't minors, over the age of 21, following previous standards set for alcohol consumption."
+            </p></div>
+            <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span>
+                <i>Tip #5</i> on 11/27/2018</span><p>"People are going too far with this legalization business. I agree that it should be decriminalized, but some of my fellow representatives have truly jumped the gun. Allowing minors, under 21, to use it unsupervised? Seriously, that is a proposition I've heard. No way. Then there are people who want the dirty pot companies to be able to advertise in HIGH SCHOOLS! We need to make sure that all advertising is fully honest, completely out of sight of minors, and highly monitored. Anything else would endanger the moral sanctity of our country and its safety, and ruin the lives of our children."
+            </p></div>
+            <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span>
+                <i>Tip #4</i> on 11/27/2018</span><p>"Let us all be honest here; the war on drugs has been motivated entirely by race. It is the clearest demonstration of discrimination in law enforcement, where there has always been increased patrol near low-income, primarily black neighborhoods, simply on the idea that they use marijuana more. By legalizing and decriminalizing this substance, we are doing a great service to all those immorally targeted and punished by an immoral law."
+            </p></div>
+            <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span>
+                <i>Tip #3</i> on 11/27/2018</span><p>"There is no doubt to me that marijuana possession should not be a felony. Why was it even in the first place? Additionally, I think it should be totally legalized for all people over 18 recreationally, and medically for anyone, even those under 18. If you need it for epilepsy or other illnesses, why should you have to wait until you are 18? The medical variety of marijuana doesn't even get you high!"
+            </p></div>
+            <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span>
+                <i>Tip #2</i> on 11/27/2018</span><p>"I am surprised at how much our sub-committee is getting along. Even with our different political ideologies, we can still get along just fine and work together to solve problems."
+            </p></div>
+            <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span>
+                <i>Tip #1</i> on 11/27/2018</span><p>"If alcohol is legal, then weed should be too; about 88,000 people a year die from drinking, so maybe even ban it instead? Meanwhile, not one single person has ever died from taking marijuana, but instead people's lives have been ruined due to charges of illegal substance. Besides, legalizing it will provide more than 1.1 million new jobs across the country. It is the clearest answer."
+            </p></div>
     </div>
     <div class="page" id="page-3">
         <table><tr><td id="names">
@@ -147,6 +168,13 @@
             <div class="bar"></div>
     </div>
     <div class="page" id="page-5">
+            <a href="lennongrad.com" class="outside button" href="http://www.emcdda.europa.eu/publications/topic-overviews/cannabis-policy/html_en">Foreign country's policies on marijuana usage</a>
+            <a href="lennongrad.com" class="outside button" href="https://www.npr.org/sections/health-shots/2014/02/25/282631913/marijuana-may-hurt-the-developing-teen-brain">Marijuana's effect on developing teens</a>
+            <a href="lennongrad.com" class="outside button" href="https://www.colorado.gov/pacific/marijuana/retail-marijuana-licensees">Marijuana policy in Colorado</a>
+            <a href="lennongrad.com" class="outside button" href="https://cannabis.ca.gov/">Marijuana policy in California</a>
+            <a href="lennongrad.com" class="outside button" href="https://www.sciencedaily.com/releases/2017/10/171031202705.htm">Environmental impact of growing marijuana</a>
+            <a href="lennongrad.com" class="outside button" href="https://www.calsalmon.org/resources/environmental-impacts-marijuana-cultivation">More sources on the environmental impact of growing marijuana</a>
+            <a href="lennongrad.com" class="outside button" href="https://www.npr.org/2018/01/16/578422469/how-active-duty-military-are-navigating-changing-attitudes-toward-marijuana">Marijuana's impact on the military</a>
             <div class="update">
                 <div class="date">Small Business</div>
                 <span class="news top">
