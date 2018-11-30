@@ -168,6 +168,17 @@ body{
         width: 60vw;
         height: 30vh;
     }
+
+    #page-2 div{
+        width: 80vw !important;
+    }
+
+    #page-5 a.outside{
+        height: 4vh;
+        line-height: 4vh;
+        width: 95vw !important;
+        font-size: 2.5vw !important;
+    }
 }
 
 iframe{
@@ -321,6 +332,10 @@ a{
     margin-left: 1vw;
     top: 1vw;
     position: absolute;
+}
+
+audio{
+    margin: auto;
 }
 
 #names div span{
