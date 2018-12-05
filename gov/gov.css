@@ -179,6 +179,15 @@ body{
         width: 95vw !important;
         font-size: 2.5vw !important;
     }
+
+    .page{
+        height: 74.5vh !important;
+    }
+
+    #footer{
+        line-height: 3vh !important;
+        font-size: 1vh !important;
+    }
 }
 
 iframe{
@@ -199,13 +208,13 @@ iframe{
     top: 15.5vh;
     left: 0;
     width: 100%;
-    height: 78.5vh;
+    height: 78.8vh;
     overflow-x: hidden;
     overflow-y: scroll;
 }
 
 #footer{
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: 6vh;
     bottom: 0;
@@ -214,7 +223,7 @@ iframe{
     color: white;
     text-align: center;
     line-height: 2vh;
-    font-size: 1.2vw;
+    font-size: 1vw;
 }
 
 #footer img{
@@ -443,7 +452,7 @@ iframe{
     margin-left: auto;
     margin-right: auto;
     padding: 1vw;
-    background-color: #2d5596;
+    background-color: #96762d;
     color: white;
 }
 

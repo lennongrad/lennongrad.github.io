@@ -28,13 +28,18 @@
         <span onclick="switchPage(0)" id="page-selection-1">Home</span>
         <span onclick="switchPage(1)" id="page-selection-2">TIP-WATCH</span>
         <span onclick="switchPage(2)" id="page-selection-3">INTRA-VIEWS</span>
-        <span onclick="switchPage(3)" id="page-selection-4" style="display:none">RUMORS</span>
+        <span onclick="switchPage(3)" id="page-selection-4">Rumours</span>
         <span onclick="switchPage(4)" id="page-selection-5">Links</span>
     </div>
     <div class="page" id="page-1">
         <div id="main-image"><div>A view of the White House, the executive mansion of the President of the United States, located at 1600 Pennsylvania Avenue in Washington, D.C.<br><span class="attribution"><a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA-3.0</a>/<a href="https://en.wikipedia.org/wiki/User:UpstateNYer">Matt H. Wade</a> at Wikipedia</span></div></div>
         <div class="bar" style="width: 80%"></div>
         <div id="updates-header">TOP UPDATES</div>
+        <div class="update">
+            <span class="news button top" onclick="switchPage(1);">Numerous anonymous tips have been submitted from straight inside the House of Representatives</span><br>
+            <span class="news button" onclick="switchPage(3);">Visit the Rumours page for new info on an upcoming Executive Order from the president!</span><br>
+            <div class="date">December 5, 2018</div>
+        </div>
         <div class="update">
             <span class="news button top" onclick="switchPage(1);">Numerous anonymous tips have been submitted from straight inside the House of Representatives</span><br>
             <span class="news button" onclick="switchPage(4);">Visit the Links page for many NEW links to outside sources on highly requested topics!</span><br>
@@ -53,6 +58,18 @@
         </div>
     </div>
     <div class="page" id="page-2">
+        <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span>
+            <i>Tip #4</i> on 12/03/2018</span><p>"I see a lot of overlapping plans for taxes, and if combined I feel that thsi will create a federal tax of such a large scale, when combined with state taxes, that will stagnate the legal marijuana industry."
+        </p></div>
+        <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span>
+            <i>Tip #3</i> on 12/03/2018</span><p>"Taxes on recreational marijuana should not be at 40%"
+        </p></div>
+        <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span>
+            <i>Tip #2</i> on 12/03/2018</span><p>"The fine for underage use and illegal selling should be higher than $150. There are speeding tickets that cost more!" 
+        </p></div>
+        <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span>
+            <i>Tip #1</i> on 12/03/2018</span><p>"The suggested rule is that medical marijuana should be legal for all ages. We should add a restriction where, for those under 18, one should require both a prescription and parental permission. If old than 18, one would only need a prescription from a certified doctor."
+        </p></div>
         <div class="button" onclick='copyToClipboard(this.childNodes[1].innerHTML.replace(/"/g, ""))'><span>
             <i>Tip #5</i> on 11/29/2018</span><p>"The people in the house are UNINFORMED, UNEDUCATED, and obviously CONFUSED. I can't beliedve that I work with these people. As underage use of marijuana is on the rise, don't we want to make sure that our teens are staying safe?! If they wanna get high, let them get high. We need to inform the youth, and make sure they're getting the best weed in the market."
         </p></div>
@@ -145,7 +162,7 @@
                     <span class="date">November 29, 2018</span>
                     <span class="title">MARIJUANA: SOME CONCERNS</span>
                     <span class="by">With Emily Mei</span> 
-                    <i>slashGOV</i> was recently given the privilege to have an interview with the President Elect at the time, Andrew Cannon, and we were able to discuss numerous policy issues concerning the recent legalization of marijuana. Read below for an official transcript of the interview or watch the embedded video.<br>
+                    Listen to the audio recoding of <i>slashGOV's</i> conversation with the Head of the House Commitee on Energy and Commerce, Emily Mei.<br>
                     <audio controls> <source src="EnergyCommerce.mp3" type="audio/mpeg"></audio>
                 </p>
                 <p id="interview-3">
@@ -170,10 +187,29 @@
     </div>
     <div class="page" id="page-4">
             <p id="interview-2">
-                <span class="date">November 20, 2018</span>
+                <span class="date">December 3, 2018</span>
                 <span class="title">UPCOMING EXECUTIVE AGREEMENT</span>
                 <span class="by"><!--By Brock Dilley--></span>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pulvinar diam nisi, ac pharetra dolor euismod nec. Vivamus ultrices eros velit, at finibus nisl tempus nec. Nulla luctus sem at mi consequat volutpat. Pellentesque eu nisi ut lorem scelerisque tristique eget non sapien. In facilisis sem id lorem pharetra, id volutpat velit interdum. In hac habitasse platea dictumst. In vestibulum erat sit amet sollicitudin fermentum. Nam tincidunt imperdiet risus a viverra. Phasellus ac pharetra nisi. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Phasellus a ullamcorper diam, ut efficitur urna. Proin consequat eros gravida tellus blandit semper. Donec nisi purus, porta suscipit varius eu, efficitur vel nisl. Donec tincidunt accumsan augue.
+                <span style="line-height: 1.75em">By the power vested in the Executive branch of the United States Government, and under the discretion of the Chief Executive, President Cannon, I hereby enact executive order 420. This order pertains strictly to the usage and regulation of various parts of the Marijuana industry.<br><br>
+
+                1. Henceforth, any and all growers of Marijuana must be located no less than 2 miles of nationally protected lands, increased to 5 miles if the plantation lies within 500 feet of a path where water can flow towards such protected sites.<br><br>
+
+                2. Creates the Recently Legalized Substances Bureau (RLSB) underneath the authority of the ATFE to deal with any current and future substances for a minimum of their first year of legalized status (marked from one month after appropriate legislation is signed into law, to allow time for allocation of resources and information).<br><br>
+
+                3. Grants the RLSB the permissions:<br>
+                    i) to set reasonable state limits on licensing and education of such substances under their jurisdiction (henceforth referred to as Recently Legalized Substances, or RLSs).<br>
+                    ii) to allocate reasonable funds from taxes on RLS’s to promote education and additional research into RLS’s.<br>
+                    iii) to suspend the licensing processes of states that do not practice reasonable standards for their licenses. This licensing process is replaced by a strict federal system until such states can replace their system with an appropriate model.<br>
+                    iv) to conduct investigations on licensed producers under court approval.<br>
+                    v) to monitor curriculums on RLS’s to ensure they are up to federal standards.<br><br>
+
+                4. Grants permissions to the ATFE to:<br>
+                    i) reallocate appropriate resources and information from the RLSB in times when no RLS’s are under the jurisdiction of the RLSB.<br>
+                    ii) reallocate appropriate resources and information to the RLSB in times when an RLS is added the the RLSB’s jurisdiction.<br><br>
+
+                5.Additionally, levies an additional federal sales tax on recreational RLS’s for the first year (as defined above) of legalization to be set at 10% with all proceeds going to research and education on the respective RLS.<br><br>
+
+                6.Mandates that every state that chooses to allow dispensaries of RLS’s keeps them a minimum of 1500 feet away from residential areas in which people, under the legal age for the respective RLS, live.<br><br></span>
             </p>
             <div class="bar"></div>
     </div>

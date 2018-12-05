@@ -927,9 +927,9 @@ var allies = {
     bean: new Unit("Bean", true,       [classes.artist, classes.programmer, classes.spriter] ,{maxHealth: 11, maxTech: 23, strength: 05, vitality: 23, stamina: 13, agility: 17}), 
     hayden: new Unit("Hayden", true,   [classes.artist, classes.student, classes.gamer]      ,{maxHealth: 27, maxTech: 14, strength: 13, vitality: 15, stamina: 08, agility: 13}),
     lorenzo: new Unit("Lorenzo", true, [classes.artist, classes.writer, classes.musician]    ,{maxHealth: 10, maxTech: 36, strength: 05, vitality: 13, stamina: 10, agility: 14}),
-    nick: new Unit("Nick", true,       [classes.artist, classes.musician, classes.programmer],{maxHealth: 18, maxTech: 20, strength: 16, vitality: 06, stamina: 08, agility: 22}),
+    nick: new Unit("Nicole", true,       [classes.artist, classes.musician, classes.programmer],{maxHealth: 18, maxTech: 20, strength: 16, vitality: 06, stamina: 08, agility: 22}),
     rick: new Unit("Rick", true,       [classes.artist, classes.spriter, classes.gamer]      ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}), 
-    paige: new Unit("Paige", true,     [classes.artist, classes.programmer, classes.gamer] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}),
+    paige: new Unit("Lumiet", true,     [classes.artist, classes.programmer, classes.gamer] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}),
     cass: new Unit("Cass", true,     [classes.artist, classes.writer, classes.gamer] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}),
     amy: new Unit("Amy", true,     [classes.artist, classes.animator, classes.gamer] ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15})
 }

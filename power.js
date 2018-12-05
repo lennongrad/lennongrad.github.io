@@ -174,8 +174,8 @@ var drawPoints = function(){
             if(distance(points[e].p, points[i].p) < 300){
                 points[e].connections++
                 points[i].connections++
-                points[e].colour = add(points[e].colour, points[i].colour,distance(points[e].p, points[i].p) * 4 + Math.log(80 * points[i].connections),1)
-                points[i].colour = add(points[e].colour, points[i].colour,1,distance(points[e].p, points[i].p) * 4 + Math.log(80 * points[e].connections))
+                points[e].colour = add(points[e].colour, points[i].colour,distance(points[e].p, points[i].p) * 4 * Math.log(80 * points[i].connections),1)
+                points[i].colour = add(points[e].colour, points[i].colour,1,distance(points[e].p, points[i].p) * 4 * Math.log(80 * points[e].connections))
                 ctx.beginPath();
                 ctx.moveTo(points[e].p.x + 5,points[e].p.y + 5);
                 ctx.lineTo(points[i].p.x + 5,points[i].p.y + 5);
