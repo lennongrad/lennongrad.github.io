@@ -56,13 +56,26 @@ class Setting{
 var settings = {
     enableDragAndDrop: new Setting("Drag and Drop", settingTypes.bool, false, settingPages.gameplay),
     debug: new Setting("Debug", settingTypes.bool, "false", settingPages.gameplay),
-    shift: new Setting("Shift", settingTypes.key, 16,  settingPages.keybindings)
+    shift: new Setting("Shift", settingTypes.key, 16,  settingPages.keybindings),
+    exit: new Setting("Exit", settingTypes.key, 27,  settingPages.keybindings)
 }
 
 var suffixes = ["", "k", "m", "b", "t", "qu", "qi", "sx", "sp"];
 
 var keys = {
-    shift: {key: 16, keydown: function(){}, keyup: function(){}, active: false}
+    shift: {key: 16, keydown: function(){}, keyup: function(){}, active: false},
+    exit: {key: 27, keydown: function(){$('#info-cover').hide(); $('#settings-cover').hide()}, keyup: function(){}, active: false}
+}
+
+var tickers = [
+    "I saw Ryan Gosling at a grocery store in Los Angeles yesterday. I told him how cool it was to meet him in person, but I didnt want to be a douche and bother him and ask him for photos or anything. He said, 'Oh,like youre doing now?' I was taken aback, and all I could say was 'Huh?' but he kept cutting me off and going 'huh? huh? huh?' and closing his hand shut in front of my face"
+]
+
+function changeTicker(){
+    g("tickerItem").innerHTML = randomValue(tickers)
+    g("tickerItem").style.width = g("tickerItem").innerHTML.length * 7 + "px"
+    g("tickerItem").style.right = -$("#tickerItem").width() + "px"
+    $("#tickerItem").animate({right: $("#tickerItem").width()}, $("#tickerItem").width() * 13, "linear", changeTicker)
 }
 
 var editIcon = g("edit-icon")
@@ -149,7 +162,7 @@ function decimalToHexString(number) {
     return number;
 }
 
-function small_int(e) {
+function smallInt(e) {
     var size = Math.floor(Math.log10(Math.abs(e))) + 1;
     var suffix = "";
 
@@ -262,7 +275,16 @@ function copyToClipboard(str) {
 };
 
 
-var pages = [document.getElementById("page-1"), document.getElementById("page-2")]
+var pages = [
+    document.getElementById("page-1"), 
+    document.getElementById("page-2"), 
+    document.getElementById("page-3"), 
+    document.getElementById("page-4"), 
+    document.getElementById("page-5"), 
+    document.getElementById("page-6"), 
+    document.getElementById("page-7"), 
+    document.getElementById("page-8")
+]
 var activePage = pages[0];
 
 function switchPage(to) {
@@ -273,14 +295,14 @@ function switchPage(to) {
     for(var i = 0; i < pages.length; i++){
         pages[i].style.display = "none"
     }
-    activePage.style.display = ""
-}
-
-function switchBox(to, down){
-    if(down || cursor.active){
-        activePen = to
-        pens[to].render()
+    if(![pages[0]].includes(activePage)){
+        g("data").style.width = "98vw"
+        g("ticker").style.width = "90.5vw" 
+    } else {
+        g("data").style.width = "35.5vw"
+        g("ticker").style.width = "28vw" 
     }
+    activePage.style.display = ""
 }
 
 // Audio
@@ -299,6 +321,7 @@ function hideTooltip() {
 }
 
 function renderAll(){
+    box.render()
     g("pen-switch").innerHTML = ""
     for(var i = 0; i < pens.length; i++){
         pens[i].showName()
@@ -316,6 +339,31 @@ function renderAll(){
             g("settings-list").appendChild(settings[Object.keys(settings)[i]].render())
         }
     }
+    
+    for(var i = 0; i < Object.keys(settingPages).length; i++){
+        if(Object.keys(settingPages)[i] != activeSettingPage){
+            g("settings-" + Object.keys(settingPages)[i]).setAttribute("active", "false")
+        }
+    }
+    g("settings-" + activeSettingPage).setAttribute("active", "true")
+
+    if(activePage == pages[4]){
+        g("item-left").innerHTML = ""
+        for(var i = 0; i < items.length; i++){
+            g("item-left").appendChild(items[i].render())
+        }
+    }
+}
+
+function arraysEqual(arr1, arr2) {
+    if(arr1.length !== arr2.length)
+        return false;
+    for(var i = arr1.length; i--;) {
+        if(arr1[i] !== arr2[i])
+            return false;
+    }
+
+    return true;
 }
 
 window.addEventListener('mousemove', function (e) {
@@ -375,17 +423,85 @@ if (storageAvailable('localStorage')) {
 
 var currentlyDragging, lastDragged
 
+class Item{
+    constructor(name, filename, type){
+        this.name = name
+        this.type = type
+        switch(this.type){
+            case "gem": this.qualities = ["strength", "cut"]; break;
+            case "ticket": this.qualities = ["species", "durability"]; break;
+        }
+        if(this.qualities == undefined){
+            this.amt = 0
+        } else {
+            this.instances = []
+        }
+
+        this.elem = document.createElement("DIV")
+        this.elem.className = "item-box"
+        this.image = document.createElement("IMG")
+        this.image.src = "items/" + filename
+        this.image.setAttribute("draggable", "false")
+        this.elem.appendChild(this.image)
+        this.counter = document.createElement("DIV")
+        this.elem.appendChild(this.counter)
+    }
+
+    add(qualities){
+        if(this.qualities == undefined){
+            this.amt += qualities
+        } else if(arraysEqual(Object.keys(qualities), this.qualities)){
+            this.instances.push(qualities)
+        }
+    }
+
+    remove(indeces){
+        if(this.qualities == undefined){
+            this.amt -= indeces
+        } else {        
+            if(typeof(indeces) != "object"){
+                indeces = [indeces]
+            }
+            for(var i = 0; i < indeces.length; i++){
+                this.instances.splice(indeces[i], 1)
+            }
+        }
+    }
+
+    render(){
+        for(var i = 0; i < this.instances.length; i++){
+
+        }
+        this.counter.innerHTML = this.amt ? this.amt : this.instances.length
+        return this.elem
+    }
+}
+
+items = [
+    new Item("Neutral Gem", "neutral_gem.png", "gem"),
+    new Item("Passion Gem", "passion_gem.png", "gem"),
+    new Item("Stability Gem", "stability_gem.png", "gem"),
+    new Item("Patience Gem", "patience_gem.png", "gem"),
+    new Item("Encounter Ticket", "encounter_ticket.png", "ticket"),
+    new Item("Egg Ticket", "egg_ticket.png", "ticket"),
+    new Item("Wildcard Ticket", "wildcard_ticket.png", "ticket")
+]
+
 class Species{
     constructor(name, stages){
         this.name = name
         this.stages = stages
+        this.stages = [{name: "egg_" + this.name, image: "dragon/egg_" + this.name + ".png"}]
+        for(var i = 1; i < stages; i++){
+            this.stages.push({name: "dragon_" + this.name + i, image: "dragon/dragon_" + this.name + i + ".png"})
+        }
     }
 }
 
-var species = {
-    one: new Species("X", [{name: "egg1", image: "1.png"}, {name: "d1", image: "2.png"}]),
-    two: new Species("Y", [{name: "egg2", image: "4.png"}, {name: "d2", image: "5.png"}])
-}
+var species = [
+    new Species("crown", 1),
+    new Species("gemini", 1)
+]
 
 class Dragon{
     constructor(speciesID, stageID, name){
@@ -420,7 +536,7 @@ class Dragon{
 }
 
 class Slot{
-    constructor(elem, shiftLocation){
+    constructor(elem, shiftLocation, locked){
         if(elem != undefined){
             this.elem = elem
         } else {
@@ -432,6 +548,7 @@ class Slot{
         this.elem.onmouseup = function(){self.click(true)}
         this.dragon = undefined
         this.shiftLocation = shiftLocation
+        this.locked = locked
         this.render()
     }
 
@@ -519,7 +636,7 @@ class SlotCollection{
         this.elem = elem
         this.slots = []
         for(var i = 0; i < size; i++){
-            this.slots.push(new Slot(undefined, shiftLocation))
+            this.slots.push(new Slot(undefined, shiftLocation, false))
         }
         
         this.shiftLocation = shiftLocation
@@ -620,11 +737,11 @@ class Pen extends SlotCollection{
         if(name != undefined){
             this.name = name
         } else {
-            var result = prompt("Input a new name for this pen")
-            if(result == null){
+            var result = prompt("Input a new name for this coop")
+            if(result == null || result == ""){
                 return
             }
-            this.name = result.replace(/\||,|;/g, "").substring(0,8)
+            this.name = result.replace(/\||,|;/g, "").substring(0,12)
         }
         renderAll()
     }
@@ -676,17 +793,19 @@ var bufferBar = new SlotCollection(g("bufferBar"), 22, function(){
 
 var pens = [], penSize = 176, pensSize = 4, activePen
 for(var i = 0; i < pensSize; i++){
-    pens.push(new Pen(g("pen"), penSize, "Pen " + (1 + i)))
+    pens.push(new Pen(g("pen"), penSize, "Coop " + (1 + i)))
 }
 activePen = pens[0]
 
 
-var x = new Dragon("one", 0)
-var y = new Dragon("two", 0, "baby")
+var x = new Dragon(0, 0)
+var y = new Dragon(1, 0)
 
-renderAll()
+var box = new SlotCollection(g("test").childNodes[1], 4, bufferBar)
 hideTooltip()
-switchPage(0);
+switchPage(4);
+changeTicker()
+renderAll()
 
 setInterval(function () {
 }, 1)

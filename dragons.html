@@ -5,9 +5,10 @@
     <title>DragonFlame</title>
     <base href="dragons/" target="_blank">
     <link rel="stylesheet" href="dragons.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="menu/favicon.png"" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <!-----------------------------------------LIBRARIES------------------------------------------------------------->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat|Open+Sans+Condensed:300|PT+Sans|Roboto+Mono|Source+Sans+Pro|Viga|Staatliches" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
@@ -30,20 +31,34 @@
     <div id="loadingright"></div>
     <div id="tooltip" style="opacity: 0"></div>
     <div id="drag"></div>
+    <div id="data">
+        <img src="items/neutral_gem.png"/> <span>1.234k</span>
+        <div id="ticker"><div id="tickerItem">And then I went to and i bet and i wroruAnd then I went to and i bet and i wroruAnd then I went to and i bet and i wroru</div></div>
+    </div>
     <div id="help">
-        <div class="button" id="page-1-selector" onclick="switchPage(0)">Pens</div>
-        <div class="button" id="page-2-selector" onclick="switchPage(1)">???</div>
-        <div class="button" onclick="$('#settings-cover').toggle()">Settings</div>
+        <div class="button" id="page-1-selector" onclick="switchPage(0)"><img src="menu/coops.png">Coops</div>
+        <div class="button" id="page-2-selector" onclick="switchPage(1)"><img src="menu/explore.png">Explore</div>
+        <div class="button" id="page-2-selector" onclick="switchPage(2)"><img src="menu/arena.png">Arena</div>
+        <div class="button" id="page-2-selector" onclick="switchPage(3)"><img src="menu/incubator.png">Incubator</div>
+        <div class="button" id="page-2-selector" onclick="switchPage(4)"><img src="menu/inventory.png">Inventory</div>
+        <div class="button" id="page-2-selector" onclick="switchPage(5)"><img src="menu/dracopedia.png">Dracopedia</div>
+        <div class="button" onclick="$('#settings-cover').toggle()"><img src="menu/settings.png">Settings</div>
+        <div class="button" onclick="$('#info-cover').toggle()"><img src="menu/info.png">Info</div>
     </div>
     <div id="copiedMessage" style="display: none">Copied to clipboard</div>
-    <div id="settings-cover" style="display: none">
+    <div class="info-box" id="settings-cover" style="display: none">
         <div id="settings-box" class="centered">
             <ul>
-                <li class="button" onclick="activeSettingPage = settingPages.gameplay; renderAll()">Gameplay</li>
-                <li class="button" onclick="activeSettingPage = settingPages.keybindings; renderAll()">Keybindings</li>
+                <li class="button" id="settings-gameplay" onclick="activeSettingPage = settingPages.gameplay; renderAll()">Gameplay</li>
+                <li class="button" id="settings-keybindings" onclick="activeSettingPage = settingPages.keybindings; renderAll()">Keybindings</li>
             </ul>
-            <div id="settings-exit" onclick="$('#settings-cover').toggle()" class="button">X</div>
+            <div class="settings-exit button" onclick="$('#settings-cover').toggle()">X</div>
             <div id="settings-list">            </div>
+        </div>
+    </div>
+    <div class="info-box" id="info-cover" style="display: none">
+        <div class="centered">
+            <div class="settings-exit button" onclick="$('#info-cover').toggle()" style="border-radius: 15px;">Close Info</div>
         </div>
     </div>
     <!--------------------------------------------------------------------------------------------------------------->
@@ -52,14 +67,40 @@
             <div id="edit-icon" onclick="activePen.changeName()"><img src="https://vignette.wikia.nocookie.net/howtoprogram/images/8/8d/Pencil-icon.png/revision/latest?cb=20130521031501"/></div>
         </div>
         <div id="pen-info">
-            <div><p id="pen-dragon-count">0</p><br><span>DRAGON(S)</span></div>
-            <div><p id="pen-egg-count">0</p><br><span>EGG(S)</span></div>
-            <div class="button" onclick="activePen.sort('isEmpty')">SORT</div>
-            <div class="button" onclick="activePen.changeFrozen()">FREEZE</div>
+            <div><p id="pen-dragon-count">0</p> <span>DRAGON(S)</span></div>
+            <div class="pen-divider"></div>
+            <div><p id="pen-egg-count">0</p> <span>EGG(S)</span></div>
+            <div class="pen-divider"></div>
+            <div class="button" onclick="activePen.sort('isEmpty')">SORT</div><!--
+            <div class="pen-divider"></div>
+            <div class="button" onclick="activePen.changeFrozen()">FREEZE</div>-->
         </div>
         <div id="pen"></div>
     </div>
-    <div id="page-2" class="page"></div>
+    <div id="page-2" class="page">
+        <div class="page-holder">
+            <div id="test" class="explore-zone" style="background-image: linear-gradient(to right, rgba(200,100,100, .4), rgba(100,0,0,1)), url('zone/cave.png');"
+                ><div class="explore-title">Magnesium Cave</div
+                ><div class="explore-slots"></div
+                ><div class="explore-rank">Team Rank: 468</div
+                ><div class="explore-go"><div class="button">Ready</div><div>00:01:23 remains</div></div
+                ><div class="explore-focus"><div>Focus:</div><div>Passion<br>Gems</div></div
+            ></div><div class="explore-zone" style="background-image: linear-gradient(to right, rgba(100,200,100, .4), rgba(0,100,0,1)), url('zone/cave.png');"></div>
+        </div>
+    </div>
+    <div id="page-3" class="page">
+    </div>
+    <div id="page-4" class="page"></div>
+    <div id="page-5" class="page">
+        <div class="page-holder">
+            <div id="item-left"></div>
+            <div id="item-topright"></div>
+            <div id="item-bottomright"></div>
+        </div>
+    </div>
+    <div id="page-6" class="page"></div>
+    <div id="page-7" class="page"></div>
+    <div id="page-8" class="page"></div>
     <div id="bufferBar"></div>
 
     <script src="dragons.js"></script>
