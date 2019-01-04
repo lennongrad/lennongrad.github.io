@@ -29,21 +29,30 @@
         <div id="logo">Dragon</div> <img src="loading.gif" id="loadingicon" />
     </div>
     <div id="loadingright"></div>
-    <div id="tooltip" style="opacity: 0"></div>
+    <div id="standard-tooltip" class="tooltip" style="opacity: 0"></div>
+    <div id="egg-tooltip" class="tooltip" style="opacity: 0"></div>
     <div id="drag"></div>
-    <div id="data">
-        <img src="items/neutral_gem.png"/> <span>1.234k</span>
-        <div id="ticker"><div id="tickerItem">And then I went to and i bet and i wroruAnd then I went to and i bet and i wroruAnd then I went to and i bet and i wroru</div></div>
+    <div id="data"
+        ><img src="items/heart.png"
+        ><span>1.234k</span>
+        <div id="ticker"><div id="tickerItem"></div></div>
     </div>
+    <div id="rewards-cover" class="info-box" style="display:none"
+    ><div class="centered"><div id="rewards-box"></div
+        ><div id="rewards-all" class="button" onclick="acceptAllRewards()">Collect All</div
+        ><div id="rewards-discard" class="button" onclick="exitRewards()">Finish</div>
+    </div></div>
     <div id="help">
         <div class="button" id="page-1-selector" onclick="switchPage(0)"><img src="menu/coops.png">Coops</div>
         <div class="button" id="page-2-selector" onclick="switchPage(1)"><img src="menu/explore.png">Explore</div>
-        <div class="button" id="page-2-selector" onclick="switchPage(2)"><img src="menu/arena.png">Arena</div>
-        <div class="button" id="page-2-selector" onclick="switchPage(3)"><img src="menu/incubator.png">Incubator</div>
-        <div class="button" id="page-2-selector" onclick="switchPage(4)"><img src="menu/inventory.png">Inventory</div>
-        <div class="button" id="page-2-selector" onclick="switchPage(5)"><img src="menu/dracopedia.png">Dracopedia</div>
-        <div class="button" onclick="$('#settings-cover').toggle()"><img src="menu/settings.png">Settings</div>
-        <div class="button" onclick="$('#info-cover').toggle()"><img src="menu/info.png">Info</div>
+        <div class="button" id="page-3-selector" onclick="switchPage(2)"><img src="menu/arena.png">Arena</div>
+        <div class="button" id="page-4-selector" onclick="switchPage(3)"><img src="menu/incubator.png">Incubator</div>
+        <div class="button" id="page-5-selector" onclick="switchPage(4)"><img src="menu/inventory.png">Inventory</div>
+        <div class="button" id="page-6-selector" onclick="switchPage(5)"><img src="menu/nursery.png">Nursery</div>
+        <div class="button" id="page-7-selector" onclick="switchPage(6)"><img src="menu/shoppe.png">Shoppe</div>
+        <div class="button" id="page-8-selector" onclick="switchPage(7)"><img src="menu/dracopedia.png">Dracopedia</div>
+        <div class="button" onclick="$('#settings-cover').toggle().css({opacity: 1})"><img src="menu/settings.png">Settings</div>
+        <div class="button" onclick="$('#info-cover').toggle().css({opacity: 1})"><img src="menu/info.png">Info</div>
     </div>
     <div id="copiedMessage" style="display: none">Copied to clipboard</div>
     <div class="info-box" id="settings-cover" style="display: none">
@@ -52,13 +61,13 @@
                 <li class="button" id="settings-gameplay" onclick="activeSettingPage = settingPages.gameplay; renderAll()">Gameplay</li>
                 <li class="button" id="settings-keybindings" onclick="activeSettingPage = settingPages.keybindings; renderAll()">Keybindings</li>
             </ul>
-            <div class="settings-exit button" onclick="$('#settings-cover').toggle()">X</div>
+            <div class="settings-exit button" onclick="$('#settings-cover').toggle().css({opacity: 0})">X</div>
             <div id="settings-list">            </div>
         </div>
     </div>
     <div class="info-box" id="info-cover" style="display: none">
         <div class="centered">
-            <div class="settings-exit button" onclick="$('#info-cover').toggle()" style="border-radius: 15px;">Close Info</div>
+            <div class="settings-exit button" onclick="$('#info-cover').toggle().css({opacity: 0})" style="border-radius: 15px;">Close Info</div>
         </div>
     </div>
     <!--------------------------------------------------------------------------------------------------------------->
@@ -71,34 +80,38 @@
             <div class="pen-divider"></div>
             <div><p id="pen-egg-count">0</p> <span>EGG(S)</span></div>
             <div class="pen-divider"></div>
-            <div class="button" onclick="activePen.sort('isEmpty')">SORT</div><!--
+            <div class="button" onclick="activePen.sort('species')">SORT</div><!--
             <div class="pen-divider"></div>
             <div class="button" onclick="activePen.changeFrozen()">FREEZE</div>-->
         </div>
         <div id="pen"></div>
     </div>
-    <div id="page-2" class="page">
-        <div class="page-holder">
-            <div id="test" class="explore-zone" style="background-image: linear-gradient(to right, rgba(200,100,100, .4), rgba(100,0,0,1)), url('zone/cave.png');"
-                ><div class="explore-title">Magnesium Cave</div
-                ><div class="explore-slots"></div
-                ><div class="explore-rank">Team Rank: 468</div
-                ><div class="explore-go"><div class="button">Ready</div><div>00:01:23 remains</div></div
-                ><div class="explore-focus"><div>Focus:</div><div>Passion<br>Gems</div></div
-            ></div><div class="explore-zone" style="background-image: linear-gradient(to right, rgba(100,200,100, .4), rgba(0,100,0,1)), url('zone/cave.png');"></div>
+    <div id="page-2" class="page"
+        ><div class="page-holder">
         </div>
     </div>
     <div id="page-3" class="page">
     </div>
     <div id="page-4" class="page"></div>
-    <div id="page-5" class="page">
+    <div id="page-5" class="page" oncontextmenu="currentItem = undefined; renderAll(); return false">
         <div class="page-holder">
             <div id="item-left"></div>
-            <div id="item-topright"></div>
-            <div id="item-bottomright"></div>
+            <div id="item-right"
+                ><div id="item-table"><table>
+
+                </table></div><div class="button" id="item-sell" onclick="currentItem.sell(currentSelling)"></div><div class="button" id="item-use" onclick="currentItem.use(currentSelling, true)"></div><div id="item-sell-edit" class="button" onclick="changeSellNumber()"><img src="https://vignette.wikia.nocookie.net/howtoprogram/images/8/8d/Pencil-icon.png/revision/latest?cb=20130521031501"/></div>
+            </div>
         </div>
     </div>
-    <div id="page-6" class="page"></div>
+    <div id="page-6" class="page"
+        ><div class="page-holder">
+            <div id="nursery-left">
+                <div id="nursery-hold"></div>
+                <div class="button" id="nursery-all">Adopt All</div>
+                <div class="button" id="nursery-use"></div>
+            </div>
+            <div id="nursery-box"></div> 
+        </div></div>
     <div id="page-7" class="page"></div>
     <div id="page-8" class="page"></div>
     <div id="bufferBar"></div>
