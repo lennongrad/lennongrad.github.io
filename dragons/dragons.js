@@ -13,6 +13,7 @@ var cursor = {x: 0, y: 0, active: false};
 var settingTypes = {bool: "boolean", percent: "percent", number: "number", key: "key"}
 var settingPages = {gameplay: "gameplay", keybindings: "keybindings"}
 var activeSettingPage = settingPages.gameplay
+var itemSort = false
 
 var trappingKey, catchingKey
 
@@ -337,6 +338,10 @@ function switchPage(to) {
     renderAll()
 }
 
+function switchDict(type, to){
+    switchPage(7)
+}
+
 // Audio
 // var snd = new Audio("click.wav");
 // snd.play();
@@ -469,7 +474,7 @@ class Item{
         this.elem.appendChild(this.counter)
         this.namebar = document.createElement("DIV")
         this.namebar.className = "item-name"
-        this.namebar.onclick = Function("switchPage(7, '" + this.name + "')")
+        this.namebar.onclick = Function("switchDict('item', '" + this.name + "')")
         this.namebar.innerHTML = this.name
         this.elem.appendChild(this.namebar)
         
@@ -652,6 +657,10 @@ var rewardsActive = false
 var currentRewards = []
 
 function triggerRewards(rewards){
+    if(rewardsActive){
+        return false
+    }
+
     rewardsActive = true
     $('#rewards-cover').toggle().css({opacity: 1})
     rewards.forEach(x => x.accepted = false)
@@ -713,6 +722,8 @@ function triggerRewards(rewards){
         }
         g("rewards-box").appendChild(elem)
     }
+
+    return true
 }
 
 function acceptAllRewards(){
@@ -769,6 +780,7 @@ class Zone{
         $("<div class='explore-rank'>Team Rank: 0</div>").appendTo(this.elem)
         $("<div class='explore-go'><div>Ready</div><div>00:01:23 remains</div></div>").appendTo(this.elem)
         $('<div class="explore-focus"><div>Focus:</div><div>' + this.focus.reduce(function(x,y){return capitalize(x) + "<br>" + capitalize(y)}) + '</div></div').appendTo(this.elem)
+        $('<div class="explore-cover"><div class="button">Use a <img src="items/compass.png"/> <b>Compass</b></div></div').appendTo(this.elem)
         this.elem.childNodes[2].setAttribute("tt", "standard")
         var me = this
         this.elem.childNodes[5].onclick = function(){
@@ -793,8 +805,10 @@ class Zone{
             case "waiting": this.ready = "active"; return;
             case "active": this.ready = "waiting"; return;
         }
-        triggerRewards(this.rewards)
-        this.ready = "waiting"
+        if(triggerRewards(this.rewards)){
+            this.ready = "waiting"
+            this.rewards = []
+        }
     }
 
     increment(){
@@ -883,11 +897,19 @@ class Zone{
                 }
             }
         }
+        
+        this.elem.childNodes[7].style.display = "none"
         if(useCompass[0] != undefined){
             this.elem.childNodes[2].childNodes[0].src = "menu/compass-available.png"
             this.elem.childNodes[2].setAttribute("message", "Click here to use 1 <b>" + items[useCompass[0]].name + "</b> to raise the level of this Zone by +1")
             this.elem.childNodes[2].onclick = Function("items[" + useCompass[0] + "].use(" + useCompass[1] + ")")
+            this.elem.childNodes[7].onclick = Function("items[" + useCompass[0] + "].use(" + useCompass[1] + ")")
+
+            if(!(this.level > 0)){
+                this.elem.childNodes[7].style.display = ""
+            }
         } else {
+            this.elem.childNodes[2].setAttribute("message", "You do not have an available Compass item to use in this Zone!")
             this.elem.childNodes[2].childNodes[0].src = "menu/compass-not-available.png"
             this.elem.childNodes[2].onclick = Function("")
         }
@@ -907,15 +929,19 @@ class Zone{
             this.elem.childNodes[5].childNodes[1].style.display = "";   
         }
         this.slots.render()
-        return this.elem
+
+        if(this.level > 0 || useCompass[0] != undefined){
+            return this.elem
+        }
     }
 }
 
 class Species{
-    constructor(name, stages){
+    constructor(name, stages, eggLimit){
         this.name = name
         this.stages = stages
         this.uncovered = false
+        this.eggLimit = eggLimit
         this.stages = [{name: "egg_" + this.name, image: "dragon/egg_" + this.name + ".png"}]
         for(var i = 1; i < stages; i++){
             this.stages.push({name: "dragon_" + this.name + i, image: "dragon/dragon_" + this.name + i + ".png"})
@@ -931,8 +957,8 @@ class Species{
 }
 
 var species = [
-    new Species("crown", 1),
-    new Species("gemini", 1)
+    new Species("crown", 2, 60),
+    new Species("gemini", 2, 60)
 ]
 
 class Dragon{
@@ -953,6 +979,8 @@ class Dragon{
             this.name = name
         }
 
+        this.hatchProgress = 0
+
         this.elem = document.createElement("img")
         this.elem.className = "dragon"
         this.elem.src = this.stage.image
@@ -963,6 +991,13 @@ class Dragon{
         return this.stages.map(y => y.name).indexOf(this.stage.name)
     }
 
+    upgrade(){
+        if(this.stageID() + 1 < this.stages.length){
+            this.stage = this.stages[this.stageID() + 1]
+        }
+        renderAll()
+    }
+
     toString(){
         var final = ""
         final += this.speciesID + ","
@@ -970,15 +1005,29 @@ class Dragon{
         final += this.name
         return final
     }
+
+    render(){
+        this.elem.src = this.stage.image
+    }
 }
 
 class Slot{
-    constructor(elem, shiftLocation, locked){
+    constructor(elem, shiftLocation, locked, type){
+        this.type = "normal"
+        if(type != undefined){
+            this.type = type
+        }
         if(elem != undefined){
             this.elem = elem
-        } else {
+        } else{
             this.elem = document.createElement("DIV")
-            this.elem.className = "dragonSlot"
+            this.elem.className = "dragon-slot"
+            if(this.type == "hatching"){
+                this.bar = document.createElement("DIV")
+                this.bar.className = "dragon-bar"
+                $("<div></div>").appendTo(this.bar)
+                this.elem.className = "dragon-slot dragon-slot-bar"
+            }
         }
         var self = this
         this.elem.onmousedown = function(){self.click(false)}
@@ -1007,6 +1056,11 @@ class Slot{
 
     click(skip){
         if((!settings.enableDragAndDrop.value && skip)){
+            return
+        }
+        if(this.dragon != undefined && this.dragon.hatchProgress == this.dragon.eggLimit){
+            this.dragon.hatchProgress = 0
+            this.dragon.upgrade()
             return
         }
         if(keys.shift.active){
@@ -1061,7 +1115,11 @@ class Slot{
 
     render(){
         this.elem.innerHTML = ""
+        if(this.type == "hatching"){
+            this.elem.appendChild(this.bar)
+        }
         if(this.dragon != undefined){
+            this.dragon.render()
             this.dragon.species.uncovered = true
             this.elem.appendChild(this.dragon.elem)
         }
@@ -1070,15 +1128,19 @@ class Slot{
 }
 
 class SlotCollection{
-    constructor(elem, size, shiftLocation, locked, autoSort){
+    constructor(elem, size, shiftLocation, locked, autoSort, type){
         this.elem = elem
         this.slots = []
         this.locked = locked
         if(locked == undefined){
             this.locked = "none"
         }
+        this.type = "normal"
+        if(type != undefined){
+            this.type = type
+        }
         for(var i = 0; i < size; i++){
-            this.slots.push(new Slot(undefined, shiftLocation, this.locked))
+            this.slots.push(new Slot(undefined, shiftLocation, this.locked, this.type))
         }
         this.autoSort = autoSort
 
@@ -1241,10 +1303,11 @@ class Pen extends SlotCollection{
 var bufferBar = new SlotCollection(g("bufferBar"), 22, function(){ 
     switch(activePage){
         case g("page-1"): return activePen; 
-        default: return;
+        case g("page-4"): return incubator; 
+        default: return bufferBar;
     }
 }, undefined, "isEmpty")
-
+var incubator = new SlotCollection(g("incubator-slots"), 36, bufferBar, undefined, undefined, "hatching")
 var nurseryBox = new SlotCollection(g("nursery-box"), 24, bufferBar, "takeOnly", "isEmpty")
 
 var pens = [], penSize = 176, pensSize = 4, activePen
@@ -1311,15 +1374,64 @@ function renderAll(){
     if(activePage == pages[1]){
         pages[1].childNodes[0].innerHTML = ""
         for(var i = 0; i < zones.length; i++){
-            pages[1].childNodes[0].appendChild(zones[i].render())
+            var elem = zones[i].render()
+            if(elem != undefined){
+                pages[1].childNodes[0].appendChild(zones[i].render())
+            }
+        }
+    }
+
+    if(activePage == pages[3]){
+        incubator.render()
+
+        incubatorCost1 = 2
+        incubatorCost2 = 8
+
+        g("incubator-timer").style.width = incubatorTimer / 60 / 60 * 100 + "%"
+        g("incubator-time").innerHTML = toHour(incubatorTimer)
+
+        g("incubator-buy-1").innerHTML = "1 Minute " + items[0].smallIcon(true) + " " + incubatorCost1
+        g("incubator-buy-2").innerHTML = "10 Minutes " + items[0].smallIcon(true) + " " + incubatorCost2
+        g("incubator-buy-1").onclick = function(){
+            if(items[0].amt() > incubatorCost1 && incubatorTimer < (60 * 59)){
+                items[0].remove(incubatorCost1)
+                incubatorTimer += 60
+            }
+            renderAll()
+        }
+        g("incubator-buy-2").onclick = function(){
+            if(items[0].amt() > incubatorCost2 && incubatorTimer < (60 * 50)){
+                items[0].remove(incubatorCost2)
+                incubatorTimer += 600
+            }
+            renderAll()
+        }
+        for(var i = 0; i < incubator.slots.length; i++){
+            incubator.slots[i].bar.childNodes[0].style.backgroundColor = "transparent"
+            if(incubator.slots[i].dragon != undefined && incubator.slots[i].dragon.stageID() == 0){
+                incubator.slots[i].bar.childNodes[0].style.backgroundColor = (incubator.slots[i].dragon.hatchProgress / incubator.slots[i].dragon.species.eggLimit > .5) ? "yellow" : "red"
+            }
         }
     }
 
     if(activePage == pages[4]){
-        g("item-left").innerHTML = ""
-        for(var i = 0; i < items.length; i++){
-            g("item-left").appendChild(items[i].render())
-            items[i].elem.setAttribute("active", "false")
+        g("item-left-holder").innerHTML = ""
+        if(itemSort){
+            var categories = []
+            for(var i = 0; i < items.length; i++){
+                if(!categories.includes(items[i].type)){
+                    categories.push(items[i].type)
+                    $("<div class='item-divider'>" + capitalize(items[i].type) + "</div>").appendTo("#item-left-holder")
+                    $("<div id='item-left-" + items[i].type + "'></div>").appendTo("#item-left-holder")
+                }
+                g("item-left-" + items[i].type).appendChild(items[i].render())
+                items[i].elem.setAttribute("active", "false")
+            }
+        } else{
+            for(var i = 0; i < items.length; i++){
+                g("item-left-holder").appendChild(items[i].render())
+                items[i].elem.setAttribute("active", "false")
+            }
         }
 
         g("item-table").childNodes[0].innerHTML = ""
@@ -1419,14 +1531,16 @@ function renderAll(){
 }
 
 //// BWAB //////
-items[6].add({origin: "Town", species: species[0], durability: .8})
+items[6].add({origin: "Town", species: species[0], durability: 1})
 items[6].add({origin: "Town", species: species[1], durability: .9})
 items[6].add({origin: "Town", species: species[0], durability: .1})
 items[6].add({origin: "Downtown", species: species[0], durability: 0})
 items[7].add({origin: "Downtown", species: species[1], durability: .9})
 items[7].add({origin: "Uptown", species: species[1], durability: 1})
 items[7].add({origin: "Downtown", species: species[1], durability: .8})
-
+items[7].add({origin: "Downtown", species: species[0], durability: .9})
+items[8].add({origin: "w",location: zones[4]}); renderAll()
+items[0].add(100)
 ///////////////
 
 g("nursery-use").onclick = function(){
@@ -1447,12 +1561,33 @@ g("nursery-all").onclick = function(){
     }
 }
 
-switchPage(5);
+switchPage(3);
 changeTicker()
 renderAll()
+
+var incubatorTimer = 0
 
 setInterval(function () {
     for(var i = 0; i < zones.length; i++){
         zones[i].increment()
+    }
+    incubatorTimer = Math.max(0, incubatorTimer - 1)
+    g("incubator-timer").style.width = incubatorTimer / 60 / 60 * 100 + "%"
+    g("incubator-time").innerHTML = toHour(incubatorTimer)
+    if(incubatorTimer != 0){
+        for(var i = 0; i < incubator.slots.length; i++){
+            if(incubator.slots[i].dragon != undefined){
+                incubator.slots[i].bar.childNodes[0].style.height = incubator.slots[i].dragon.hatchProgress / incubator.slots[i].dragon.species.eggLimit * 100 + "%"
+                incubator.slots[i].bar.childNodes[0].style.top = 100 - incubator.slots[i].dragon.hatchProgress / incubator.slots[i].dragon.species.eggLimit * 100 + "%"
+                incubator.slots[i].bar.childNodes[0].style.backgroundColor = (incubator.slots[i].dragon.hatchProgress / incubator.slots[i].dragon.species.eggLimit > .5) ? "yellow" : "red"
+                if(incubator.slots[i].dragon.hatchProgress == incubator.slots[i].dragon.species.eggLimit){
+                    incubator.slots[i].bar.childNodes[0].style.backgroundColor = "green"
+                } else {
+                    incubator.slots[i].dragon.hatchProgress += 1
+                }
+            } else {
+                incubator.slots[i].bar.childNodes[0].style.backgroundColor = "transparent"
+            }
+        }
     }
 }, 1000)

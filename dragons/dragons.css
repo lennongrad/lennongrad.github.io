@@ -44,6 +44,10 @@ th{
     top: 0;
 }
 
+[onclick]{
+    cursor: pointer
+}
+
 #copiedMessage{
     position: fixed;
     left: 50vw;
@@ -233,7 +237,7 @@ th{
     background-color: rgba(15,15,15,1);
 }
 
-#help div img{
+#help div img:first-child{
     height: 5vh;
     width: 5vh;
     margin-left: 7px;
@@ -247,8 +251,21 @@ th{
     width: calc(12vw + 7px)
 }
 
-#help div[active="true"] img{
+#help div[active="true"] img:first-child{
     animation: wobble 1s ease infinite
+}
+
+#help div img:nth-child(2){
+    height: 3.5vh;
+    width: 3.5vh;
+    margin-right: 7px;
+    margin-top: 1.25vh;
+    float: right;
+    vertical-align: baseline;
+}
+
+#help div img:nth-child(2):hover{
+    transform: scale(1.1)
 }
 
 @keyframes wobble {
@@ -261,7 +278,6 @@ th{
 
 .button{
     cursor: pointer;
-    transition: filter .02s
 }
 
 .button:hover{
@@ -360,7 +376,7 @@ th{
     height: 3vw;
 }
 
-.dragonSlot{
+.dragon-slot{
     display: inline-block; /* will be defined otherwise as element style */
     width: 3vw;
     height: 3vw;
@@ -373,12 +389,43 @@ th{
     vertical-align: middle;
 }
 
-.dragonSlot:hover{
+.dragon-slot:hover{
     border: 3px solid rgba(255, 255, 255, .4);
 }
 
-.dragonSlot:active{
+.dragon-slot:active{
     border: 3px solid rgba(255, 255, 255, .8);
+}
+
+.dragon-slot-bar{
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    padding: .2vw;
+    width: calc(3vw + 10px)
+}
+
+.dragon-bar{
+    position: relative;
+    float: left;
+    width: .5vw;
+    height: 100%;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, .05);
+}
+
+.dragon-slot-bar:hover .dragon-bar{
+    background-color: rgba(255, 255, 255, .4);
+}
+
+.dragon-slot-bar:active .dragon-bar{
+    background-color: rgba(255, 255, 255, .8);
+}
+
+.dragon-bar div{
+    position: absolute;
+    width: 100%;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
 }
 
 /* -------------------------------LAYOUT--------------------------------- */
@@ -689,15 +736,167 @@ th{
     margin-right: 1vw;
 }
 
+.explore-cover{
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(40,40,40,1)
+}
+
+.explore-cover div{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 15vw;
+    height: 4vh;
+    line-height: 4vh;
+    font-size: 1.5vw;
+    padding: .5vw;
+    color: white;
+    background-color: rgba(0,0,0,.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.explore-cover img{
+    width: 1.5vw;
+    height: 1.5vw;
+    margin-left: .5vw;
+    margin-right: .5vw;
+}
+
+/* ------------------------------PAGE-4---------------------------------- */
+#incubator-title{
+    z-index: 5;
+    position: absolute;
+    top: 14vh;
+    left: 12vw;
+}
+
+#incubator-slots{
+    z-index: 1;
+    position: absolute;
+    text-align: center;
+    padding: 1vw;
+    width: calc(24vw + 100px);
+    height: calc(25vw + 2vh);
+    background-color: rgba(40,15,40,.85);
+    top: 21vh;
+    left: 13.5vw;
+}
+
+#incubator-fuel-title{
+    z-index: 5;
+    position: absolute;
+    width: 10vw;
+    top: 10vh;
+    right: 19.5vw;
+}
+
+#incubator-fuel{
+    position: absolute;
+    z-index: 1;
+    padding: .8vw;
+    right: 6vw;
+    top: 18vh;
+    right: 12vw;
+    background-color: rgba(15,15,15,.95)
+}
+
+#incubator-fuel div:nth-child(1){
+    display: inline-block;
+    font-size: 1.5vw;
+    color: rgba(180,180,180,.9);
+    margin-right: .5vw;
+    margin-left: .5vw;
+}
+
+#incubator-fuel div:nth-child(2), #incubator-fuel div:nth-child(3){
+    display: inline-block;
+    background-color: rgba(155,155,155,.9);
+    padding: .5vw;
+    font-size: 1.1vw;
+    margin: .25vw;
+}
+
+#incubator-fuel div:nth-child(2) img, #incubator-fuel div:nth-child(3) img{
+    margin-left: .4vw;
+    vertical-align: middle;
+}
+
+#incubator-fuel div:nth-child(4){
+    border-top: 2px solid red; 
+    height: 1px;
+    width: 100%;
+}
+
+
 /* ------------------------------PAGE-5---------------------------------- */
 #item-left{
     position: absolute;
     top: 5%;
     left: 0;
     width: calc(50% - 2px);
-    height: 90%;
-    text-align: center;
     /*border-right: 5px solid  rgba(0, 0, 0, .6);*/
+}
+
+h1{
+    display: inline-block;
+    background-color: rgba(10,10,10,.85);
+    padding: 1vw;
+    color: white;
+    font-size: 1.1vw;
+    height: 1.5vw;
+    line-height: 1.5vw;
+    width: 15vw;
+    margin-bottom: 2vh;
+    text-align: center;
+}
+
+h1 img{
+    width: 1.5vw;
+    height: 1.5vw;
+    margin-right: .25vw;
+    vertical-align: middle;
+    float: left;
+}
+
+#item-left-sort{
+    display: inline-block;
+    background-color: rgba(40,15,40,.85);
+    padding: 1vw;
+    color: white;
+    font-size: 1.1vw;
+    height: 1.5vw;
+    line-height: 1.5vw;
+    width: 10vw;
+    margin-bottom: 2vh;
+    text-align: center;
+}
+
+.item-divider{
+    display: inline-block;
+    background-color: rgba(10,10,10,.8);
+    padding: .5vw;
+    color: #eee;
+    font-size: 1vw;
+    margin-left: -.5vw;
+    margin-bottom: .2vw;
+    margin-top: 1.2vw;
+    width: 6vw;
+    text-align: center;
+}
+
+#item-left-holder{
+    width: 100%;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-left: 1vw;
 }
 
 .item-box{
@@ -895,7 +1094,6 @@ th{
     top: 5%;
     left: 0;
     width: calc(50% - 2px);
-    text-align: center;
     /*border-right: 5px solid  rgba(0, 0, 0, .6);*/
 }
 
@@ -904,6 +1102,7 @@ th{
     padding: 1vw;
     color: white;
     font-size: 1.1vw;
+    text-align: center;
 }
 
 .nursery-box{
@@ -986,25 +1185,22 @@ th{
 /* -----------------------------SCROLLBAR-------------------------------- */
 /* width */
 ::-webkit-scrollbar {
-    width: 10px;
+	width: 10px;
+	background-color: #313;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-    background: none; 
+	border: 1px solid black;
+	background-color: #313;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #42275a;
-    background: -webkit-linear-gradient(to right, #734b6d, #42275a); 
-    background: linear-gradient(to right, #734b6d, #42275a);
-    
+	background-color: #000000;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: #42275a;
-    background: -webkit-linear-gradient(to bottom right, #573451, #2f1a42); 
-    background: linear-gradient(to bottom right, #5e3a58, #2c173f);
+    background-color: #111;
 }
