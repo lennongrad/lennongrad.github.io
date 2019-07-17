@@ -5,7 +5,7 @@
     <title>DragonFlame</title>
     <base href="dragons/" target="_blank">
     <link rel="stylesheet" href="dragons.css">
-    <link rel="icon" href="menu/favicon.png"" type="image/x-icon">
+    <link rel="icon" href="menu/favicon.png" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <!-----------------------------------------LIBRARIES------------------------------------------------------------->
     <link href="https://fonts.googleapis.com/css?family=Montserrat|Open+Sans+Condensed:300|PT+Sans|Roboto+Mono|Source+Sans+Pro|Viga|Staatliches" rel="stylesheet">
@@ -45,14 +45,13 @@
     <div id="help">
         <div class="button" id="page-1-selector" onclick="switchPage(0)"><img src="menu/coops.png">Coops<img src="menu/pedialink.png" onclick="switchDict('location', 'coops')"></div>
         <div class="button" id="page-2-selector" onclick="switchPage(1)"><img src="menu/explore.png">Explore<img src="menu/pedialink.png" onclick="switchDict('location', 'explore')"></div>
-        <div class="button" id="page-3-selector" onclick="switchPage(2)"><img src="menu/arena.png">Arena<img src="menu/pedialink.png" onclick="switchDict('location', 'arena')"></div>
-        <div class="button" id="page-4-selector" onclick="switchPage(3)"><img src="menu/incubator.png">Incubator<img src="menu/pedialink.png" onclick="switchDict('location', 'incubator')"></div>
-        <div class="button" id="page-5-selector" onclick="switchPage(4)"><img src="menu/inventory.png">Inventory<img src="menu/pedialink.png" onclick="switchDict('location', 'inventory')"></div>
-        <div class="button" id="page-6-selector" onclick="switchPage(5)"><img src="menu/nursery.png">Nursery<img src="menu/pedialink.png" onclick="switchDict('location', 'nursery')"></div>
-        <div class="button" id="page-7-selector" onclick="switchPage(6)"><img src="menu/shoppe.png">Shoppe<img src="menu/pedialink.png" onclick="switchDict('location', 'shoppe')"></div>
-        <div class="button" id="page-8-selector" onclick="switchPage(7)"><img src="menu/dracopedia.png">Dracopedia<img src="menu/pedialink.png" onclick="switchDict('location', 'dracopedia')"></div>
+        <div class="button" id="page-3-selector" onclick="switchPage(2)" style="display:none" ><img src="menu/arena.png">Arena<img src="menu/pedialink.png" onclick="switchDict('location', 'arena')"></div>
+        <div class="button" id="page-4-selector" onclick="switchPage(3)"><img src="menu/inventory.png">Inventory<img src="menu/pedialink.png" onclick="switchDict('location', 'inventory')"></div>
+        <div class="button" id="page-5-selector" onclick="switchPage(4)"><img src="menu/nursery.png">Nursery<img src="menu/pedialink.png" onclick="switchDict('location', 'nursery')"></div>
+        <div class="button" id="page-6-selector" onclick="switchPage(5)" style="display: none"><img src="menu/shoppe.png">Shoppe<img src="menu/pedialink.png" onclick="switchDict('location', 'shoppe')"></div>
+        <div class="button" id="page-7-selector" onclick="switchPage(6)" style="display: none"><img src="menu/dracopedia.png">Dracopedia<img src="menu/pedialink.png" onclick="switchDict('location', 'dracopedia')"></div>
         <div class="button" onclick="$('#settings-cover').toggle().css({opacity: 1})"><img src="menu/settings.png">Settings<img src="menu/pedialink.png" onclick="switchDict('location', 'settings')"></div>
-        <div class="button" onclick="$('#info-cover').toggle().css({opacity: 1})"><img src="menu/info.png">Info<img src="menu/pedialink.png" onclick="switchDict('location', 'info')"></div>
+        <div class="button" onclick="$('#info-cover').toggle().css({opacity: 1})" style="display: none"><img src="menu/info.png">Info<img src="menu/pedialink.png" onclick="switchDict('location', 'info')"></div>
     </div>
     <div id="copiedMessage" style="display: none">Copied to clipboard</div>
     <div class="info-box" id="settings-cover" style="display: none">
@@ -92,22 +91,11 @@
     </div>
     <div id="page-3" class="page">
     </div>
-    <div id="page-4" class="page">
-        <h1 id="incubator-title"><img src="menu/incubator-warm.png">Warm Chamber</h1>
-        <div id="incubator-slots"></div>
-        <h1 id="incubator-fuel-title"><img src="menu/incubator-settings.png">Chamber Control</h1>
-        <div id="incubator-fuel">
-            <div id="incubator-time">00:01:23</div
-            ><div class="button" id="incubator-buy-1">1 Minute <img src="items/heart.png" class="small-icon" style="width: 1vw; height: 1vw;"> 2</div
-            ><div class="button" id="incubator-buy-2">10 Minutes <img src="items/heart.png" class="small-icon" style="width: 1vw; height: 1vw;"> 8</div
-            ><div id="incubator-timer"></div>
-        </div>
-    </div>
-    <div id="page-5" class="page" oncontextmenu="currentItem = undefined; renderAll(); return false">
+    <div id="page-4" class="page" oncontextmenu="currentItem = undefined; renderAll(); return false">
         <div class="page-holder" style="overflow-y: hidden">
             <div id="item-left">
                 <h1 id="item-left-title"><img src="menu/inventory-bag.png">Item Bag</h1>
-                <div id="item-left-sort" class="button" onclick="itemSort = !itemSort; this.innerHTML = !itemSort ? 'By Category' : 'Uncategorized'; renderAll()">By Category</div>
+                <div id="item-left-sort" class="button" onclick="itemSort = !itemSort; this.innerHTML = !itemSort ? 'Uncategorized' : 'By Category'; renderAll()">Uncategorized</div>
                 <div id="item-left-holder"></div>
             </div>
             <div id="item-right"
@@ -117,20 +105,31 @@
             </div>
         </div>
     </div>
-    <div id="page-6" class="page"
+    <div id="page-5" class="page"
         ><div class="page-holder">
             <div id="nursery-left">
                 <h1 id="nursery-ticket-title"><img src="menu/nursery-ticket.png">Ticket Redemption Booth</h1>
                 <div id="nursery-hold"></div><div style="text-align: center">
                 <div class="button" id="nursery-all">Adopt All</div>
                 <div class="button" id="nursery-use"></div>
+                <div id="nursery-results"></div> 
+            </div></div>
+            <div id="nursery-right">
+                <h1 id="incubator-title"><img src="menu/incubator-warm.png">Incubator Station</h1>
+                <div id="incubator-slots"></div>
+                <div id="incubator-fuel">
+                    <div id="incubator-time">00:01:23</div
+                    ><div class="button" id="incubator-buy-1">1 Minute <img src="items/heart.png" class="small-icon" style="width: 1vw; height: 1vw;"> 2</div
+                    ><div class="button" id="incubator-buy-2">10 Minutes <img src="items/heart.png" class="small-icon" style="width: 1vw; height: 1vw;"> 8</div
+                    ><div id="incubator-timer"></div>
                 </div>
             </div>
-            <div id="nursery-box"></div> 
-        </div></div>
+        </div>
+    </div></div>
+    <div id="page-6" class="page">
+    </div>
     <div id="page-7" class="page">
     </div>
-    <div id="page-8" class="page"></div>
     <div id="bufferBar"></div>
 
     <script src="dragons.js"></script>

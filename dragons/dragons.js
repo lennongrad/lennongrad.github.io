@@ -311,8 +311,7 @@ var pages = [
     document.getElementById("page-4"), 
     document.getElementById("page-5"), 
     document.getElementById("page-6"), 
-    document.getElementById("page-7"), 
-    document.getElementById("page-8")
+    document.getElementById("page-7")
 ]
 var activePage = pages[0];
 
@@ -339,7 +338,7 @@ function switchPage(to) {
 }
 
 function switchDict(type, to){
-    switchPage(7)
+    switchPage(6)
 }
 
 // Audio
@@ -589,7 +588,7 @@ class Item{
                         case "gem": items[1].add([this.instances[i]]); break;
                         case "ticket": switch(this.name){
                             case "Wildcard Ticket":
-                            case "Egg Ticket": switchPage(5); 
+                            case "Egg Ticket": switchPage(4); 
                                 remove = (Math.random() > this.instances[i].durability) ? true : nurseryBox.add(new Dragon(this.instances[i].species, 0), "special")
                             break;
                             case "Encounter Ticker": switchPage(2); remove = false; break;
@@ -1300,17 +1299,17 @@ class Pen extends SlotCollection{
     }
 }
 
-var bufferBar = new SlotCollection(g("bufferBar"), 22, function(){ 
+var bufferBar = new SlotCollection(g("bufferBar"), 10, function(){ 
     switch(activePage){
         case g("page-1"): return activePen; 
-        case g("page-4"): return incubator; 
+        case g("page-5"): return incubator; 
         default: return bufferBar;
     }
 }, undefined, "isEmpty")
-var incubator = new SlotCollection(g("incubator-slots"), 36, bufferBar, undefined, undefined, "hatching")
-var nurseryBox = new SlotCollection(g("nursery-box"), 24, bufferBar, "takeOnly", "isEmpty")
+var incubator = new SlotCollection(g("incubator-slots"), 6, bufferBar, undefined, undefined, "hatching")
+var nurseryBox = new SlotCollection(g("nursery-results"), 24, bufferBar, "takeOnly", "isEmpty")
 
-var pens = [], penSize = 176, pensSize = 4, activePen
+var pens = [], penSize = 90, pensSize = 4, activePen
 for(var i = 0; i < pensSize; i++){
     pens.push(new Pen(g("pen"), penSize, "Coop " + (1 + i)))
 }
@@ -1381,7 +1380,7 @@ function renderAll(){
         }
     }
 
-    if(activePage == pages[3]){
+    if(activePage == pages[4]){
         incubator.render()
 
         incubatorCost1 = 2
@@ -1414,7 +1413,7 @@ function renderAll(){
         }
     }
 
-    if(activePage == pages[4]){
+    if(activePage == pages[3]){
         g("item-left-holder").innerHTML = ""
         if(itemSort){
             var categories = []
@@ -1505,7 +1504,7 @@ function renderAll(){
     }
 
     
-    if(activePage == pages[5]){
+    if(activePage == pages[4]){
         if(items.filter(x => x.name == "Egg Ticket" || x.name == "Wildcard Ticket").filter(x => x.amt() > 0).length > 0){
             g("nursery-use").style.display = ""
             g("nursery-all").style.display = ""
@@ -1561,7 +1560,7 @@ g("nursery-all").onclick = function(){
     }
 }
 
-switchPage(3);
+switchPage(4);
 changeTicker()
 renderAll()
 
