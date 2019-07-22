@@ -1141,29 +1141,14 @@ h1 img{
     background-color: rgba(40,15,40,.85);
 }
 
-#incubator-fuel-title{
-    z-index: 5;
-    height: 4vh;
-    line-height: 4vh;
-}
-
 #incubator-fuel {
     display: inline-block;
     z-index: 1;
     padding: .8vw;
     background-color: rgba(15,15,15,.95);
-    width: 22vw;
 }
 
-#incubator-fuel div:nth-child(1){
-    display: inline-block;
-    font-size: 1.5vw;
-    color: rgba(180,180,180,.9);
-    margin-right: .5vw;
-    margin-left: .5vw;
-}
-
-#incubator-fuel div:nth-child(2), #incubator-fuel div:nth-child(3){
+#incubator-fuel div{
     display: inline-block;
     background-color: rgba(155,155,155,.9);
     padding: .5vw;
@@ -1171,15 +1156,9 @@ h1 img{
     margin: .25vw;
 }
 
-#incubator-fuel div:nth-child(2) img, #incubator-fuel div:nth-child(3) img{
+#incubator-fuel div img{
     margin-left: .4vw;
     vertical-align: middle;
-}
-
-#incubator-fuel div:nth-child(4){
-    border-top: 2px solid red; 
-    height: 1px;
-    width: 100%;
 }
 
 /* -----------------------------SCROLLBAR-------------------------------- */

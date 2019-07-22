@@ -656,10 +656,6 @@ var rewardsActive = false
 var currentRewards = []
 
 function triggerRewards(rewards){
-    if(rewardsActive){
-        return false
-    }
-
     rewardsActive = true
     $('#rewards-cover').toggle().css({opacity: 1})
     rewards.forEach(x => x.accepted = false)
@@ -721,8 +717,6 @@ function triggerRewards(rewards){
         }
         g("rewards-box").appendChild(elem)
     }
-
-    return true
 }
 
 function acceptAllRewards(){
@@ -804,10 +798,9 @@ class Zone{
             case "waiting": this.ready = "active"; return;
             case "active": this.ready = "waiting"; return;
         }
-        if(triggerRewards(this.rewards)){
-            this.ready = "waiting"
-            this.rewards = []
-        }
+        triggerRewards(this.rewards)
+        this.ready = "waiting"
+        this.rewards = []
     }
 
     increment(){
@@ -837,7 +830,7 @@ class Zone{
         }
 
         var rewards = []
-        for(var i = 0; i < this.level * 2 && Math.random() < .95; i+=.25){
+        for(var i = 0; i < this.level * 2 && Math.random() < .6; i+=.25){
             var die = Math.random() * total
             var possible = [Number.MAX_SAFE_INTEGER]
             for(var e = 0; e < table.length; e++){
@@ -857,7 +850,7 @@ class Zone{
             } else {
                 switch(items[rewards[i]].type){
                     case "none": quality.count = 1; break;
-                    case "currency": quality.count = Math.ceil(10 * this.level * Math.random())
+                    case "currency": quality.count = 1 + Math.ceil(10 * this.level * Math.random())
                 }
             }
 
@@ -956,8 +949,8 @@ class Species{
 }
 
 var species = [
-    new Species("crown", 2, 60),
-    new Species("gemini", 2, 60)
+    new Species("crown", 2, 300),
+    new Species("gemini", 2, 300)
 ]
 
 class Dragon{
@@ -1337,6 +1330,24 @@ checkAll.onclick = function(){
     }
 }
 
+function renderIncubator(){
+    for(var i = 0; i < incubator.slots.length; i++){
+        if(incubator.slots[i].dragon != undefined){
+            if(incubator.slots[i].dragon.hatchProgress >= incubator.slots[i].dragon.species.eggLimit){
+                incubator.slots[i].dragon.hatchProgress = incubator.slots[i].dragon.species.eggLimit
+            }
+            incubator.slots[i].bar.childNodes[0].style.height = incubator.slots[i].dragon.hatchProgress / incubator.slots[i].dragon.species.eggLimit * 100 + "%"
+            incubator.slots[i].bar.childNodes[0].style.top = 100 - incubator.slots[i].dragon.hatchProgress / incubator.slots[i].dragon.species.eggLimit * 100 + "%"
+            incubator.slots[i].bar.childNodes[0].style.backgroundColor = (incubator.slots[i].dragon.hatchProgress / incubator.slots[i].dragon.species.eggLimit > .5) ? "yellow" : "red"
+            if(incubator.slots[i].dragon.hatchProgress >= incubator.slots[i].dragon.species.eggLimit){
+                incubator.slots[i].bar.childNodes[0].style.backgroundColor = "green"
+            }
+        } else {
+            incubator.slots[i].bar.childNodes[0].style.backgroundColor = "transparent"
+        }
+    }
+}
+
 function renderAll(){
     g("pen-switch").innerHTML = ""
     for(var i = 0; i < pens.length; i++){
@@ -1348,6 +1359,8 @@ function renderAll(){
     g("pen-dragon-count").innerHTML = activePen.match(["stage", 1]).length
     g("pen-switch").appendChild(editIcon)
     bufferBar.render()
+
+    renderIncubator()
     
     g("settings-list").innerHTML = ""
     for(var i = 0; i < Object.keys(settings).length; i++){
@@ -1386,22 +1399,17 @@ function renderAll(){
         incubatorCost1 = 2
         incubatorCost2 = 8
 
-        g("incubator-timer").style.width = incubatorTimer / 60 / 60 * 100 + "%"
-        g("incubator-time").innerHTML = toHour(incubatorTimer)
-
         g("incubator-buy-1").innerHTML = "1 Minute " + items[0].smallIcon(true) + " " + incubatorCost1
         g("incubator-buy-2").innerHTML = "10 Minutes " + items[0].smallIcon(true) + " " + incubatorCost2
         g("incubator-buy-1").onclick = function(){
-            if(items[0].amt() > incubatorCost1 && incubatorTimer < (60 * 59)){
-                items[0].remove(incubatorCost1)
-                incubatorTimer += 60
+            for(var i = 0; i < incubator.slots.length; i++){
+                incubator.slots[i].dragon.hatchProgress += 60
             }
             renderAll()
         }
         g("incubator-buy-2").onclick = function(){
-            if(items[0].amt() > incubatorCost2 && incubatorTimer < (60 * 50)){
-                items[0].remove(incubatorCost2)
-                incubatorTimer += 600
+            for(var i = 0; i < incubator.slots.length; i++){
+                incubator.slots[i].dragon.hatchProgress += 600
             }
             renderAll()
         }
@@ -1493,7 +1501,7 @@ function renderAll(){
                             default: elem.innerHTML += "<td>" + obj[Object.keys(obj)[e]] + "</td>"
                         }
                     }
-                    $("<td>" + currentItem.price(i) + items[0].smallIcon(true) + "</td>").appendTo(elem)
+                    $("<td>" + Math.floor(10 * currentItem.price(i)) / 10 + items[0].smallIcon(true) + "</td>").appendTo(elem)
                     elem.onclick = Function("currentItem.instances[" + i + "].checked = !currentItem.instances[" + i + "].checked; renderAll()")
                     g("item-table").childNodes[0].appendChild(elem)
                 }
@@ -1567,26 +1575,18 @@ renderAll()
 var incubatorTimer = 0
 
 setInterval(function () {
+    // HAPPENS ONCE EVERY SECOND
     for(var i = 0; i < zones.length; i++){
         zones[i].increment()
     }
-    incubatorTimer = Math.max(0, incubatorTimer - 1)
-    g("incubator-timer").style.width = incubatorTimer / 60 / 60 * 100 + "%"
-    g("incubator-time").innerHTML = toHour(incubatorTimer)
-    if(incubatorTimer != 0){
-        for(var i = 0; i < incubator.slots.length; i++){
-            if(incubator.slots[i].dragon != undefined){
-                incubator.slots[i].bar.childNodes[0].style.height = incubator.slots[i].dragon.hatchProgress / incubator.slots[i].dragon.species.eggLimit * 100 + "%"
-                incubator.slots[i].bar.childNodes[0].style.top = 100 - incubator.slots[i].dragon.hatchProgress / incubator.slots[i].dragon.species.eggLimit * 100 + "%"
-                incubator.slots[i].bar.childNodes[0].style.backgroundColor = (incubator.slots[i].dragon.hatchProgress / incubator.slots[i].dragon.species.eggLimit > .5) ? "yellow" : "red"
-                if(incubator.slots[i].dragon.hatchProgress == incubator.slots[i].dragon.species.eggLimit){
-                    incubator.slots[i].bar.childNodes[0].style.backgroundColor = "green"
-                } else {
-                    incubator.slots[i].dragon.hatchProgress += 1
-                }
-            } else {
-                incubator.slots[i].bar.childNodes[0].style.backgroundColor = "transparent"
+    for(var i = 0; i < incubator.slots.length; i++){
+        if(incubator.slots[i].dragon != undefined){
+            if(incubator.slots[i].dragon.hatchProgress < incubator.slots[i].dragon.species.eggLimit){
+                incubator.slots[i].dragon.hatchProgress += 1
             }
+        } else {
+            incubator.slots[i].bar.childNodes[0].style.backgroundColor = "transparent"
         }
     }
+    renderIncubator()
 }, 1000)
