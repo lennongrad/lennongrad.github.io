@@ -1,33 +1,25 @@
+var versionNumber = "0.0"
+var versionTitle = "Initial"
+
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+var clock = new THREE.Clock();
+var loader = new THREE.GLTFLoader();
+var renderer = new THREE.WebGLRenderer();
+var raycaster = new THREE.Raycaster();
+raycaster.far = 20;
+var mouseVector = new THREE.Vector2();
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+
+$(document).ready(function () {
+})
+
+var debug = false;
 var cursor = {x: 0, y: 0, active: false};
-var originalCursor = {x: 0, y: 0}
-window.addEventListener('mousemove', function (e) {
-    cursor.y = e.pageY;
-    cursor.x = e.pageX
-    
-    if(cursor.active){
-        cameraRotation += (cursor.x - originalCursor.x) / 100
-        cameraRotationVertical -= (cursor.y - originalCursor.y) / 100
-        if(cameraRotationVertical > Math.PI * 3 / 8){
-            cameraRotationVertical = Math.PI * 3 / 8
-        }
-        if(cameraRotationVertical < 0){
-            cameraRotationVertical = 0
-        }
 
-        originalCursor.x = e.pageX
-        originalCursor.y = e.pageY
-    }
-});
-
-window.addEventListener('mousedown', function (e) {
-    cursor.active = true;
-    originalCursor.x = e.pageX
-    originalCursor.y = e.pageY
-});
-
-window.addEventListener('mouseup', function (e) {
-    cursor.active = false;
-});
+var suffixes = ["", "k", "m", "b", "t", "qu", "qi", "sx", "sp"];
+var hexagonSize = 1
 
 var keys = {
     87: {keydown: function(){}, keyup: function(){}, active: false}, // up
@@ -36,13 +28,38 @@ var keys = {
     68: {keydown: function(){}, keyup: function(){}, active: false}  // right
 }
 
+window.addEventListener('mousemove', function (e) {
+    cursor.y = e.pageY;
+    cursor.x = e.pageX;	
+
+    if(cursor.active){
+        camera.position.x -= e.movementX / 100
+        camera.position.y += e.movementY / 100
+    }
+    
+    mouseVector.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouseVector.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+});
+
+window.addEventListener('mousedown', function (e) {
+    cursor.active = true;
+})
+
+window.addEventListener('mouseup', function (e) {
+    cursor.active = false;
+});
+
+document.body.addEventListener('wheel',function(event){
+    return false; 
+}, false);
+
 document.addEventListener('keydown', function (event) {
     if (keys[event.keyCode] == undefined) {
         return
     }
     keys[event.keyCode].keydown()
     keys[event.keyCode].active = true
-})
+});
 
 document.addEventListener('keyup', function (event) {
     if (keys[event.keyCode] == undefined) {
@@ -52,101 +69,130 @@ document.addEventListener('keyup', function (event) {
     keys[event.keyCode].active = false
 });
 
-var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-camera.rotation.order = "XZY"
-var clock = new THREE.Clock();
-var loader = new THREE.GLTFLoader();
+function log(value, base) {
+    return Math.log(value) / Math.log(base)
+}
 
-var renderer = new THREE.WebGLRenderer();
-renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
+function removeElement(element) {
+    element.parentNode.removeChild(element);
+}
 
-var runnerTexture = new THREE.TextureLoader().load( 'exampleAnimation.png' );
-var runnerTextureAlpha = new THREE.TextureLoader().load( 'exampleAnimationAlpha.png' );
-annie = new TextureAnimator( runnerTexture, 10, 1, 10, 75 ); // texture, #horiz, #vert, #total, duration.
-annieAlpha = new TextureAnimator( runnerTextureAlpha, 10, 1, 10, 75 ); // texture, #horiz, #vert, #total, duration.
-var runnerMaterial = new THREE.MeshBasicMaterial( { map: runnerTexture, alphaMap: runnerTextureAlpha, side: THREE.DoubleSide, transparent: true } );
-var runnerGeometry = new THREE.PlaneGeometry(2, 2, 1, 1);
-var runner = new THREE.Mesh(runnerGeometry, runnerMaterial);
-runner.position.set(0,0,0);
-scene.add(runner);
+function isJSON(str) {
+    try {
+        return (JSON.parse(str) && !!str);
+    } catch (e) {
+        return false;
+    }
+}
 
-var sphere = new THREE.Mesh( new THREE.SphereGeometry( .2, 10, 10 ),  new THREE.MeshBasicMaterial( {color: 0xffff00} ) );
-sphere.position.y = 4
-scene.add( sphere );
+function randomIndex(arr) {
+    return Math.floor(arr.length * Math.random())
+}
 
-var background
-loader.load('scene.gltf', function ( gltf ) { background = gltf.scene; scene.add( gltf.scene );}, function ( xhr ) {}, function ( error ) {});
+function randomValue(arr) {
+    return arr[randomIndex(arr)]
+}
 
-var runnerPos = {x: 0, y: 0.9, z: 0}
+function randomValueObj(obj){
+    return obj[randomValue(Object.keys(obj))]
+}
 
-//var controls = new THREE.OrbitControls( camera, renderer.domElement );
+function adjustBrightness(col, amt) {
+    var usePound = false;
 
-var directionalLight = new THREE.PointLight( 0xffffff, 1, 0, 1 );
-directionalLight.position.set( 1, 4, 1 ).normalize();
-scene.add( directionalLight );
-
-var hemisphereLight = new THREE.HemisphereLight( 0xffffbb, 0x080820, .4 );
-scene.add( hemisphereLight );
-
-var time = 0
-var timeScale = .25
-var cameraRotation = 0
-var cameraRotationVertical = 0
-var delta = 0 
-var zoomLevel = 2
-
-document.body.addEventListener('wheel',function(event){
-    zoomLevel += event.deltaY / 15
-    return false; 
-}, false);
-
-function animate() {
-    delta = clock.getDelta() 
-    time += delta * timeScale
-    directionalLight.position.x = 7 * Math.cos(time * 2);
-    directionalLight.position.z = 7 * Math.sin(time * 2);
-    sphere.position.x = 5 * Math.cos(time * 2);
-    sphere.position.z = 5 * Math.sin(time * 2);
-    
-    camera.position.y = 2 + zoomLevel * Math.sin(cameraRotationVertical) + runnerPos.y;
-    camera.position.x = zoomLevel * 5 * Math.cos(cameraRotationVertical) * Math.cos(cameraRotation) + runnerPos.x;
-    camera.position.z = zoomLevel * 5 * Math.cos(cameraRotationVertical) * Math.sin(cameraRotation) + runnerPos.z;
-    camera.rotation.y = Math.PI / 2 + -cameraRotation;
-    runner.rotation.y = -Math.PI / 2 + -cameraRotation;
-    camera.rotation.x = cameraRotationVertical * Math.sin(-cameraRotation) * .6;
-    camera.rotation.z = cameraRotationVertical * Math.sin(Math.PI / 2 - cameraRotation) * .6;
-    annie.update(1000 * delta)
-    annieAlpha.update(1000 * delta)
-
-    if(keys[87].active){
-        runnerPos.x -= .4 * Math.cos(cameraRotation)
-        runnerPos.z -= .4 * Math.sin(cameraRotation)
-    }    
-    if(keys[83].active){
-        runnerPos.x += .1 * Math.cos(cameraRotation)
-        runnerPos.z += .1 * Math.sin(cameraRotation)
-    }    
-    if(keys[65].active){
-        runnerPos.x -= .3 * Math.cos(-Math.PI / 2 + cameraRotation)
-        runnerPos.z -= .3 * Math.sin(-Math.PI / 2 + cameraRotation)
-    }    
-    if(keys[68].active){
-        runnerPos.x -= .3 * Math.cos(Math.PI / 2 + cameraRotation)
-        runnerPos.z -= .3 * Math.sin(Math.PI / 2 + cameraRotation)
+    if (col[0] == "#") {
+        col = col.slice(1);
+        usePound = true;
     }
 
-    runner.position.x = runnerPos.x
-    runner.position.y = runnerPos.y
-    runner.position.z = runnerPos.z
+    var R = parseInt(col.substring(0, 2), 16);
+    var G = parseInt(col.substring(2, 4), 16);
+    var B = parseInt(col.substring(4, 6), 16);
 
-    //controls.update()
-	requestAnimationFrame( animate );
-	renderer.render( scene, camera );
+    R = R + amt;
+    G = G + amt;
+    B = B + amt;
+
+    if (R > 255) R = 255;
+    else if (R < 0) R = 0;
+
+    if (G > 255) G = 255;
+    else if (G < 0) G = 0;
+
+    if (B > 255) B = 255;
+    else if (B < 0) B = 0;
+
+    var RR = ((R.toString(16).length == 1) ? "0" + R.toString(16) : R.toString(16));
+    var GG = ((G.toString(16).length == 1) ? "0" + G.toString(16) : G.toString(16));
+    var BB = ((B.toString(16).length == 1) ? "0" + B.toString(16) : B.toString(16));
+
+    return (usePound ? "#" : "") + RR + GG + BB;
+
 }
-animate();
 
+function numberExtension(number, sigFig) {
+    number = number.toString();
+    while(sigFig > number.length) {
+        number = number + "0";
+    }
+    return number;
+}
+
+function decimalToHexString(number) {
+    if (number < 0) {
+        number = 0xFFFFFFFF + number + 1;
+    }
+
+    number = number.toString(16).toUpperCase();
+    for (y = 0; y < 7 - number.toString().length; y++) {
+        number = "0" + number;
+    }
+
+    return number;
+}
+
+function small_int(e) {
+    var size = Math.floor(Math.log10(Math.abs(e))) + 1;
+    var suffix = "";
+
+    if (size < 4) {
+        return e.toString().substring(0, 3);
+    } else {
+        e = e.toExponential(9);
+        e = e.substring(0, 4 + size % 3 + 4);
+    }
+    if (size >= 4) {
+        switch (size % 3) {
+            case 0: e = e.substring(0, 1) + e.substring(2, 4) + "." + e.substring(4); e = e.substring(0, 7); break;
+            case 1: e = e.substring(0, 5); break;
+            case 2: e = e.substring(0, 1) + e.substring(2, 3) + "." + e.substring(3); e = e.substring(0, 6); break;
+        }
+        suffix = suffixes[Math.floor((size - 1) / 3)]
+    }
+    if ((Math.floor((size - 1) / 3)) < suffixes.length) {
+        return e + suffix;
+    } else {
+        return e + "e" + (size - 3);
+    }
+}
+
+function storageAvailable(type) {
+    try {
+        var storage = window[type],
+            x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    }
+    catch (e) {
+        return e instanceof DOMException && (
+            e.code === 22 ||                               // everything except Firefox
+            e.code === 1014 ||                             //test name field too, because code might not be present everything except Firefox
+            e.name === 'QuotaExceededError' ||             // Firefox
+            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+            storage.length !== 0;                          // acknowledge QuotaExceededError only if there's something already stored
+    }
+}
 
 function TextureAnimator(texture, tilesHoriz, tilesVert, numTiles, tileDispDuration) 
 {	
@@ -185,4 +231,238 @@ function TextureAnimator(texture, tilesHoriz, tilesVert, numTiles, tileDispDurat
 			texture.offset.y = currentRow / this.tilesVertical;
 		}
 	};
-}		
+}	
+
+function capitalize(str) {
+    return str[0].toUpperCase() + str.substring(1);
+}
+
+function exportStr() {
+    var data = [versionNumber]
+
+    return JSON.stringify(data)
+}
+
+function importString(str) {
+    if (!isJSON(str)) {
+        return false
+    }
+    var data = JSON.parse(str)
+    if (data.length != 1 || data[0] != versionNumber) {
+        alert("This data is incompatible.")
+
+        return false
+    }
+    return true
+}
+
+function saveData() {
+    if (storageAvailable('localStorage')) {
+        localStorage.setItem("save", exportStr())
+    }
+}
+
+function resetData() {
+    if (storageAvailable('localStorage')) {
+        localStorage.removeItem("save")
+        location.reload()
+    }
+}
+
+function loadData(str) {
+    if (storageAvailable('localStorage')) {
+        localStorage.setItem("save", str)
+        location.reload()
+    } else {
+        importString(str)
+    }
+}
+
+function copyToClipboard(str) {
+    const tempElement = document.createElement('textarea');  // Create a <textarea> element
+    tempElement.value = str;                                 // Set its value to the string that you want copied
+    tempElement.setAttribute('readonly', '');                // Make it readonly to be tamper-proof
+    tempElement.style.position = 'absolute';
+    tempElement.style.left = '150vw';                        // Move outside the screen to make it invisible
+    document.body.appendChild(tempElement);                  // Append the <textarea> element to the HTML document
+    const selected =
+        document.getSelection().rangeCount > 0               // Check if there is any content selected previously
+            ? document.getSelection().getRangeAt(0)          // Store selection if found
+            : false;                                         // Mark as false to know no selection existed before
+    tempElement.select();                                    // Select the <textarea> content
+    document.execCommand('copy');                            // Copy - only works as a result of a user action (e.g. click events)
+    document.body.removeChild(tempElement);                  // Remove the <textarea> element
+    if (selected) {                                          // If a selection existed before copying
+        document.getSelection().removeAllRanges();           // Unselect everything on the HTML document
+        document.getSelection().addRange(selected);          // Restore the original selection
+    }
+};
+
+// Audio
+//var snd = new Audio("click.wav");
+// snd.play();
+
+function showTooltip(elem) {
+    document.getElementById("tooltip").innerHTML = elem.getAttribute("message")
+    document.getElementById("tooltip").style.left = elem.getBoundingClientRect().left + elem.getBoundingClientRect().width / 2 + "px"
+    document.getElementById("tooltip").style.top = elem.getBoundingClientRect().top - window.innerHeight / 22 + "px"
+    document.getElementById("tooltip").style.opacity = .92
+}
+
+function hideTooltip() {
+    document.getElementById("tooltip").style.opacity = 0
+}
+
+if (storageAvailable('localStorage')) {
+    if (localStorage.getItem("save") != undefined) {
+        if (!importString(localStorage.getItem("save"))) {
+            localStorage.removeItem("save")
+            location.reload()
+        }
+    }
+}
+
+class Terrain{
+    constructor(name, texture){
+        this.name = name
+        this.textureFilename = texture
+        this.texture = new THREE.TextureLoader().load(texture);
+    }
+}
+var terrainAlpha = new THREE.TextureLoader().load("terrain/alpha.png");
+
+var terrainTypes = {
+    grasslands: new Terrain("Grasslands", "terrain/coast.png"),
+    grasslandsHills: new Terrain("Grasslands Hills", "terrain/coast.png"),
+    plains: new Terrain("Plains", "terrain/coast.png"),
+    plainsHills: new Terrain("Plains Hills", "terrain/coast.png"),
+    tundra: new Terrain("Tundra", "terrain/coast.png"),
+    tundraHills: new Terrain("Tundra Hills", "terrain/coast.png"),
+    desert: new Terrain("Desert", "terrain/coast.png"),
+    desertHills: new Terrain("Desert Hills", "terrain/coast.png"),
+    snow: new Terrain("Snow", "terrain/coast.png"),
+    snowHills: new Terrain("Snow Hills", "terrain/coast.png"),
+    coast: new Terrain("Coast", "terrain/coast.png"),
+    ocean: new Terrain("Ocean", "terrain/coast.png"),
+    ice: new Terrain("Ice", "terrain/coast.png")
+}
+
+var hexagonAlpha = new THREE.TextureLoader().load("terrain/alpha.png")
+class Tile{
+    constructor(position){
+        this.position = position
+        this.depth = Math.random() * .5 + .25
+        
+        this.mesh = new THREE.Mesh( 
+            new THREE.ExtrudeGeometry(hexagonShape,  { depth: this.depth, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: .5 } ), 
+            new THREE.MeshLambertMaterial({color: "#050505"}) 
+        );
+        this.mesh.position.y = hexagonSize * 3/2 * position.y
+        this.mesh.position.x = (2 * position.x  + (this.position.y % 2 == 0 ? 0 : 1)) * Math.sqrt(3) / 2 * hexagonSize 
+        scene.add(this.mesh)
+
+        this.face = new THREE.Mesh(new THREE.PlaneGeometry(Math.sqrt(3) * hexagonSize, 2.05 * hexagonSize, 1, 1), 
+            new THREE.MeshBasicMaterial( { alphaMap: hexagonAlpha, transparent: true, depthWrite: false } ));
+        this.face.position.z = this.depth + .02
+        this.face.position.y = hexagonSize * 3/2 * position.y
+        this.face.position.x = (2 * position.x  + (this.position.y % 2 == 0 ? 0 : 1)) * Math.sqrt(3) / 2 * hexagonSize 
+        this.face.gamePosition = position
+            scene.add(this.face)
+        
+        this.setTerrain(terrainTypes.ocean)
+    }
+
+    setTerrain(terrain){
+        this.terrain = terrain
+        this.face.material.map = this.terrain.texture
+    }
+}
+
+var hexagonShape = new THREE.Shape();
+hexagonShape.moveTo(0, -hexagonSize)
+hexagonShape.lineTo(Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2);
+hexagonShape.lineTo(Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2);
+hexagonShape.lineTo(0, hexagonSize);
+hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2);
+hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2);
+hexagonShape.lineTo(0, -hexagonSize)
+
+var mapSize = 20
+var tiles = []
+for(var i = 0; i < mapSize; i++){
+    tiles.push([])
+    for(var e = 0; e < mapSize; e++){
+        tiles[i].push(new Tile({x: i, y: e}))
+    }
+}
+var tilesByDepth = []
+for(var i = 0; i < mapSize; i ++){
+    for(var e = 0; e < mapSize; e++){
+        tilesByDepth.push(tiles[i][e])
+    }
+}
+tilesByDepth.sort(function(a,b){return a.depth - b.depth})
+for(var i = 1; i < mapSize + 1; i++){
+    tilesByDepth[i].face.depthTest = i;
+}
+
+var runnerTexture = new THREE.TextureLoader().load( 'exampleAnimation.png' );
+var runnerTextureAlpha = new THREE.TextureLoader().load( 'exampleAnimationAlpha.png' );
+annie = new TextureAnimator( runnerTexture, 10, 1, 10, 75 ); // texture, #horiz, #vert, #total, duration.
+annieAlpha = new TextureAnimator( runnerTextureAlpha, 10, 1, 10, 75 ); // texture, #horiz, #vert, #total, duration.
+var runnerMaterial = new THREE.MeshBasicMaterial( { map: runnerTexture, alphaMap: runnerTextureAlpha, side: THREE.DoubleSide, transparent: true } );
+var runnerGeometry = new THREE.PlaneGeometry(2, 2, 1, 1);
+var runner = new THREE.Mesh(runnerGeometry, runnerMaterial);
+runner.position.set(0,0,0);
+//scene.add(runner);
+
+var background
+loader.load('scene.gltf', function ( gltf ) { 
+    background = gltf.scene; 
+    background.scale.set(10,10,10)
+    background.rotation.y = -Math.PI / 2
+    background.position.x = -150
+    background.position.z = 250
+    background.position.y = -40
+    //scene.add( gltf.scene );
+}, function ( xhr ) {}, function ( error ) {});
+
+var hemisphereLight = new THREE.HemisphereLight( 0xffffff, 0x000000, 12.4 );
+scene.add( hemisphereLight );
+
+camera.position.z = 8
+camera.rotation.x = .8
+
+var delta
+function animate() {
+    delta = clock.getDelta()    
+    annie.update(1000 * delta)
+    annieAlpha.update(1000 * delta)
+	requestAnimationFrame( animate );
+    renderer.render( scene, camera );
+    
+    activeTile = undefined
+    tiles.forEach(function(x){x.forEach(function(y){
+        y.active = false; 
+    })})
+
+	raycaster.setFromCamera( mouseVector, camera );
+    var intersects = raycaster.intersectObjects( scene.children )
+    if(intersects[0].object.gamePosition != undefined){
+        activeTile = tiles[intersects[0].object.gamePosition.x][intersects[0].object.gamePosition.y]
+        activeTile.active = true
+    }	
+
+    tiles.forEach(function(x){x.forEach(function(y){
+        if(y.active){
+            y.mesh.position.z = Math.min(.4, y.mesh.position.z + 0.1)
+            y.face.position.z = y.mesh.position.z + y.depth + .02
+        } else {
+            y.mesh.position.z = Math.max(0, y.mesh.position.z - 0.1)
+            y.face.position.z = y.mesh.position.z + y.depth + .02
+        }
+    })})
+}
+
+hideTooltip()
+animate();
