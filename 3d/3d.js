@@ -7,18 +7,27 @@ var clock = new THREE.Clock();
 var loader = new THREE.GLTFLoader();
 var renderer = new THREE.WebGLRenderer();
 var raycaster = new THREE.Raycaster();
-raycaster.far = 20;
+raycaster.far = 25;
 var mouseVector = new THREE.Vector2();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 var chanceToContinue = .25
-var chanceToBeSameElevation = .95
-var lengthDecreaseAmount = .09
-var minimumLengthToContinue = 0
-var maximumElevation = 3.5
-var startingElevationBase = .8
-var startingElevationVariance = 1.4
+var chanceToBeSameElevation = .6
+var lengthDecreaseAmount = .1
+var minimumLengthToContinue = .25
+var maximumElevation = 7
+var startingElevationBase = .25
+var startingElevationVariance = .75
+var minimumInitialElevations = 15
+var chanceToNotContinueElevations = .2
+var chanceToSpreadCoast = .25
+var lengthAdditionModifier = .05
+var alreadyVisitedModifier = .2
+var depthMultiplier = 2.5
+
+var minimumScrollOut = 16
+var minimumScrollIn = 8
 
 $(document).ready(function () {
 })
@@ -72,10 +81,10 @@ window.addEventListener('mouseup', function (e) {
 
 document.body.addEventListener('wheel',function(event){
     camera.position.z += event.deltaY / 5
-    if(camera.position.z > 11){
-        camera.position.z = 11
-    } else if(camera.position.z < 4){
-        camera.position.z = 4
+    if(camera.position.z > minimumScrollOut){
+        camera.position.z = minimumScrollOut
+    } else if(camera.position.z < minimumScrollIn){
+        camera.position.z = minimumScrollIn
     }
     return false; 
 }, false);
@@ -419,6 +428,11 @@ class Tile{
     }
 
     initialize(){
+        if(this.depth > 1){
+            this.depth *= depthMultiplier
+            this.depth -= (1.25 * depthMultiplier) - 1.1
+        }
+
         this.mesh = new THREE.Mesh( 
             new THREE.ExtrudeGeometry(hexagonShape,  { depth: this.depth, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: .5 } ), 
             new THREE.MeshLambertMaterial({color: "#050505"}) 
@@ -426,7 +440,7 @@ class Tile{
         scene.add(this.mesh)
 
         this.face = new THREE.Mesh(new THREE.PlaneGeometry(Math.sqrt(3) * hexagonSize, 2.05 * hexagonSize, 1, 1), 
-            new THREE.MeshBasicMaterial( { alphaMap: hexagonAlpha, transparent: true, depthWrite: false } ));
+            new THREE.MeshLambertMaterial( { alphaMap: hexagonAlpha, transparent: true, depthWrite: false } ));
         this.face.gamePosition = this.position
         scene.add(this.face)
 
@@ -452,21 +466,29 @@ hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2);
 hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2);
 hexagonShape.lineTo(0, -hexagonSize)
 
-var mapSizeX = 85
-var mapSizeY = 50
+var mapSizeX = 65
+var mapSizeY = 40
 var tiles = []
+var flatArrayTiles = []
 for(var i = 0; i < mapSizeX; i++){
     tiles.push([])
     for(var e = 0; e < mapSizeY; e++){
         tiles[i].push(new Tile({x: i, y: e}))
+        flatArrayTiles.push(tiles[i][e])
     }
 }
 
 function setElevation(pos, length){
+    var lengthModifier = 1
+    if(visitedTiles.filter(x => x.position.x == pos.x && x.position.y == pos.y).length < 1){
+        lengthModifier = alreadyVisitedModifier
+    }
+    visitedTiles.push(tiles[pos.x][pos.y])
+
     if(tiles[pos.x][pos.y].depth > maximumElevation){
         return
     }
-    tiles[pos.x][pos.y].depth += length
+    tiles[pos.x][pos.y].depth = Math.max(1 + length, tiles[pos.x][pos.y].depth + length * lengthAdditionModifier * lengthModifier)
 
     length -= lengthDecreaseAmount
     if(length <= minimumLengthToContinue){
@@ -474,7 +496,7 @@ function setElevation(pos, length){
     }
 
     var noLoss = [false, false, false, false, false, false]
-    if(Math.random() > chanceToBeSameElevation){
+    if(Math.random() < chanceToBeSameElevation){
         noLoss[randomIndex(noLoss)] = true
     }
 
@@ -498,10 +520,53 @@ function setElevation(pos, length){
     }
 }
 
-
-for(var i = 0; Math.random() > ((.1 * i) - 1); i++){
-    setElevation({x: randomIndex(tiles), y: randomIndex(tiles[0])}, startingElevationVariance * Math.random() + startingElevationBase)
+var visitedTiles = []
+for(var i = 0; i < minimumInitialElevations || Math.random() > chanceToNotContinueElevations; i++){
+    var pos = {x: randomIndex(tiles), y: randomIndex(tiles[0])}
+    setElevation(pos, startingElevationVariance * Math.random() + startingElevationBase)
+    visitedTiles = []
 }
+
+var averageElevation = 0
+var tilesWithElevation = 0
+tiles.forEach(function(x){x.forEach(function(e){
+    if(e.depth > 1){
+        averageElevation += e.depth
+        tilesWithElevation++
+    }
+})})
+averageElevation /= tilesWithElevation
+
+var averageElevationA = 0
+var averageElevationB = 0
+var tilesWithElevationA = 0
+var tilesWithElevationB = 0
+tiles.forEach(function(x){x.forEach(function(e){
+    if(e.depth < averageElevation && e.depth > 1){
+        averageElevationA += e.depth
+        tilesWithElevationA++
+    } else if(e.depth > 1){
+        averageElevationB += e.depth
+        tilesWithElevationB++
+    }
+})})
+averageElevationA /= tilesWithElevationA
+averageElevationB /= tilesWithElevationB
+
+tiles.forEach(function(x){x.forEach(function(e){
+    if(e.depth <= 1){
+        return
+    }
+    if(e.depth < averageElevationA){
+        e.depth = 1.25
+    } else if(e.depth < averageElevation){
+        e.depth = 1.5
+    } else if(e.depth < averageElevationB){
+        e.depth = 1.75
+    } else{
+        e.depth = 2
+    }
+})})
 
 tiles.forEach(function(x){x.forEach(function(e){
     e.initialize()
@@ -518,6 +583,34 @@ tiles.forEach(function(x){x.forEach(function(e){
             e.setTerrain(terrainTypes.coast)
     }
 })})
+
+var coastalTiles = []
+tiles.forEach(function(x){x.forEach(function(e){
+    if(e.terrain == terrainTypes.coast){
+        coastalTiles.push(e)
+    }
+})})
+
+coastalTiles.forEach(function(e){
+    if(Math.random() < chanceToSpreadCoast && t(e, "r").terrain == terrainTypes.ocean){
+        t(e, "r").setTerrain(terrainTypes.coast)
+    }
+    if(Math.random() < chanceToSpreadCoast && t(e, "l").terrain == terrainTypes.ocean){
+        t(e, "l").setTerrain(terrainTypes.coast)
+    }
+    if(Math.random() < chanceToSpreadCoast && t(e, "ur").terrain == terrainTypes.ocean){
+        t(e, "ur").setTerrain(terrainTypes.coast)
+    }
+    if(Math.random() < chanceToSpreadCoast && t(e, "ul").terrain == terrainTypes.ocean){
+        t(e, "ul").setTerrain(terrainTypes.coast)
+    }
+    if(Math.random() < chanceToSpreadCoast && t(e, "dr").terrain == terrainTypes.ocean){
+        t(e, "dr").setTerrain(terrainTypes.coast)
+    }
+    if(Math.random() < chanceToSpreadCoast && t(e, "dl").terrain == terrainTypes.ocean){
+        t(e, "dl").setTerrain(terrainTypes.coast)
+    }
+})
 
 var maxOffsetX= mapSizeX * Math.sqrt(3) * hexagonSize
 var maxOffsetY = mapSizeY * 3 / 2 * hexagonSize
@@ -545,10 +638,13 @@ loader.load('scene.gltf', function ( gltf ) {
     scene.add( gltf.scene );
 }, function ( xhr ) {}, function ( error ) {});*/
 
-var hemisphereLight = new THREE.HemisphereLight( 0xffffff, 0x000000, 12.4 );
+var hemisphereLight = new THREE.HemisphereLight( 0xffffff, 0x000000, 1.5 );
 scene.add( hemisphereLight );
 
-camera.position.z = 6
+var light = new THREE.PointLight( 0xffffff, 1.5, 15 );
+scene.add( light );
+
+camera.position.z = (minimumScrollIn + minimumScrollOut) / 2
 camera.rotation.x = .6
 camera.position.x = 40
 camera.position.y = 5
@@ -572,6 +668,8 @@ function animate() {
         activeTile = tiles[intersects[0].object.gamePosition.x][intersects[0].object.gamePosition.y]
         activeTile.active = true
     }	
+
+    light.position.set( intersects[0].point.x, intersects[0].point.y, camera.position.z );
 
     tiles.forEach(function(x){x.forEach(function(e){
         if(e.active){
