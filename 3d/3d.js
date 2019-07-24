@@ -12,6 +12,14 @@ var mouseVector = new THREE.Vector2();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
+var chanceToContinue = .25
+var chanceToBeSameElevation = .95
+var lengthDecreaseAmount = .09
+var minimumLengthToContinue = 0
+var maximumElevation = 3.5
+var startingElevationBase = .8
+var startingElevationVariance = 1.4
+
 $(document).ready(function () {
 })
 
@@ -33,12 +41,25 @@ window.addEventListener('mousemove', function (e) {
     cursor.x = e.pageX;	
 
     if(cursor.active){
-        camera.position.x -= e.movementX / 100
-        camera.position.y += e.movementY / 100
+        mapOffset.x += e.movementX / 100
+        if(mapOffset.x < 0){
+            mapOffset.x = maxOffsetX
+        }
+        mapOffset.y -= e.movementY / 100
+        if(mapOffset.y < 0){
+            mapOffset.y = maxOffsetY
+        }
     }
+
+    tiles.forEach(function(x){x.forEach(function(e){
+        e.mesh.position.x = (((2 * e.position.x  + (e.position.y % 2 == 0 ? 0 : 1)) * Math.sqrt(3) / 2 * hexagonSize) + mapOffset.x) % maxOffsetX
+        e.face.position.x = e.mesh.position.x
+        e.mesh.position.y = ((hexagonSize * 3/2 * e.position.y) + mapOffset.y) % maxOffsetY
+        e.face.position.y = e.mesh.position.y
+    })})
     
     mouseVector.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	mouseVector.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+	mouseVector.y = - ( (event.clientY - 5) / window.innerHeight ) * 2 + 1;
 });
 
 window.addEventListener('mousedown', function (e) {
@@ -50,6 +71,12 @@ window.addEventListener('mouseup', function (e) {
 });
 
 document.body.addEventListener('wheel',function(event){
+    camera.position.z += event.deltaY / 5
+    if(camera.position.z > 11){
+        camera.position.z = 11
+    } else if(camera.position.z < 4){
+        camera.position.z = 4
+    }
     return false; 
 }, false);
 
@@ -68,6 +95,43 @@ document.addEventListener('keyup', function (event) {
     keys[event.keyCode].keyup()
     keys[event.keyCode].active = false
 });
+
+function t(pos, direction){
+    var used = pos
+    var returnPosition = true
+    var final
+    if(pos.x == undefined){
+        used = pos.position
+        returnPosition = false
+    }
+    
+    switch(direction){
+        case "l": final = {x: used.x - 1, y: used.y}; break;
+        case "r": final = {x: used.x + 1, y: used.y}; break;
+        case "ul": final = {x: used.x + (used.y % 2 == 0 ? -1 : 0), y: used.y + 1}; break;
+        case "ur": final = {x: used.x + (used.y % 2 == 0 ? 0 : 1), y: used.y + 1}; break;
+        case "dl": final = {x: used.x + (used.y % 2 == 0 ? -1 : 0), y: used.y - 1}; break;
+        case "dr": final = {x: used.x + (used.y % 2 == 0 ? 0 : 1), y: used.y - 1}; break;
+    }
+
+    if(final.x < 0){
+        final.x = mapSizeX + final.x
+    }
+    if(final.y < 0){
+        final.y = mapSizeY + final.y
+    }
+    if(final.x >= mapSizeX){
+        final.x = final.x - mapSizeX
+    }
+    if(final.y >= mapSizeY){
+        final.y = final.y - mapSizeY
+    }
+
+    if(returnPosition){
+        return final
+    }
+    return tiles[final.x][final.y]
+}
 
 function log(value, base) {
     return Math.log(value) / Math.log(base)
@@ -332,44 +396,45 @@ class Terrain{
 var terrainAlpha = new THREE.TextureLoader().load("terrain/alpha.png");
 
 var terrainTypes = {
-    grasslands: new Terrain("Grasslands", "terrain/coast.png"),
-    grasslandsHills: new Terrain("Grasslands Hills", "terrain/coast.png"),
-    plains: new Terrain("Plains", "terrain/coast.png"),
-    plainsHills: new Terrain("Plains Hills", "terrain/coast.png"),
-    tundra: new Terrain("Tundra", "terrain/coast.png"),
-    tundraHills: new Terrain("Tundra Hills", "terrain/coast.png"),
-    desert: new Terrain("Desert", "terrain/coast.png"),
-    desertHills: new Terrain("Desert Hills", "terrain/coast.png"),
-    snow: new Terrain("Snow", "terrain/coast.png"),
-    snowHills: new Terrain("Snow Hills", "terrain/coast.png"),
+    grasslands: new Terrain("Grasslands", "terrain/grasslands.png"),
+    grasslandsHills: new Terrain("Grasslands Hills", "terrain/grasslands-hills.png"),
+    plains: new Terrain("Plains", "terrain/plains.png"),
+    plainsHills: new Terrain("Plains Hills", "terrain/plains-hills.png"),
+    tundra: new Terrain("Tundra", "terrain/tundra.png"),
+    tundraHills: new Terrain("Tundra Hills", "terrain/tundra-hills.png"),
+    desert: new Terrain("Desert", "terrain/desert.png"),
+    desertHills: new Terrain("Desert Hills", "terrain/desert-hills.png"),
+    snow: new Terrain("Snow", "terrain/snow.png"),
+    snowHills: new Terrain("Snow Hills", "terrain/snow-hills.png"),
     coast: new Terrain("Coast", "terrain/coast.png"),
-    ocean: new Terrain("Ocean", "terrain/coast.png"),
-    ice: new Terrain("Ice", "terrain/coast.png")
+    ocean: new Terrain("Ocean", "terrain/ocean.png"),
+    ice: new Terrain("Ice", "terrain/ice.png")
 }
 
 var hexagonAlpha = new THREE.TextureLoader().load("terrain/alpha.png")
 class Tile{
     constructor(position){
         this.position = position
-        this.depth = Math.random() * .5 + .25
-        
+        this.depth = 1
+    }
+
+    initialize(){
         this.mesh = new THREE.Mesh( 
             new THREE.ExtrudeGeometry(hexagonShape,  { depth: this.depth, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: .5 } ), 
             new THREE.MeshLambertMaterial({color: "#050505"}) 
         );
-        this.mesh.position.y = hexagonSize * 3/2 * position.y
-        this.mesh.position.x = (2 * position.x  + (this.position.y % 2 == 0 ? 0 : 1)) * Math.sqrt(3) / 2 * hexagonSize 
         scene.add(this.mesh)
 
         this.face = new THREE.Mesh(new THREE.PlaneGeometry(Math.sqrt(3) * hexagonSize, 2.05 * hexagonSize, 1, 1), 
             new THREE.MeshBasicMaterial( { alphaMap: hexagonAlpha, transparent: true, depthWrite: false } ));
-        this.face.position.z = this.depth + .02
-        this.face.position.y = hexagonSize * 3/2 * position.y
-        this.face.position.x = (2 * position.x  + (this.position.y % 2 == 0 ? 0 : 1)) * Math.sqrt(3) / 2 * hexagonSize 
-        this.face.gamePosition = position
-            scene.add(this.face)
-        
-        this.setTerrain(terrainTypes.ocean)
+        this.face.gamePosition = this.position
+        scene.add(this.face)
+
+        if(this.depth > 1){
+            this.setTerrain(terrainTypes.grasslands)
+        } else {
+            this.setTerrain(terrainTypes.ocean)
+        }
     }
 
     setTerrain(terrain){
@@ -387,25 +452,78 @@ hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2);
 hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2);
 hexagonShape.lineTo(0, -hexagonSize)
 
-var mapSize = 20
+var mapSizeX = 85
+var mapSizeY = 50
 var tiles = []
-for(var i = 0; i < mapSize; i++){
+for(var i = 0; i < mapSizeX; i++){
     tiles.push([])
-    for(var e = 0; e < mapSize; e++){
+    for(var e = 0; e < mapSizeY; e++){
         tiles[i].push(new Tile({x: i, y: e}))
     }
 }
-var tilesByDepth = []
-for(var i = 0; i < mapSize; i ++){
-    for(var e = 0; e < mapSize; e++){
-        tilesByDepth.push(tiles[i][e])
+
+function setElevation(pos, length){
+    if(tiles[pos.x][pos.y].depth > maximumElevation){
+        return
+    }
+    tiles[pos.x][pos.y].depth += length
+
+    length -= lengthDecreaseAmount
+    if(length <= minimumLengthToContinue){
+        return
+    }
+
+    var noLoss = [false, false, false, false, false, false]
+    if(Math.random() > chanceToBeSameElevation){
+        noLoss[randomIndex(noLoss)] = true
+    }
+
+    if(Math.random() > chanceToContinue){
+        setElevation(t(pos, "l"), noLoss[0] ? (length + lengthDecreaseAmount) : length)
+    }
+    if(Math.random() > chanceToContinue){
+        setElevation(t(pos, "r"), noLoss[1] ? (length + lengthDecreaseAmount) : length)
+    }
+    if(Math.random() > chanceToContinue){
+        setElevation(t(pos, "ul"), noLoss[2] ? (length + lengthDecreaseAmount) : length)
+    }
+    if(Math.random() > chanceToContinue){
+        setElevation(t(pos, "ur"), noLoss[3] ? (length + lengthDecreaseAmount) : length)
+    }
+    if(Math.random() > chanceToContinue){
+        setElevation(t(pos, "dl"), noLoss[4] ? (length + lengthDecreaseAmount) : length)
+    }
+    if(Math.random() > chanceToContinue){
+        setElevation(t(pos, "dr"), noLoss[5] ? (length + lengthDecreaseAmount) : length)
     }
 }
-tilesByDepth.sort(function(a,b){return a.depth - b.depth})
-for(var i = 1; i < mapSize + 1; i++){
-    tilesByDepth[i].face.depthTest = i;
+
+
+for(var i = 0; Math.random() > ((.1 * i) - 1); i++){
+    setElevation({x: randomIndex(tiles), y: randomIndex(tiles[0])}, startingElevationVariance * Math.random() + startingElevationBase)
 }
 
+tiles.forEach(function(x){x.forEach(function(e){
+    e.initialize()
+})})
+
+tiles.forEach(function(x){x.forEach(function(e){
+    if( e.terrain == terrainTypes.ocean &&
+        ((t(e, "r").terrain != terrainTypes.ocean && (t(e, "r").terrain != terrainTypes.coast)) ||
+        (t(e,  "l").terrain != terrainTypes.ocean && (t(e, "l").terrain != terrainTypes.coast)) ||
+        (t(e, "ur").terrain != terrainTypes.ocean && (t(e, "ur").terrain != terrainTypes.coast)) ||
+        (t(e, "ul").terrain != terrainTypes.ocean && (t(e, "ul").terrain != terrainTypes.coast)) ||
+        (t(e, "dr").terrain != terrainTypes.ocean && (t(e, "dr").terrain != terrainTypes.coast)) ||
+        (t(e, "dl").terrain != terrainTypes.ocean && (t(e, "dl").terrain != terrainTypes.coast)))){
+            e.setTerrain(terrainTypes.coast)
+    }
+})})
+
+var maxOffsetX= mapSizeX * Math.sqrt(3) * hexagonSize
+var maxOffsetY = mapSizeY * 3 / 2 * hexagonSize
+var mapOffset = {x: maxOffsetX, y: maxOffsetY}
+
+/*
 var runnerTexture = new THREE.TextureLoader().load( 'exampleAnimation.png' );
 var runnerTextureAlpha = new THREE.TextureLoader().load( 'exampleAnimationAlpha.png' );
 annie = new TextureAnimator( runnerTexture, 10, 1, 10, 75 ); // texture, #horiz, #vert, #total, duration.
@@ -414,7 +532,7 @@ var runnerMaterial = new THREE.MeshBasicMaterial( { map: runnerTexture, alphaMap
 var runnerGeometry = new THREE.PlaneGeometry(2, 2, 1, 1);
 var runner = new THREE.Mesh(runnerGeometry, runnerMaterial);
 runner.position.set(0,0,0);
-//scene.add(runner);
+scene.add(runner);
 
 var background
 loader.load('scene.gltf', function ( gltf ) { 
@@ -424,26 +542,28 @@ loader.load('scene.gltf', function ( gltf ) {
     background.position.x = -150
     background.position.z = 250
     background.position.y = -40
-    //scene.add( gltf.scene );
-}, function ( xhr ) {}, function ( error ) {});
+    scene.add( gltf.scene );
+}, function ( xhr ) {}, function ( error ) {});*/
 
 var hemisphereLight = new THREE.HemisphereLight( 0xffffff, 0x000000, 12.4 );
 scene.add( hemisphereLight );
 
-camera.position.z = 8
-camera.rotation.x = .8
+camera.position.z = 6
+camera.rotation.x = .6
+camera.position.x = 40
+camera.position.y = 5
 
 var delta
 function animate() {
     delta = clock.getDelta()    
-    annie.update(1000 * delta)
-    annieAlpha.update(1000 * delta)
+   // annie.update(1000 * delta)
+   // annieAlpha.update(1000 * delta)
 	requestAnimationFrame( animate );
     renderer.render( scene, camera );
     
     activeTile = undefined
-    tiles.forEach(function(x){x.forEach(function(y){
-        y.active = false; 
+    tiles.forEach(function(x){x.forEach(function(e){
+        e.active = false; 
     })})
 
 	raycaster.setFromCamera( mouseVector, camera );
@@ -453,14 +573,13 @@ function animate() {
         activeTile.active = true
     }	
 
-    tiles.forEach(function(x){x.forEach(function(y){
-        if(y.active){
-            y.mesh.position.z = Math.min(.4, y.mesh.position.z + 0.1)
-            y.face.position.z = y.mesh.position.z + y.depth + .02
+    tiles.forEach(function(x){x.forEach(function(e){
+        if(e.active){
+            e.mesh.position.z = Math.min(.3, e.mesh.position.z + 0.07)
         } else {
-            y.mesh.position.z = Math.max(0, y.mesh.position.z - 0.1)
-            y.face.position.z = y.mesh.position.z + y.depth + .02
+            e.mesh.position.z = Math.max(0, e.mesh.position.z - 0.1)
         }
+        e.face.position.z = e.mesh.position.z + e.depth + .02
     })})
 }
 

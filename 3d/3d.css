@@ -5,6 +5,7 @@ body{
     cursor: context-menu;
     overflow-x: hidden;
     overflow-y: hidden;
+    padding: none;
 }
 
 #tooltip{
