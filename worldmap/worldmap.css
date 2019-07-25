@@ -1,0 +1,90 @@
+body{
+    font-family: Arial;
+    background-color: #e8e8e8;
+    user-select: none;
+    cursor: context-menu;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    background-size: 64px 64px;
+}
+
+#tooltip{
+    position: absolute;
+    box-shadow:   inset 0 0 4px 3px #000000;
+    color: white;
+    text-shadow: 2px 2px 3px black;
+    border-radius: 4px;
+    padding: 1vw;
+    transform: translate(-50%, -50%);
+    transition: opacity .2s, left .4s, right .4s;
+    pointer-events: none;
+}
+
+/* actual map */
+#main{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    border-spacing: 0;
+    filter: drop-shadow(12px 12px 1px rgba(75,75,75,.8));
+    transition: 1s;
+}
+
+td{
+    padding: 0
+}
+
+img{
+    width: 64px;
+    height: 64px;
+    image-rendering: pixelated;
+    display: block;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.flash{
+    filter: brightness(0) invert(1) drop-shadow(12px 12px 1px rgba(75,75,75,.8)) !important
+}
+
+#mario{
+    position: absolute;
+    transition: .1s;
+    filter: drop-shadow(12px 12px 1px rgba(75,75,75,.8)) 
+}
+
+#mario.smw{
+    transform: scale(1.2);
+}
+
+#mario.smb3{
+    transform: scale(1.5);
+}
+
+/* -----------------------------SCROLLBAR-------------------------------- */
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: none; 
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+    border-radius: 5px;
+}
