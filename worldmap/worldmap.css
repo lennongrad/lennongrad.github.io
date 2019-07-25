@@ -25,27 +25,39 @@ body{
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
     text-align: center;
     border-spacing: 0;
     filter: drop-shadow(12px 12px 1px rgba(75,75,75,.8));
-    transition: 1s;
+    transition: .1s;
 }
 
 td{
-    padding: 0
+    position: relative;
+    padding: 0;
+    width: 64px;
+    height: 64px;
 }
 
-img{
+td img{
     width: 64px;
     height: 64px;
     image-rendering: pixelated;
     display: block;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    left: 50%;
+    top: 50%;
     user-select: none;
     -moz-user-select: none;
     -webkit-user-drag: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+}
+
+[src*="switch"]{
+    width: 96px;
+    height: 96px;
+    z-index: 10;
 }
 
 .flash{
@@ -54,8 +66,11 @@ img{
 
 #mario{
     position: absolute;
-    transition: .1s;
-    filter: drop-shadow(12px 12px 1px rgba(75,75,75,.8)) 
+    left: 30%;
+    top: 50%;
+    filter: drop-shadow(12px 12px 1px rgba(75,75,75,.8));
+    width: 64px;
+    height: 64px; 
 }
 
 #mario.smw{
@@ -65,6 +80,167 @@ img{
 #mario.smb3{
     transform: scale(1.5);
 }
+
+.arrow{
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    filter: drop-shadow(0px 0px 5px rgba(75,75,75,.8));
+    cursor: pointer;
+}
+
+#arrow-left{
+    left: calc(30% - 64px);
+    top: 50%;
+    transform: scale(.5) rotate(180deg)
+}
+
+#arrow-right{
+    left: calc(30% + 64px);
+    top: 50%;
+    transform: scale(.5) 
+}
+
+#arrow-up{
+    left: 30%;
+    top: calc(50% - 64px);
+    transform: scale(.5) rotate(270deg)
+}
+
+#arrow-down{
+    left: 30%;
+    top: calc(50% + 64px);
+    transform: scale(.5) rotate(90deg)
+}
+
+#levelinfo{
+    position: absolute;
+    top: 50%;
+    transform-origin: 100% 50%;
+    transform: translateY(-50%) scale(1.3);
+    width: 240px;
+    background-color: #FFCC04;
+    color: #5D1B1C;
+    border-radius: 3px;
+    padding: 10px;
+    filter: drop-shadow(12px 12px 1px rgba(75,75,75,.8));
+    transition: .15s;
+    pointer-events: none;
+}
+
+#levelinfo-thumb{
+    width: 210px
+}
+
+#levelinfo-title{
+    display: block;
+    margin-bottom: 10px;
+    font-size: 15px;
+    margin-left: 5px;
+    font-weight: bold;
+    padding-left: 25px;
+}
+
+#levelinfo-title img{
+    display: inline-block;
+    width: 30px;
+    height: 20px;
+    vertical-align: middle;
+    transform: scale(1.8, 1.3) translateX(-10px)
+}
+
+#levelinfo-panel{
+    height: calc(100% - 55px);
+    background-color: #CFD0C2;
+    width: 210px;
+    box-shadow: 0px 0px 25px 2px inset rgba(25,25,25,.3);
+    padding: 10px;
+}
+
+#levelinfo-descr, #levelinfo-record, #levelinfo-code{
+    background-color: #FEF3D3;
+    margin-top: 14px;
+    padding: 5px;
+}
+
+#levelinfo-descr{
+    margin-top: 4px;
+}
+
+#levelinfo-record{
+    position: relative;
+    text-align: center;
+}
+
+#levelinfo-record-title, #levelinfo-code-title{
+    display: block;
+    color: grey;
+    font-size: 11px;
+    margin-bottom: 5px;
+}
+
+#levelinfo-record img{
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    left: 10px;
+    top: 20px;
+}
+
+#levelinfo-record-text{
+    font-weight: bold
+}
+
+#levelinfo-code{
+    text-align: center;
+    position: relative;
+}
+
+#levelinfo-code-code{
+    font-weight: bold
+}
+
+#levelinfo-toggle{
+    display: none;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 20vw;
+    height: 20vw;
+    border-radius: 3px;
+    font-size: 18vw;
+    text-align: center;
+    line-height: 20vw;
+    color: #621E1F;
+    background-color: #FECE00;
+    filter: drop-shadow(8px 8px 1px rgba(75,75,75,.8));
+    transition: .1s
+}
+
+@media only screen and (max-width: 600px) {
+    #levelinfo {
+        transform: translate(-50%, -50%);
+        left: 50%;
+        top: 50%;
+        width: 90vw;
+        z-index: 5;
+    }
+    
+    #levelinfo-panel{
+        width: calc(100% - 20px)
+    }
+    
+    #levelinfo-thumb{
+        width: calc(100% - 20px);
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%)
+    }
+
+    #levelinfo-toggle{
+        display: block;
+    }
+  }
 
 /* -----------------------------SCROLLBAR-------------------------------- */
 /* width */

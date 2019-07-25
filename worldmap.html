@@ -19,9 +19,25 @@
 <body>
     <!----------------------------------------------FREE------------------------------------------------------------->
 
-    <table id="main">
+    <table id="main"></table>
 
-    </table>
+    <div id="levelinfo-toggle" onclick="toggleLevelInfo()">!</div>
+    <div id="levelinfo">
+        <div id="levelinfo-title"><img id="levelinfo-style" src="https://www.mariowiki.com/images/thumb/e/e8/SMM-SMB3logo.png/50px-SMM-SMB3logo.png"><span id="levelinfo-name">Spiny Desert Plumbing</span></div>
+        <div id="levelinfo-panel">
+            <img id="levelinfo-thumb" src="levelicons/1.png">
+            <div id="levelinfo-descr">The desert pipes have been clogged with Spinies and Thwomps!</div>
+            <div id="levelinfo-record"><img src="worldrecord.png"><div id="levelinfo-record-title">World Record</div><span id="levelinfo-record-text">01'27''110</span>
+            <br><span id="levelinfo-record-holder">VGMelodies</span></div>
+            <div id="levelinfo-code"><span id="levelinfo-code-title">Course ID</span>
+            <span id="levelinfo-code-code">TN7-4X6-6QF</span></div>
+        </div>
+    </div>
+
+    <img id="arrow-left" class="arrow" onclick="keys[37].keydown()" src="arrow.png">
+    <img id="arrow-up" class="arrow" onclick="keys[38].keydown()" src="arrow.png">
+    <img id="arrow-right" class="arrow" onclick="keys[39].keydown()" src="arrow.png">
+    <img id="arrow-down"  class="arrow" onclick="keys[40].keydown()" src="arrow.png">
     <div id="tooltip" style="opacity: 0"></div>
     <!--------------------------------------------------------------------------------------------------------------->
 
