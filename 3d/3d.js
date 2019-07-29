@@ -24,10 +24,15 @@ var chanceToNotContinueElevations = .2
 var chanceToSpreadCoast = .25
 var lengthAdditionModifier = .05
 var alreadyVisitedModifier = .2
-var depthMultiplier = 2.5
+var depthMultiplier = 1.5
 
-var minimumScrollOut = 16
-var minimumScrollIn = 8
+var minimumScrollOut = 13
+var minimumScrollIn = 9
+var ambientLighting = 1
+var unitLighting = 1.75
+var unitLightingDistance = 8
+var seenLighting = .25
+var ownershipOpacity = .2
 
 $(document).ready(function () {
 })
@@ -36,13 +41,79 @@ var debug = false;
 var cursor = {x: 0, y: 0, active: false};
 
 var suffixes = ["", "k", "m", "b", "t", "qu", "qi", "sx", "sp"];
+var directions = ["l", "r", "ul", "ur", "dl", "dr"]
 var hexagonSize = 1
+var hexagonShape = new THREE.Shape();
+hexagonShape.moveTo(0, -hexagonSize)
+hexagonShape.lineTo(Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2);
+hexagonShape.lineTo(Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2);
+hexagonShape.lineTo(0, hexagonSize);
+hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2);
+hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2);
+hexagonShape.lineTo(0, -hexagonSize)
+
+var ownerBordersShape = [new THREE.Shape(), new THREE.Shape(), new THREE.Shape(), new THREE.Shape(), new THREE.Shape(), new THREE.Shape()]
+//L
+ownerBordersShape[0].moveTo(-Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2)
+ownerBordersShape[0].lineTo(-Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2)
+ownerBordersShape[0].lineTo(-Math.sqrt(3) * hexagonSize / 2.4, -hexagonSize / 2 - hexagonSize / 10)
+ownerBordersShape[0].lineTo(-Math.sqrt(3) * hexagonSize / 2.4, -hexagonSize / 2)
+ownerBordersShape[0].lineTo(-Math.sqrt(3) * hexagonSize / 2.4, hexagonSize / 2 + hexagonSize / 10)
+ownerBordersShape[0].lineTo(-Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2)
+//R
+ownerBordersShape[1].moveTo(Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2)
+ownerBordersShape[1].lineTo(Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2)
+ownerBordersShape[1].lineTo(Math.sqrt(3) * hexagonSize / 2.4, -hexagonSize / 2 - hexagonSize / 10)
+ownerBordersShape[1].lineTo(Math.sqrt(3) * hexagonSize / 2.4, hexagonSize / 2)
+ownerBordersShape[1].lineTo(Math.sqrt(3) * hexagonSize / 2.4, hexagonSize / 2 + hexagonSize / 10)
+ownerBordersShape[1].lineTo(Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2)
+//UL
+ownerBordersShape[2].moveTo(0, hexagonSize)
+ownerBordersShape[2].lineTo(hexagonSize / 7, hexagonSize / 1.15)
+ownerBordersShape[2].lineTo(0, hexagonSize / 1.15)
+ownerBordersShape[2].lineTo(-Math.sqrt(3) * hexagonSize / 2.5, hexagonSize / 2) 
+ownerBordersShape[2].lineTo(-Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2 - hexagonSize / 10) 
+ownerBordersShape[2].lineTo(-Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2)
+ownerBordersShape[2].lineTo(0, hexagonSize)
+//UR
+ownerBordersShape[3].moveTo(0, hexagonSize)
+ownerBordersShape[3].lineTo(-hexagonSize / 7, hexagonSize / 1.15)
+ownerBordersShape[3].lineTo(0, hexagonSize / 1.15)
+ownerBordersShape[3].lineTo(Math.sqrt(3) * hexagonSize / 2.5, hexagonSize / 2) 
+ownerBordersShape[3].lineTo(Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2 - hexagonSize / 10) 
+ownerBordersShape[3].lineTo(Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2)
+ownerBordersShape[3].lineTo(0, hexagonSize)
+//DL
+ownerBordersShape[4].moveTo(0, -hexagonSize)
+ownerBordersShape[4].lineTo(hexagonSize / 7, -hexagonSize / 1.15)
+ownerBordersShape[4].lineTo(0, -hexagonSize / 1.15)
+ownerBordersShape[4].lineTo(-Math.sqrt(3) * hexagonSize / 2.5, -hexagonSize / 2) 
+ownerBordersShape[4].lineTo(-Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2 + hexagonSize / 5) 
+ownerBordersShape[4].lineTo(-Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2)
+ownerBordersShape[4].lineTo(0, -hexagonSize)
+//DR
+ownerBordersShape[5].moveTo(0, -hexagonSize)
+ownerBordersShape[5].lineTo(-hexagonSize / 7, -hexagonSize / 1.15)
+ownerBordersShape[5].lineTo(0, -hexagonSize / 1.15)
+ownerBordersShape[5].lineTo(Math.sqrt(3) * hexagonSize / 2.5, -hexagonSize / 2) 
+ownerBordersShape[5].lineTo(Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2 + hexagonSize / 5) 
+ownerBordersShape[5].lineTo(Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2)
+ownerBordersShape[5].lineTo(0, -hexagonSize)
+
+var ownerBorders = []
+for(var i = 0; i < directions.length; i++){
+    ownerBorders[i] = new THREE.Mesh( 
+        new THREE.ExtrudeGeometry(ownerBordersShape[i], { depth: .1, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: .1, bevelThickness: .1 }),
+        new THREE.MeshLambertMaterial({color: "#050505"}) 
+    );
+}
 
 var keys = {
     87: {keydown: function(){}, keyup: function(){}, active: false}, // up
     83: {keydown: function(){}, keyup: function(){}, active: false}, // down
     65: {keydown: function(){}, keyup: function(){}, active: false}, // left
-    68: {keydown: function(){}, keyup: function(){}, active: false}  // right
+    68: {keydown: function(){}, keyup: function(){}, active: false},  // right
+    13: {keydown: function(){players[0].endTurn()}, keyup: function(){}, active: false}  
 }
 
 window.addEventListener('mousemove', function (e) {
@@ -60,12 +131,7 @@ window.addEventListener('mousemove', function (e) {
         }
     }
 
-    tiles.forEach(function(x){x.forEach(function(e){
-        e.mesh.position.x = (((2 * e.position.x  + (e.position.y % 2 == 0 ? 0 : 1)) * Math.sqrt(3) / 2 * hexagonSize) + mapOffset.x) % maxOffsetX
-        e.face.position.x = e.mesh.position.x
-        e.mesh.position.y = ((hexagonSize * 3/2 * e.position.y) + mapOffset.y) % maxOffsetY
-        e.face.position.y = e.mesh.position.y
-    })})
+    cameraMove()
     
     mouseVector.x = ( event.clientX / window.innerWidth ) * 2 - 1;
 	mouseVector.y = - ( (event.clientY - 5) / window.innerHeight ) * 2 + 1;
@@ -73,6 +139,15 @@ window.addEventListener('mousemove', function (e) {
 
 window.addEventListener('mousedown', function (e) {
     cursor.active = true;
+
+    if(hoveredUnit != undefined){
+        activeUnit = hoveredUnit
+        renderReachable(activeUnit)
+    }
+    
+    if(activeTile != undefined && activeTile.reachableOverlay != undefined){
+        activeUnit.move(activeTile.position, activeTile.reachableOverlay.reachableDistance)
+    }
 })
 
 window.addEventListener('mouseup', function (e) {
@@ -104,6 +179,7 @@ document.addEventListener('keyup', function (event) {
     keys[event.keyCode].keyup()
     keys[event.keyCode].active = false
 });
+
 
 function t(pos, direction){
     var used = pos
@@ -399,7 +475,8 @@ class Terrain{
     constructor(name, texture){
         this.name = name
         this.textureFilename = texture
-        this.texture = new THREE.TextureLoader().load(texture);
+        this.texture = new THREE.TextureLoader().load(texture)
+        this.material = new THREE.MeshLambertMaterial( { alphaMap: hexagonAlpha, transparent: true, depthWrite: false, map: this.texture } )
     }
 }
 var terrainAlpha = new THREE.TextureLoader().load("terrain/alpha.png");
@@ -421,26 +498,23 @@ var terrainTypes = {
 }
 
 var hexagonAlpha = new THREE.TextureLoader().load("terrain/alpha.png")
+var hexagonGeometry = new THREE.PlaneGeometry(Math.sqrt(3) * hexagonSize, 2.05 * hexagonSize, 1, 1)
 class Tile{
     constructor(position){
         this.position = position
         this.depth = 1
+
+        this.light = new THREE.PointLight( 0xffffff, seenLighting, unitLightingDistance );
     }
 
     initialize(){
-        if(this.depth > 1){
-            this.depth *= depthMultiplier
-            this.depth -= (1.25 * depthMultiplier) - 1.1
-        }
-
         this.mesh = new THREE.Mesh( 
             new THREE.ExtrudeGeometry(hexagonShape,  { depth: this.depth, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: .5 } ), 
             new THREE.MeshLambertMaterial({color: "#050505"}) 
         );
         scene.add(this.mesh)
 
-        this.face = new THREE.Mesh(new THREE.PlaneGeometry(Math.sqrt(3) * hexagonSize, 2.05 * hexagonSize, 1, 1), 
-            new THREE.MeshLambertMaterial( { alphaMap: hexagonAlpha, transparent: true, depthWrite: false } ));
+        this.face = new THREE.Mesh(hexagonGeometry);
         this.face.gamePosition = this.position
         scene.add(this.face)
 
@@ -453,18 +527,209 @@ class Tile{
 
     setTerrain(terrain){
         this.terrain = terrain
-        this.face.material.map = this.terrain.texture
+        this.face.material = this.terrain.material
+    }
+
+    seen(){
+        scene.add( this.light );
+    }
+
+    goto(){
+        mapOffset.x = 40 - (Math.sqrt(3) * hexagonSize * this.position.x)
+        mapOffset.y = 70 - (2.05 * hexagonSize * this.position.y)
+        cameraMove()
+    }
+
+    foundSettlement(){
+        this.settlement = new Settlement(this.position)
+        activePlayer.settlements.push(this.settlement)
+
+        this.switchOwnership(activePlayer) 
+        for(var i = 0; i < directions.length; i++){
+            t(this, directions[i]).switchOwnership(activePlayer)
+        }
+    }
+
+    switchOwnership(player){
+        this.player = player
+
+        if(this.ownerOverlay == undefined){
+            this.ownerOverlay = new THREE.Mesh(hexagonGeometry, this.player.overlayMaterial);
+            this.ownerOverlay.gamePosition = this.position
+            scene.add(this.ownerOverlay)
+        }
+
+        calculateBorders()
     }
 }
 
-var hexagonShape = new THREE.Shape();
-hexagonShape.moveTo(0, -hexagonSize)
-hexagonShape.lineTo(Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2);
-hexagonShape.lineTo(Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2);
-hexagonShape.lineTo(0, hexagonSize);
-hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2);
-hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2);
-hexagonShape.lineTo(0, -hexagonSize)
+var overlayMaterial = new THREE.MeshBasicMaterial( { color: 0x0000FF, alphaMap: hexagonAlpha, transparent: true, opacity: .2, depthWrite: false } )
+function renderReachable(unit){
+    hideReachable()
+    
+    var reachable = unit.determineReachable()
+
+    if(reachable.length > 1){
+        reachable.forEach(function(e){
+            e.tile.reachableOverlay = new THREE.Mesh(hexagonGeometry, overlayMaterial)
+            e.tile.reachableOverlay.reachablePos = e.tile.position
+            e.tile.reachableOverlay.reachableDistance = e.distance
+            scene.add(e.tile.reachableOverlay)
+        })
+    }
+}
+
+function hideReachable(){
+    tiles.forEach(z => z.forEach(function(e){
+        scene.remove(e.reachableOverlay)
+        e.reachableOverlay = undefined
+    }))
+}
+
+class UnitType{
+    constructor(name, ocean, filename){
+        this.name = name
+        this.ocean = ocean //temp   
+        this.texture = new THREE.TextureLoader().load( 'uniticons/' + filename );
+    }
+}
+
+var unitTypes = {
+    infantry: new UnitType("Infantry", false, "infantry.png"),
+    sea: new UnitType("Sea", true, "sea.png")
+}
+
+var unitIconAlpha = new THREE.TextureLoader().load( 'uniticons/alpha.png' );
+
+class Unit{
+    constructor(type, pos){
+        this.type = type
+        this.pos = pos
+        this.movementRemaining = 0
+
+        this.icon = new THREE.Sprite(new THREE.SpriteMaterial( { map: this.type.texture, alphaMap: unitIconAlpha, side: THREE.DoubleSide, transparent: true } ));
+        scene.add(this.icon)
+
+        this.light = new THREE.PointLight( 0xffffff, unitLighting, unitLightingDistance );
+        scene.add( this.light );
+        this.lightNorth = new THREE.PointLight( 0xffffff, unitLighting, unitLightingDistance );
+        scene.add( this.lightNorth );
+        this.lightWest = new THREE.PointLight( 0xffffff, unitLighting, unitLightingDistance );
+        scene.add( this.lightWest );
+        this.lightEast = new THREE.PointLight( 0xffffff, unitLighting, unitLightingDistance );
+        scene.add( this.lightEast );
+        this.lightSouth = new THREE.PointLight( 0xffffff, unitLighting, unitLightingDistance );
+        scene.add( this.lightSouth );
+        
+
+        this.resetTurn()
+    }
+
+    movementCost(tile){
+        var final = 1
+
+        if(this.type.ocean){
+            if(tile.terrain == terrainTypes.coast){
+                final += .25
+            }
+            if(tile.terrain == terrainTypes.ocean){
+                final += .5
+            }
+        } else{
+            if(tile.terrain == terrainTypes.coast){
+                final += .5
+            }
+            if(tile.terrain == terrainTypes.ocean){
+                final = 100
+            }
+        }
+
+        return final
+    }
+
+    determineReachable(){
+        var visited = [{tile: tiles[this.pos.x][this.pos.y], distance: 0}]
+        var fringes = []
+        fringes.push([{tile: tiles[this.pos.x][this.pos.y], distance: 0}])
+
+        var self = this
+
+        for(var i = 0; i < self.movementRemaining; i++){
+            fringes.push([])
+            fringes[i].forEach(function(e){
+                for(var d = 0; d < directions.length; d++){
+                    var neighbor = t(e.tile, directions[d])
+                    if(e.distance + self.movementCost(neighbor) <= self.movementRemaining){
+                        var sameTiles = visited.filter(y => y.tile.position.x == neighbor.position.x && y.tile.position.y == neighbor.position.y)
+                        if(sameTiles.length == 0){
+                            visited.push({tile: neighbor, distance: e.distance + self.movementCost(neighbor)})
+                            fringes[i + 1].push({tile: neighbor, distance: e.distance + self.movementCost(neighbor)})
+                        } else if(sameTiles[0].distance > e.distance + self.movementCost(neighbor)) {
+                            sameTiles[0].distance = e.distance + self.movementCost(neighbor)
+                            fringes[i + 1].push({tile: neighbor, distance: e.distance + self.movementCost(neighbor)})
+                        }
+                    }
+                }
+            })
+        }
+
+        return visited
+    }
+
+    disactivate(){
+        this.icon.material.opacity = .5
+    }
+
+    resetTurn(){
+        this.icon.material.opacity = .9
+        this.movementRemaining = 4
+    }
+
+    move(tile, cost){
+        this.pos = tile
+        this.movementRemaining -= cost
+        
+        if(this.determineReachable().length <= 1){
+            this.disactivate()
+        }
+
+        tiles[tile.x][tile.y].seen()
+
+        cameraMove()
+        hideReachable()
+    }
+}
+
+class Player{
+    constructor(){
+        this.units = [] 
+        this.settlements = []
+        this.overlayMaterial = new THREE.MeshBasicMaterial( { color: new THREE.Color(Math.random(), Math.random(), Math.random()),
+             alphaMap: hexagonAlpha, transparent: true, opacity: ownershipOpacity, depthWrite: false } )
+    }
+
+    endTurn(){
+        hideReachable()
+        this.units.forEach(x => x.resetTurn())
+        activePlayer = players[(players.indexOf(activePlayer) + 1) % players.length]
+    }
+}
+var players = [new Player()]
+activePlayer = players[0]
+
+class Settlement{
+    constructor(pos){
+        this.position = pos
+
+        this.model = settlement.clone()
+        this.model.scale.set(.0025, .0025, .0025)
+        this.model.rotation.y = Math.random() * Math.PI * 2
+        scene.add(this.model)
+    }
+}
+
+players[0].units.push(new Unit(unitTypes.infantry, {x: 0, y: 0}))
+players[0].units.push(new Unit(unitTypes.sea, {x: 2, y: 2}))
 
 var mapSizeX = 65
 var mapSizeY = 40
@@ -527,48 +792,10 @@ for(var i = 0; i < minimumInitialElevations || Math.random() > chanceToNotContin
     visitedTiles = []
 }
 
-var averageElevation = 0
-var tilesWithElevation = 0
 tiles.forEach(function(x){x.forEach(function(e){
     if(e.depth > 1){
-        averageElevation += e.depth
-        tilesWithElevation++
+        e.depth = 1 + depthMultiplier * (Math.pow(e.depth, .5) - 1)
     }
-})})
-averageElevation /= tilesWithElevation
-
-var averageElevationA = 0
-var averageElevationB = 0
-var tilesWithElevationA = 0
-var tilesWithElevationB = 0
-tiles.forEach(function(x){x.forEach(function(e){
-    if(e.depth < averageElevation && e.depth > 1){
-        averageElevationA += e.depth
-        tilesWithElevationA++
-    } else if(e.depth > 1){
-        averageElevationB += e.depth
-        tilesWithElevationB++
-    }
-})})
-averageElevationA /= tilesWithElevationA
-averageElevationB /= tilesWithElevationB
-
-tiles.forEach(function(x){x.forEach(function(e){
-    if(e.depth <= 1){
-        return
-    }
-    if(e.depth < averageElevationA){
-        e.depth = 1.25
-    } else if(e.depth < averageElevation){
-        e.depth = 1.5
-    } else if(e.depth < averageElevationB){
-        e.depth = 1.75
-    } else{
-        e.depth = 2
-    }
-})})
-
-tiles.forEach(function(x){x.forEach(function(e){
     e.initialize()
 })})
 
@@ -615,6 +842,8 @@ coastalTiles.forEach(function(e){
 var maxOffsetX= mapSizeX * Math.sqrt(3) * hexagonSize
 var maxOffsetY = mapSizeY * 3 / 2 * hexagonSize
 var mapOffset = {x: maxOffsetX, y: maxOffsetY}
+var activeUnit = undefined
+var hoveredUnit = undefined
 
 /*
 var runnerTexture = new THREE.TextureLoader().load( 'exampleAnimation.png' );
@@ -626,28 +855,98 @@ var runnerGeometry = new THREE.PlaneGeometry(2, 2, 1, 1);
 var runner = new THREE.Mesh(runnerGeometry, runnerMaterial);
 runner.position.set(0,0,0);
 scene.add(runner);
+*/
 
-var background
+var settlement
 loader.load('scene.gltf', function ( gltf ) { 
-    background = gltf.scene; 
-    background.scale.set(10,10,10)
-    background.rotation.y = -Math.PI / 2
-    background.position.x = -150
-    background.position.z = 250
-    background.position.y = -40
-    scene.add( gltf.scene );
-}, function ( xhr ) {}, function ( error ) {});*/
+    settlement = gltf.scene; 
+    settlement.rotation.x = Math.PI / 2
 
-var hemisphereLight = new THREE.HemisphereLight( 0xffffff, 0x000000, 1.5 );
+    tiles[0][1].foundSettlement()
+}, function ( xhr ) {}, function ( error ) {});
+
+var hemisphereLight = new THREE.HemisphereLight( 0xffffff, 0x000000, ambientLighting );
 scene.add( hemisphereLight );
-
-var light = new THREE.PointLight( 0xffffff, 1.5, 15 );
-scene.add( light );
 
 camera.position.z = (minimumScrollIn + minimumScrollOut) / 2
 camera.rotation.x = .6
 camera.position.x = 40
 camera.position.y = 5
+
+function calculateBorders(){
+    tiles.forEach(z => z.forEach(function(e){
+        if(e.player != undefined){
+            if(e.borderMeshes != undefined && e.borderMeshes.length > 0){
+                for(var i = 0; i < e.borderMeshes.length; i++){
+                    scene.remove(e.borderMeshes[i])
+                }
+            }
+            e.borderMeshes = []
+            for(var d = 0; d < directions.length; d++){
+                if(t(e, directions[d]).player != e.player){
+                    e.borderMeshes.push(ownerBorders[d].clone())
+                    scene.add(e.borderMeshes[e.borderMeshes.length - 1])
+                }
+            }
+        }
+    }))
+}
+
+function cameraMove(){
+    tiles.forEach(function(x){x.forEach(function(e){
+        e.mesh.position.x = (((2 * e.position.x  + (e.position.y % 2 == 0 ? 0 : 1)) * Math.sqrt(3) / 2 * hexagonSize) + mapOffset.x) % maxOffsetX
+        e.face.position.x = e.mesh.position.x
+        e.light.position.x = e.mesh.position.x
+        e.mesh.position.y = ((hexagonSize * 3/2 * e.position.y) + mapOffset.y) % maxOffsetY
+        e.face.position.y = e.mesh.position.y
+        e.light.position.y = e.mesh.position.y
+
+        if(e.reachableOverlay != undefined){
+            e.reachableOverlay.position.x = e.face.position.x
+            e.reachableOverlay.position.y = e.face.position.y
+        }
+
+        if(e.ownerOverlay != undefined){
+            e.ownerOverlay.position.x = e.face.position.x
+            e.ownerOverlay.position.y = e.face.position.y
+        }
+
+        if(e.borderMeshes != undefined){
+            e.borderMeshes.forEach(function(d){
+                d.position.x = e.face.position.x
+                d.position.y = e.face.position.y
+            })
+        }
+    })})
+
+    players.forEach(x => x.units.forEach(function(e){
+        e.icon.position.x = tiles[e.pos.x][e.pos.y].mesh.position.x
+        e.icon.position.y = tiles[e.pos.x][e.pos.y].mesh.position.y - .2
+        e.icon.position.z = tiles[e.pos.x][e.pos.y].face.position.z + .5
+
+        e.light.position.z = tiles[e.pos.x][e.pos.y].face.position.z + 1.75
+        e.lightNorth.position.z = tiles[e.pos.x][e.pos.y].face.position.z + 1.75
+        e.lightEast.position.z = tiles[e.pos.x][e.pos.y].face.position.z + 1.75
+        e.lightWest.position.z = tiles[e.pos.x][e.pos.y].face.position.z + 1.75
+        e.lightSouth.position.z = tiles[e.pos.x][e.pos.y].face.position.z + 1.75
+        
+        e.light.position.x = tiles[e.pos.x][e.pos.y].mesh.position.x
+        e.light.position.y = tiles[e.pos.x][e.pos.y].mesh.position.y
+        e.lightNorth.position.x = tiles[e.pos.x][e.pos.y].mesh.position.x
+        e.lightNorth.position.y = tiles[e.pos.x][e.pos.y].mesh.position.y + maxOffsetY 
+        e.lightWest.position.x = tiles[e.pos.x][e.pos.y].mesh.position.x - maxOffsetX
+        e.lightWest.position.y = tiles[e.pos.x][e.pos.y].mesh.position.y
+        e.lightEast.position.x = tiles[e.pos.x][e.pos.y].mesh.position.x + maxOffsetX
+        e.lightEast.position.y = tiles[e.pos.x][e.pos.y].mesh.position.y
+        e.lightSouth.position.x = tiles[e.pos.x][e.pos.y].mesh.position.x
+        e.lightSouth.position.y = tiles[e.pos.x][e.pos.y].mesh.position.y - maxOffsetY
+    }))
+
+    players.forEach(x => x.settlements.forEach(function(e){
+        e.model.position.x = tiles[e.position.x][e.position.y].mesh.position.x
+        e.model.position.y = tiles[e.position.x][e.position.y].mesh.position.y
+    }))
+}
 
 var delta
 function animate() {
@@ -662,14 +961,20 @@ function animate() {
         e.active = false; 
     })})
 
+    hoveredUnit = undefined
 	raycaster.setFromCamera( mouseVector, camera );
     var intersects = raycaster.intersectObjects( scene.children )
-    if(intersects[0].object.gamePosition != undefined){
-        activeTile = tiles[intersects[0].object.gamePosition.x][intersects[0].object.gamePosition.y]
-        activeTile.active = true
-    }	
-
-    light.position.set( intersects[0].point.x, intersects[0].point.y, camera.position.z );
+    if(intersects[0] != undefined && intersects[0].object != undefined){
+        if(intersects[0].object.gamePosition != undefined){
+            activeTile = tiles[intersects[0].object.gamePosition.x][intersects[0].object.gamePosition.y]
+            activeTile.active = true
+        } else if(intersects[0].object.reachablePos != undefined){
+            activeTile = tiles[intersects[0].object.reachablePos.x][intersects[0].object.reachablePos.y]
+            activeTile.active = true
+        } else if(intersects[0].object.unitID != undefined){
+            hoveredUnit = players[intersects[0].object.playerID].units[intersects[0].object.unitID]
+        }
+    }
 
     tiles.forEach(function(x){x.forEach(function(e){
         if(e.active){
@@ -678,8 +983,31 @@ function animate() {
             e.mesh.position.z = Math.max(0, e.mesh.position.z - 0.1)
         }
         e.face.position.z = e.mesh.position.z + e.depth + .02
+        e.light.position.z = e.mesh.position.z + e.depth + 1
+        if(e.settlement != undefined){
+            e.settlement.model.position.z = e.face.position.z
+        }
+        if(e.reachableOverlay != undefined){
+            e.reachableOverlay.position.z = e.face.position.z + .05
+        }
+        if(e.ownerOverlay != undefined){
+            e.ownerOverlay.position.z = e.face.position.z + .06
+        }
+        if(e.borderMeshes != undefined){
+            e.borderMeshes.forEach(function(d){
+                d.position.z = e.face.position.z
+            })
+        }
     })})
+
+    for(var i = 0; i < players.length; i++){
+        for(var e = 0; e < players[i].units.length; e++){
+            players[i].units[e].icon.playerID = i
+            players[i].units[e].icon.unitID = e
+        }
+    }
 }
 
+tiles[0][0].goto()
 hideTooltip()
 animate();
