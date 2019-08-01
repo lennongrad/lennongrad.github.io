@@ -9,9 +9,8 @@ body{
     margin: 0px
 }
 
-#tooltip{
+.tooltip{
     position: absolute;
-    background: url("weatheredbackground.png"), black repeat;
     box-shadow:   inset 0 0 4px 3px #000000;
     color: white;
     text-shadow: 2px 2px 3px black;
@@ -20,6 +19,10 @@ body{
     transform: translate(-50%, -50%);
     transition: opacity .2s, left .4s, right .4s;
     pointer-events: none;
+}
+
+#tooltip-tile{
+    transform: translate(20px, -50%);
 }
 
 /* -----------------------------SCROLLBAR-------------------------------- */

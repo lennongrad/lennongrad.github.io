@@ -12,6 +12,8 @@ var mouseVector = new THREE.Vector2();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
+var tooltipTile = document.getElementById("tooltip-tile")
+
 var chanceToContinue = .25
 var chanceToBeSameElevation = .6
 var lengthDecreaseAmount = .1
@@ -25,23 +27,32 @@ var chanceToSpreadCoast = .25
 var lengthAdditionModifier = .05
 var alreadyVisitedModifier = .2
 var depthMultiplier = 1.5
+var riversLimit = 15
+var chanceToGenerateRiverDespiteDepth = .01
+var plainsLimit = 4
+var desertsLimit = 2
+var maxSpreadTerrain = 5
+var minimumSpreadTerrain = 2
+var chanceToContinueMountain = .45
+var chanceToContinueForest = .2
+var forestsLimit = 16
 
 var minimumScrollOut = 13
 var minimumScrollIn = 9
-var ambientLighting = 1
-var unitLighting = 1.75
+var ambientLighting = 2
+var unitLighting = 0
 var unitLightingDistance = 8
-var seenLighting = .25
-var ownershipOpacity = .2
-
-$(document).ready(function () {
-})
+var ownershipOpacity = .3
+var reachableOverlayOpacity = .3
+var unitIconHoverAboveTile = .3
+var chanceToIgnoreDeepestTile = .5
 
 var debug = false;
-var cursor = {x: 0, y: 0, active: false};
+var cursor = {x: 0, y: 0, active: false, lastMoved: 0};
 
 var suffixes = ["", "k", "m", "b", "t", "qu", "qi", "sx", "sp"];
 var directions = ["l", "r", "ul", "ur", "dl", "dr"]
+var directionsClockwise = ["r", "dr", "dl", "l", "ul", "ur"]
 var hexagonSize = 1
 var hexagonShape = new THREE.Shape();
 hexagonShape.moveTo(0, -hexagonSize)
@@ -103,10 +114,18 @@ ownerBordersShape[5].lineTo(0, -hexagonSize)
 var ownerBorders = []
 for(var i = 0; i < directions.length; i++){
     ownerBorders[i] = new THREE.Mesh( 
-        new THREE.ExtrudeGeometry(ownerBordersShape[i], { depth: .1, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: .1, bevelThickness: .1 }),
-        new THREE.MeshLambertMaterial({color: "#050505"}) 
+        new THREE.ExtrudeGeometry(ownerBordersShape[i], { depth: .1, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: .1, bevelThickness: .1 }),
+        new THREE.MeshLambertMaterial({color: "#050505", transparent: true, opacity: .9}) 
     );
 }
+ 
+document.oncontextmenu = cancelContextMenu = function(e) {
+    if (e && e.stopPropagation)
+      e.stopPropagation();
+ 
+     return false;
+}
+
 
 var keys = {
     87: {keydown: function(){}, keyup: function(){}, active: false}, // up
@@ -116,43 +135,61 @@ var keys = {
     13: {keydown: function(){players[0].endTurn()}, keyup: function(){}, active: false}  
 }
 
-window.addEventListener('mousemove', function (e) {
-    cursor.y = e.pageY;
-    cursor.x = e.pageX;	
+var dontHideReachable = false
+window.addEventListener('mousemove', function (eventData) {
+    cursor.y = eventData.pageY;
+    cursor.x = eventData.pageX;	
+    cursor.lastMoved = 0;
 
     if(cursor.active){
-        mapOffset.x += e.movementX / 100
+        mapOffset.x += eventData.movementX / 100
         if(mapOffset.x < 0){
             mapOffset.x = maxOffsetX
         }
-        mapOffset.y -= e.movementY / 100
+        mapOffset.y -= eventData.movementY / 100
         if(mapOffset.y < 0){
             mapOffset.y = maxOffsetY
         }
     }
 
     cameraMove()
+    dontHideReachable = true
     
-    mouseVector.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	mouseVector.y = - ( (event.clientY - 5) / window.innerHeight ) * 2 + 1;
+    mouseVector.x = ( eventData.clientX / window.innerWidth ) * 2 - 1;
+	mouseVector.y = - ( (eventData.clientY - 5) / window.innerHeight ) * 2 + 1;
 });
 
-window.addEventListener('mousedown', function (e) {
-    cursor.active = true;
-
-    if(hoveredUnit != undefined){
-        activeUnit = hoveredUnit
-        renderReachable(activeUnit)
-    }
-    
-    if(activeTile != undefined && activeTile.reachableOverlay != undefined){
-        activeUnit.move(activeTile.position, activeTile.reachableOverlay.reachableDistance)
+window.addEventListener('mousedown', function (eventData) {
+    if (eventData.which === 1) { //left
+        cursor.active = true;
+        dontHideReachable = false
     }
 })
 
-window.addEventListener('mouseup', function (e) {
-    cursor.active = false;
+$(document).mouseleave(function () {
+    cursor.active = false
 });
+
+$("body").mouseup(function(eventData) {
+    if (eventData.which === 1) { //left
+        cursor.active = false;
+    
+        if(!dontHideReachable){
+            hideReachable()
+        }
+    
+        if(hoveredUnit != undefined){
+            activeUnit = hoveredUnit
+            renderReachable(activeUnit)
+        }
+    } else if(eventData.which === 3){ //right
+        if(activeTile != undefined && activeTile.reachableOverlay != undefined && activeTile != tiles[activeUnit.pos.x][activeUnit.pos.y]){
+            activeUnit.move(activeTile.position, activeTile.reachableOverlay.reachableDistance)
+        }
+    } else { //midle
+
+    }
+})
 
 document.body.addEventListener('wheel',function(event){
     camera.position.z += event.deltaY / 5
@@ -216,6 +253,10 @@ function t(pos, direction){
         return final
     }
     return tiles[final.x][final.y]
+}
+
+function randomTile(){
+    return randomValue(randomValue(tiles))
 }
 
 function log(value, base) {
@@ -293,7 +334,7 @@ function decimalToHexString(number) {
     }
 
     number = number.toString(16).toUpperCase();
-    for (y = 0; y < 7 - number.toString().length; y++) {
+    for (y = 0; y < 6 - number.toString().length; y++) {
         number = "0" + number;
     }
 
@@ -480,6 +521,14 @@ class Terrain{
     }
 }
 var terrainAlpha = new THREE.TextureLoader().load("terrain/alpha.png");
+var riverMaterial =  new THREE.MeshLambertMaterial( { 
+    alphaMap: new THREE.TextureLoader().load("terrain/river_alpha.png"), 
+    map: new THREE.TextureLoader().load("terrain/river.png"), 
+    transparent: true, depthWrite: false,  side: THREE.DoubleSide } )
+var roadMaterial =  new THREE.MeshLambertMaterial( { 
+    alphaMap: new THREE.TextureLoader().load("terrain/road_alpha.png"), 
+    map: new THREE.TextureLoader().load("terrain/road.png"), 
+    transparent: true, depthWrite: false,  side: THREE.DoubleSide } )
 
 var terrainTypes = {
     grasslands: new Terrain("Grasslands", "terrain/grasslands.png"),
@@ -489,6 +538,7 @@ var terrainTypes = {
     tundra: new Terrain("Tundra", "terrain/tundra.png"),
     tundraHills: new Terrain("Tundra Hills", "terrain/tundra-hills.png"),
     desert: new Terrain("Desert", "terrain/desert.png"),
+    desertFloodplains: new Terrain("Desert Floodplains", "terrain/desert-floodplains.png"),
     desertHills: new Terrain("Desert Hills", "terrain/desert-hills.png"),
     snow: new Terrain("Snow", "terrain/snow.png"),
     snowHills: new Terrain("Snow Hills", "terrain/snow-hills.png"),
@@ -497,14 +547,46 @@ var terrainTypes = {
     ice: new Terrain("Ice", "terrain/ice.png")
 }
 
+class Feature{
+    constructor(name, filename, modelProperties){
+        this.name = name
+        this.modelProperties = modelProperties
+
+        var self = this
+        loader.load(filename, function ( gltf ) { 
+            self.model = gltf.scene; 
+            if(modelProperties.scale != undefined){
+                self.model.scale.set(modelProperties.scale, modelProperties.scale, modelProperties.scale)
+            }
+            if(modelProperties.offsetX != undefined){
+                self.model.position.x = modelProperties.offsetX
+            }
+            if(modelProperties.offsetY != undefined){
+                self.model.position.y = modelProperties.offsetY
+            }
+            self.model.rotation.x = Math.PI / 2
+            allModelsLoaded()
+        }, function ( xhr ) {}, function ( error ) {});
+    }
+}
+
+var features = {
+    mountain: new Feature("Mountain", 'Mountain.glb', {offsetZ: -.05, scale: .67}),
+    forest: new Feature("Forest", 'lowpoly_forest.glb', {scale: .15})
+}
+
 var hexagonAlpha = new THREE.TextureLoader().load("terrain/alpha.png")
 var hexagonGeometry = new THREE.PlaneGeometry(Math.sqrt(3) * hexagonSize, 2.05 * hexagonSize, 1, 1)
 class Tile{
     constructor(position){
         this.position = position
         this.depth = 1
+        this.river = false
+        this.riverDirections = [false, false, false, false, false, false]
+        this.road = false
+        this.features = []
 
-        this.light = new THREE.PointLight( 0xffffff, seenLighting, unitLightingDistance );
+        this.face = new THREE.Mesh(hexagonGeometry);
     }
 
     initialize(){
@@ -513,25 +595,60 @@ class Tile{
             new THREE.MeshLambertMaterial({color: "#050505"}) 
         );
         scene.add(this.mesh)
-
-        this.face = new THREE.Mesh(hexagonGeometry);
-        this.face.gamePosition = this.position
-        scene.add(this.face)
-
-        if(this.depth > 1){
-            this.setTerrain(terrainTypes.grasslands)
-        } else {
-            this.setTerrain(terrainTypes.ocean)
-        }
-    }
-
-    setTerrain(terrain){
-        this.terrain = terrain
+        this.mesh.gamePosition = this.position
         this.face.material = this.terrain.material
-    }
+        this.mesh.add(this.face)
+        var self = this
 
-    seen(){
-        scene.add( this.light );
+        this.riverMeshes = []
+        if(this.river){
+            for(var d = 0; d < directionsClockwise.length; d++){
+                if((t(this, directionsClockwise[d]).river && this.riverDirections[d]) || t(this, directionsClockwise[d]).terrain == terrainTypes.coast){
+                    this.riverMeshes.push(new THREE.Mesh(hexagonGeometry, riverMaterial))
+                    this.riverMeshes[this.riverMeshes.length - 1].rotation.z = -Math.PI / 3 * d
+                }
+            }
+
+            this.riverMeshes.forEach(function(x){
+                self.face.add(x);
+                x.position.z = .01
+            })
+            if(this.riverMeshes.length == 0){
+                this.river = false
+            }
+        }
+
+        this.roadMeshes = []
+        if(this.road){
+            for(var d = 0; d < directionsClockwise.length; d++){
+                if(t(this, directionsClockwise[d]).road){
+                    this.roadMeshes.push(new THREE.Mesh(hexagonGeometry, roadMaterial))
+                    this.roadMeshes[this.roadMeshes.length - 1].rotation.z = -Math.PI / 3 * d
+                }
+            }
+
+            this.roadMeshes.forEach(function(x){
+                self.face.add(x);
+                x.position.z = .01
+            })
+            if(this.roadMeshes.length == 0){
+                this.road = false
+            }
+        }
+
+
+        this.featureMeshes = []
+        this.features.forEach(function(f){
+            self.featureMeshes.push(f.model.clone())
+            self.mesh.add(self.featureMeshes[self.featureMeshes.length - 1])
+            self.featureMeshes[self.featureMeshes.length - 1].position.z = self.depth
+            if(f.modelProperties.offsetZ != undefined){
+                self.featureMeshes[self.featureMeshes.length - 1].position.z += f.modelProperties.offsetZ
+            }
+            self.featureMeshes[self.featureMeshes.length - 1].rotation.y = Math.random() * Math.PI * 2
+        })
+
+        this.face.position.z = this.depth + .02
     }
 
     goto(){
@@ -543,6 +660,8 @@ class Tile{
     foundSettlement(){
         this.settlement = new Settlement(this.position)
         activePlayer.settlements.push(this.settlement)
+
+        this.settlement.model.position.z = this.depth
 
         this.switchOwnership(activePlayer) 
         for(var i = 0; i < directions.length; i++){
@@ -556,14 +675,19 @@ class Tile{
         if(this.ownerOverlay == undefined){
             this.ownerOverlay = new THREE.Mesh(hexagonGeometry, this.player.overlayMaterial);
             this.ownerOverlay.gamePosition = this.position
-            scene.add(this.ownerOverlay)
+            this.ownerOverlay.position.z = this.depth + .025
+            this.mesh.add(this.ownerOverlay)
         }
 
         calculateBorders()
     }
+
+    getTooltip(){
+        return this.terrain.name
+    }
 }
 
-var overlayMaterial = new THREE.MeshBasicMaterial( { color: 0x0000FF, alphaMap: hexagonAlpha, transparent: true, opacity: .2, depthWrite: false } )
+var overlayMaterial = new THREE.MeshBasicMaterial( { color: 0x0000FF, alphaMap: hexagonAlpha, transparent: true, opacity: reachableOverlayOpacity, depthWrite: false } )
 function renderReachable(unit){
     hideReachable()
     
@@ -574,14 +698,19 @@ function renderReachable(unit){
             e.tile.reachableOverlay = new THREE.Mesh(hexagonGeometry, overlayMaterial)
             e.tile.reachableOverlay.reachablePos = e.tile.position
             e.tile.reachableOverlay.reachableDistance = e.distance
-            scene.add(e.tile.reachableOverlay)
+            e.tile.reachableOverlay.position.z = e.tile.depth + .05
+            e.tile.mesh.add(e.tile.reachableOverlay)
         })
     }
 }
 
 function hideReachable(){
+    if(!modelsLoaded){
+        return
+    }
+
     tiles.forEach(z => z.forEach(function(e){
-        scene.remove(e.reachableOverlay)
+        e.mesh.remove(e.reachableOverlay)
         e.reachableOverlay = undefined
     }))
 }
@@ -609,17 +738,23 @@ class Unit{
 
         this.icon = new THREE.Sprite(new THREE.SpriteMaterial( { map: this.type.texture, alphaMap: unitIconAlpha, side: THREE.DoubleSide, transparent: true } ));
         scene.add(this.icon)
+        this.icon.scale.set(.65, .65, .65)
 
         this.light = new THREE.PointLight( 0xffffff, unitLighting, unitLightingDistance );
-        scene.add( this.light );
+        this.icon.add( this.light );
         this.lightNorth = new THREE.PointLight( 0xffffff, unitLighting, unitLightingDistance );
-        scene.add( this.lightNorth );
+        this.icon.add( this.lightNorth );
         this.lightWest = new THREE.PointLight( 0xffffff, unitLighting, unitLightingDistance );
-        scene.add( this.lightWest );
+        this.icon.add( this.lightWest );
         this.lightEast = new THREE.PointLight( 0xffffff, unitLighting, unitLightingDistance );
-        scene.add( this.lightEast );
+        this.icon.add( this.lightEast );
         this.lightSouth = new THREE.PointLight( 0xffffff, unitLighting, unitLightingDistance );
-        scene.add( this.lightSouth );
+        this.icon.add( this.lightSouth );
+        
+        this.lightNorth.position.y =  maxOffsetY 
+        this.lightWest.position.x = -maxOffsetX
+        this.lightEast.position.x = maxOffsetX
+        this.lightSouth.position.y = -maxOffsetY
         
 
         this.resetTurn()
@@ -688,15 +823,19 @@ class Unit{
     move(tile, cost){
         this.pos = tile
         this.movementRemaining -= cost
-        
-        if(this.determineReachable().length <= 1){
-            this.disactivate()
-        }
-
-        tiles[tile.x][tile.y].seen()
 
         cameraMove()
+
         hideReachable()
+        if(this.determineReachable().length <= 1){
+            this.disactivate()
+        } else {
+            renderReachable(this)
+        }
+    }
+
+    getTooltip(){
+        return this.type.name
     }
 }
 
@@ -704,7 +843,11 @@ class Player{
     constructor(){
         this.units = [] 
         this.settlements = []
-        this.overlayMaterial = new THREE.MeshBasicMaterial( { color: new THREE.Color(Math.random(), Math.random(), Math.random()),
+        this.color = "#" + decimalToHexString(Math.ceil(16777215 * Math.random())) 
+        this.borderColor = new THREE.Color(adjustBrightness(this.color, 5))
+        this.color = new THREE.Color(this.color)
+
+        this.overlayMaterial = new THREE.MeshBasicMaterial( { color: this.color,
              alphaMap: hexagonAlpha, transparent: true, opacity: ownershipOpacity, depthWrite: false } )
     }
 
@@ -724,12 +867,10 @@ class Settlement{
         this.model = settlement.clone()
         this.model.scale.set(.0025, .0025, .0025)
         this.model.rotation.y = Math.random() * Math.PI * 2
-        scene.add(this.model)
+        tiles[this.position.x][this.position.y].mesh.add(this.model)
     }
 }
 
-players[0].units.push(new Unit(unitTypes.infantry, {x: 0, y: 0}))
-players[0].units.push(new Unit(unitTypes.sea, {x: 2, y: 2}))
 
 var mapSizeX = 65
 var mapSizeY = 40
@@ -765,23 +906,81 @@ function setElevation(pos, length){
         noLoss[randomIndex(noLoss)] = true
     }
 
-    if(Math.random() > chanceToContinue){
-        setElevation(t(pos, "l"), noLoss[0] ? (length + lengthDecreaseAmount) : length)
+    for(var d = 0; d < directions.length; d++){
+        if(Math.random() > chanceToContinue){
+            setElevation(t(pos, directions[d]), noLoss[d] ? (length + lengthDecreaseAmount) : length)
+        }
     }
-    if(Math.random() > chanceToContinue){
-        setElevation(t(pos, "r"), noLoss[1] ? (length + lengthDecreaseAmount) : length)
+}
+
+function spreadTerrain(tile, terrain, length){
+    tile.terrain = terrain
+
+    for(var d = 0; d < directions.length; d++){
+        if(length < (maxSpreadTerrain * Math.random()) + minimumSpreadTerrain 
+        && t(tile, directions[d]).depth > 1 
+        && t(tile, directions[d]).terrain != terrainTypes.plains
+        && t(tile, directions[d]).terrain != terrainTypes.desert){
+            spreadTerrain(t(tile, directions[d]), terrain, length + 1)
+        }
     }
-    if(Math.random() > chanceToContinue){
-        setElevation(t(pos, "ul"), noLoss[2] ? (length + lengthDecreaseAmount) : length)
+}
+
+function setRiver(tile){
+    if(tile.river){
+        return
     }
-    if(Math.random() > chanceToContinue){
-        setElevation(t(pos, "ur"), noLoss[3] ? (length + lengthDecreaseAmount) : length)
+
+    var possibilities = []
+
+    for(var d = 0; d < directionsClockwise.length; d++){
+        if(t(tile, directionsClockwise[d]).depth < tile.depth){
+            possibilities.push({direction: d, tile: t(tile, directionsClockwise[d])})
+        }
     }
-    if(Math.random() > chanceToContinue){
-        setElevation(t(pos, "dl"), noLoss[4] ? (length + lengthDecreaseAmount) : length)
+
+    if(possibilities.length == 0){
+        tile.terrain = terrainTypes.coast
+        tile.depth = Math.max(1, tile.depth - .3)
+    } else {
+        var nextTile
+        if(Math.random() < chanceToIgnoreDeepestTile){
+            nextTile = randomValue(possibilities)
+        } else {
+            nextTile = possibilities.sort(function(x,y){return y.depth - x.depth})[0]
+        }
+        setRiver(nextTile.tile)
+        nextTile.tile.riverDirections[(nextTile.direction + 3) % 6] = true
+        tile.riverDirections[nextTile.direction] = true
+        tile.river = true
+        if(tile.terrain == terrainTypes.desert){
+            tile.terrain = terrainTypes.desertFloodplains
+        }
     }
-    if(Math.random() > chanceToContinue){
-        setElevation(t(pos, "dr"), noLoss[5] ? (length + lengthDecreaseAmount) : length)
+}
+
+function setMountainRange(tile, length){
+    tile.features.push(features.mountain)
+
+    for(var d = 0; d < directions.length; d++){
+        if(t(tile, directions[d]).depth > 1
+        && !t(tile, directions[d]).features.includes(features.mountain)
+        && (Math.random() > chanceToContinueMountain * (length - 1))){
+            setMountainRange(t(tile, directions[d]), length + 1)
+            return
+        }
+    }
+}
+
+function setForest(tile, length){
+    tile.features.push(features.forest)
+
+    for(var d = 0; d < directions.length; d++){
+        if(Math.abs(t(tile, directions[d]).depth - tile.depth) < .3
+        && !t(tile, directions[d]).features.includes(features.forest)
+        && (Math.random() > chanceToContinueForest * (length - 1))){
+            setForest(t(tile, directions[d]), length + 1)
+        }
     }
 }
 
@@ -792,12 +991,54 @@ for(var i = 0; i < minimumInitialElevations || Math.random() > chanceToNotContin
     visitedTiles = []
 }
 
-tiles.forEach(function(x){x.forEach(function(e){
+tiles.forEach(x => x.forEach(function(e){
     if(e.depth > 1){
-        e.depth = 1 + depthMultiplier * (Math.pow(e.depth, .5) - 1)
+        e.terrain = terrainTypes.grasslands
+    } else {
+        e.terrain = terrainTypes.ocean
     }
-    e.initialize()
-})})
+}))
+
+var desertsCreated = 0
+for(var i = 0; i < 500 && desertsCreated < desertsLimit; i++){
+    var desertSource = randomTile()
+    if(desertSource.depth > 1){
+        spreadTerrain(desertSource, terrainTypes.desert, 0)
+        desertsCreated++
+    }
+}
+
+var plainsCreated = 0
+for(var i = 0; i < 500 && plainsCreated < plainsLimit; i++){
+    var plainsSource = randomTile()
+    if(plainsSource.depth > 1){
+        spreadTerrain(plainsSource, terrainTypes.plains, 0)
+        plainsCreated++
+    }
+}
+
+var riversCreated = 0
+var riverSource = randomTile()
+for(var i = 0; i < 500 && riversCreated < riversLimit; i++){
+    riverSource = tiles[(riverSource.position.x + Math.floor(Math.random() * 15)) % mapSizeX][(riverSource.position.y + Math.floor(Math.random() * 15)) % mapSizeY]
+    if(riverSource.depth > 3.5 || (riverSource.depth > 1 && Math.random() < chanceToGenerateRiverDespiteDepth)){
+        if(!riverSource.river){
+            setMountainRange(riverSource, 0)
+        }
+        setRiver(riverSource)
+        riversCreated++
+    }
+}
+
+var forestsCreated = 0
+var forestSource
+for(var i = 0; i < 500 && forestsCreated < forestsLimit; i++){
+    forestSource = randomTile()
+    if(forestSource.depth > 1 && !forestSource.features.includes(features.forest)){
+        setForest(forestSource, 0)
+        forestsCreated++
+    }
+}
 
 tiles.forEach(function(x){x.forEach(function(e){
     if( e.terrain == terrainTypes.ocean &&
@@ -807,7 +1048,7 @@ tiles.forEach(function(x){x.forEach(function(e){
         (t(e, "ul").terrain != terrainTypes.ocean && (t(e, "ul").terrain != terrainTypes.coast)) ||
         (t(e, "dr").terrain != terrainTypes.ocean && (t(e, "dr").terrain != terrainTypes.coast)) ||
         (t(e, "dl").terrain != terrainTypes.ocean && (t(e, "dl").terrain != terrainTypes.coast)))){
-            e.setTerrain(terrainTypes.coast)
+            e.terrain = terrainTypes.coast
     }
 })})
 
@@ -819,25 +1060,18 @@ tiles.forEach(function(x){x.forEach(function(e){
 })})
 
 coastalTiles.forEach(function(e){
-    if(Math.random() < chanceToSpreadCoast && t(e, "r").terrain == terrainTypes.ocean){
-        t(e, "r").setTerrain(terrainTypes.coast)
-    }
-    if(Math.random() < chanceToSpreadCoast && t(e, "l").terrain == terrainTypes.ocean){
-        t(e, "l").setTerrain(terrainTypes.coast)
-    }
-    if(Math.random() < chanceToSpreadCoast && t(e, "ur").terrain == terrainTypes.ocean){
-        t(e, "ur").setTerrain(terrainTypes.coast)
-    }
-    if(Math.random() < chanceToSpreadCoast && t(e, "ul").terrain == terrainTypes.ocean){
-        t(e, "ul").setTerrain(terrainTypes.coast)
-    }
-    if(Math.random() < chanceToSpreadCoast && t(e, "dr").terrain == terrainTypes.ocean){
-        t(e, "dr").setTerrain(terrainTypes.coast)
-    }
-    if(Math.random() < chanceToSpreadCoast && t(e, "dl").terrain == terrainTypes.ocean){
-        t(e, "dl").setTerrain(terrainTypes.coast)
+    for(var d = 0; d < directions.length; d++){
+        if(Math.random() < chanceToSpreadCoast && t(e, directions[d]).terrain == terrainTypes.ocean){
+            t(e, directions[d]).terrain = terrainTypes.coast
+        }
     }
 })
+
+tiles.forEach(function(x){x.forEach(function(e){
+    if(e.depth > 1){
+        e.depth = 1 + depthMultiplier * (Math.pow(e.depth, .5) - 1)
+    }
+})})
 
 var maxOffsetX= mapSizeX * Math.sqrt(3) * hexagonSize
 var maxOffsetY = mapSizeY * 3 / 2 * hexagonSize
@@ -854,15 +1088,16 @@ var runnerMaterial = new THREE.MeshBasicMaterial( { map: runnerTexture, alphaMap
 var runnerGeometry = new THREE.PlaneGeometry(2, 2, 1, 1);
 var runner = new THREE.Mesh(runnerGeometry, runnerMaterial);
 runner.position.set(0,0,0);
-scene.add(runner);
 */
 
+var modelsToLoad = 3
+var modelsLoaded = false
 var settlement
 loader.load('scene.gltf', function ( gltf ) { 
     settlement = gltf.scene; 
     settlement.rotation.x = Math.PI / 2
-
-    tiles[0][1].foundSettlement()
+    
+    allModelsLoaded()
 }, function ( xhr ) {}, function ( error ) {});
 
 var hemisphereLight = new THREE.HemisphereLight( 0xffffff, 0x000000, ambientLighting );
@@ -872,89 +1107,58 @@ camera.position.z = (minimumScrollIn + minimumScrollOut) / 2
 camera.rotation.x = .6
 camera.position.x = 40
 camera.position.y = 5
+camera.rotation.order = "ZXY"
 
 function calculateBorders(){
     tiles.forEach(z => z.forEach(function(e){
         if(e.player != undefined){
             if(e.borderMeshes != undefined && e.borderMeshes.length > 0){
                 for(var i = 0; i < e.borderMeshes.length; i++){
-                    scene.remove(e.borderMeshes[i])
+                    e.mesh.remove(e.borderMeshes[i])
                 }
             }
             e.borderMeshes = []
             for(var d = 0; d < directions.length; d++){
                 if(t(e, directions[d]).player != e.player){
                     e.borderMeshes.push(ownerBorders[d].clone())
-                    scene.add(e.borderMeshes[e.borderMeshes.length - 1])
+                    e.mesh.add(e.borderMeshes[e.borderMeshes.length - 1])
+                    e.borderMeshes[e.borderMeshes.length - 1].material.color = e.player.borderColor
                 }
             }
+
+            e.borderMeshes.forEach(x => x.position.z = e.depth)
         }
     }))
+
+    cameraMove()
 }
 
 function cameraMove(){
+    if(!modelsLoaded){
+        return
+    }
     tiles.forEach(function(x){x.forEach(function(e){
         e.mesh.position.x = (((2 * e.position.x  + (e.position.y % 2 == 0 ? 0 : 1)) * Math.sqrt(3) / 2 * hexagonSize) + mapOffset.x) % maxOffsetX
-        e.face.position.x = e.mesh.position.x
-        e.light.position.x = e.mesh.position.x
         e.mesh.position.y = ((hexagonSize * 3/2 * e.position.y) + mapOffset.y) % maxOffsetY
-        e.face.position.y = e.mesh.position.y
-        e.light.position.y = e.mesh.position.y
-
-        if(e.reachableOverlay != undefined){
-            e.reachableOverlay.position.x = e.face.position.x
-            e.reachableOverlay.position.y = e.face.position.y
-        }
-
-        if(e.ownerOverlay != undefined){
-            e.ownerOverlay.position.x = e.face.position.x
-            e.ownerOverlay.position.y = e.face.position.y
-        }
-
-        if(e.borderMeshes != undefined){
-            e.borderMeshes.forEach(function(d){
-                d.position.x = e.face.position.x
-                d.position.y = e.face.position.y
-            })
-        }
     })})
 
     players.forEach(x => x.units.forEach(function(e){
         e.icon.position.x = tiles[e.pos.x][e.pos.y].mesh.position.x
-        e.icon.position.y = tiles[e.pos.x][e.pos.y].mesh.position.y - .2
-        e.icon.position.z = tiles[e.pos.x][e.pos.y].face.position.z + .5
-
-        e.light.position.z = tiles[e.pos.x][e.pos.y].face.position.z + 1.75
-        e.lightNorth.position.z = tiles[e.pos.x][e.pos.y].face.position.z + 1.75
-        e.lightEast.position.z = tiles[e.pos.x][e.pos.y].face.position.z + 1.75
-        e.lightWest.position.z = tiles[e.pos.x][e.pos.y].face.position.z + 1.75
-        e.lightSouth.position.z = tiles[e.pos.x][e.pos.y].face.position.z + 1.75
-        
-        e.light.position.x = tiles[e.pos.x][e.pos.y].mesh.position.x
-        e.light.position.y = tiles[e.pos.x][e.pos.y].mesh.position.y
-        e.lightNorth.position.x = tiles[e.pos.x][e.pos.y].mesh.position.x
-        e.lightNorth.position.y = tiles[e.pos.x][e.pos.y].mesh.position.y + maxOffsetY 
-        e.lightWest.position.x = tiles[e.pos.x][e.pos.y].mesh.position.x - maxOffsetX
-        e.lightWest.position.y = tiles[e.pos.x][e.pos.y].mesh.position.y
-        e.lightEast.position.x = tiles[e.pos.x][e.pos.y].mesh.position.x + maxOffsetX
-        e.lightEast.position.y = tiles[e.pos.x][e.pos.y].mesh.position.y
-        e.lightSouth.position.x = tiles[e.pos.x][e.pos.y].mesh.position.x
-        e.lightSouth.position.y = tiles[e.pos.x][e.pos.y].mesh.position.y - maxOffsetY
-    }))
-
-    players.forEach(x => x.settlements.forEach(function(e){
-        e.model.position.x = tiles[e.position.x][e.position.y].mesh.position.x
-        e.model.position.y = tiles[e.position.x][e.position.y].mesh.position.y
+        e.icon.position.y = tiles[e.pos.x][e.pos.y].mesh.position.y
+        e.icon.position.z = tiles[e.pos.x][e.pos.y].mesh.position.z + tiles[e.pos.x][e.pos.y].depth + unitIconHoverAboveTile
     }))
 }
 
 var delta
+var intersects
 function animate() {
     delta = clock.getDelta()    
    // annie.update(1000 * delta)
    // annieAlpha.update(1000 * delta)
 	requestAnimationFrame( animate );
     renderer.render( scene, camera );
+
+    cursor.lastMoved += delta
     
     activeTile = undefined
     tiles.forEach(function(x){x.forEach(function(e){
@@ -963,17 +1167,29 @@ function animate() {
 
     hoveredUnit = undefined
 	raycaster.setFromCamera( mouseVector, camera );
-    var intersects = raycaster.intersectObjects( scene.children )
+    intersects = raycaster.intersectObjects( scene.children )
     if(intersects[0] != undefined && intersects[0].object != undefined){
         if(intersects[0].object.gamePosition != undefined){
             activeTile = tiles[intersects[0].object.gamePosition.x][intersects[0].object.gamePosition.y]
             activeTile.active = true
-        } else if(intersects[0].object.reachablePos != undefined){
-            activeTile = tiles[intersects[0].object.reachablePos.x][intersects[0].object.reachablePos.y]
-            activeTile.active = true
         } else if(intersects[0].object.unitID != undefined){
             hoveredUnit = players[intersects[0].object.playerID].units[intersects[0].object.unitID]
+            activeTile = tiles[hoveredUnit.pos.x][hoveredUnit.pos.y]
+            activeTile.active = true
         }
+    }
+
+    if(activeTile != undefined && cursor.lastMoved > .5){
+        tooltipTile.innerHTML = ""
+        tooltipTile.innerHTML += (hoveredUnit == undefined) ? (activeTile.getTooltip()) : (hoveredUnit.getTooltip())
+        tooltipTile.style.left = cursor.x + "px"
+        tooltipTile.style.top = cursor.y + "px"
+        tooltipTile.style.opacity = "1"
+    } else {
+        tooltipTile.style.transition = ""
+        tooltipTile.style.opacity = "0"
+        tooltipTile.offsetLeft;
+        tooltipTile.style.transition = ".2s opacity"
     }
 
     tiles.forEach(function(x){x.forEach(function(e){
@@ -981,22 +1197,6 @@ function animate() {
             e.mesh.position.z = Math.min(.3, e.mesh.position.z + 0.07)
         } else {
             e.mesh.position.z = Math.max(0, e.mesh.position.z - 0.1)
-        }
-        e.face.position.z = e.mesh.position.z + e.depth + .02
-        e.light.position.z = e.mesh.position.z + e.depth + 1
-        if(e.settlement != undefined){
-            e.settlement.model.position.z = e.face.position.z
-        }
-        if(e.reachableOverlay != undefined){
-            e.reachableOverlay.position.z = e.face.position.z + .05
-        }
-        if(e.ownerOverlay != undefined){
-            e.ownerOverlay.position.z = e.face.position.z + .06
-        }
-        if(e.borderMeshes != undefined){
-            e.borderMeshes.forEach(function(d){
-                d.position.z = e.face.position.z
-            })
         }
     })})
 
@@ -1008,6 +1208,20 @@ function animate() {
     }
 }
 
-tiles[0][0].goto()
-hideTooltip()
-animate();
+tiles[0][0].features.push(features.forest)
+function allModelsLoaded(){
+    modelsToLoad--
+    if(modelsToLoad == 0){
+        tiles.forEach(function(x){x.forEach(function(e){
+            e.initialize()
+        })})
+        tiles[0][1].foundSettlement()
+ 
+        players[0].units.push(new Unit(unitTypes.infantry, {x: 0, y: 0}))
+        players[0].units.push(new Unit(unitTypes.sea, {x: 2, y: 2}))
+        tiles[0][0].goto()
+        hideTooltip()
+        modelsLoaded = true
+        animate();
+    }
+}
