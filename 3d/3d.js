@@ -977,6 +977,8 @@ function setForest(tile, length){
 
     for(var d = 0; d < directions.length; d++){
         if(Math.abs(t(tile, directions[d]).depth - tile.depth) < .3
+        && t(tile, directions[d]).depth > 1
+        && t(tile, directions[d]).terrain != terrainTypes.desert
         && !t(tile, directions[d]).features.includes(features.forest)
         && (Math.random() > chanceToContinueForest * (length - 1))){
             setForest(t(tile, directions[d]), length + 1)
@@ -1034,11 +1036,19 @@ var forestsCreated = 0
 var forestSource
 for(var i = 0; i < 500 && forestsCreated < forestsLimit; i++){
     forestSource = randomTile()
-    if(forestSource.depth > 1 && !forestSource.features.includes(features.forest)){
+    if(forestSource.depth > 1
+        && !forestSource.features.includes(features.forest)
+        && forestSource.terrain != terrainTypes.desert){
         setForest(forestSource, 0)
         forestsCreated++
     }
 }
+
+tiles.forEach(function(x){x.forEach(function(e){
+    if(terrainTypes[e.terrain.name.toLowerCase() + "Hills"] != undefined && Math.random() > .6){
+        e.terrain = terrainTypes[e.terrain.name.toLowerCase() + "Hills"]
+    }
+})})
 
 tiles.forEach(function(x){x.forEach(function(e){
     if( e.terrain == terrainTypes.ocean &&
@@ -1208,17 +1218,16 @@ function animate() {
     }
 }
 
-tiles[0][0].features.push(features.forest)
 function allModelsLoaded(){
     modelsToLoad--
     if(modelsToLoad == 0){
         tiles.forEach(function(x){x.forEach(function(e){
             e.initialize()
         })})
-        tiles[0][1].foundSettlement()
+        //tiles[0][1].foundSettlement()
  
-        players[0].units.push(new Unit(unitTypes.infantry, {x: 0, y: 0}))
-        players[0].units.push(new Unit(unitTypes.sea, {x: 2, y: 2}))
+        //players[0].units.push(new Unit(unitTypes.infantry, {x: 0, y: 0}))
+        //players[0].units.push(new Unit(unitTypes.sea, {x: 2, y: 2}))
         tiles[0][0].goto()
         hideTooltip()
         modelsLoaded = true
