@@ -2,6 +2,7 @@ body{
     font-family: Arial;
     background-color: #e8e8e8;
     user-select: none;
+    -moz-user-select: none;
     cursor: context-menu;
     overflow-x: hidden;
     overflow-y: hidden;
@@ -9,12 +10,20 @@ body{
     margin: 0px
 }
 
+#cssRenderer{
+    position: absolute;
+    top: 0;
+    pointer-events: none;
+}
+
 .tooltip{
     position: absolute;
     box-shadow:   inset 0 0 4px 3px #000000;
     color: white;
     text-shadow: 2px 2px 3px black;
-    border-radius: 4px;
+    border-radius: 2px;
+    line-height: 22px;
+    background-color: grey;
     padding: 1vw;
     transform: translate(-50%, -50%);
     transition: opacity .2s, left .4s, right .4s;
@@ -23,6 +32,339 @@ body{
 
 #tooltip-tile{
     transform: translate(20px, -50%);
+}
+
+#nextturn{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 215px;
+    height: 215px;
+    background: url("nextturnblocked-back.png");
+    background-size: contain;
+    transform: translate(21%, 21%);
+}
+
+#nextturn:hover{
+    filter: brightness(1.1)
+}
+
+#nextturn:active{
+    filter: brightness(1.3)
+}
+
+#nextturn-cover{
+    position: relative;
+    top: 50%;
+    left: 50%;
+    width: 185px;
+    height: 185px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+#unitactions{
+    position: absolute;
+    bottom: .5vw;
+    height: 108px;
+    padding-left: 5%;
+    padding-right: 2.5%;
+    background: url("unitActions-back.png");
+    background-size: 100% 108px;
+    text-align: right;
+    -moz-user-select: none;
+    user-select: none;
+    transition: .25s;
+    line-height: 108px;
+    transform: translateX(-80px) scale(.8)
+}
+
+#unitactions div{
+    display: inline-block;
+    background: url("glassBack.png"), darkslateblue;
+    background-size: contain;
+    border-radius: 100%;
+    padding: 4px;
+    margin-right: 10px;
+    transition: .1s;
+    width: 85px;
+    height: 85px;
+    vertical-align:middle;
+    line-height: 85px;
+    text-align: middle;
+    filter: drop-shadow(0px 0px 3px black)
+}
+
+#unitactions div[inactive="true"]{
+    filter: drop-shadow(0px 0px 3px black) saturate(0)
+}
+
+#unitactions div[inactive="false"]:hover{
+    transform: scale(1.1);
+    filter: brightness(.8)
+}
+
+#unitactions div[inactive="false"]:active{
+    transform: scale(1.2);
+    filter: brightness(.6)
+}
+
+#unitactions img{
+    width: 95%;
+    height: 95%;
+    vertical-align: middle;
+}
+
+.city-label{
+    width: 185px;
+    height: 40px;
+    border-radius: 50px;
+    filter: drop-shadow(2px 2px 2px black);
+    pointer-events: all;
+    opacity: .9
+}
+
+.city-label:hover{
+    filter: drop-shadow(2px 2px 4px black);
+}
+
+.city-label-name{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% - 40px);
+    height: 40px;
+    line-height: 40px;
+    background-color: darkblue;
+    text-align: center;
+    color: white;
+    font-size: 15px;
+    font-family: 'Cinzel', sans-serif;
+    cursor: pointer;
+}
+
+.city-label-name:hover{
+    filter: brightness(.85)
+}
+
+.city-label-name:active{
+    filter:brightness(.7)
+}
+
+.city-label-pop, .city-label-prod{
+    position: absolute;
+    top: 50%;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    background-color: white;
+    text-align: center;
+    border-radius: 100%;
+    z-index: 2;
+}
+.city-label-pop{
+    left: 22px;
+    transform: translate(-50%, -50%);
+    color: green;
+}
+.city-label-prod{
+    right: 22px;
+    transform: translate(50%, -50%);
+    color: orange;
+    cursor: pointer;
+}
+.city-label-prod:hover{
+    filter: brightness(.85)
+}
+.city-label-prod:active{
+    filter: brightness(.7)
+}
+
+.city-label-prod img{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+}
+
+.invert{
+    filter: invert(1) saturate(0) drop-shadow(2px 2px black) !important
+}
+
+.city-label-left-circle, .city-label-right-circle{
+    position: absolute;
+    top: 50%;
+    background-color: black;
+    border-radius: 100%;
+    width: 40px;
+    height: 40px;
+}
+.city-label-left-circle{
+    left: 22px;
+    transform: translate(-50%, -50%);
+}
+.city-label-right-circle{
+    right: 22px;
+    transform: translate(50%, -50%);
+}
+
+.city-label-left-bar, .city-label-right-bar{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border-radius: 100%;
+    width: 40px;
+    height: 40px;
+}
+.city-label-left-bar{
+    background-color: green;
+    clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%)
+}
+.city-label-right-bar{
+    background-color: orange;
+    clip-path: polygon(50% 0, 0 0, 0 100%, 50% 100%)
+}
+
+#city-production{
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 200;
+    text-align: center;
+    border: 3px solid #0f0e1c;
+    box-shadow: -2px 0px 7px 1px black;
+    transition: .4s;
+    transform: translate(5px, -5px);
+    color: white;
+    text-shadow: 0px 0px 2px black;
+    will-change: right;
+}
+
+#city-production-header{
+    position: relative;
+    width: calc(100% + 10px);
+    height: 2vw;
+    line-height: 2vw;
+    text-align: left;
+    border: 2px solid black;
+    background: url("fabric.png"), #9e7e09;
+    color: black;
+    text-shadow: none;
+    box-shadow: inset -10px 0px 10px rgba(255,255,255,.5);
+}
+
+#city-production-header div{
+    vertical-align: middle;
+    font-size: 1vw;
+    font-weight: bold;
+    margin-left: 15px;
+}
+
+#city-production-header img{
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    transform: translate(50%, -50%);
+    cursor: pointer
+}
+
+#city-production-header img:hover{
+    filter: brightness(1.3)
+}
+#city-production-header img:active{
+    filter: brightness(1.6)
+}
+
+.city-production-item{
+    position: relative;
+    width: 13vw;
+    cursor: pointer;
+    border: 1px solid black;
+    background: url("cardboard.png"), #383469;
+}
+.city-production-item-active{
+    background: url("cardboard.png"), #34693f;
+}
+.city-production-item-selected{
+    background: url("cardboard.png"), #694f34;
+}
+
+.city-production-item:hover{
+    filter: brightness(.8)
+}
+.city-production-item:active{
+    filter: brightness(.6)
+}
+
+.city-production-item-image{
+    width: 2vw;
+    height: 2vw;
+    padding: 5px;
+    padding-right: 8px;
+    background: linear-gradient(to right, black 0%, transparent)
+}
+
+.city-production-item-image img{
+    width: 2vw;
+    height: 2vw;
+    filter: drop-shadow(2px 2px black);
+}
+
+.city-production-item-details{
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    text-align: right;
+}
+
+.city-production-item-name{
+    font-size: 18px;
+    font-weight: bold
+}
+
+.city-production-item-cost span{
+    vertical-align: middle
+}
+
+.city-production-item-cost img{
+    width:20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+#notifications{
+    position: absolute;
+    bottom: 200px;
+    right: 10px;
+}
+
+#notifications div{
+    border-radius: 100%;
+    background-color: blue;
+    border: 3px solid goldenrod;
+    cursor: pointer;
+    height: 75px;
+    margin-top: 8px;
+}
+
+#notifications div:hover{
+    filter: brightness(.85)
+}
+
+#notifications div:active{
+    filter: brightness(.7)
+}
+
+#notifications img{
+    width: 75px;
+    height: 75px;
+    transform: scale(1.05)
 }
 
 /* -----------------------------SCROLLBAR-------------------------------- */
