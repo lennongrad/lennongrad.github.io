@@ -50,7 +50,8 @@ var forestsLimit = 25
 var minimumScrollOut = 28
 var minimumScrollIn = 18
 var ambientLighting = 1.5
-var reachableOverlayOpacity = .3
+var reachableOverlayColor = "#109fc9"
+var reachableOverlayOpacity = .1
 var ownerOverlayOpacity = .1
 var unitIconHoverAboveTile = .45
 var chanceToIgnoreDeepestTile = .8
@@ -74,67 +75,71 @@ hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2);
 hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2);
 hexagonShape.lineTo(0, -hexagonSize)
 
-var ownerBordersShape = [new THREE.Shape(), new THREE.Shape(), new THREE.Shape(), new THREE.Shape(), new THREE.Shape(), new THREE.Shape()]
-var standardDisplacement = .5
-var partialTowardsCenter = .49
-var fullTowardsCenter = .48
-var smallAmount = 0
-var farBeginning = 0
-var slightlyClose = .95
-//L
-ownerBordersShape[0].moveTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
-ownerBordersShape[0].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement)
-ownerBordersShape[0].lineTo(-Math.sqrt(3) * hexagonSize * partialTowardsCenter, -hexagonSize * standardDisplacement - smallAmount)
-ownerBordersShape[0].lineTo(-Math.sqrt(3) * hexagonSize * partialTowardsCenter, -hexagonSize * standardDisplacement)
-ownerBordersShape[0].lineTo(-Math.sqrt(3) * hexagonSize * partialTowardsCenter, hexagonSize * standardDisplacement + smallAmount)
-ownerBordersShape[0].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
-//R
-ownerBordersShape[1].moveTo(Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
-ownerBordersShape[1].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement)
-ownerBordersShape[1].lineTo(Math.sqrt(3) * hexagonSize * partialTowardsCenter, -hexagonSize * standardDisplacement - smallAmount)
-ownerBordersShape[1].lineTo(Math.sqrt(3) * hexagonSize * partialTowardsCenter, hexagonSize * standardDisplacement)
-ownerBordersShape[1].lineTo(Math.sqrt(3) * hexagonSize * partialTowardsCenter, hexagonSize * standardDisplacement + smallAmount)
-ownerBordersShape[1].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
-//UL
-ownerBordersShape[2].moveTo(0, hexagonSize)
-ownerBordersShape[2].lineTo(hexagonSize * farBeginning, hexagonSize * slightlyClose)
-ownerBordersShape[2].lineTo(0, hexagonSize * slightlyClose)
-ownerBordersShape[2].lineTo(-Math.sqrt(3) * hexagonSize * fullTowardsCenter, hexagonSize * standardDisplacement) 
-ownerBordersShape[2].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement - smallAmount) 
-ownerBordersShape[2].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
-ownerBordersShape[2].lineTo(0, hexagonSize)
-//UR
-ownerBordersShape[3].moveTo(0, hexagonSize)
-ownerBordersShape[3].lineTo(-hexagonSize * farBeginning, hexagonSize * slightlyClose)
-ownerBordersShape[3].lineTo(0, hexagonSize * slightlyClose)
-ownerBordersShape[3].lineTo(Math.sqrt(3) * hexagonSize * fullTowardsCenter, hexagonSize * standardDisplacement) 
-ownerBordersShape[3].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement - smallAmount) 
-ownerBordersShape[3].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
-ownerBordersShape[3].lineTo(0, hexagonSize)
-//DL
-ownerBordersShape[4].moveTo(0, -hexagonSize)
-ownerBordersShape[4].lineTo(hexagonSize * farBeginning, -hexagonSize * slightlyClose)
-ownerBordersShape[4].lineTo(0, -hexagonSize * slightlyClose)
-ownerBordersShape[4].lineTo(-Math.sqrt(3) * hexagonSize * fullTowardsCenter, -hexagonSize * standardDisplacement) 
-ownerBordersShape[4].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement + smallAmount * 2) 
-ownerBordersShape[4].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement)
-ownerBordersShape[4].lineTo(0, -hexagonSize)
-//DR
-ownerBordersShape[5].moveTo(0, -hexagonSize)
-ownerBordersShape[5].lineTo(-hexagonSize * farBeginning, -hexagonSize * slightlyClose)
-ownerBordersShape[5].lineTo(0, -hexagonSize * slightlyClose)
-ownerBordersShape[5].lineTo(Math.sqrt(3) * hexagonSize * fullTowardsCenter, -hexagonSize * standardDisplacement) 
-ownerBordersShape[5].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement + smallAmount * 2) 
-ownerBordersShape[5].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement)
-ownerBordersShape[5].lineTo(0, -hexagonSize)
+var hexagonAlpha = new THREE.TextureLoader().load("terrain/alpha.png")
+var hexagonGeometry = new THREE.PlaneBufferGeometry(Math.sqrt(3) * hexagonSize, 2.05 * hexagonSize, 1, 1)
 
-var ownerBorders = []
-for(var i = 0; i < directions.length; i++){
-    ownerBorders[i] = new THREE.Mesh( 
-        new THREE.ExtrudeBufferGeometry(ownerBordersShape[i], { depth: .08, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: .05, bevelThickness: .05 }),
-        new THREE.MeshLambertMaterial({color: "#050505" }) 
-    );
+function makeTileBorderMeshes(standardDisplacement, partialTowardsCenter, smallAmount, farBeginning, slightlyClose, offsetClose, meshProperties){
+
+    var shapes = [new THREE.Shape(), new THREE.Shape(), new THREE.Shape(), new THREE.Shape(), new THREE.Shape(), new THREE.Shape()]
+    //L
+    shapes[0].moveTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
+    shapes[0].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement)
+    shapes[0].lineTo(-Math.sqrt(3) * hexagonSize * partialTowardsCenter, -hexagonSize * standardDisplacement - smallAmount)
+    shapes[0].lineTo(-Math.sqrt(3) * hexagonSize * partialTowardsCenter, -hexagonSize * standardDisplacement)
+    shapes[0].lineTo(-Math.sqrt(3) * hexagonSize * partialTowardsCenter, hexagonSize * standardDisplacement + smallAmount)
+    shapes[0].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
+    //R
+    shapes[1].moveTo(Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
+    shapes[1].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement)
+    shapes[1].lineTo(Math.sqrt(3) * hexagonSize * partialTowardsCenter, -hexagonSize * standardDisplacement - smallAmount)
+    shapes[1].lineTo(Math.sqrt(3) * hexagonSize * partialTowardsCenter, hexagonSize * standardDisplacement)
+    shapes[1].lineTo(Math.sqrt(3) * hexagonSize * partialTowardsCenter, hexagonSize * standardDisplacement + smallAmount)
+    shapes[1].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
+    //UL
+    shapes[2].moveTo(0, hexagonSize)
+    shapes[2].lineTo(hexagonSize * farBeginning, hexagonSize * offsetClose)
+    shapes[2].lineTo(0, hexagonSize * slightlyClose)
+    shapes[2].lineTo(-Math.sqrt(3) * hexagonSize * partialTowardsCenter, hexagonSize * standardDisplacement) 
+    shapes[2].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement - smallAmount) 
+    shapes[2].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
+    shapes[2].lineTo(0, hexagonSize)
+    //UR
+    shapes[3].moveTo(0, hexagonSize)
+    shapes[3].lineTo(-hexagonSize * farBeginning, hexagonSize * offsetClose)
+    shapes[3].lineTo(0, hexagonSize * slightlyClose)
+    shapes[3].lineTo(Math.sqrt(3) * hexagonSize * partialTowardsCenter, hexagonSize * standardDisplacement) 
+    shapes[3].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement - smallAmount) 
+    shapes[3].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
+    shapes[3].lineTo(0, hexagonSize)
+    //DL
+    shapes[4].moveTo(0, -hexagonSize)
+    shapes[4].lineTo(hexagonSize * farBeginning, -hexagonSize * offsetClose)
+    shapes[4].lineTo(0, -hexagonSize * slightlyClose)
+    shapes[4].lineTo(-Math.sqrt(3) * hexagonSize * partialTowardsCenter, -hexagonSize * standardDisplacement) 
+    shapes[4].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement + smallAmount * 2) 
+    shapes[4].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement)
+    shapes[4].lineTo(0, -hexagonSize)
+    //DR
+    shapes[5].moveTo(0, -hexagonSize)
+    shapes[5].lineTo(-hexagonSize * farBeginning, -hexagonSize * offsetClose)
+    shapes[5].lineTo(0, -hexagonSize * slightlyClose)
+    shapes[5].lineTo(Math.sqrt(3) * hexagonSize * partialTowardsCenter, -hexagonSize * standardDisplacement) 
+    shapes[5].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement + smallAmount * 2) 
+    shapes[5].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement)
+    shapes[5].lineTo(0, -hexagonSize)
+    
+    var borders = []
+    for(var i = 0; i < directions.length; i++){
+        borders[i] = new THREE.Mesh( 
+            new THREE.ExtrudeBufferGeometry(shapes[i], meshProperties),
+            new THREE.MeshLambertMaterial({color: reachableOverlayColor}) 
+        );
+        borders[i].position.z = maxDepth + .01
+    }
+    return borders
 }
+var ownerBorders = makeTileBorderMeshes(.5, .49, 0, 0, .95, .9, { depth: .08, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: .05, bevelThickness: .05 })
+var reachableBorders = makeTileBorderMeshes(.5, .4, .1, .1, .85, .95, { depth: .02, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: .05, bevelThickness: .05 })
  
 document.oncontextmenu = cancelContextMenu = function(e) {
     if (e && e.stopPropagation)
@@ -199,6 +204,7 @@ $("body").mouseup(function(eventData) {
         
             if(!dontHideReachable){
                 document.getElementById("city-production").style.right = "-400px"
+                document.getElementById("city-yields").style.left = "-400px"
                 activeUnit = undefined
                 document.getElementById("unitactions").style.right = "-500px"
                 hideReachable()
@@ -586,10 +592,6 @@ if (storageAvailable('localStorage')) {
     }
 }
 
-var yieldsAlpha = []
-for(var i = 0; i < 5; i++){
-    yieldsAlpha.push(new THREE.TextureLoader().load("yields/alpha_" + (i + 1) + ".png"))
-}    
 var yieldScale = .3
 var yieldWidth = yieldScale
 class Yield{
@@ -600,7 +602,7 @@ class Yield{
         for(var i = 0; i < 5; i++){
             this.yieldIcons.push( new THREE.Sprite( 
                 new THREE.SpriteMaterial({map: new THREE.TextureLoader().load("yields/" + this.name.toLowerCase() + "_" + (i + 1) + ".png"), 
-                                             alphaMap: yieldsAlpha[i], transparent: true, depthTest: false}) 
+                                             transparent: true, depthTest: false}) 
             )) 
             this.yieldIcons[i].scale.set(yieldScale, yieldScale, yieldScale)
         }
@@ -611,7 +613,8 @@ var yields = {
     food: new Yield("Food"),
     production: new Yield("Production"),
     science: new Yield("Science"),
-    gold: new Yield("Gold")
+    gold: new Yield("Gold"),
+    culture: new Yield("Culture")
 }
 
 class Terrain{
@@ -749,7 +752,6 @@ class Resource{
 
         this.icon = new THREE.Sprite( 
             new THREE.SpriteMaterial({map: new THREE.TextureLoader().load("resources/" + this.name.toLowerCase() + ".png"), 
-                                      alphaMap: new THREE.TextureLoader().load("resources/" + this.name.toLowerCase() + "_alpha.png"),
                                       transparent: true, depthTest: false}) 
         )
         this.icon.scale.set(.45,.45,.45)
@@ -845,8 +847,6 @@ var features = {
     savanna: new Feature("Savanna", 'savanna.glb', {scale: .025})
 }
 
-var hexagonAlpha = new THREE.TextureLoader().load("terrain/alpha.png")
-var hexagonGeometry = new THREE.PlaneBufferGeometry(Math.sqrt(3) * hexagonSize, 2.05 * hexagonSize, 1, 1)
 
 var productionTileIcon = new THREE.Mesh(
     hexagonGeometry, new THREE.MeshBasicMaterial( { map:  new THREE.TextureLoader().load("construction.jpg"),  
@@ -934,8 +934,20 @@ class Tile{
         }
 
         this.face.position.z = maxDepth + .02
+        this.reachableBorders = []
 
         this.calculateYields()
+    }
+
+    getUnits(){
+        var final = []
+        var me = this
+        players.forEach(p => p.units.forEach(function(u){
+            if(u.pos.x == me.position.x && u.pos.y == me.position.y){
+                final.push(u)
+            }
+        }))
+        return final
     }
 
     canSettle(){
@@ -1155,7 +1167,7 @@ function addYields(y1, y2){
     return final
 }
 
-var overlayMaterial = new THREE.MeshBasicMaterial( { color: 0x0000FF, alphaMap: hexagonAlpha, transparent: true, opacity: reachableOverlayOpacity, depthWrite: false } )
+var overlayMaterial = new THREE.MeshBasicMaterial( { color: reachableOverlayColor, alphaMap: hexagonAlpha, transparent: true, opacity: reachableOverlayOpacity, depthWrite: false } )
 var reachableIsRendered = false
 function renderReachable(unit){
     hideReachable()
@@ -1168,8 +1180,16 @@ function renderReachable(unit){
             e.tile.reachableOverlay = new THREE.Mesh(hexagonGeometry, overlayMaterial)
             e.tile.reachableOverlay.reachablePos = e.tile.position
             e.tile.reachableOverlay.reachableDistance = e.distance
-            e.tile.reachableOverlay.position.z = maxDepth + .05
+            e.tile.reachableOverlay.position.z = maxDepth + .08
             e.tile.mesh.add(e.tile.reachableOverlay)
+
+            e.tile.reachableBorders = []
+            directions.forEach(function(d, index){
+                if(!reachable.map(x => x.tile).includes(t(e.tile, d))){
+                    e.tile.reachableBorders.push(reachableBorders[index].clone())
+                    e.tile.mesh.add(e.tile.reachableBorders[e.tile.reachableBorders.length - 1])
+                }
+            })
         })
     }
 }
@@ -1183,6 +1203,8 @@ function hideReachable(){
     tiles.forEach(z => z.forEach(function(e){
         e.mesh.remove(e.reachableOverlay)
         e.reachableOverlay = undefined
+        e.reachableBorders.forEach(x => e.mesh.remove(x))
+        e.reachableBorders = []
     }))
     renderer.renderLists.dispose();
 }
@@ -1294,8 +1316,6 @@ var unitTypes = {
     settler: new UnitType("Settler", unitClasses.settler, "settler.png")
 }
 
-var unitIconAlpha = new THREE.TextureLoader().load( 'uniticons/alpha.png' );
-
 class Unit{
     constructor(type, player, pos){
         this.type = type
@@ -1305,7 +1325,7 @@ class Unit{
         this.asleep = false
 
         this.icon = new THREE.Sprite(new THREE.SpriteMaterial( 
-            { map: this.type.texture, alphaMap: unitIconAlpha, side: THREE.DoubleSide, transparent: true, depthTest: false, depthFunc: THREE.AlwaysDepth } ));
+            { map: this.type.texture, side: THREE.DoubleSide, transparent: true, depthTest: false, depthFunc: THREE.AlwaysDepth } ));
         scene.add(this.icon)
         this.icon.scale.set(.65, .65, .65)      
 
@@ -1319,9 +1339,11 @@ class Unit{
     }
 
     select(){
-        activeUnit = this
-        this.updateActions()
-        renderReachable(this)
+        if(activePlayer == this.player){
+            activeUnit = this
+            this.updateActions()
+            renderReachable(this)
+        }
     }
 
     sleep(){
@@ -1535,27 +1557,38 @@ class Player{
         document.getElementById("notifications").innerHTML = ""
         notifications.forEach(function(n){
             if(n.criteria(me)){
-                if(me.notificationsRemaining.length == 0){
-                    document.getElementById("nextturn-cover").src = n.iconIMG.src
-                } else {
-                    document.getElementById("notifications").appendChild(n.icon)
+                if(me == players[0]){
+                    if(me.notificationsRemaining.length == 0){
+                        document.getElementById("nextturn-cover").src = n.iconIMG.src
+                    } else {
+                        document.getElementById("notifications").appendChild(n.icon)
+                    }
                 }
                 me.notificationsRemaining.push(n)
             }
         })
 
-        if(me.notificationsRemaining.length == 0){
-            document.getElementById("nextturn").style.backgroundImage = "url('nextturn-back.png')"
-            document.getElementById("nextturn-cover").style.display = "none"
-        } else {
-            document.getElementById("nextturn").style.backgroundImage = ""
-            document.getElementById("nextturn-cover").style.display = ""
+        if(this == players[0]){
+            if(me.notificationsRemaining.length == 0){
+                document.getElementById("nextturn").style.backgroundImage = "url('nextturn-back.png')"
+                document.getElementById("nextturn-cover").style.display = "none"
+            } else {
+                document.getElementById("nextturn").style.backgroundImage = ""
+                document.getElementById("nextturn-cover").style.display = ""
+            }
         }
     }
 
     beginTurn(){
         this.settlements.forEach(x => x.beginTurn())
         this.updateNotifications()
+        if(this != players[0]){
+            setTimeout(() => { this.ai() }, 500);
+        }
+    }
+
+    ai(){
+        this.endTurn()
     }
 
     endTurn(){
@@ -1564,10 +1597,17 @@ class Player{
         hideReachable()
         this.units.forEach(x => x.resetTurn())
         activePlayer = players[(players.indexOf(activePlayer) + 1) % players.length]
-        activePlayer.beginTurn()
         if(activeSettlement != undefined){
             activeSettlement.deselect()
         }
+        document.getElementById('city-yields').style.left = '-400px';
+
+        if(this == players[0]){
+            document.getElementById("nextturn").style.backgroundImage = ""
+            document.getElementById("nextturn-cover").style.display = ""
+            document.getElementById("nextturn-cover").src = "waitingarrow.png"
+        }
+        activePlayer.beginTurn()
     }
 
     detectSeen(){
@@ -1602,7 +1642,7 @@ class Player{
         }
     }
 }
-var players = [new Player()]
+var players = [new Player(), new Player()]
 activePlayer = players[0]
 
 var producibleTypes = {
@@ -1618,12 +1658,20 @@ function clearSelection(){
     }
 }
 
+dieBro()
+
 var activeSelection = undefined
 class Settlement{
     constructor(pos, player){
         this.position = pos
         this.tile = tiles[pos.x][pos.y]
         this.player = player
+
+        this.population = 1
+        this.tiles = []
+        this.yields = {}
+        this.foodCount = 0
+        this.heldProduction = 0
 
         this.model = settlement.clone()
         this.model.scale.set(.0025, .0025, .0025)
@@ -1640,10 +1688,9 @@ class Settlement{
         this.labelLeftBar = document.createElement("DIV")
         this.labelLeftBar.className = "city-label-left-bar"
         this.labelLeftCircle.appendChild(this.labelLeftBar)
-        this.labelLeftBar.style.transform = "translate(-50%, -50%) rotate(" + (Math.PI * Math.random()) + "rad)"
 
         this.labelPop = document.createElement("DIV")
-        this.labelPop.innerHTML = 2
+        this.labelPop.innerHTML = this.population
         this.labelPop.className = "city-label-pop"
         this.labelDIV.appendChild(this.labelPop)
 
@@ -1668,6 +1715,10 @@ class Settlement{
         this.labelName.className = "city-label-name"
         this.labelDIV.appendChild(this.labelName)
 
+        this.labelDIV.onmouseup = function(){
+            cursor.active = false
+        }
+
         var me = this
         this.labelName.onclick = function(){
             if(me != activeSettlement){
@@ -1678,13 +1729,11 @@ class Settlement{
         this.labelProd.onclick = function(){
             me.displayProduction()
         }
+        this.labelPop.onclick = function(){
+            me.displayYields()
+        }
 
         this.label = new THREE.CSS2DObject(this.labelDIV)
-
-        this.population = 2
-        this.tiles = []
-        this.yields = {}
-        this.heldProduction = 0
 
         this.producible = []
         this.producible[0] = {type: producibleTypes.develop, name: "Develop Tile", progress: 0}
@@ -1694,12 +1743,28 @@ class Settlement{
         })
         this.producingID = undefined
         this.incrementProduction(0)
+        this.incrementFood(0)
     }
 
     beginTurn(){
         this.calculateYields()
-        this.yields = addYields({production: 1, food: 1}, this.yields)
         this.incrementProduction(this.yields.production)
+        this.incrementFood(this.yields.food)
+    }
+    
+    getValue(tile){
+        var final = 0
+        tile.calculateYields()
+        Object.keys(tile.yields).forEach(function(x){
+            final += tile.yields[x] * (x == "gold" ? .5 : 1)
+        })
+        if(tile.resource != undefined){
+            final *= 2
+        }
+        if(tile.river){
+            final *= 1.2
+        }
+        return final
     }
 
     updateProducible(){
@@ -1784,6 +1849,72 @@ class Settlement{
         })
     }
 
+    displayYields(){
+        this.calculateYields()
+
+        document.getElementById("city-yields").style.left = "0px"
+        document.getElementById("city-yields-food-bar").style.width = this.foodCount / this.foodCost() * 100 + "%"
+        if(this.yields.food != undefined && this.yields.food > 0){
+            document.getElementById("city-yields-food-turns").innerHTML =  Math.ceil((this.foodCost() - this.foodCount) / this.yields.food)
+            document.getElementById("city-yields-food-count").innerHTML = "+" + Math.floor(this.yields.food)
+        } else {
+            document.getElementById("city-yields-food-turns").innerHTML = "?"
+            document.getElementById("city-yields-food-count").innerHTML = "?"
+        }
+        if(this.yields.culture != undefined && this.yields.culture > 0){
+           // document.getElementById("city-yields-culture-turns").innerHTML =  Math.ceil((this.cultureCost() - this.cultureCount) / this.yields.culture)
+            document.getElementById("city-yields-culture-count").innerHTML = "+" + Math.floor(this.yields.culture)
+        } else {
+           // document.getElementById("city-yields-culture-turns").innerHTML = "?"
+            document.getElementById("city-yields-culture-count").innerHTML = "?"
+        }
+
+        document.getElementById("city-yields-production-count").innerHTML = "+" + Math.floor(this.yields.production)
+        if(this.producingID != undefined){
+            document.getElementById("city-yields-production").style.height = ""
+            document.getElementById("city-yields-turns-production").style.display = ""
+            document.getElementById("city-yields-bar-production").style.display = ""
+            document.getElementById("city-yields-production-turns").innerHTML = Math.ceil((this.producible[this.producingID].cost - this.producible[this.producingID].progress) / this.yields.production)
+            document.getElementById("city-yields-production-bar").style.width = this.producible[this.producingID].progress / this.producible[this.producingID].cost * 100 + "%"
+        } else {
+            document.getElementById("city-yields-production").style.height = "35px"
+            document.getElementById("city-yields-turns-production").style.display = "none"
+            document.getElementById("city-yields-bar-production").style.display = "none"
+        }
+        if(this.yields.science != undefined && this.yields.science > 0){
+            document.getElementById("city-yields-science-count").innerHTML = "+" + Math.floor(this.yields.science)
+        } else {
+            document.getElementById("city-yields-science-count").innerHTML = "?"
+        }
+        if(this.yields.gold != undefined && this.yields.gold > 0){
+            document.getElementById("city-yields-gold-count").innerHTML = "+" + Math.floor(this.yields.gold)
+        } else {
+            document.getElementById("city-yields-gold-count").innerHTML = "?"
+        }
+        document.getElementById("city-yields-food-result").innerHTML = this.population
+    }
+
+    incrementFood(amount){
+        this.foodCount += amount
+
+        if(this.foodCount > this.foodCost()){
+            this.foodCount -= this.foodCost()
+            this.changePopulation(1)
+        }
+
+        this.labelLeftBar.style.transform = "translate(-50%, -50%) rotate(" + (Math.PI * this.foodCount / this.foodCost()) + "rad)"
+    }
+
+    changePopulation(amount){
+        this.population += amount
+        this.labelPop.innerHTML = this.population
+        this.calculateYields()
+    }
+
+    foodCost(){
+        return 20
+    }
+
     incrementProduction(amount){
         if(this.producingID != undefined){
             var cost = this.producible[this.producingID].cost
@@ -1822,6 +1953,9 @@ class Settlement{
             this.incrementProduction(0)
         }
         activePlayer.updateNotifications()
+        if(document.getElementById("city-yields").style.left == "0px"){
+            this.displayYields()
+        }
     }
 
     calculateYields(){
@@ -1835,6 +1969,7 @@ class Settlement{
             this.yields = addYields(this.yields, compareStrength[i].yields)
         }
 
+        this.yields = addYields({production: 1, food: 1, science: 1, culture: 1, gold: 1}, this.yields)
     }
 
     showDevelopEligible(){
@@ -1900,6 +2035,8 @@ class Settlement{
     }
 
     select(view){
+        this.displayProduction()
+        this.displayYields()
         if(activeSettlement != undefined && activeSettlement != this){
             activeSettlement.deselect(true)
         }
@@ -1940,6 +2077,7 @@ class Settlement{
             activeSettlement = undefined
             activeSelection = undefined
             document.getElementById("city-production").style.right = "-400px"
+            document.getElementById("city-yields").style.left = "-400px"
             camera.rotation.x = cameraRotationBase * (1 - (camera.position.z - minimumScrollIn) / (minimumScrollOut - minimumScrollIn))
             
             if(!reselecting){
@@ -1963,21 +2101,21 @@ class Settlement{
 }
 
 var workedIcon =  new THREE.Sprite( 
-    new THREE.SpriteMaterial({map: new THREE.TextureLoader().load("worked.png"), alphaMap: new THREE.TextureLoader().load("workedAlpha.png"), transparent: true, depthTest: false })
+    new THREE.SpriteMaterial({map: new THREE.TextureLoader().load("worked.png"), transparent: true, depthTest: false })
 ) 
 
 var unworkedIcon =  new THREE.Sprite( 
-    new THREE.SpriteMaterial({map: new THREE.TextureLoader().load("unworked.png"), alphaMap: new THREE.TextureLoader().load("workedAlpha.png"), transparent: true, depthTest: false })
+    new THREE.SpriteMaterial({map: new THREE.TextureLoader().load("unworked.png"), transparent: true, depthTest: false })
 ) 
 
 var developIcon = new THREE.Sprite( 
     new THREE.SpriteMaterial({map: new THREE.TextureLoader().load("actions/build.png"), 
-    alphaMap: new THREE.TextureLoader().load("actions/build_alpha.png"), transparent: true, depthTest: false })
+    transparent: true, depthTest: false })
 ) 
 
 var clearIcon = new THREE.Sprite( 
     new THREE.SpriteMaterial({map: new THREE.TextureLoader().load("actions/clear.png"), 
-    alphaMap: new THREE.TextureLoader().load("actions/clear_alpha.png"), transparent: true, depthTest: false })
+   transparent: true, depthTest: false })
 ) 
 
 var tileIcons = [workedIcon, unworkedIcon, developIcon, clearIcon]
@@ -2202,9 +2340,9 @@ for(var i = 0; i < 4; i++){
 
 var riversCreated = 0
 var riverSource
-for(var i = 0; i < 500 && riversCreated < riversLimit; i++){
+for(var i = 0; i < 5000 && riversCreated < riversLimit; i++){
     riverSource = randomTile()
-    if((riverSource.depth > 2.5 || (riverSource.depth > 1 && Math.random() < chanceToGenerateRiverDespiteDepth))
+    if((riverSource.depth > 2.2 || (riverSource.depth > 1 && Math.random() < chanceToGenerateRiverDespiteDepth))
         && nearby(riverSource, 5).filter(x => x.river).length == 0){
         if(!riverSource.river && setRiver(riverSource)){
             setMountainRange(riverSource, 0)
@@ -2324,7 +2462,8 @@ players.forEach(function(p){
     
         if([terrainTypes.grasslands, terrainTypes.plains].includes(spawnPoint.terrain) 
         && !spawnPoint.features.includes(features.mountain)
-        && nearby(spawnPoint, 3).filter(x => x.resource != undefined).length > 4){
+        && nearby(spawnPoint, 3).filter(x => x.resource != undefined).length > 4
+        && nearby(spawnPoint, 10).filter(x => x.getUnits().length > 0).length == 0){
             var nearbyPoint
             directions.forEach(function(d){
                 if(t(spawnPoint, d).depth > 1 && !t(spawnPoint,d).features.includes(features.mountain)){
@@ -2338,7 +2477,6 @@ players.forEach(function(p){
                 
                 esc = true
             }
-
         }
     }
 })
@@ -2404,8 +2542,6 @@ function calculateBorders(){
                     e.borderMeshes[e.borderMeshes.length - 1].material.color = e.player.borderColor
                 }
             }
-
-            e.borderMeshes.forEach(x => x.position.z = maxDepth)
         }
     }))
 

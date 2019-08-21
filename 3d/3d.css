@@ -62,6 +62,13 @@ body{
     transform: translate(-50%, -50%);
     pointer-events: none;
 }
+#nextturn-cover[src*="waiting"]{
+    animation: rotate 8s infinite linear
+}
+@keyframes rotate {
+  from {transform: translate(-50%, -50%) rotate(0)}
+  to {transform: translate(-50%, -50%) rotate(1800deg)}
+}
 
 #unitactions{
     position: absolute;
@@ -162,6 +169,7 @@ body{
     text-align: center;
     border-radius: 100%;
     z-index: 2;
+    cursor: pointer;
 }
 .city-label-pop{
     left: 22px;
@@ -172,12 +180,11 @@ body{
     right: 22px;
     transform: translate(50%, -50%);
     color: orange;
-    cursor: pointer;
 }
-.city-label-prod:hover{
+.city-label-pop:hover, .city-label-prod:hover{
     filter: brightness(.85)
 }
-.city-label-prod:active{
+.city-label-pop:active, .city-label-prod:active{
     filter: brightness(.7)
 }
 
@@ -226,6 +233,129 @@ body{
 .city-label-right-bar{
     background-color: orange;
     clip-path: polygon(50% 0, 0 0, 0 100%, 50% 100%)
+}
+
+#city-yields{
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 200;
+    text-align: center;
+    border: 3px solid #0f0e1c;
+    box-shadow: 2px 0px 7px 1px black;
+    transition: .4s;
+    transform: translate(-5px, -5px);
+    color: white;
+    text-shadow: 0px 0px 2px black;
+    will-change: left;
+}
+
+#city-yields-header{
+    position: relative;
+    height: 2vw;
+    line-height: 2vw;
+    text-align: left;
+    border: 2px solid black;
+    background: url("fabric.png"), #9e7e09;
+    color: black;
+    text-shadow: none;
+    box-shadow: inset 0px 0px 10px rgba(255,255,255,.5);
+}
+
+#city-yields-header div{
+    vertical-align: middle;
+    font-size: 1vw;
+    font-weight: bold;
+    margin-left: 15px;
+}
+
+#city-yields-header img{
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    transform: translate(50%, -50%);
+    cursor: pointer
+}
+
+#city-yields-header img:hover{
+    filter: brightness(1.3)
+}
+#city-yields-header img:active{
+    filter: brightness(1.6)
+}
+
+
+.city-yields-category{
+    position: relative;
+    width: 220px;
+    height: 60px;
+    border: 1px solid black;
+    font-size: 18px;
+}
+.city-yields-category:hover{
+    filter: brightness(1.2)
+}
+#city-yields-food{
+    background: url("halftone.png"), #184000;
+}
+#city-yields-gold{
+    background: url("halftone.png"), #403700;
+    height:35px;
+}
+#city-yields-culture{
+    background: url("halftone.png"), #400030;
+}
+#city-yields-science{
+    background: url("halftone.png"), #001740;
+    height:35px;
+}
+#city-yields-production{
+    background: url("halftone.png"), #401f00;
+}
+
+.city-yields-category img{
+    width: 20px;
+    height: 20px;
+    vertical-align: middle
+}
+
+.city-yields-category span{
+    vertical-align: middle;
+}
+
+.city-yields-category div{
+    position: absolute;
+}
+
+.city-yields-count{
+    top: 5px;
+    left: 10px;
+}
+.city-yields-bar{
+    width: 145px;
+    height: 18px;
+    bottom: 5px;
+    right: 10px;
+    border: 1px solid white;
+    border-radius: 5px;
+}
+.city-yields-bar div{
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: white;
+    opacity: .8;
+    width: 20px;
+}
+.city-yields-turns{
+    bottom: 5px;
+    left: 10px;
+}
+.city-yields-result{
+    right: 10px;
+    top: 5px;
 }
 
 #city-production{
