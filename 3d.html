@@ -1,74 +1,135 @@
 <!DOCTYPE html>
 <html>
-	<head>
-        <base href="3d/" target="_blank">
-		<meta charset=utf-8>
-		<link rel="stylesheet" href="3d.css">
-		<link rel="icon" href="favicon.ico" type="image/x-icon">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-		<link href="https://fonts.googleapis.com/css?family=Cinzel|Merriweather+Sans&display=swap" rel="stylesheet">
-	</head>
-	<body>
-		<div id="tooltip" class="tooltip" style="opacity: 0"></div>
-		<div id="tooltip-tile" class="tooltip" style="opacity: 0"></div>
-		<div id="unitactions" style="right: -500px" onmouseup="cursor.active = false"></div>
-		<div id="nextturn" onclick="nextTurnButton()" onmouseup="cursor.active = false">
-			<img id="nextturn-cover"></div>
+
+<head>
+	<base href="3d/" target="_blank">
+	<meta charset=utf-8>
+	<link rel="stylesheet" href="3d.css">
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<link href="https://fonts.googleapis.com/css?family=Cinzel|Merriweather+Sans&display=swap" rel="stylesheet">
+</head>
+
+<body>
+	<div id="topbar" onmouseup="cursor.active = false">
+		<div id="topbar-gold" class="topbar-yield">
+			<img src="yields/gold_5.png">
+			<div id="topbar-gold-count" class="topbar-count">384,876</div>
+			<div id="topbar-gold-perturn" class="topbar-perturn">+1,100</div>
 		</div>
-		<div id="city-production" style="right: -400px" onmouseup="cursor.active = false">
-			<div id="city-production-header"><div>PRODUCTION</div>
-			<img src="xbutton.png" onclick="document.getElementById('city-production').style.right = '-400px'; clearSelection();"></div>
-			<span id="city-production-items">
-			</span>
+		<div id="topbar-science" class="topbar-yield">
+			<img src="yields/science_5.png">
+			<div id="topbar-science-perturn" class="topbar-count">+500</div>
 		</div>
-		<div id="city-yields" style="left: -400px" onmouseup="cursor.active = false">
-			<div id="city-yields-header"><div>YIELDS</div>
-			<img src="xbutton.png" onclick="document.getElementById('city-yields').style.left = '-400px';"></div>
+		<div id="topbar-culture" class="topbar-yield">
+			<img src="yields/culture_5.png">
+			<div id="topbar-culture-count" class="topbar-count">59,584</div>
+			<div id="topbar-culture-perturn" class="topbar-perturn">+100</div>
+		</div>
+		<div id="topbar-food" class="topbar-yield">
+			<img src="yields/food_5.png">
+			<div id="topbar-food-perturn" class="topbar-count">+500</div>
+		</div>
+		<div id="topbar-production" class="topbar-yield">
+			<img src="yields/production_5.png">
+			<div id="topbar-production-perturn" class="topbar-count">+500</div>
+		</div>
+	</div>
+	<div id="tooltip" class="tooltip" style="opacity: 0"></div>
+	<div id="tooltip-tile" class="tooltip" style="opacity: 0"></div>
+	<div id="unitactions" style="right: -500px" onmouseup="cursor.active = false"></div>
+	<div id="nextturn" onclick="nextTurnButton()" onmouseup="cursor.active = false">
+		<img id="nextturn-cover"></div>
+	</div>
+
+	<div id="city-info" onmouseup="cursor.active = false" style="right: -400px">
+		<div id="city-info-header">
+			<img src="xbutton.png" id="city-header-info-exit" onclick="Settlement.hideInfo()">
+		</div>
+		<div id="city-production"></div>
+		<div id="city-yields" style="display:none">
 			<div class="city-yields-category" id="city-yields-production">
-				<div class="city-yields-count"><span id="city-yields-production-count">+10</span> <img src="yields/production_5.png"></div>
-				<div class="city-yields-bar" id="city-yields-bar-production"><div id="city-yields-production-bar"></div></div>
-				<div class="city-yields-turns" id="city-yields-turns-production"><span id="city-yields-production-turns">8</span> <img src="clock.png"></div>
+				<div class="city-yields-count"><span id="city-yields-production-count">+10</span> <img
+						src="yields/production_5.png"></div>
+				<div class="city-yields-bar" id="city-yields-bar-production">
+					<div id="city-yields-production-bar"></div>
+				</div>
+				<div class="city-yields-turns" id="city-yields-turns-production"><span
+						id="city-yields-production-turns">8</span> <img src="clock.png"></div>
 			</div>
 			<div class="city-yields-category" id="city-yields-food">
-				<div class="city-yields-count"><span id="city-yields-food-count">+10</span> <img src="yields/food_5.png"></div>
-				<div class="city-yields-bar"><div id="city-yields-food-bar"></div></div>
+				<div class="city-yields-count"><span id="city-yields-food-count">+10</span> <img
+						src="yields/food_5.png">
+				</div>
+				<div class="city-yields-bar">
+					<div id="city-yields-food-bar"></div>
+				</div>
 				<div class="city-yields-turns"><span id="city-yields-food-turns">8</span> <img src="clock.png"></div>
-				<div class="city-yields-result"><span id="city-yields-food-result">4</span> <img src="citizen.png"></div>
+				<div class="city-yields-result"><span id="city-yields-food-result">4</span> <img src="citizen.png">
+				</div>
 			</div>
 			<div class="city-yields-category" id="city-yields-culture">
-				<div class="city-yields-count"><span id="city-yields-culture-count">+10</span> <img src="yields/culture_5.png"></div>
-				<div class="city-yields-bar"><div id="city-yields-culture-bar"></div></div>
+				<div class="city-yields-count"><span id="city-yields-culture-count">+10</span> <img
+						src="yields/culture_5.png">
+				</div>
+				<div class="city-yields-bar">
+					<div id="city-yields-culture-bar"></div>
+				</div>
 				<div class="city-yields-turns"><span id="city-yields-culture-turns">8</span> <img src="clock.png"></div>
-				<div class="city-yields-result"><span id="city-yields-culture-result">4</span> <img src="tiles.png"></div>
+				<div class="city-yields-result"><span id="city-yields-culture-result">4</span> <img src="tiles.png">
+				</div>
 			</div>
 			<div class="city-yields-category" id="city-yields-gold">
-				<div class="city-yields-count"><span id="city-yields-gold-count">+10</span> <img src="yields/gold_5.png"></div><!--
-				<div class="city-yields-bar"><div id="city-yields-gold-bar"></div></div>
-				<div class="city-yields-turns"><span id="city-yields-gold-turns">8</span> <img src="clock.png"></div>
-				<div class="city-yields-result"><span id="city-yields-gold-result">4</span> <img src="citizen.png"></div>-->
+				<div class="city-yields-count"><span id="city-yields-gold-count">+10</span> <img
+						src="yields/gold_5.png">
+				</div>
+				<!--
+										<div class="city-yields-bar"><div id="city-yields-gold-bar"></div></div>
+										<div class="city-yields-turns"><span id="city-yields-gold-turns">8</span> <img src="clock.png"></div>
+										<div class="city-yields-result"><span id="city-yields-gold-result">4</span> <img src="citizen.png"></div>-->
 			</div>
 			<div class="city-yields-category" id="city-yields-science">
-				<div class="city-yields-count"><span id="city-yields-science-count">+10</span> <img src="yields/science_5.png"></div><!--
-				<div class="city-yields-bar"><div id="city-yields-science-bar"></div></div>
-				<div class="city-yields-turns"><span id="city-yields-science-turns">8</span> <img src="clock.png"></div>
-				<div class="city-yields-result"><span id="city-yields-science-result">4</span> <img src="citizen.png"></div>-->
+				<div class="city-yields-count"><span id="city-yields-science-count">+10</span> <img
+						src="yields/science_5.png">
+				</div>
+				<!--
+										<div class="city-yields-bar"><div id="city-yields-science-bar"></div></div>
+										<div class="city-yields-turns"><span id="city-yields-science-turns">8</span> <img src="clock.png"></div>
+										<div class="city-yields-result"><span id="city-yields-science-result">4</span> <img src="citizen.png"></div>-->
 			</div>
 		</div>
-
-		<div id="notifications" onmouseup="cursor.active = false">
-			<div><img src="notifications/production.png"></div>
-			<div><img src="notifications/unit.png"></div>
+		<div id="city-info-footer">
+			<div id="city-info-header-production" onclick="Settlement.changeCityInfoPanel(0)">
+				<img src="cityinfo_production.png">
+			</div>
+			<div id="city-info-header-yields" onclick="Settlement.changeCityInfoPanel(1)">
+				<img src="cityinfo_yields.png">
+			</div>
 		</div>
-		<script src="tile.js"></script>
-		<script src="three.js"></script>
-		<script src="OrbitControls.js"></script>
-		<script src="CSS3DRenderer.js"></script>
-		<script src="CSS2DRenderer.js"></script>
-		<script src="loader.js"></script>
-		<script src="3d.js"></script>
-	</body>
+	</div>
+
+	<div id="notifications" onmouseup="cursor.active = false">
+		<div><img src="notifications/production.png"></div>
+		<div><img src="notifications/unit.png"></div>
+	</div>
+
+	<script src="three.js"></script>
+	<script src="OrbitControls.js"></script>
+	<script src="CSS3DRenderer.js"></script>
+	<script src="CSS2DRenderer.js"></script>
+	<script src="loader.js"></script>
+
+	<script src="basic.js"></script>
+	<script src="classes.js"></script>
+	<script src="tile.js"></script>
+	<script src="player.js"></script>
+	<script src="unit.js"></script>
+	<script src="settlement.js"></script>
+	<script src="3d.js"></script>
+</body>
+
 </html>

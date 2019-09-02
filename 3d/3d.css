@@ -83,7 +83,8 @@ body{
     user-select: none;
     transition: .25s;
     line-height: 108px;
-    transform: translateX(-80px) scale(.8)
+    transform: translateX(-80px) scale(.8);
+    cursor: pointer;
 }
 
 #unitactions div{
@@ -235,63 +236,11 @@ body{
     clip-path: polygon(50% 0, 0 0, 0 100%, 50% 100%)
 }
 
-#city-yields{
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 200;
-    text-align: center;
-    border: 3px solid #0f0e1c;
-    box-shadow: 2px 0px 7px 1px black;
-    transition: .4s;
-    transform: translate(-5px, -5px);
-    color: white;
-    text-shadow: 0px 0px 2px black;
-    will-change: left;
-}
-
-#city-yields-header{
-    position: relative;
-    height: 2vw;
-    line-height: 2vw;
-    text-align: left;
-    border: 2px solid black;
-    background: url("fabric.png"), #9e7e09;
-    color: black;
-    text-shadow: none;
-    box-shadow: inset 0px 0px 10px rgba(255,255,255,.5);
-}
-
-#city-yields-header div{
-    vertical-align: middle;
-    font-size: 1vw;
-    font-weight: bold;
-    margin-left: 15px;
-}
-
-#city-yields-header img{
-    position: absolute;
-    right: 30px;
-    top: 50%;
-    width: 20px;
-    height: 20px;
-    transform: translate(50%, -50%);
-    cursor: pointer
-}
-
-#city-yields-header img:hover{
-    filter: brightness(1.3)
-}
-#city-yields-header img:active{
-    filter: brightness(1.6)
-}
-
-
 .city-yields-category{
     position: relative;
     width: 220px;
     height: 60px;
-    border: 1px solid black;
+    border: 1px solid white;
     font-size: 18px;
 }
 .city-yields-category:hover{
@@ -358,44 +307,66 @@ body{
     top: 5px;
 }
 
-#city-production{
+#city-info-header, #city-info-footer{
     position: absolute;
-    top: 0;
+    bottom: 99%;
     right: 0;
-    z-index: 200;
-    text-align: center;
-    border: 3px solid #0f0e1c;
-    box-shadow: -2px 0px 7px 1px black;
-    transition: .4s;
-    transform: translate(5px, -5px);
-    color: white;
-    text-shadow: 0px 0px 2px black;
-    will-change: right;
-}
-
-#city-production-header{
-    position: relative;
+    transition: .3s;
     width: calc(100% + 10px);
-    height: 2vw;
+    height: 40px;
     line-height: 2vw;
-    text-align: left;
-    border: 2px solid black;
-    background: url("fabric.png"), #9e7e09;
+    text-align: right;
+    background: url("cityinfobar.png");
+    background-size: 100% 100%;
     color: black;
-    text-shadow: none;
-    box-shadow: inset -10px 0px 10px rgba(255,255,255,.5);
+    z-index: 15;
+    padding-right: 10px;
 }
 
-#city-production-header div{
-    vertical-align: middle;
-    font-size: 1vw;
-    font-weight: bold;
-    margin-left: 15px;
+#city-info-footer{
+    top: 99%;
+    bottom: 0;
 }
 
-#city-production-header img{
+#city-info-footer div{
+    position: relative;
+    width: 40px;
+    height: 60px;
+    display: inline-block;
+    background-image: url("cityinfo_back.png");
+    background-size: 100% 100%;
+    transition: height .1s;
+    cursor: pointer;
+    vertical-align: top;
+}
+
+
+#city-info-footer div:hover{
+    height: 65px;
+    filter: brightness(.85);
+}
+
+#city-info-footer div[currentPanel="true"], #city-info-footer div[currentPanel="true"]:hover{
+    height: 70px;
+}
+
+#city-info-footer div:active{
+    height: 75px !important;
+    filter: brightness(.7)
+}
+
+#city-info-footer div img{
     position: absolute;
-    right: 30px;
+    bottom: 22px;
+    left: 50%;
+    width: 35px;
+    height: 35px;
+    transform: translateX(-50%)
+}
+
+#city-header-info-exit{
+    position: absolute;
+    right: 20px;
     top: 50%;
     width: 20px;
     height: 20px;
@@ -403,18 +374,32 @@ body{
     cursor: pointer
 }
 
-#city-production-header img:hover{
+#city-header-info-exit:hover{
     filter: brightness(1.3)
 }
-#city-production-header img:active{
+#city-header-info-exit:active{
     filter: brightness(1.6)
+}
+
+#city-info{
+    position: absolute;
+    top: 44px;
+    right: 0;
+    z-index: 14;
+    text-align: center;
+    box-shadow: 0px 0px 5px 1px white;
+    transition: .3s;
+    transform: translateY(-5px);
+    color: white;
+    text-shadow: 0px 0px 2px black;
+    will-change: right;
 }
 
 .city-production-item{
     position: relative;
     width: 13vw;
     cursor: pointer;
-    border: 1px solid black;
+    border: 1px solid white;
     background: url("cardboard.png"), #383469;
 }
 .city-production-item-active{
@@ -495,6 +480,85 @@ body{
     width: 75px;
     height: 75px;
     transform: scale(1.05)
+}
+
+#topbar{
+    position: absolute;
+    top: 4px;
+    left: 0;
+    font-size: 12px;
+    background: url("topbar.png");
+    background-size: 100% 100%;
+    padding-right: 40px;
+}
+
+#topbar div{
+    display: inline-block;
+    vertical-align: top;
+    text-shadow: 0 0 10px white
+}
+
+.topbar-yield{
+    position: relative;
+    height: 40px;
+    line-height: 40px;
+    padding-left: 50px;
+    padding-right: 15px;
+}
+
+#topbar img{
+    position: absolute;
+    left: 25px;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 31px;
+    height: 31px;
+}
+
+.topbar-perturn{
+    transform-origin: 0% 50%;
+    transform: scale(.8) translateY(-20%)
+}
+
+#topbar-gold{
+    background: linear-gradient(to right, rgba(230, 219, 0, .0), 
+                                          rgba(230, 219, 0, .3) 15%,
+                                          rgba(230, 219, 0, .5) 50%, 
+                                          rgba(230, 219, 0, .3) 85%, 
+                                          rgba(230, 219, 0, 0) 100%)
+}
+
+#topbar-science{
+    background: linear-gradient(to right, rgba(0, 0, 230, .0), 
+                                          rgba(0, 0, 230, .3) 15%, 
+                                          rgba(0, 0, 230, .5) 50%, 
+                                          rgba(0, 0, 230, .3) 85%, 
+                                          rgba(0, 0, 230, 0) 100%);
+    padding-right: 15px;
+}
+
+#topbar-culture{
+    background: linear-gradient(to right, rgba(230, 0, 230, .0), 
+                                          rgba(230, 0, 230, .3) 15%, 
+                                          rgba(230, 0, 230, .5) 50%, 
+                                          rgba(230, 0, 230, .3) 85%, 
+                                          rgba(230, 0, 230, 0) 100%);
+}
+
+#topbar-food{
+    background: linear-gradient(to right, rgba(0, 230, 38, .0), 
+                                          rgba(0, 230, 38, .3) 15%, 
+                                          rgba(0, 230, 38, .5) 50%, 
+                                          rgba(0, 230, 38, .3) 85%, 
+                                          rgba(0, 230, 38, 0) 100%);
+}
+
+#topbar-production{
+    background: linear-gradient(to right, rgba(230, 150, 0, .0), 
+                                          rgba(230, 150, 0, .3) 15%, 
+                                          rgba(230, 150, 0, .5) 50%, 
+                                          rgba(230, 150, 0, .3) 85%, 
+                                          rgba(230, 150, 0, 0) 100%);
 }
 
 /* -----------------------------SCROLLBAR-------------------------------- */
