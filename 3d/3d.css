@@ -561,6 +561,48 @@ body{
                                           rgba(230, 150, 0, 0) 100%);
 }
 
+.tile-buy-button{
+    background-color: #888;
+    border-radius: 5px;
+    font-size: 18px;
+    border: 2px solid black;
+    padding: 2px;
+    padding-right: 5px;
+    padding-left: 30px;
+    pointer-events: all;
+    box-shadow: 2px 2px 2px black;
+    text-shadow: 0 0 1px white;
+    opacity: .9;
+    cursor: pointer;
+}
+
+.tile-buy-button[afford="false"]{
+    filter: brightness(.5) !important;
+    opacity: .6 !important;
+    cursor: unset;
+}
+
+.tile-buy-button[inactive="true"]{
+    display: none
+}
+
+.tile-buy-button img{
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+}
+
+.tile-buy-button:hover{
+    filter: brightness(1.15)
+}
+
+.tile-buy-button:active{
+    filter: brightness(1.3)
+}
+
 /* -----------------------------SCROLLBAR-------------------------------- */
 /* width */
 ::-webkit-scrollbar {

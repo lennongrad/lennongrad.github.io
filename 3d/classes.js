@@ -1,3 +1,7 @@
+/**
+ * @typedef {{x: number, y: number}}
+ */
+var Position
 
 class Yield{
     constructor(name){
@@ -116,5 +120,16 @@ class UnitType{
         this.name = name
         this.unitClass = unitClass
         this.texture = new THREE.TextureLoader().load( 'uniticons/' + filename );
+    }
+}
+
+class Technology{
+    constructor(name, filename, type, description, prerequisites, unlockList){
+        this.name = name
+        this.filename = filename
+        this.type = type
+        this.description = description;
+        this.prerequisites = prerequisites;
+        this.unlockList = unlockList;
     }
 }

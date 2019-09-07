@@ -290,6 +290,7 @@ class Settlement {
     acquireTile(tile) {
         this.tiles.push(tile)
         tile.switchOwnership(this.player)
+        this.calculateYields()
     }
 
     incrementProduction(amount) {
@@ -345,17 +346,26 @@ class Settlement {
 
         this.yields = addYields({ production: 1, food: 1, science: 1, culture: 5, gold: 1 }, this.yields)
 
-        var cultureEligibleTiles = []
+        this.cultureEligibleTiles = []
         this.tiles.forEach(function (x) {
             directions.forEach(function (d) {
                 var currentTile = t(x, d)
-                if (!cultureEligibleTiles.includes(currentTile) && currentTile.player == undefined && nearby(this.tile, 3).includes(currentTile)) {
-                    cultureEligibleTiles.push(currentTile)
+                if (!this.cultureEligibleTiles.includes(currentTile) && currentTile.player == undefined && nearby(this.tile, 3).includes(currentTile)) {
+                    this.cultureEligibleTiles.push(currentTile)
                 }
             }.bind(this))
         }.bind(this))
 
-        this.cultureTarget = cultureEligibleTiles.sort((x, y) => this.getTileValue(y) - this.getTileValue(x))[0]
+        this.cultureEligibleTiles.forEach(function(x){
+            x.buyLabelPrice.innerHTML = this.priceToBuyTile(x)
+            if(this.priceToBuyTile(x) > this.player.accumulatedGold){
+                x.buyLabel.setAttribute("afford", "false")
+            } else {
+                x.buyLabel.setAttribute("afford", "true")
+            }
+        }.bind(this))
+
+        this.cultureTarget = this.cultureEligibleTiles.sort((x, y) => this.getTileValue(y) - this.getTileValue(x))[0]
     }
 
     showDevelopEligible() {
@@ -399,6 +409,8 @@ class Settlement {
                 e.mesh.add(e.workedIcon)
             }
         })
+
+        this.cultureEligibleTiles.forEach(x => x.buyLabel.setAttribute("inactive", "false"))
     }
 
     hideWorked() {
@@ -418,6 +430,8 @@ class Settlement {
                 e.clearIcon = undefined
             }
         })
+
+        tiles.forEach(y => y.forEach(x => x.buyLabel.setAttribute("inactive", "true")))
     }
 
     select(view) {
@@ -492,6 +506,10 @@ class Settlement {
                 }
             }))
         }
+    }
+
+    priceToBuyTile(tile){
+        return 20
     }
 
     static hideInfo(){

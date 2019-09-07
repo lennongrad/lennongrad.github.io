@@ -1111,7 +1111,9 @@ tiles.forEach(function (x) {
             var escape = false
             for (var i = 0; i < 500 && !escape; i++) {
                 var resource = randomValueObj(resources)
-                if (testRequirements(e, resource.requirements)) {
+                if (testRequirements(e, resource.requirements)
+                && !e.features.includes(features.mountain)
+                && e.terrain != terrainTypes.ice) {
                     escape = true
                     e.resource = resource
                     if (e.terrain == terrainTypes.ocean) {
@@ -1331,5 +1333,6 @@ function allModelsLoaded() {
         players[0].units[0].tile().centerCameraOnTile()
         players[0].detectSeen()
         players[0].beginTurn()
+        Settlement.changeCityInfoPanel(0)
     }
 }
