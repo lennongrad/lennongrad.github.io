@@ -562,7 +562,7 @@ var resources = {
     horse: new Resource("Horse", developments.pasture, { production: 2 }, [requirements.standard, requirements.notHills]),
     iron: new Resource("Iron", developments.mine, { production: 2 }, [requirements.land]),
     jade: new Resource("Jade", developments.mine, { gold: 3 }, [requirements.hills]),
-    latex: new Resource("Rubber", developments.plantation, { gold: 2, production: 1 }, [requirements.forest, requirements.standard]),
+    latex: new Resource("Latex", developments.plantation, { gold: 2, production: 1 }, [requirements.forest, requirements.standard]),
     marble: new Resource("Marble", developments.quarry, { gold: 3 }, [requirements.hills]),
     mercury: new Resource("Mercury", developments.mine, { gold: 3 }, [requirements.hills]),
     murex: new Resource("Murex", developments.fishery, { gold: 3 }, [requirements.notLand, requirements.coastal]),
@@ -584,14 +584,14 @@ var resources = {
     sugarcane: new Resource("Sugarcane", developments.plantation, { gold: 3 }, [requirements.land, requirements.coastal, requirements.notTundra, requirements.notSnow]),
     tea: new Resource("Tea", developments.plantation, { gold: 3 }, [requirements.standard, requirements.coastal]),
     tobacco: new Resource("Tobacco", developments.plantation, { gold: 3 }, [requirements.standard, requirements.coastal]),
-    turtles: new Resource("Turtle", developments.fishery, { gold: 2, food: 1 }, [requirements.notLand, requirements.coastal]),
+    turtles: new Resource("Turtles", developments.fishery, { gold: 2, food: 1 }, [requirements.notLand, requirements.coastal]),
     //uranium: new Resource("Uranium"    , {production: 2}, [requirements.land])     ,
     whales: new Resource("Whales", developments.fishery, { gold: 2, food: 1 }, [requirements.notLand, requirements.coastal]),
     wheat: new Resource("Wheat", developments.farm, { food: 2 }, [requirements.standard]),
 }
 
 var features = {
-    mountain: new Feature("Mountain", 'mountain.glb', { offsetZ: -.05, scale: .67 }),
+    mountain: new Feature("Mountain", 'Mountain.glb', { offsetZ: -.05, scale: .67 }),
     forest: new Feature("Forest", 'lowpoly_forest.glb', { scale: .15 }),
     mesa: new Feature("Mesa", 'mesa.glb', { offsetZ: -.05, scale: .6 }),
     savanna: new Feature("Savanna", 'savanna.glb', { scale: .025 })
