@@ -18,25 +18,25 @@
 	<div id="topbar" onmouseup="cursor.active = false">
 		<div id="topbar-gold" class="topbar-yield">
 			<img src="yields/gold_5.png">
-			<div id="topbar-gold-count" class="topbar-count">384,876</div>
-			<div id="topbar-gold-perturn" class="topbar-perturn">+1,100</div>
+			<div id="topbar-gold-count" class="topbar-count"></div>
+			<div id="topbar-gold-perturn" class="topbar-perturn">+</div>
 		</div>
 		<div id="topbar-science" class="topbar-yield">
 			<img src="yields/science_5.png">
-			<div id="topbar-science-perturn" class="topbar-count">+500</div>
+			<div id="topbar-science-perturn" class="topbar-count">+</div>
 		</div>
 		<div id="topbar-culture" class="topbar-yield">
 			<img src="yields/culture_5.png">
-			<div id="topbar-culture-count" class="topbar-count">59,584</div>
-			<div id="topbar-culture-perturn" class="topbar-perturn">+100</div>
+			<div id="topbar-culture-count" class="topbar-count"></div>
+			<div id="topbar-culture-perturn" class="topbar-perturn">+</div>
 		</div>
 		<div id="topbar-food" class="topbar-yield">
 			<img src="yields/food_5.png">
-			<div id="topbar-food-perturn" class="topbar-count">+500</div>
+			<div id="topbar-food-perturn" class="topbar-count">+</div>
 		</div>
 		<div id="topbar-production" class="topbar-yield">
 			<img src="yields/production_5.png">
-			<div id="topbar-production-perturn" class="topbar-count">+500</div>
+			<div id="topbar-production-perturn" class="topbar-count">+</div>
 		</div>
 	</div>
 	<div id="tooltip" class="tooltip" style="opacity: 0"></div>
@@ -45,6 +45,8 @@
 	<div id="nextturn" onclick="nextTurnButton()" onmouseup="cursor.active = false">
 		<img id="nextturn-cover"></div>
 	</div>
+
+	<div id="science-holder" onmouseup="cursor.active = false"></div>
 
 	<div id="city-info" onmouseup="cursor.active = false" style="right: -400px">
 		<div id="city-info-header">
@@ -58,8 +60,9 @@
 				<div class="city-yields-bar" id="city-yields-bar-production">
 					<div id="city-yields-production-bar"></div>
 				</div>
-				<div class="city-yields-turns" id="city-yields-turns-production"><span
-						id="city-yields-production-turns">8</span> <img src="clock.png"></div>
+				<div class="city-yields-turns" id="city-yields-turns-production">
+					<span id="city-yields-production-turns">8</span> <img src="clock.png">
+				</div>
 			</div>
 			<div class="city-yields-category" id="city-yields-food">
 				<div class="city-yields-count"><span id="city-yields-food-count">+10</span> <img

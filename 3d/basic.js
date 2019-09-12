@@ -3,11 +3,25 @@ Array.prototype.last = function () {
 };
 
 document.oncontextmenu = cancelContextMenu = function (e) {
-    if (e && e.stopPropagation)
+    if (e && e.stopPropagation){
         e.stopPropagation();
+    }
 
     return false;
 }
+
+// From https://stackoverflow.com/a/6121234/8815098
+Object.defineProperties(Array.prototype, {
+    count: {
+        value: function(query) {
+            var count = 0;
+            for(let i=0; i<this.length; i++)
+                if (this[i]==query)
+                    count++;
+            return count;
+        }
+    }
+});
 
 /** Performs a change of base
  * @param {number} value The number that the logarithm is performed on

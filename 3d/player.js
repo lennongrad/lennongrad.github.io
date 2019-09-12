@@ -8,8 +8,14 @@ class Player{
         this.seen = []
         this.yields = {}
 
+        this.technologyPicks = []
+        this.technologyChosen = undefined
+        this.technologyCompleted = []
+
         this.accumulatedCulture = 0
         this.accumulatedGold = 0
+        this.heldScience = 0
+        this.randomizeTechnology()
 
         this.overlayMaterial = new THREE.MeshBasicMaterial( { color: this.color,
              alphaMap: hexagonAlpha, transparent: true, opacity: ownerOverlayOpacity, depthWrite: false } )
@@ -50,9 +56,15 @@ class Player{
             setTimeout(() => { this.ai() }, 500);
         }
         this.calculateYields()
+        this.units.forEach(x => tiles[x.pos.x][x.pos.y].unitIconHolderDIV.appendChild(x.iconDIV))
+
+        if(this.technologyPicks.length >= 1 && this.technologyChosen == undefined){
+            this.chooseTechnology(0)
+        }
 
         this.accumulatedGold += this.yields.gold
         this.accumulatedCulture += this.yields.culture
+        this.incrementScience(this.yields.science)
 
         if(this == players[0]){
             this.updateTopbar()
@@ -61,6 +73,73 @@ class Player{
 
     ai(){
         this.endTurn()
+    }
+
+    incrementScience(value){
+        if(this.technologyChosen != undefined){
+            if(this.heldScience > 0){
+                value += this.heldScience
+                this.heldScience = 0
+            }
+            
+            if(this.technologyChosen.completion + value > this.technologyChosen.getCost(this)){
+                this.technologyCompleted.push(this.technologyChosen)
+                this.randomizeTechnology()
+                this.chooseTechnology((this.technologyPicks.length > 0) ? 0 : undefined)
+
+                this.heldScience = this.technologyChosen.completion + value - this.technologyChosen.getCost(this)
+            } else {
+                this.technologyChosen.completion += value
+                this.technologyChosen.elementBar.style.transform = "translate(-51%,-50%) rotate(-" + (Math.PI * (this.technologyChosen.completion / this.technologyChosen.getCost(this))) + "rad)"
+            }
+        } else {
+            this.heldScience += value
+        }
+    }
+
+    randomizeTechnology(){
+        var possiblePicks = []
+        Object.keys(technologies).forEach(function(tech){
+            if(!this.technologyCompleted.includes(technologies[tech])){
+                var canInclude = true
+                technologies[tech].prerequisites.forEach(function(pre){
+                    if(!this.technologyCompleted.includes(pre)){
+                        canInclude = false
+                    }
+                }.bind(this))
+                if(canInclude){
+                    possiblePicks.push(technologies[tech])
+                }
+            }
+        }.bind(this))
+
+        this.technologyPicks = []
+        if(possiblePicks.length >= 3){
+            while(this.technologyPicks.length < 3){
+                var randomVal = randomValue(possiblePicks)
+                if(!this.technologyPicks.includes(randomVal)){
+                    this.technologyPicks.push(randomVal)
+                }
+            }
+        } else {
+            this.technologyPicks = possiblePicks
+        } 
+    }
+
+    chooseTechnology(index){
+        if(index != undefined){
+            this.technologyChosen = this.technologyPicks[index]
+        }
+        if(this == players[0]){
+            document.getElementById("science-holder").innerHTML = ""
+            this.technologyPicks.forEach(function(tech, index){
+                document.getElementById("science-holder").appendChild(tech.element)
+                tech.element.setAttribute("indexInPicks", index)
+            })
+            if(index != undefined){
+                document.getElementById("science-holder").prepend(this.technologyChosen.element)
+            }
+        }
     }
 
     endTurn(){

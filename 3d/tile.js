@@ -162,6 +162,13 @@ class Tile {
         this.buyLabel2D.position.z = .02
         this.buyLabel2D.position.y = .5
 
+        this.unitIconHolderDIV = document.createElement("DIV")
+        this.unitIconHolder = new THREE.CSS3DSprite(this.unitIconHolderDIV)
+        this.unitIconHolder.scale.set(.013, .013, .013)
+        this.face.add(this.unitIconHolder)
+        this.unitIconHolder.rotation.x = Math.PI / 2
+        this.unitIconHolder = unitIconHoverAboveTile
+
         this.calculateYields()
     }
 
@@ -241,8 +248,7 @@ class Tile {
             this.settlement.tiles.push(t(this, directions[i]))
         }
 
-        this.settlement.label.position.z = maxDepth + 1.1
-        this.mesh.add(this.settlement.label)
+        this.face.add(this.settlement.label)
 
         this.clearAllFeatures()
         this.clearResource()

@@ -1,0 +1,77 @@
+#holder{
+    position: absolute;
+    right: 50%;
+    top: 50%;
+    transform: translate(100px, -50%);
+    white-space: nowrap;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    text-align: center;
+    user-select:none;
+}
+
+#holder div{
+    position: relative;
+    width: 196px;
+    line-height: 17px;
+    padding: 1px;
+    border: 1px solid black;
+    display: inline-block;
+}
+
+#holder div p{
+    top: 100%;
+}
+
+#base{
+    top: -20px;
+    right: 3px;
+    cursor: pointer
+}
+
+#base::before{
+    content: "Click here!";
+    position: absolute;
+    top: -20px;
+}
+
+#holder div p, #base{
+    position: absolute;    
+    height: 20px;
+    width: 194px;
+    border: 1px solid black;
+    margin: 0;
+}
+
+#holder div:last-child{
+    border: 3px solid black;
+}
+
+#holder div:nth-last-child(2){
+    border-right: 0;
+}
+
+.match{
+    background-color: yellow;
+}
+
+
+#button{
+    position: absolute;
+    right: 20%;
+    transform: translateX(50%);
+    bottom: 10px;
+    width: 150px;
+    background-color: #111166;
+    color: white;
+    text-align: center;
+    height: 60px;
+    line-height: 60px;
+    font-size: 21px;
+    cursor: pointer;
+    user-select: none;
+}
+
+#button:hover{
+    filter: brightness(.75)
+}

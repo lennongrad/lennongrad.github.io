@@ -8,17 +8,21 @@ var camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHei
 var clock = new THREE.Clock();
 var loader = new THREE.GLTFLoader();
 var renderer = new THREE.WebGLRenderer();
-var cssRenderer = new THREE.CSS2DRenderer();
+var css2DRenderer = new THREE.CSS2DRenderer();
+var css3DRenderer = new THREE.CSS3DRenderer();
 var raycaster = new THREE.Raycaster();
 raycaster.far = 25;
 var mouseVector = new THREE.Vector2();
 document.body.appendChild(renderer.domElement);
-document.body.appendChild(cssRenderer.domElement);
-cssRenderer.domElement.id = "cssRenderer"
+document.body.appendChild(css2DRenderer.domElement);
+document.body.appendChild(css3DRenderer.domElement);
+css2DRenderer.domElement.className = "cssRenderer"
+css3DRenderer.domElement.className = "cssRenderer"
 
 window.onresize = function () {
     renderer.setSize(window.innerWidth, window.innerHeight);
-    cssRenderer.setSize(window.innerWidth, window.innerHeight);
+    css2DRenderer.setSize(window.innerWidth, window.innerHeight);
+    css3DRenderer.setSize(window.innerWidth, window.innerHeight);
 }
 window.onresize();
 
@@ -47,8 +51,8 @@ var chanceToContinueMountain = .45
 var chanceToContinueForest = .2
 var forestsLimit = 25
 
-var minimumScrollOut = 28
-var minimumScrollIn = 18
+var minimumScrollOut = 24
+var minimumScrollIn = 16
 var ambientLighting = 1.5
 var reachableOverlayColor = "#109fc9"
 var reachableOverlayOpacity = .1
@@ -213,13 +217,9 @@ $("body").mouseup(function (eventData) {
                 }
 
                 if (activeSettlement != undefined &&
-                    (hoveredUnit != undefined || (activeTile != undefined && activeTile.player != activeSettlement.player))) {
+                    (activeTile != undefined && activeTile.player != activeSettlement.player)) {
                     activeSettlement.deselect()
                 }
-            }
-
-            if (hoveredUnit != undefined && hoveredUnit.determineReachable().length > 0) {
-                hoveredUnit.select()
             }
         } else if (eventData.which === 3) { //right
             if (activeTile != undefined && activeTile.reachableOverlay != undefined && activeTile != tiles[activeUnit.pos.x][activeUnit.pos.y]) {
@@ -722,9 +722,9 @@ var actions = {
 }
 
 var unitClasses = {
-    infantry: new UnitClass("Infantry", false, []),
-    ship: new UnitClass("Ship", false, []),
-    settler: new UnitClass("Settler", false, [actions.settle])
+    infantry: new UnitClass("Infantry", false),
+    ship: new UnitClass("Ship", false),
+    settler: new UnitClass("Settler", false)
 }
 
 var unitTypes = {
@@ -733,6 +733,30 @@ var unitTypes = {
     settler: new UnitType("Settler", unitClasses.settler, "settler.png")
 }
 
+var technologyTypes = {
+    engineering: "Engineering",
+    society: "Society",
+    theoretical: "Theoretical",
+    none: "None"
+}
+
+var technologies = {
+    animalHusbandry: new Technology("Animal Husbandry", "animalhusbandry", technologyTypes.none, [unitTypes.sea]),
+    archery: new Technology("Archery", "archery", technologyTypes.none, []),
+    astrology: new Technology("Astrology", "astrology", technologyTypes.none, []),
+    bronzeWorking: new Technology("Bronze Working", "bronzeworking", technologyTypes.none, []),
+    irrigation: new Technology("Irrigation", "irrigation", technologyTypes.none, []),
+    masonry: new Technology("Masonry", "masonry", technologyTypes.none, []),
+    mining: new Technology("Mining", "mining", technologyTypes.none, []),
+    pottery: new Technology("Pottery", "pottery", technologyTypes.none, []),
+    sailing: new Technology("Sailing", "sailing", technologyTypes.none, []),
+    wheel: new Technology("Wheel", "wheel", technologyTypes.none, []),
+    writing: new Technology("Writing", "writing", technologyTypes.society, [])
+}
+
+technologies.bronzeWorking.prerequisites = [technologies.mining]
+technologies.irrigation.prerequisites = [technologies.pottery]
+technologies.wheel.prerequisites = [technologies.mining]
 
 var players = [new Player(), new Player()]
 activePlayer = players[0]
@@ -1155,7 +1179,6 @@ players.forEach(function (p) {
 var maxOffsetX = mapSizeX * Math.sqrt(3) * hexagonSize
 var mapOffset = { x: maxOffsetX, y: 0 }
 var activeUnit = undefined
-var hoveredUnit = undefined
 var activeSettlement = undefined
 var viewedSettlement = undefined
 
@@ -1224,17 +1247,13 @@ function cameraMove() {
     if (!modelsLoaded) {
         return
     }
+
     tiles.forEach(function (x) {
         x.forEach(function (e) {
             e.mesh.position.x = (((2 * e.position.x + (e.position.y % 2 == 0 ? 0 : 1)) * Math.sqrt(3) / 2 * hexagonSize) + mapOffset.x) % maxOffsetX
             e.mesh.position.y = (hexagonSize * 3 / 2 * e.position.y) + mapOffset.y - (activeSettlement == undefined ? (camera.position.z - minimumScrollIn) : 0)
         })
     })
-
-    players.forEach(x => x.units.forEach(function (e) {
-        e.icon.position.x = tiles[e.pos.x][e.pos.y].mesh.position.x
-        e.icon.position.y = tiles[e.pos.x][e.pos.y].mesh.position.y + ((activeSettlement != undefined) ? (1) : (.4))
-    }))
 }
 
 function nextTurnButton() {
@@ -1253,8 +1272,8 @@ function animate() {
     // annieAlpha.update(1000 * delta)
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
-    //cssRenderer.render( cssScene, camera );
-    cssRenderer.render(scene, camera);
+    css2DRenderer.render(scene, camera);
+    css3DRenderer.render(scene, camera);
 
     cursor.lastMoved += delta
 
@@ -1265,8 +1284,6 @@ function animate() {
         })
     })
 
-    hoveredUnit = undefined
-
     if (renderer.domElement.matches(':hover')) {
         raycaster.setFromCamera(mouseVector, camera);
         intersects = raycaster.intersectObjects(scene.children)
@@ -1274,17 +1291,13 @@ function animate() {
             if (intersects[0].object.gamePosition != undefined) {
                 activeTile = tiles[intersects[0].object.gamePosition.x][intersects[0].object.gamePosition.y]
                 activeTile.active = true
-            } else if (intersects[0].object.unitID != undefined) {
-                hoveredUnit = players[intersects[0].object.playerID].units[intersects[0].object.unitID]
-                activeTile = tiles[hoveredUnit.pos.x][hoveredUnit.pos.y]
-                activeTile.active = true
             }
         }
     }
 
     if (activeTile != undefined && cursor.lastMoved > .25) {
         tooltipTile.innerHTML = ""
-        tooltipTile.innerHTML += (hoveredUnit == undefined) ? (activeTile.getTooltip()) : (hoveredUnit.getTooltip())
+        tooltipTile.innerHTML += activeTile.getTooltip()
         tooltipTile.style.left = cursor.x + "px"
         tooltipTile.style.top = cursor.y + "px"
         tooltipTile.style.opacity = "1"
@@ -1304,17 +1317,6 @@ function animate() {
             }
         })
     })
-
-    players.forEach(x => x.units.forEach(function (e) {
-        e.icon.position.z = tiles[e.pos.x][e.pos.y].mesh.position.z + maxDepth + unitIconHoverAboveTile
-    }))
-
-    for (var i = 0; i < players.length; i++) {
-        for (var e = 0; e < players[i].units.length; e++) {
-            players[i].units[e].icon.playerID = i
-            players[i].units[e].icon.unitID = e
-        }
-    }
 }
 
 function allModelsLoaded() {
