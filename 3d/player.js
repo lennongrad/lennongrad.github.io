@@ -143,7 +143,7 @@ class Player{
     }
 
     endTurn(){
-        activeUnit = undefined
+        selectedUnits = []
         document.getElementById("unitactions").style.right = "-500px"
         hideReachable()
         this.units.forEach(x => x.resetTurn())

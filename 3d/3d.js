@@ -18,6 +18,7 @@ document.body.appendChild(css2DRenderer.domElement);
 document.body.appendChild(css3DRenderer.domElement);
 css2DRenderer.domElement.className = "cssRenderer"
 css3DRenderer.domElement.className = "cssRenderer"
+css3DRenderer.domElement.id = "cssRenderer3D"
 
 window.onresize = function () {
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -51,8 +52,8 @@ var chanceToContinueMountain = .45
 var chanceToContinueForest = .2
 var forestsLimit = 25
 
-var minimumScrollOut = 24
-var minimumScrollIn = 16
+var minimumScrollOut = 26
+var minimumScrollIn = 14
 var ambientLighting = 1.5
 var reachableOverlayColor = "#109fc9"
 var reachableOverlayOpacity = .1
@@ -65,11 +66,20 @@ var cameraRotationBase = .75
 
 var debug = false;
 var cursor = { x: 0, y: 0, active: false, lastMoved: 0 };
+var dragInitialPoint = { x: 0, y: 0 }
+var dragTopLeftPoint = { x: 0, y: 0 }
+var dragBottomRightPoint = { x: 0, y: 0 }
 var activeCityInfoPanel = 0
+var activeTile
+var selectedUnits = []
+var unitActions = []
+var activeSettlement = undefined
+var viewedSettlement = undefined
 
-var suffixes = ["", "k", "m", "b", "t", "qu", "qi", "sx", "sp"];
-var directions = ["r", "dr", "dl", "l", "ul", "ur"]
-var hexagonSize = 1
+const cannotPassTile = 10000 
+const suffixes = ["", "k", "m", "b", "t", "qu", "qi", "sx", "sp"];
+const directions = ["r", "dr", "dl", "l", "ul", "ur"]
+const hexagonSize = 1
 var hexagonShape = new THREE.Shape();
 hexagonShape.moveTo(0, -hexagonSize)
 hexagonShape.lineTo(Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2);
@@ -79,8 +89,8 @@ hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, hexagonSize / 2);
 hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2);
 hexagonShape.lineTo(0, -hexagonSize)
 
-var hexagonAlpha = new THREE.TextureLoader().load("terrain/alpha.png")
-var hexagonGeometry = new THREE.PlaneBufferGeometry(Math.sqrt(3) * hexagonSize, 2.05 * hexagonSize, 1, 1)
+const hexagonAlpha = new THREE.TextureLoader().load("terrain/alpha.png")
+const hexagonGeometry = new THREE.PlaneBufferGeometry(Math.sqrt(3) * hexagonSize, 2.05 * hexagonSize, 1, 1)
 
 function makeTileBorderMeshes(standardDisplacement, partialTowardsCenter, smallAmount, farBeginning, slightlyClose, offsetClose, meshProperties) {
 
@@ -145,17 +155,41 @@ function makeTileBorderMeshes(standardDisplacement, partialTowardsCenter, smallA
 var ownerBorders = makeTileBorderMeshes(.5, .44, 0, 0, .95, .9, { depth: .08, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: .05, bevelThickness: .05 })
 var reachableBorders = makeTileBorderMeshes(.5, .35, .1, .1, .85, .95, { depth: .02, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: .05, bevelThickness: .05 })
 
+var unitPathShape = new THREE.Shape()
+unitPathShape.moveTo(0, .05)
+unitPathShape.lineTo(0, -.05)
+unitPathShape.lineTo(hexagonSize * .88, -.05)
+unitPathShape.lineTo(hexagonSize * .88, .05)
+unitPathShape.lineTo(0, .05)
+var unitPathMesh = new THREE.Mesh(
+    new THREE.ExtrudeBufferGeometry( unitPathShape, {bevelEnabled: true, depth: .2, bevelSize: .05, bevelThickness: .05}),
+    new THREE.MeshLambertMaterial({ color: reachableOverlayColor })
+)
 
 var keys = {
-    87: { keydown: function () { }, keyup: function () { }, active: false }, // up
-    83: { keydown: function () { }, keyup: function () { }, active: false }, // down
-    65: { keydown: function () { }, keyup: function () { }, active: false }, // left
-    68: { keydown: function () { }, keyup: function () { }, active: false },  // right
-    13: { keydown: function () { players[0].endTurn() }, keyup: function () { }, active: false }
+    up: { key: 87, keydown: function () { }, keyup: function () { }, active: false },
+    down: { key: 83, keydown: function () { }, keyup: function () { }, active: false },
+    left: { key: 65, keydown: function () { }, keyup: function () { }, active: false },
+    right: { key: 68, keydown: function () { }, keyup: function () { }, active: false },
+    ctrl: { key: 17, keydown: function () { }, keyup: function () { }, active: false },
+    shift: {
+        key: 16, keydown: function () {
+            document.getElementById("drag-catch").style.pointerEvents = ""
+        }, keyup: function () {
+            document.getElementById("drag-catch").style.pointerEvents = "none"
+        }, active: false
+    },
+    enter: { key: 13, keydown: function () { 
+                if(players[0].notificationsRemaining.length >= 1){
+                    players[0].notificationsRemaining[0].click() 
+                } else {
+                    players[0].endTurn() 
+                }
+            }, keyup: function () { }, active: false }
 }
 
-$(document).on("dragstart", function (e) {
-    if (e.target.nodeName.toUpperCase() == "IMG") {
+$(document).on("dragstart", function (event) {
+    if (event.target.nodeName.toUpperCase() == "IMG") {
         return false;
     }
 });
@@ -201,9 +235,7 @@ $("body").mouseup(function (eventData) {
 
             if (!dontHideReachable) {
                 Settlement.hideInfo()
-                activeUnit = undefined
-                document.getElementById("unitactions").style.right = "-500px"
-                hideReachable()
+                Unit.deselectAllUnits()
 
                 if ((activeSelection == 0 || activeSelection == 1)
                     && (activeSelection == 1 || !activeTile.developed)
@@ -222,11 +254,17 @@ $("body").mouseup(function (eventData) {
                 }
             }
         } else if (eventData.which === 3) { //right
-            if (activeTile != undefined && activeTile.reachableOverlay != undefined && activeTile != tiles[activeUnit.pos.x][activeUnit.pos.y]) {
-                if (activeUnit.disabled) {
-                    activeUnit.activate()
+            if ((selectedUnits.length == 1 || (Unit.selectedUnitsOnSameTile() && Unit.selectedUnitsHaveSameMovement()))
+                    && activeTile != undefined && activeTile != tiles[selectedUnits[0].pos.x][selectedUnits[0].pos.y]) {
+                if(selectedUnits[0].determineReachable().map(x => x.tile).includes(activeTile)){
+                    if (selectedUnits[0].disabled) {
+                        selectedUnits[0].activate()
+                    }
+                    selectedUnits[0].move(activeTile.position, activeTile.reachableOverlay.reachableDistance)
+                    selectedUnits[0].assignPath(undefined)
+                } else {
+                    selectedUnits[0].setPath(activeTile)
                 }
-                activeUnit.move(activeTile.position, activeTile.reachableOverlay.reachableDistance)
             }
 
             if (activeSettlement != undefined) {
@@ -255,19 +293,21 @@ document.body.addEventListener('wheel', function (event) {
 }, false);
 
 document.addEventListener('keydown', function (event) {
-    if (keys[event.keyCode] == undefined) {
+    var foundMatch = keys[Object.keys(keys).filter(x => keys[x].key == event.keyCode)[0]]
+    if (foundMatch == undefined) {
         return
     }
-    keys[event.keyCode].keydown()
-    keys[event.keyCode].active = true
+    foundMatch.keydown()
+    foundMatch.active = true
 });
 
 document.addEventListener('keyup', function (event) {
-    if (keys[event.keyCode] == undefined) {
+    var foundMatch = keys[Object.keys(keys).filter(x => keys[x].key == event.keyCode)[0]]
+    if (foundMatch == undefined) {
         return
     }
-    keys[event.keyCode].keyup()
-    keys[event.keyCode].active = false
+    foundMatch.keyup()
+    foundMatch.active = false
 });
 
 
@@ -326,6 +366,43 @@ function nearby(tile, distance) {
     }
 
     return final
+}
+
+document.getElementById("drag-catch").onmousedown = function (event) {
+    dragInitialPoint = {x: event.clientX, y: event.clientY}
+    document.getElementById("drag-catch-box").style.display = ""
+    this.onmousemove(event)
+}
+
+document.getElementById("drag-catch").onmouseup = function (event) {
+    document.getElementById("drag-catch-box").style.display = "none"
+
+    if(!keys.ctrl.active){
+        Unit.deselectAllUnits()
+    }
+
+    activePlayer.units.forEach(function(unit){
+        if(unit.iconDIV.getBoundingClientRect().left > dragTopLeftPoint.x
+            && unit.iconDIV.getBoundingClientRect().top > dragTopLeftPoint.y
+            && unit.iconDIV.getBoundingClientRect().right < dragBottomRightPoint.x
+            && unit.iconDIV.getBoundingClientRect().bottom < dragBottomRightPoint.y){
+                unit.select()
+        }
+    })
+}
+document.getElementById("drag-catch").onmouseout = function(){
+    if(cursor.active){
+        document.getElementById("drag-catch").onmouseup()
+    }
+}
+
+document.getElementById("drag-catch").onmousemove = function (event) {
+    dragTopLeftPoint = {x: Math.min(dragInitialPoint.x, event.clientX), y: Math.min(dragInitialPoint.y, event.clientY)}
+    dragBottomRightPoint = {x: Math.max(dragInitialPoint.x, event.clientX), y: Math.max(dragInitialPoint.y, event.clientY)}
+    document.getElementById("drag-catch-box").style.left = dragTopLeftPoint.x + "px"
+    document.getElementById("drag-catch-box").style.top = dragTopLeftPoint.y + "px"
+    document.getElementById("drag-catch-box").style.width = Math.abs(dragTopLeftPoint.x - dragBottomRightPoint.x) + "px"
+    document.getElementById("drag-catch-box").style.height = Math.abs(dragTopLeftPoint.y - dragBottomRightPoint.y) + "px"
 }
 
 function randomTile() {
@@ -676,15 +753,15 @@ var notifications = [
     }, function () {
         var targetUnit = activePlayer.units.filter(x => !x.disabled)[0]
 
-        if (activePlayer.units.filter(x => !x.disabled).includes(activeUnit)) {
-            targetUnit = activePlayer.units.filter(x => !x.disabled)[(activePlayer.units.filter(x => !x.disabled).indexOf(activeUnit) + 1) % activePlayer.units.filter(x => !x.disabled).length]
+        if (selectedUnits.length == 1 && activePlayer.units.filter(x => !x.disabled).includes(selectedUnits[0])) {
+            targetUnit = activePlayer.units.filter(x => !x.disabled)[(activePlayer.units.filter(x => !x.disabled).indexOf(selectedUnits[0]) + 1) % activePlayer.units.filter(x => !x.disabled).length]
         }
 
         if (activeSettlement != undefined) {
             activeSettlement.deselect()
         }
 
-        if(targetUnit != undefined){
+        if (targetUnit != undefined) {
             targetUnit.tile().centerCameraOnTile()
             targetUnit.select()
         } else {
@@ -695,28 +772,35 @@ var notifications = [
 
 var actions = {
     wait: new Action("Wait", "wait.png", function () {
-        if (activeUnit != undefined) {
-            activeUnit.wait()
+        if (selectedUnits.length == 1) {
+            selectedUnits[0].wait()
         }
     }),
     sleep: new Action("Sleep", "sleep.png", function () {
-        if (activeUnit != undefined) {
-            activeUnit.sleep()
+        if (selectedUnits.length == 1) {
+            selectedUnits[0].sleep()
         }
     }),
     wakeUp: new Action("Wake Up", "wake.png", function () {
-        if (activeUnit != undefined) {
-            activeUnit.wakeUp()
+        if (selectedUnits.length == 1) {
+            selectedUnits[0].wakeUp()
+        }
+    }),
+    merge: new Action("Merge", "merge.png", function () {
+        var temp = selectedUnits.splice(1)
+        selectedUnits[0].mergeMultiple(temp)
+        if (selectedUnits.length == 1) {
+            renderReachable(selectedUnits[0])
         }
     }),
     settle: new Action("Settle", "settle.png", function () {
-        if (activeUnit != undefined && activeUnit.determineReachable().length > 1) {
-            activeUnit.foundSettlement()
+        if (selectedUnits.length == 1 && selectedUnits[0].determineReachable().length > 1) {
+            selectedUnits[0].foundSettlement()
         }
     }),
     move: new Action("Move", "move.png", function () {
-        if (activeUnit != undefined) {
-            activeUnit.moveButton()
+        if (selectedUnits.length == 1) {
+            selectedUnits[0].moveButton()
         }
     })
 }
@@ -765,13 +849,6 @@ var producibleTypes = {
     develop: "develop",
     clear: "clear",
     unit: "unit"
-}
-
-function clearSelection() {
-    if (activeSelection != undefined) {
-        activeSelection = undefined
-        activeSettlement.select("working")
-    }
 }
 
 var activeSelection = undefined
@@ -1136,8 +1213,8 @@ tiles.forEach(function (x) {
             for (var i = 0; i < 500 && !escape; i++) {
                 var resource = randomValueObj(resources)
                 if (testRequirements(e, resource.requirements)
-                && !e.features.includes(features.mountain)
-                && e.terrain != terrainTypes.ice) {
+                    && !e.features.includes(features.mountain)
+                    && e.terrain != terrainTypes.ice) {
                     escape = true
                     e.resource = resource
                     if (e.terrain == terrainTypes.ocean) {
@@ -1167,9 +1244,8 @@ players.forEach(function (p) {
             })
 
             if (nearbyPoint != undefined) {
-                p.units.push(new Unit(unitTypes.settler, p, spawnPoint.position))
+                p.units.push(new Unit([unitTypes.settler, unitTypes.infantry], p, spawnPoint.position))
                 p.units.push(new Unit(unitTypes.infantry, p, nearbyPoint.position))
-
                 esc = true
             }
         }
@@ -1178,9 +1254,6 @@ players.forEach(function (p) {
 
 var maxOffsetX = mapSizeX * Math.sqrt(3) * hexagonSize
 var mapOffset = { x: maxOffsetX, y: 0 }
-var activeUnit = undefined
-var activeSettlement = undefined
-var viewedSettlement = undefined
 
 /*
 var runnerTexture = new THREE.TextureLoader().load( 'exampleAnimation.png' );
@@ -1277,6 +1350,7 @@ function animate() {
 
     cursor.lastMoved += delta
 
+    var previousActiveTile = activeTile
     activeTile = undefined
     tiles.forEach(function (x) {
         x.forEach(function (e) {
@@ -1284,15 +1358,17 @@ function animate() {
         })
     })
 
-    if (renderer.domElement.matches(':hover')) {
-        raycaster.setFromCamera(mouseVector, camera);
-        intersects = raycaster.intersectObjects(scene.children)
-        if (intersects[0] != undefined && intersects[0].object != undefined) {
-            if (intersects[0].object.gamePosition != undefined) {
-                activeTile = tiles[intersects[0].object.gamePosition.x][intersects[0].object.gamePosition.y]
-                activeTile.active = true
-            }
+    raycaster.setFromCamera(mouseVector, camera);
+    intersects = raycaster.intersectObjects(scene.children)
+    if (intersects[0] != undefined && intersects[0].object != undefined) {
+        if (intersects[0].object.gamePosition != undefined) {
+            activeTile = tiles[intersects[0].object.gamePosition.x][intersects[0].object.gamePosition.y]
+            activeTile.active = true
         }
+    }
+
+    if(activeTile != previousActiveTile){
+        Unit.displayPaths(selectedUnits, activeTile)
     }
 
     if (activeTile != undefined && cursor.lastMoved > .25) {
@@ -1311,7 +1387,7 @@ function animate() {
     tiles.forEach(function (x) {
         x.forEach(function (e) {
             if (e.active) {
-                e.mesh.position.z = e.depth + Math.min(.2, e.mesh.position.z - e.depth + 0.1)
+                e.mesh.position.z = e.depth + Math.min(.1, e.mesh.position.z - e.depth + 0.1)
             } else {
                 e.mesh.position.z = e.depth + Math.max(0, e.mesh.position.z - e.depth - 0.1)
             }
@@ -1333,6 +1409,7 @@ function allModelsLoaded() {
         animate();
         cameraMove()
         players[0].units[0].tile().centerCameraOnTile()
+        players[0].units[0].select()
         players[0].detectSeen()
         players[0].beginTurn()
         Settlement.changeCityInfoPanel(0)

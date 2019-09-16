@@ -15,6 +15,9 @@
 </head>
 
 <body>
+	<div id="drag-catch" style="pointer-events: none">
+		<div id="drag-catch-box" style="display: none"></div>
+	</div>
 	<div id="topbar" onmouseup="cursor.active = false">
 		<div id="topbar-gold" class="topbar-yield">
 			<img src="yields/gold_5.png">
@@ -45,7 +48,9 @@
 	<div id="nextturn" onclick="nextTurnButton()" onmouseup="cursor.active = false">
 		<img id="nextturn-cover"></div>
 	</div>
-
+	<div id="troop-info">
+		
+	</div>
 	<div id="science-holder" onmouseup="cursor.active = false"></div>
 
 	<div id="city-info" onmouseup="cursor.active = false" style="right: -400px">

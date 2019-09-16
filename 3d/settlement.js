@@ -54,6 +54,8 @@ class Settlement {
         this.labelName.className = "city-label-name"
         this.labelDIV.appendChild(this.labelName)
 
+        this.tile.unitIconHolderDIV.prepend(this.labelDIV)
+
         this.labelDIV.onmouseup = function () {
             cursor.active = false
         }
@@ -73,11 +75,6 @@ class Settlement {
             Settlement.changeCityInfoPanel(1)
             me.displayInfo()
         }
-
-        this.label = new THREE.CSS3DSprite(this.labelDIV)
-        this.label.scale.set(.014,.014,.014)
-        this.label.position.z = .25
-        this.label.rotation.x = Math.PI / 4
 
         this.producible = []
         this.producible[0] = { type: producibleTypes.develop, name: "Develop Tile", progress: 0 }
@@ -478,8 +475,6 @@ class Settlement {
             this.producible[this.producingID].target.productionTileIcon = productionTileIcon.clone()
             this.producible[this.producingID].target.mesh.add(this.producible[this.producingID].target.productionTileIcon)
         }
-
-        this.label.rotation.x = 0
     }
 
     deselect(reselecting) {
@@ -511,8 +506,6 @@ class Settlement {
                 }
             }))
         }
-
-        this.label.rotation.x = Math.PI / 4
     }
 
     priceToBuyTile(tile){

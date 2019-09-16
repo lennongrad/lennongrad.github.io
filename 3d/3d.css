@@ -14,6 +14,22 @@ body{
     position: absolute;
     top: 0;
     pointer-events: none;
+    z-index: 1;
+}
+
+#drag-catch{
+    position: absolute;
+    left: 0; 
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 50;
+}
+
+#drag-catch-box{
+    position: absolute;
+    border: 1px solid white;
+    pointer-events: none
 }
 
 .tooltip{
@@ -28,6 +44,7 @@ body{
     transform: translate(-50%, -50%);
     transition: opacity .2s, left .4s, right .4s;
     pointer-events: none;
+    z-index: 6;
 }
 
 #tooltip-tile{
@@ -43,6 +60,7 @@ body{
     background: url("nextturnblocked-back.png");
     background-size: contain;
     transform: translate(21%, 21%);
+    z-index: 5;
 }
 
 #nextturn:hover{
@@ -75,7 +93,7 @@ body{
     bottom: .5vw;
     height: 108px;
     padding-left: 5%;
-    padding-right: 2.5%;
+    padding-right: 90px;
     background: url("unitActions-back.png");
     background-size: 100% 108px;
     text-align: right;
@@ -84,7 +102,7 @@ body{
     transition: .25s;
     line-height: 108px;
     transform: translateX(-80px) scale(.8);
-    cursor: pointer;
+    z-index: 4;
 }
 
 #unitactions div{
@@ -100,7 +118,8 @@ body{
     vertical-align:middle;
     line-height: 85px;
     text-align: middle;
-    filter: drop-shadow(0px 0px 3px black)
+    filter: drop-shadow(0px 0px 3px black);
+    cursor: pointer;
 }
 
 #unitactions div[inactive="true"]{
@@ -490,6 +509,7 @@ body{
     background: url("topbar.png");
     background-size: 100% 100%;
     padding-right: 40px;
+    z-index: 4;
 }
 
 #topbar div{
@@ -608,6 +628,7 @@ body{
     top: 20%;
     left: -215px;
     transition: .1s;
+    z-index: 4;
 }
 
 #science-holder:hover{
@@ -778,6 +799,10 @@ body{
     margin-left: 5px;
 }
 
+.unit-icon-holder{
+    text-align: center;
+}
+
 .unit-icon{
     background-color: #111;
     border: 1px solid white;
@@ -787,14 +812,53 @@ body{
     color: white;
     pointer-events: all;
     cursor: pointer;
+    margin: 4px;
+    display: inline-block;
 }
 
 .unit-icon:hover{
     filter: brightness(2)
 }
 
+.unit-icon[selected="true"]{
+    transform: scale(1.1);
+    filter: invert(1)
+}
+
+.unit-icon[inactive="true"]{
+    opacity: .5;
+}
+
+.unit-icon[inactive="true"]:hover{
+    opacity: .8;
+}
+
 .unit-icon img{
     vertical-align: middle;
+}
+
+#troop-info{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+
+.troop-info-box{
+    background-color: #444;
+    padding: 5px;
+    text-align: center;
+    width: 100%;
+}
+
+.troop-info-troop-div{
+    display: inline-block;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.troop-info-troop-div img{
+    width: 64px;
+    height: 64px;
 }
 
 /* -----------------------------SCROLLBAR-------------------------------- */

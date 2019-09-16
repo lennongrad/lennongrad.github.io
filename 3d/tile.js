@@ -167,7 +167,14 @@ class Tile {
         this.unitIconHolder.scale.set(.013, .013, .013)
         this.face.add(this.unitIconHolder)
         this.unitIconHolder.rotation.x = Math.PI / 2
+        this.unitIconHolder.position.z = .16
         this.unitIconHolder = unitIconHoverAboveTile
+        this.unitIconHolderDIV.className = "unit-icon-holder"
+        this.unitIconHolderDIV.onmouseup = function(){
+            cursor.active = false
+        }
+
+        this.pathMeshes = []
 
         this.calculateYields()
     }
@@ -190,7 +197,8 @@ class Tile {
      * @return {boolean} Whether or not this Tile can have a Settlement founded on it
     */
     canFoundSettlement() {
-        return nearby(this, 3).filter(x => x.settlement != undefined).length == 0
+        return nearby(this, 3).filter(x => x.settlement != undefined).length == 0 
+               && this.terrain.variety == terrainVariety.land
     }
 
     /**
@@ -247,8 +255,6 @@ class Tile {
             t(this, directions[i]).switchOwnership(activePlayer)
             this.settlement.tiles.push(t(this, directions[i]))
         }
-
-        this.face.add(this.settlement.label)
 
         this.clearAllFeatures()
         this.clearResource()
@@ -428,5 +434,10 @@ class Tile {
             this.mesh.add(this.yieldIcons[i])
             this.yieldIcons[i].position.x = yieldWidth * (i - ((Object.keys(this.yields).length - 1) / 2))
         }
+    }
+
+    clearPathMeshes(){
+        this.pathMeshes.forEach(mesh => this.face.remove(mesh))
+        this.pathMeshes = []
     }
 }
