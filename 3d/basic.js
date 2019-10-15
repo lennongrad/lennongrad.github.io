@@ -36,7 +36,13 @@ function log(value, base) {
  * @param {object} element The element being removed
  */
 function removeElement(element) {
-    element.parentNode.removeChild(element);
+    if(element.parentNode != undefined){
+        element.parentNode.removeChild(element);
+    }
+}
+
+function insertAfter(newNode, referenceNode) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
 /** Checks whether a specific string can be parsed properly through JSON
@@ -74,6 +80,19 @@ function randomValue(array) {
  */
 function randomValueObj(obj) {
     return obj[randomValue(Object.keys(obj))]
+}
+
+/**
+ * Duplicates an array then randomizes the order of elements
+ * @param {array} arr 
+ */
+function copyAndRandomize(arr){
+    var newArr = arr.slice()
+    var finalArr = []
+    while(newArr.length > 0){
+        finalArr = finalArr.concat(newArr.splice(randomIndex(newArr) , 1))
+    }
+    return finalArr
 }
 
 /**
@@ -226,6 +245,17 @@ function capitalize(str) {
     return str[0].toUpperCase() + str.substring(1);
 }
 
+function showTooltip(elem) {
+    document.getElementById("tooltip").innerHTML = elem.getAttribute("message")
+    document.getElementById("tooltip").style.left = elem.getBoundingClientRect().left + elem.getBoundingClientRect().width / 2 + "px"
+    document.getElementById("tooltip").style.top = elem.getBoundingClientRect().top - window.innerHeight / 22 + "px"
+    document.getElementById("tooltip").style.opacity = .92
+}
+
+function hideTooltip() {
+    document.getElementById("tooltip").style.opacity = 0
+}
+
 function copyToClipboard(str) {
     const tempElement = document.createElement('textarea');  // Create a <textarea> element
     tempElement.value = str;                                 // Set its value to the string that you want copied
@@ -245,6 +275,27 @@ function copyToClipboard(str) {
         document.getSelection().addRange(selected);          // Restore the original selection
     }
 };
+
+/**
+* @param {String} HTML representing a single element
+* @return {Element}
+*/
+function htmlToElement(html) {
+   var template = document.createElement('template');
+   html = html.trim(); // Never return a text node of whitespace as the result
+   template.innerHTML = html;
+   return template.content.firstChild;
+}
+
+/**
+* @param {String} HTML representing any number of sibling elements
+* @return {NodeList} 
+*/
+function htmlToElements(html) {
+   var template = document.createElement('template');
+   template.innerHTML = html;
+   return template.content.childNodes;
+}
 
 // from https://stackoverflow.com/questions/42919469/efficient-way-to-implement-priority-queue-in-javascript priority queu
 const parent = i => ((i + 1) >>> 1) - 1;

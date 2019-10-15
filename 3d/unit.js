@@ -9,14 +9,13 @@ class Unit {
         if(type.length == undefined){
             type = [type]
         }
-
-        this.troops = []
         type.forEach(function(t){
             if (t.isUnitType != undefined) {
-                this.troops.push({ type: t, constitution: 1 })
+                this.troops.push(new Troop(t))
             } else {
                 this.troops.push(t)
             }
+            this.troops.last().unit = this
         }.bind(this))
 
         this.path = undefined
@@ -24,21 +23,31 @@ class Unit {
         this.iconDIV = document.createElement("DIV")
         this.iconDIV.className = "unit-icon"
         this.iconDIV.unit = this
-
         this.iconDIV.onclick = function () {
             this.unit.select()
         }
+        if(this.player instanceof Animals){
+            this.iconDIV.style.backgroundColor = "#700"
+        }
+        this.iconTroopsDIV = document.createElement("DIV")
+        this.iconTroopsDIV.className = "unit-icon-troops"
+        this.iconDIV.appendChild(this.iconTroopsDIV)
+
+        this.iconMoraleDIV = document.createElement("DIV")
+        this.iconMoraleDIV.className = "unit-icon-morale"
+        this.iconMoraleBarDIV = document.createElement("DIV")
+        this.iconMoraleDIV.appendChild(this.iconMoraleBarDIV)
+        this.iconDIV.appendChild(this.iconMoraleDIV)
 
         this.resetTurn()
         this.updateInfo()
     }
 
     updateInfo() {
-        this.iconDIV.innerHTML = " " + this.troops.length + " |"
+        this.iconTroopsDIV.innerHTML = " " + this.troops.length + " |"
         Object.keys(unitClasses).forEach(function (unitClass) {
             var atLeastOne = false
             this.troops.forEach(function (troop) {
-                console.log(troop)
                 if (troop.type.unitClass == unitClasses[unitClass]) {
                     atLeastOne = true
                 }
@@ -47,9 +56,11 @@ class Unit {
             if (atLeastOne) {
                 var newImage = document.createElement("IMG")
                 newImage.src = "uniticons/class_" + unitClasses[unitClass].name.toLowerCase() + ".png"
-                this.iconDIV.appendChild(newImage)
+                this.iconTroopsDIV.appendChild(newImage)
             }
         }.bind(this))
+
+        this.iconMoraleBarDIV.style.height = this.troops.reduce((x,y) => x + y.constitution, 0) / this.troops.reduce((x,y) => x + y.type.constitution, 0) * 100 + "%"
     }
 
     select() {
@@ -59,7 +70,7 @@ class Unit {
             }
             selectedUnits.push(this)
             Unit.updateActions()
-            if (Unit.selectedUnitsOnSameTile()) {
+            if (Unit.selectedUnitsOnSameTile() && Unit.selectedUnitsHaveSameMovement()) {
                 renderReachable(this)
             } else {
                 hideReachable()
@@ -81,7 +92,7 @@ class Unit {
     deselect() {
         if (selectedUnits.includes(this)) {
             selectedUnits.splice(selectedUnits.indexOf(this), 1)
-            document.getElementById("unitactions").style.right = "-500px"
+            document.getElementById("unitactions").style.left = "-500px"
             this.iconDIV.setAttribute("selected", "false")
 
             if (selectedUnits.length == 1) {
@@ -120,9 +131,9 @@ class Unit {
     }
 
     foundSettlement() {
-        if (this.tile().canFoundSettlement()) {
-            this.tile().foundSettlement()
-            this.die(this.troops.filter(x => x.type == unitTypes.settler)[0])
+        if (this.tile.canFoundSettlement()) {
+            this.tile.foundSettlement()
+            this.troops.filter(x => x.type == unitTypes.settler)[0].die()
         }
     }
 
@@ -146,6 +157,7 @@ class Unit {
 
     merge(oldUnit) {
         this.troops = this.troops.concat(oldUnit.troops)
+        this.troops.forEach(x => x.unit = this)
         oldUnit.troops = []
         this.movementRemaining = Math.min(this.movementRemaining, oldUnit.movementRemaining)
         oldUnit.die()
@@ -156,11 +168,7 @@ class Unit {
         }
     }
 
-    die(troop) {
-        if (troop != undefined) {
-            this.troops.splice(this.troops.indexOf(troop), 1)
-        }
-
+    die() {
         if (this.troops.length == 0) {
             this.deselect()
             scene.remove(this.icon)
@@ -173,7 +181,7 @@ class Unit {
         }
     }
 
-    tile() {
+    get tile() {
         return tiles[this.pos.x][this.pos.y]
     }
 
@@ -181,7 +189,7 @@ class Unit {
         // base cost for moving a single tile
         var final = 1
 
-        // tiles that are impassable get an arbitrarily high value
+        // tiles that are impassable an arbitrarily high value
         if (
             // terrain type    
             tile.terrain == terrainTypes.ice
@@ -221,16 +229,16 @@ class Unit {
 
     // based off of this explanation https://www.redblobgames.com/pathfinding/a-star/introduction.html
     getPathToTile(tile) {
-        if (tile == this.tile()) {
+        if (tile == this.tile) {
             return false
         }
 
         var frontier = new PriorityQueue((a, b) => a[1] < b[1])
-        frontier.push([this.tile(), 0])
+        frontier.push([this.tile, 0])
         var cameFrom = new Dictionary()
-        cameFrom.setValue(this.tile(), undefined)
+        cameFrom.setValue(this.tile, undefined)
         var costSoFar = new Dictionary()
-        costSoFar.setValue(this.tile(), 0)
+        costSoFar.setValue(this.tile, 0)
 
         var attempts = 1000
         while (!frontier.isEmpty() && attempts > 0) {
@@ -259,7 +267,7 @@ class Unit {
 
         var current = tile
         var path = []
-        while (current != this.tile()) {
+        while (current != this.tile) {
             path.push(current)
             current = cameFrom.getValue(current)
         }
@@ -273,25 +281,23 @@ class Unit {
         var fringes = []
         fringes.push([{ tile: tiles[this.pos.x][this.pos.y], distance: 0 }])
 
-        var me = this
-
-        for (var i = 0; i < me.movementRemaining; i++) {
+        for (var i = 0; i < this.movementRemaining; i++) {
             fringes.push([])
             fringes[i].forEach(function (e) {
                 for (var d = 0; d < directions.length; d++) {
                     var neighbor = t(e.tile, directions[d])
-                    if (e.distance + me.movementCost(neighbor, e.tile) <= me.movementRemaining) {
+                    if (e.distance + this.movementCost(neighbor, e.tile) <= this.movementRemaining) {
                         var sameTiles = visited.filter(y => y.tile.position.x == neighbor.position.x && y.tile.position.y == neighbor.position.y)
                         if (sameTiles.length == 0) {
-                            visited.push({ tile: neighbor, distance: e.distance + me.movementCost(neighbor, e.tile) })
-                            fringes[i + 1].push({ tile: neighbor, distance: e.distance + me.movementCost(neighbor, e.tile) })
-                        } else if (sameTiles[0].distance > e.distance + me.movementCost(neighbor, e.tile)) {
-                            sameTiles[0].distance = e.distance + me.movementCost(neighbor, e.tile)
-                            fringes[i + 1].push({ tile: neighbor, distance: e.distance + me.movementCost(neighbor, e.tile) })
+                            visited.push({ tile: neighbor, distance: e.distance + this.movementCost(neighbor, e.tile) })
+                            fringes[i + 1].push({ tile: neighbor, distance: e.distance + this.movementCost(neighbor, e.tile) })
+                        } else if (sameTiles[0].distance > e.distance + this.movementCost(neighbor, e.tile)) {
+                            sameTiles[0].distance = e.distance + this.movementCost(neighbor, e.tile)
+                            fringes[i + 1].push({ tile: neighbor, distance: e.distance + this.movementCost(neighbor, e.tile) })
                         }
                     }
                 }
-            })
+            }.bind(this))
         }
 
         return visited
@@ -328,7 +334,12 @@ class Unit {
             this.activate()
         }
 
-        this.movementRemaining = 2
+        this.movementRemaining = 20
+        this.troops.forEach(function(troop){
+            if(troop.type.unitClass.movement < this.movementRemaining){
+                this.movementRemaining = troop.type.unitClass.movement 
+            }
+        }.bind(this))
     }
 
     move(position, cost) {
@@ -342,19 +353,61 @@ class Unit {
         this.wakeUp()
         if (this.determineReachable().length <= 1) {
             this.disactivate()
-        } else {
+        } else if(this.player == players[0]){
             renderReachable(this)
         }
         Unit.updateActions()
     }
 
-    getTooltip() {
+    moveToAttack(tile){
+        if(this.determineReachable().map(x => x.tile).includes(tile)){
+            while (!nearby(this.tile, 1).includes(tile)) {
+                var pathToDefender = this.getPathToTile(tile).reverse()
+                this.move(pathToDefender[0].position, this.determineReachable().filter(x => x.tile == pathToDefender[0])[0].distance)
+            }
+        }
+    }
+
+    detectSeen(){
+        var frontier = [this.tile]
+        var visited = [this.tile]
+        var unitOnHill = this.tile.terrain.name.includes("Hill")
+        while(frontier.length >= 1){
+            var currentTile = frontier.shift()
+            nearby(currentTile, 1).forEach(function(tile){
+                if(!this.player.seen.includes(tile)){
+                    this.player.seen.push(tile)
+                }
+                if(((!tile.terrain.name.includes("Hill") && !tile.features.includes(features.forest)) || unitOnHill)
+                && !tile.features.includes(features.mountain)
+                && !visited.includes(tile)
+                && nearby(this.tile, 1).includes(tile)){
+                    frontier.push(tile)
+                    visited.push(tile)
+                }
+            }.bind(this))
+        }
+    }
+
+    get frontlineTroops(){
+        return this.troops.filter(x => frontlineClasses.includes(x.type.unitClass))
+    }
+
+    get backlineTroops(){
+        return this.troops.filter(x => backlineClasses.includes(x.type.unitClass))
+    }
+
+    get supportTroops(){
+        return this.troops.filter(x => supportClasses.includes(x.type.unitClass))
+    }
+
+    get tooltip() {
         var finalText = ""
         //finalText = this.type.name
         return finalText
     }
 
-    getTroopInfo(){
+    get troopInfo(){
         var troopInfoDIV = document.createElement("DIV")
         troopInfoDIV.className = "troop-info-box"
 
@@ -393,29 +446,29 @@ class Unit {
                 unitActions.push(actions.merge)
             }
         }
-        if (selectedUnits.filter(x => x.asleep).length >= 1) {
+        if (selectedUnits.some(x => x.asleep)) {
             unitActions.push(actions.wakeUp)
         }
-        if (selectedUnits.filter(x => !x.asleep).length >= 1) {
+        if (selectedUnits.some(x => !x.asleep)) {
             unitActions.push(actions.sleep)
         }
         unitActions.push(actions.wait)
-        if (selectedUnits.length == 1) {
+        if (Unit.selectedUnitsHaveSameMovement()) {
             unitActions.push(actions.move)
         }
 
         document.getElementById("unitactions").innerHTML = ""
-        document.getElementById("unitactions").style.right = "0"
+        document.getElementById("unitactions").style.left = "0"
 
         unitActions.forEach(function (e) {
             var makeInactive = false
             switch (e) {
                 case actions.move: makeInactive = selectedUnits[0].determineReachable().length == 1; break;
                 case actions.settle:
-                    makeInactive = !selectedUnits.filter(x => x.troops.filter(x => x.type.unitClass == unitClasses.settler).length >= 1)[0].tile().canFoundSettlement()
+                    makeInactive = !selectedUnits.filter(x => x.troops.filter(x => x.type.unitClass == unitClasses.settler).length >= 1)[0].tile.canFoundSettlement()
                     makeInactive |= selectedUnits.filter(x => x.troops.filter(x => x.type.unitClass == unitClasses.settler).length >= 1)[0].determineReachable().length == 1;
                     break;
-                case actions.wait: makeInactive = selectedUnits.filter(x => !x.disabled).length == 0; break;
+                case actions.wait: makeInactive = !selectedUnits.every(x => !x.disabled); break;
             }
             if (makeInactive) {
                 e.icon.setAttribute("inactive", "true")
@@ -427,7 +480,7 @@ class Unit {
 
         document.getElementById("troop-info").innerHTML = ""
         selectedUnits.forEach(function(unit){
-            document.getElementById("troop-info").appendChild(unit.getTroopInfo())
+            document.getElementById("troop-info").appendChild(unit.troopInfo)
         })
     }
 
@@ -445,7 +498,7 @@ class Unit {
             }
 
             if (pathwayTiles != undefined) {
-                pathwayTiles.push(unit.tile())
+                pathwayTiles.push(unit.tile)
 
                 tiles.forEach(x => x.forEach(function (tile) {
                     if (pathwayTiles.includes(tile)) {
@@ -473,7 +526,7 @@ class Unit {
         var result = true
         if (selectedUnits.length > 1) {
             for (var i = 0; i < selectedUnits.length - 1; i++) {
-                if (selectedUnits[i].tile() != selectedUnits[i + 1].tile()) {
+                if (selectedUnits[i].tile != selectedUnits[i + 1].tile) {
                     result = false
                 }
             }
@@ -491,5 +544,31 @@ class Unit {
             }
         }
         return result
+    }
+
+    static resolveCombat(attacker, defender){
+        var attackers = attacker, defenders = defender
+        if(attackers.length == undefined){
+            attackers = [attacker]
+        }
+        if(defenders.length == undefined){
+            defenders = [defender]
+        }
+        attackers.forEach(x => x.troops.forEach(function(troop){
+            if(defender != undefined){
+                var target
+                if(defenders.some(x => x.frontlineTroops.length > 0)){
+                    target = randomValue(defenders.reduce((x,y) => x.concat(y.frontlineTroops), []))
+                } else if(defenders.some(x => x.backlineTroops.length > 0)){
+                    target = randomValue(defenders.reduce((x,y) => x.concat(y.backlineTroops), []))
+                } else {
+                    target = randomValue(defenders.reduce((x,y) => x.concat(y.supportTroops), []))
+                }
+
+                target.takeDamage(troop.strength)
+            }
+        }))
+
+        attackers.forEach(x => x.movementRemaining = 0)
     }
 }

@@ -6,16 +6,15 @@ class Settlement {
         this.player = player
 
         this.population = 1
+        this.developmentLevel = 0
+        this.tradeRoutes = []
         this.tiles = []
         this.yields = {}
         this.foodCount = 0
         this.cultureCount = 0
         this.heldProduction = 0
-
-        this.model = settlement.clone()
-        this.model.scale.set(.0025, .0025, .0025)
-        this.model.rotation.y = Math.random() * Math.PI * 2
-        tiles[this.position.x][this.position.y].mesh.add(this.model)
+        // kept as a whole number to avoid weird floating point issues
+        this.taxRate = 50
 
         this.labelDIV = document.createElement("DIV")
         this.labelDIV.className = "city-label"
@@ -52,6 +51,7 @@ class Settlement {
         this.labelName = document.createElement("DIV")
         this.labelName.innerHTML = "SETTLEMENT"
         this.labelName.className = "city-label-name"
+        this.labelName.style.backgroundColor = this.player.color
         this.labelDIV.appendChild(this.labelName)
 
         this.tile.unitIconHolderDIV.prepend(this.labelDIV)
@@ -60,29 +60,34 @@ class Settlement {
             cursor.active = false
         }
 
-        var me = this
         this.labelName.onclick = function () {
-            if (me != activeSettlement) {
-                me.select("working")
+            if (this != activeSettlement) {
+                this.select("working")
             }
-        }
+        }.bind(this)
 
         this.labelProd.onclick = function () {
             Settlement.changeCityInfoPanel(0)
-            me.displayInfo()
-        }
+            this.displayInfo()
+        }.bind(this)
         this.labelPop.onclick = function () {
             Settlement.changeCityInfoPanel(1)
-            me.displayInfo()
-        }
+            this.displayInfo()
+        }.bind(this)
 
         this.producible = []
         this.producible[0] = { type: producibleTypes.develop, name: "Develop Tile", progress: 0 }
         this.producible[1] = { type: producibleTypes.clear, name: "Clear Feature", progress: 0 }
+        this.producible[2] = { type: producibleTypes.district, name: "Build District", progress: 0 }
         Object.keys(unitTypes).forEach(function (e) {
-            me.producible.push({ type: producibleTypes.unit, unit: unitTypes[e], name: unitTypes[e].name, progress: 0 })
-        })
+            this.producible.push({ type: producibleTypes.unit, unit: unitTypes[e], name: unitTypes[e].name, progress: 0 })
+        }.bind(this))
         this.producingID = undefined
+        this.districts = []
+        this.buildDistrict(this.tile)
+
+        this.increaseDevelopmentLevel()
+
         this.incrementProduction(0)
         this.incrementFood(0)
         this.incrementCulture(0)
@@ -94,13 +99,18 @@ class Settlement {
         this.incrementCulture(this.yields.culture)
     }
 
+    increaseDevelopmentLevel(){
+        this.developmentLevel++;
+        this.tradeRoutes.push({settlement: undefined, path: undefined})
+    }
+
     /**
      * A measurement of the value of this Tile, used to determine Culture border growth and which Tiles are Worked by a Settlement
      */
     getTileValue(tile) {
         var final = 0
         Object.keys(tile.yields).forEach(function (x) {
-            final += tile.yields[x] * (x == "gold" ? .5 : 1)
+            final += tile.yields[x]
         })
         if (tile.resource != undefined) {
             final *= 2
@@ -117,20 +127,26 @@ class Settlement {
                 case producibleTypes.clear: e.image = "actions/clear.png"; break;
                 case producibleTypes.develop: e.image = "actions/build.png"; break;
                 case producibleTypes.unit: e.image = "unitIcons/prod_" + e.name + ".png"; break;
+                case producibleTypes.district: e.image = "actions/district.png"; break;
+                case producibleTypes.building: e.image = e.building.icon; break;
             }
-            e.cost = 30
+            e.cost = 3
         })
     }
 
-    displayInfo(){
+    displayInfo() {
         viewedSettlement = this
 
         document.getElementById("city-info").style.right = "0"
         document.getElementById("city-production").style.display = "none"
         document.getElementById("city-yields").style.display = "none"
-        switch(activeCityInfoPanel){
+        document.getElementById("city-commerce").style.display = "none"
+        document.getElementById("city-districts").style.display = "none"
+        switch (activeCityInfoPanel) {
             case 0: this.displayProduction(); break;
             case 1: this.displayYields(); break;
+            case 2: this.displayCommerce(); break;
+            case 3: this.displayDistricts(); break;
         }
     }
 
@@ -139,19 +155,178 @@ class Settlement {
         this.updateProducible()
 
         document.getElementById("city-production").innerHTML = ""
-        var me = this
+
+        var itemSettlement = this
 
         this.items = []
         this.producible.forEach(function (e, index) {
+            if (e.type == producibleTypes.district || e.type == producibleTypes.building) {
+                return
+            }
+
             switch (e.type) {
-                case producibleTypes.clear: if (me.tiles.filter(x => x.features.includes(features.forest) || x.features.includes(features.savanna)).length == 0) { return }; break;
-                case producibleTypes.develop: if (me.tiles.filter(x => !x.developed && x.getDevelopment()).length == 0) { return }; break;
+                case producibleTypes.clear: if (!this.tiles.some(x => x.features.includes(features.forest) || x.features.includes(features.savanna))) { return }; break;
+                case producibleTypes.develop: if (!this.tiles.some(x => !x.developed && x.plannedDevelopment)) { return }; break;
+            }
+
+            if(e.type == producibleTypes.unit && !this.player.unlockedUnits.includes(e.unit)){
+                return
             }
 
             var item = document.createElement("DIV")
             item.className = "city-production-item"
-            if (index == me.producingID) {
+            if (index == this.producingID) {
                 item.className = "city-production-item city-production-item-selected"
+            }
+
+            var itemImage = document.createElement("DIV")
+            itemImage.className = "city-production-item-image"
+            var itemImageIMG = document.createElement("IMG")
+            itemImageIMG.src = e.image
+            itemImage.appendChild(itemImageIMG)
+            item.appendChild(itemImage)
+
+            if (e.type == producibleTypes.unit) {
+                itemImageIMG.className = "invert"
+            }
+
+            var itemDetails = document.createElement("DIV")
+            itemDetails.className = "city-production-item-details"
+            var itemDetailsName = document.createElement("DIV")
+            itemDetailsName.className = "city-production-item-name"
+            itemDetailsName.innerHTML = e.name
+            var itemDetailsCost = document.createElement("DIV")
+            itemDetailsCost.append(document.getElementById("producible-cost").content.cloneNode(true))
+            itemDetailsCost.className = "city-production-item-cost"
+            itemDetailsCost.getElementsByTagName("span")[0].innerHTML = ((e.progress != 0) ? (e.progress + " / ") : ("")) + e.cost
+            itemDetailsCost.getElementsByTagName("span")[1].innerHTML = Math.ceil((e.cost - e.progress) / this.yields.production)
+            itemDetails.appendChild(itemDetailsName)
+            itemDetails.appendChild(itemDetailsCost)
+            item.appendChild(itemDetails)
+
+            item.id = index
+            item.onclick = function () {
+                if (this.id == "0" || this.id == "1") {
+                    switch (this.id) {
+                        case "0": itemSettlement.select("develop"); break;
+                        case "1": itemSettlement.select("clear"); break;
+                    }
+
+                    activeSelection = Number(this.id)
+                    itemSettlement.items.forEach(function (x) {
+                        x.className = "city-production-item"
+                    })
+                    this.className = "city-production-item city-production-item-active"
+                } else {
+                    itemSettlement.setProduction(Number(this.id))
+                    if (activeSettlement != undefined) {
+                        activeSettlement.deselect()
+                    }
+                    Settlement.hideInfo()
+                }
+            }
+
+            document.getElementById("city-production").appendChild(item);
+            this.items.push(item)
+        }.bind(this))
+    }
+
+    displayYields() {
+        document.getElementById("city-yields").style.display = ""
+
+        document.getElementById("city-yields-food-bar").style.width = this.foodCount / this.foodCost() * 100 + "%"
+        if (this.yields.food != undefined && this.yields.food > 0) {
+            document.getElementById("city-yields-food-turns").innerHTML = Math.ceil((this.foodCost() - this.foodCount) / this.yields.food)
+            document.getElementById("city-yields-food-count").innerHTML = "+" + Math.floor(this.yields.food * 100) / 100
+        } else {
+            document.getElementById("city-yields-food-turns").innerHTML = "?"
+            document.getElementById("city-yields-food-count").innerHTML = "?"
+        }
+        document.getElementById("city-yields-food-result").innerHTML = this.population
+
+        document.getElementById("city-yields-culture-bar").style.width = this.cultureCount / this.cultureCost() * 100 + "%"
+        if (this.yields.culture != undefined && this.yields.culture > 0) {
+            document.getElementById("city-yields-culture-turns").innerHTML = Math.ceil((this.cultureCost() - this.cultureCount) / this.yields.culture)
+            document.getElementById("city-yields-culture-count").innerHTML = "+" + Math.floor(this.yields.culture * 100) / 100
+        } else {
+            document.getElementById("city-yields-culture-turns").innerHTML = "?"
+            document.getElementById("city-yields-culture-count").innerHTML = "?"
+        }
+        document.getElementById("city-yields-culture-result").innerHTML = this.tiles.length
+
+        document.getElementById("city-yields-production-count").innerHTML = "+" + Math.floor(this.yields.production * 100) / 100
+        if (this.producingID != undefined) {
+            document.getElementById("city-yields-production").style.height = ""
+            document.getElementById("city-yields-turns-production").style.display = ""
+            document.getElementById("city-yields-bar-production").style.display = ""
+            document.getElementById("city-yields-production-turns").innerHTML = Math.ceil((this.producible[this.producingID].cost - this.producible[this.producingID].progress) / this.yields.production)
+            document.getElementById("city-yields-production-bar").style.width = this.producible[this.producingID].progress / this.producible[this.producingID].cost * 100 + "%"
+        } else {
+            document.getElementById("city-yields-production").style.height = "35px"
+            document.getElementById("city-yields-turns-production").style.display = "none"
+            document.getElementById("city-yields-bar-production").style.display = "none"
+        }
+        if (this.yields.science != undefined && this.yields.science >= 0) {
+            document.getElementById("city-yields-science-count").innerHTML = "+" + Math.floor(this.yields.science * 100) / 100
+        } else {
+            document.getElementById("city-yields-science-count").innerHTML = "?"
+        }
+        if (this.yields.commerce != undefined && this.yields.commerce >= 0) {
+            document.getElementById("city-yields-commerce-count").innerHTML = "+" + Math.floor(this.yields.commerce * 100) / 100
+        } else {
+            document.getElementById("city-yields-commerce-count").innerHTML = "?"
+        }
+        if (this.yields.capital != undefined && this.yields.capital >= 0) {
+            document.getElementById("city-yields-capital-count").innerHTML = "+" + Math.floor(this.yields.capital * 100) / 100
+        } else {
+            document.getElementById("city-yields-capital-count").innerHTML = "?"
+        }
+    }
+
+    displayCommerce(){
+        document.getElementById("city-commerce").style.display = ""
+        document.getElementById("city-commerce-conversion-arrow-rate").innerHTML = this.taxRate + "%"
+        document.getElementById("city-commerce-conversion-initial-commerce").getElementsByTagName("SPAN")[0].innerHTML = "+" + this.commerceValues.preTaxCommerce
+        document.getElementById("city-commerce-conversion-result-commerce").getElementsByTagName("SPAN")[0].innerHTML = "+" + this.commerceValues.postTaxCommerce
+        document.getElementById("city-commerce-conversion-result-capital").getElementsByTagName("SPAN")[0].innerHTML = "+" + this.commerceValues.postTaxCapital
+
+        
+        document.getElementById("city-commerce-routes").innerHTML = ""
+        this.tradeRoutes.forEach(function(route){
+            var routeElement = document.createElement("DIV")
+            routeElement.className = "city-commerce-routes-item"
+
+            if(route.settlement != undefined){
+                routeElement.innerHTML = route.settlement.name
+            } else {
+                routeElement.innerHTML = "No Trade Route selected"
+            }
+            document.getElementById("city-commerce-routes").appendChild(routeElement)
+        })
+    }
+
+    displayDistricts() {
+        document.getElementById("city-districts").style.display = ""
+        document.getElementById("city-districts-list").innerHTML = ""
+        buildingsList.innerHTML = ""
+        this.updateProducible()
+
+        var itemSettlement = this
+
+        this.items = []
+        this.producible.forEach(function (e, index) {
+            if (e.type != producibleTypes.district && e.type != producibleTypes.building) {
+                return
+            }
+            if(e.type == producibleTypes.building && (e.district.hasBuilding(e.building) || !testRequirements(e.building.requirements, e.district.tile, this, e.district))){
+                return
+            }
+            var item = document.createElement("DIV")
+            item.className = "city-production-item"
+            if (index == this.producingID) {
+                item.className = "city-production-item city-production-item-selected"
+            }if(e.type == producibleTypes.building && !this.player.unlockedBuildings.includes(e.building)){
+                return
             }
 
             var itemImage = document.createElement("DIV")
@@ -175,7 +350,7 @@ class Settlement {
             var itemDetailsCostSpan = document.createElement("SPAN")
             itemDetailsCostSpan.innerHTML = ((e.progress != 0) ? (e.progress + " / ") : ("")) + e.cost + " "
             var itemDetailsCostImage = document.createElement("IMG")
-            itemDetailsCostImage.src = "yields/production_5.png"
+            itemDetailsCostImage.src = "yields/production.png"
             itemDetailsCost.appendChild(itemDetailsCostSpan)
             itemDetailsCost.appendChild(itemDetailsCostImage)
             itemDetails.appendChild(itemDetailsName)
@@ -184,15 +359,19 @@ class Settlement {
 
             item.id = index
             item.onclick = function () {
-                if (this.id == "0" || this.id == "1") {
-                    me.select(this.id == "0" ? "develop" : "clear")
+                if (this.id == "2") {
+                    Settlement.hideBuildingProduction()
+                    switch (this.id) {
+                        case "2": itemSettlement.select("district"); break;
+                    }
+
                     activeSelection = Number(this.id)
-                    me.items.forEach(function (x) {
+                    itemSettlement.items.forEach(function (x) {
                         x.className = "city-production-item"
                     })
                     this.className = "city-production-item city-production-item-active"
                 } else {
-                    me.setProduction(Number(this.id))
+                    itemSettlement.setProduction(Number(this.id))
                     if (activeSettlement != undefined) {
                         activeSettlement.deselect()
                     }
@@ -200,56 +379,16 @@ class Settlement {
                 }
             }
 
-            document.getElementById("city-production").appendChild(item)
-            me.items.push(item)
+            switch (e.type) {
+                case producibleTypes.district: document.getElementById("city-districts-list").appendChild(item); break;
+                case producibleTypes.building: item.district = e.district; buildingsList.appendChild(item); break;
+            }
+            this.items.push(item)
+        }.bind(this))
+
+        this.districts.forEach(function (district) {
+            document.getElementById("city-districts-list").appendChild(district.element);
         })
-    }
-
-    displayYields() {
-        document.getElementById("city-yields").style.display = ""
-
-        document.getElementById("city-yields-food-bar").style.width = this.foodCount / this.foodCost() * 100 + "%"
-        if (this.yields.food != undefined && this.yields.food > 0) {
-            document.getElementById("city-yields-food-turns").innerHTML = Math.ceil((this.foodCost() - this.foodCount) / this.yields.food)
-            document.getElementById("city-yields-food-count").innerHTML = "+" + Math.floor(this.yields.food)
-        } else {
-            document.getElementById("city-yields-food-turns").innerHTML = "?"
-            document.getElementById("city-yields-food-count").innerHTML = "?"
-        }
-        document.getElementById("city-yields-food-result").innerHTML = this.population
-
-        document.getElementById("city-yields-culture-bar").style.width = this.cultureCount / this.cultureCost() * 100 + "%"
-        if (this.yields.culture != undefined && this.yields.culture > 0) {
-            document.getElementById("city-yields-culture-turns").innerHTML = Math.ceil((this.cultureCost() - this.cultureCount) / this.yields.culture)
-            document.getElementById("city-yields-culture-count").innerHTML = "+" + Math.floor(this.yields.culture)
-        } else {
-            document.getElementById("city-yields-culture-turns").innerHTML = "?"
-            document.getElementById("city-yields-culture-count").innerHTML = "?"
-        }
-        document.getElementById("city-yields-culture-result").innerHTML = this.tiles.length
-
-        document.getElementById("city-yields-production-count").innerHTML = "+" + Math.floor(this.yields.production)
-        if (this.producingID != undefined) {
-            document.getElementById("city-yields-production").style.height = ""
-            document.getElementById("city-yields-turns-production").style.display = ""
-            document.getElementById("city-yields-bar-production").style.display = ""
-            document.getElementById("city-yields-production-turns").innerHTML = Math.ceil((this.producible[this.producingID].cost - this.producible[this.producingID].progress) / this.yields.production)
-            document.getElementById("city-yields-production-bar").style.width = this.producible[this.producingID].progress / this.producible[this.producingID].cost * 100 + "%"
-        } else {
-            document.getElementById("city-yields-production").style.height = "35px"
-            document.getElementById("city-yields-turns-production").style.display = "none"
-            document.getElementById("city-yields-bar-production").style.display = "none"
-        }
-        if (this.yields.science != undefined && this.yields.science > 0) {
-            document.getElementById("city-yields-science-count").innerHTML = "+" + Math.floor(this.yields.science)
-        } else {
-            document.getElementById("city-yields-science-count").innerHTML = "?"
-        }
-        if (this.yields.gold != undefined && this.yields.gold > 0) {
-            document.getElementById("city-yields-gold-count").innerHTML = "+" + Math.floor(this.yields.gold)
-        } else {
-            document.getElementById("city-yields-gold-count").innerHTML = "?"
-        }
     }
 
     incrementFood(amount) {
@@ -291,6 +430,7 @@ class Settlement {
         this.tiles.push(tile)
         tile.switchOwnership(this.player)
         this.calculateYields()
+        this.player.detectSeen()
     }
 
     incrementProduction(amount) {
@@ -302,7 +442,10 @@ class Settlement {
                 switch (this.producible[this.producingID].type) {
                     case producibleTypes.develop: this.producible[this.producingID].target.updateDevelopment(); break;
                     case producibleTypes.clear: this.producible[this.producingID].target.clearAllFeatures(); break;
-                    case producibleTypes.unit: this.player.units.push(new Unit(this.producible[this.producingID].unit, this.player, this.tile.position))
+                    case producibleTypes.district: this.buildDistrict(this.producible[this.producingID].target); break;
+                    case producibleTypes.unit: this.player.units.push(new Unit(this.producible[this.producingID].unit, this.player, this.tile.position));
+                        this.tile.unitIconHolderDIV.appendChild(this.player.units.last().iconDIV); break;
+                    case producibleTypes.building: this.producible[this.producingID].district.addBuilding(this.producible[this.producingID].building); break;
                 }
                 this.producingID = undefined
                 this.labelProdImage.src = "unknown.png"
@@ -318,6 +461,9 @@ class Settlement {
         } else {
             this.labelRightBar.style.transform = "translate(-50%, -50%) rotate(0rad)"
         }
+
+        this.player.calculateYields()
+        this.player.updateNotifications()
     }
 
     setProduction(id) {
@@ -335,8 +481,10 @@ class Settlement {
 
     calculateYields() {
         this.tiles.forEach(x => x.worked = false)
-        this.yields = {}
+        this.yields = { production: 1, food: 1, science: 1, culture: 5, capital: 0, commerce: 1 }
 
+        this.tiles.forEach(x => x.resetBuildingYields())
+        this.districts.forEach(district => this.yields = addYields(this.yields, district.calculateYields()))
         this.tiles.forEach(x => x.calculateYields())
         var compareStrength = this.tiles.sort(function (x, y) { return this.getTileValue(y) - this.getTileValue(x) }.bind(this))
         for (var i = 0; i < this.population && i < compareStrength.length; i++) {
@@ -344,7 +492,11 @@ class Settlement {
             this.yields = addYields(this.yields, compareStrength[i].yields)
         }
 
-        this.yields = addYields({ production: 1, food: 1, science: 1, culture: 5, gold: 1 }, this.yields)
+        this.commerceValues = { preTaxCommerce: this.yields.commerce, 
+            postTaxCommerce: Math.ceil(this.yields.commerce * (100 - this.taxRate)) / 100, 
+            postTaxCapital: this.yields.commerce * this.taxRate / 100 }
+        this.yields.capital += this.commerceValues.postTaxCapital
+        this.yields.commerce = this.commerceValues.postTaxCommerce
 
         this.cultureEligibleTiles = []
         this.tiles.forEach(function (x) {
@@ -356,9 +508,9 @@ class Settlement {
             }.bind(this))
         }.bind(this))
 
-        this.cultureEligibleTiles.forEach(function(x){
+        this.cultureEligibleTiles.forEach(function (x) {
             x.buyLabelPrice.innerHTML = this.priceToBuyTile(x)
-            if(this.priceToBuyTile(x) > this.player.accumulatedGold){
+            if (this.priceToBuyTile(x) > this.player.accumulatedCapital) {
                 x.buyLabel.setAttribute("afford", "false")
             } else {
                 x.buyLabel.setAttribute("afford", "true")
@@ -373,10 +525,10 @@ class Settlement {
 
         var me = this
         this.tiles.forEach(function (e) {
-            if (!e.developed && e.getDevelopment() && !e.settlement) {
+            if (!e.developed && e.plannedDevelopment && !e.settlement) {
                 e.developIcon = developIcon.clone()
-                e.developIcon.position.z = maxDepth + .1
-                e.mesh.add(e.developIcon)
+                e.developIcon.position.z = .1
+                e.face.add(e.developIcon)
             }
         })
     }
@@ -388,8 +540,21 @@ class Settlement {
         this.tiles.forEach(function (e) {
             if ((e.features.includes(features.forest) || e.features.includes(features.savanna)) && !e.features.includes(features.mountain)) {
                 e.clearIcon = clearIcon.clone()
-                e.clearIcon.position.z = maxDepth + .1
-                e.mesh.add(e.clearIcon)
+                e.clearIcon.position.z = .1
+                e.face.add(e.clearIcon)
+            }
+        })
+    }
+
+    showDistrictEligible() {
+        this.hideWorked()
+
+        var me = this
+        this.tiles.forEach(function (e) {
+            if (e.terrain.variety == terrainVariety.land && !e.district && !e.settlement && !e.features.includes(features.mountain)) {
+                e.districtIcon = districtIcon.clone()
+                e.districtIcon.position.z = .1
+                e.face.add(e.districtIcon)
             }
         })
     }
@@ -405,8 +570,8 @@ class Settlement {
                 } else {
                     e.workedIcon = unworkedIcon.clone()
                 }
-                e.workedIcon.position.z = maxDepth + .1
-                e.mesh.add(e.workedIcon)
+                e.workedIcon.position.z = .1
+                e.face.add(e.workedIcon)
             }
         })
 
@@ -416,18 +581,23 @@ class Settlement {
     hideWorked() {
         this.tiles.forEach(function (e) {
             if (e.workedIcon != undefined) {
-                e.mesh.remove(e.workedIcon)
+                e.face.remove(e.workedIcon)
                 e.workedIcon = undefined
             }
 
             if (e.developIcon != undefined) {
-                e.mesh.remove(e.developIcon)
+                e.face.remove(e.developIcon)
                 e.developIcon = undefined
             }
 
             if (e.clearIcon != undefined) {
-                e.mesh.remove(e.clearIcon)
+                e.face.remove(e.clearIcon)
                 e.clearIcon = undefined
+            }
+
+            if (e.districtIcon != undefined) {
+                e.face.remove(e.districtIcon)
+                e.districtIcon = undefined
             }
         })
 
@@ -444,36 +614,39 @@ class Settlement {
 
         mapOffset.x = maxOffsetX + initialCameraOffsetX - (Math.sqrt(3) * hexagonSize * this.position.x)
         mapOffset.y = initialCameraOffsetY - (2.05 * .75 * hexagonSize * this.position.y) + 2
-        camera.rotation.x = 0
         activeSettlement = this
+        adjustCameraRotation()
         this.calculateYields()
 
         switch (view) {
             case "working": this.showWorked(); break;
             case "develop": this.showDevelopEligible(); break;
+            case "district": this.showDistrictEligible(); break;
             case "clear": this.showClearEligible(); break;
         }
 
-        if(this.cultureTarget != undefined){
+        if (this.cultureTarget != undefined) {
             this.cultureTarget.face.add(cultureTargetIcon)
         }
 
-        var me = this
         tiles.forEach(x => x.forEach(function (e) {
-            if (me.tiles.includes(e) && (view != "develop" || e.developIcon != undefined) && (view != "clear" || e.clearIcon != undefined)) {
+            if (this.tiles.includes(e)
+                && (view != "develop" || e.developIcon != undefined)
+                && (view != "clear" || e.clearIcon != undefined)
+                && (view != "district" || e.districtIcon != undefined)) {
                 e.face.material = e.terrain.material
             } else {
                 e.face.material = e.terrain.materialDark
             }
             if (e.productionTileIcon != undefined) {
-                e.mesh.remove(e.productionTileIcon)
+                e.face.remove(e.productionTileIcon)
                 e.productionTileIcon = undefined
             }
-        }))
+        }.bind(this)))
 
         if (this.producingID != undefined && this.producible[this.producingID].target != undefined) {
             this.producible[this.producingID].target.productionTileIcon = productionTileIcon.clone()
-            this.producible[this.producingID].target.mesh.add(this.producible[this.producingID].target.productionTileIcon)
+            this.producible[this.producingID].target.face.add(this.producible[this.producingID].target.productionTileIcon)
         }
     }
 
@@ -483,53 +656,126 @@ class Settlement {
             activeSettlement = undefined
             activeSelection = undefined
             Settlement.hideInfo()
-            camera.rotation.x = cameraRotationBase * (1 - (camera.position.z - minimumScrollIn) / (minimumScrollOut - minimumScrollIn))
+            adjustCameraRotation()
 
             if (!reselecting) {
                 this.tile.centerCameraOnTile()
             }
 
-            if(cultureTargetIcon.parent != undefined){
+            if (cultureTargetIcon.parent != undefined) {
                 cultureTargetIcon.parent.remove(cultureTargetIcon)
             }
 
-            var me = this
             tiles.forEach(x => x.forEach(function (e) {
-                if (me.player.seen.includes(e)) {
+                if (this.player.seen.includes(e)) {
                     e.face.material = e.terrain.material
                 } else {
                     e.face.material = e.terrain.materialDark
                 }
                 if (e.productionTileIcon != undefined) {
-                    e.mesh.remove(e.productionTileIcon)
+                    e.face.remove(e.productionTileIcon)
                     e.productionTileIcon = undefined
                 }
-            }))
+            }.bind(this)))
         }
     }
 
-    priceToBuyTile(tile){
+    buildDistrict(tile) {
+        tile.clearDevelopment()
+        tile.district = new District(tile, this.player, this)
+        this.districts.push(tile.district)
+        tiles.forEach(x => x.forEach(y => y.calculateYields()))
+        Object.keys(buildings).forEach(function (building) {
+            this.producible.push({ type: producibleTypes.building, building: buildings[building], name: buildings[building].name, district: tile.district, progress: 0, })
+        }.bind(this))
+    }
+
+    detectSeen() {
+        this.tiles.forEach(x => nearby(x, 2).forEach(function (tile) {
+            if (!this.player.seen.includes(tile)) {
+                this.player.seen.push(tile)
+            }
+        }.bind(this)))
+    }
+
+    priceToBuyTile(tile) {
         return 20
     }
 
-    static hideInfo(){
-        document.getElementById("city-info").style.right = "-400px"
-        viewedSettlement = undefined
+    get possibleTradeRoutes(){
+        var possibleRoutes = []
+        var testUnit = new Unit(unitTypes.trader, this.player, this.position)
+        players.filter(x => x.settlements != undefined).forEach(x => x.settlements.forEach(function(settlement){
+            if(settlement != this){
+                var path = testUnit.getPathToTile(settlement.tile)
+                if(path.length < 10){
+                    possibleRoutes.push({settlement: settlement, path: path})
+                }
+            }
+        }.bind(this)))
+        return possibleRoutes
     }
 
-    static changeCityInfoPanel(newActivePanel){
+    static hideInfo() {
+        document.getElementById("city-info").style.right = "-400px"
+        viewedSettlement = undefined
+
+        Settlement.hideBuildingProduction()
+    }
+
+    static changeCityInfoPanel(newActivePanel) {
         activeCityInfoPanel = newActivePanel;
+
+        Settlement.hideBuildingProduction()
 
         document.getElementById("city-info-header-production").setAttribute("currentPanel", "false")
         document.getElementById("city-info-header-yields").setAttribute("currentPanel", "false")
+        document.getElementById("city-info-header-district").setAttribute("currentPanel", "false")
+        document.getElementById("city-info-header-commerce").setAttribute("currentPanel", "false")
 
-        switch(newActivePanel){
-            case 0: document.getElementById("city-info-header-production").setAttribute("currentPanel", "true"); break;
-            case 1: document.getElementById("city-info-header-yields").setAttribute("currentPanel", "true"); break;
+        switch (newActivePanel) {
+            case 0: document.getElementById("city-info-header-title").innerHTML = "Production";
+                document.getElementById("city-info-header-production").setAttribute("currentPanel", "true"); break;
+            case 1: document.getElementById("city-info-header-title").innerHTML = "Yields";
+                document.getElementById("city-info-header-yields").setAttribute("currentPanel", "true"); break;
+            case 2: document.getElementById("city-info-header-title").innerHTML = "Commerce";
+                document.getElementById("city-info-header-commerce").setAttribute("currentPanel", "true"); break;
+            case 3: document.getElementById("city-info-header-title").innerHTML = "Districts";
+                document.getElementById("city-info-header-district").setAttribute("currentPanel", "true"); break;
         }
 
-        if(viewedSettlement != undefined){
-            viewedSettlement.displayInfo()
+        if (viewedSettlement != undefined) {
+            setTimeout(function () {
+                viewedSettlement.displayInfo()
+            }, 100)
+        }
+    }
+
+    static hideBuildingProduction() {
+        buildingsList.style.transform = "scaleY(0)"
+        buildingsList.style.maxHeight = "0"
+        if (viewedSettlement != undefined) {
+            viewedSettlement.districts.forEach(function (district) {
+                district.elementProduction.style.maxWidth = ""
+                district.element.style.maxHeight = "2.5vw"
+                district.yieldTable.style.transform = "scaleY(0)"
+            })
+        }
+    }
+
+    static increaseTax(){
+        if(viewedSettlement != undefined && viewedSettlement.taxRate <= 90){
+            viewedSettlement.taxRate += 10
+            viewedSettlement.calculateYields()
+            viewedSettlement.displayCommerce()
+        }
+    }
+
+    static decreaseTax(){
+        if(viewedSettlement != undefined && viewedSettlement.taxRate >= 10){
+            viewedSettlement.taxRate -= 10
+            viewedSettlement.calculateYields()
+            viewedSettlement.displayCommerce()
         }
     }
 }

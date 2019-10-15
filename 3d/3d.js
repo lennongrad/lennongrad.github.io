@@ -4,21 +4,41 @@ var versionTitle = "Initial"
 
 var scene = new THREE.Scene();
 //var cssScene = new THREE.Scene()
-var camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.1, 50);
+var camera = new THREE.PerspectiveCamera(43, window.innerWidth / window.innerHeight, 0.1, 50);
 var clock = new THREE.Clock();
 var loader = new THREE.GLTFLoader();
-var renderer = new THREE.WebGLRenderer();
+var renderer = new THREE.WebGLRenderer({ powerPreference: "high-performance" });
 var css2DRenderer = new THREE.CSS2DRenderer();
 var css3DRenderer = new THREE.CSS3DRenderer();
 var raycaster = new THREE.Raycaster();
-raycaster.far = 25;
+var stats = new Stats();
+raycaster.far = 22;
+camera.far = 18;
+camera.updateProjectionMatrix();
 var mouseVector = new THREE.Vector2();
+stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+stats.dom.style.top = "50px"
+document.body.appendChild(stats.dom);
 document.body.appendChild(renderer.domElement);
 document.body.appendChild(css2DRenderer.domElement);
 document.body.appendChild(css3DRenderer.domElement);
 css2DRenderer.domElement.className = "cssRenderer"
 css3DRenderer.domElement.className = "cssRenderer"
 css3DRenderer.domElement.id = "cssRenderer3D"
+
+function animate2() {
+
+    stats.begin();
+
+    // monitored code goes here
+
+    stats.end();
+
+    requestAnimationFrame(animate2);
+
+}
+
+requestAnimationFrame(animate2);
 
 window.onresize = function () {
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -28,6 +48,7 @@ window.onresize = function () {
 window.onresize();
 
 var tooltipTile = document.getElementById("tooltip-tile")
+var buildingsList = document.getElementById("city-districts-buildings")
 
 var chanceToContinue = .25
 var chanceToBeSameElevation = .6
@@ -52,8 +73,8 @@ var chanceToContinueMountain = .45
 var chanceToContinueForest = .2
 var forestsLimit = 25
 
-var minimumScrollOut = 26
-var minimumScrollIn = 14
+var minimumScrollOut = 14
+var minimumScrollIn = 9
 var ambientLighting = 1.5
 var reachableOverlayColor = "#109fc9"
 var reachableOverlayOpacity = .1
@@ -76,9 +97,15 @@ var unitActions = []
 var activeSettlement = undefined
 var viewedSettlement = undefined
 
-const cannotPassTile = 10000 
+const cannotPassTile = 10000
 const suffixes = ["", "k", "m", "b", "t", "qu", "qi", "sx", "sp"];
-const directions = ["r", "dr", "dl", "l", "ul", "ur"]
+const directions = [Symbol("r"),
+Symbol("dr"),
+Symbol("dl"),
+Symbol("l"),
+Symbol("ul"),
+Symbol("ur")]
+
 const hexagonSize = 1
 var hexagonShape = new THREE.Shape();
 hexagonShape.moveTo(0, -hexagonSize)
@@ -92,78 +119,89 @@ hexagonShape.lineTo(0, -hexagonSize)
 const hexagonAlpha = new THREE.TextureLoader().load("terrain/alpha.png")
 const hexagonGeometry = new THREE.PlaneBufferGeometry(Math.sqrt(3) * hexagonSize, 2.05 * hexagonSize, 1, 1)
 
-function makeTileBorderMeshes(standardDisplacement, partialTowardsCenter, smallAmount, farBeginning, slightlyClose, offsetClose, meshProperties) {
+ownerBorderShape = new THREE.Shape()
+ownerBorderShape.moveTo(Math.sqrt(3) * hexagonSize * .5, hexagonSize * .5)
+ownerBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .5, -hexagonSize * .5)
+ownerBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .44, -hexagonSize * .5)
+ownerBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .44, hexagonSize * .5)
+ownerBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .44, hexagonSize * .5)
+ownerBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .5, hexagonSize * .5)
 
-    var shapes = [new THREE.Shape(), new THREE.Shape(), new THREE.Shape(), new THREE.Shape(), new THREE.Shape(), new THREE.Shape()]
-    //R
-    shapes[0].moveTo(Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
-    shapes[0].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement)
-    shapes[0].lineTo(Math.sqrt(3) * hexagonSize * partialTowardsCenter, -hexagonSize * standardDisplacement - smallAmount)
-    shapes[0].lineTo(Math.sqrt(3) * hexagonSize * partialTowardsCenter, hexagonSize * standardDisplacement)
-    shapes[0].lineTo(Math.sqrt(3) * hexagonSize * partialTowardsCenter, hexagonSize * standardDisplacement + smallAmount)
-    shapes[0].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
-    //DR
-    shapes[1].moveTo(0, -hexagonSize)
-    shapes[1].lineTo(-hexagonSize * farBeginning, -hexagonSize * offsetClose)
-    shapes[1].lineTo(0, -hexagonSize * slightlyClose)
-    shapes[1].lineTo(Math.sqrt(3) * hexagonSize * partialTowardsCenter, -hexagonSize * standardDisplacement)
-    shapes[1].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement + smallAmount * 2)
-    shapes[1].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement)
-    shapes[1].lineTo(0, -hexagonSize)
-    //DL
-    shapes[2].moveTo(0, -hexagonSize)
-    shapes[2].lineTo(hexagonSize * farBeginning, -hexagonSize * offsetClose)
-    shapes[2].lineTo(0, -hexagonSize * slightlyClose)
-    shapes[2].lineTo(-Math.sqrt(3) * hexagonSize * partialTowardsCenter, -hexagonSize * standardDisplacement)
-    shapes[2].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement + smallAmount * 2)
-    shapes[2].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement)
-    shapes[2].lineTo(0, -hexagonSize)
-    //L
-    shapes[3].moveTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
-    shapes[3].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, -hexagonSize * standardDisplacement)
-    shapes[3].lineTo(-Math.sqrt(3) * hexagonSize * partialTowardsCenter, -hexagonSize * standardDisplacement - smallAmount)
-    shapes[3].lineTo(-Math.sqrt(3) * hexagonSize * partialTowardsCenter, -hexagonSize * standardDisplacement)
-    shapes[3].lineTo(-Math.sqrt(3) * hexagonSize * partialTowardsCenter, hexagonSize * standardDisplacement + smallAmount)
-    shapes[3].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
-    //UL
-    shapes[4].moveTo(0, hexagonSize)
-    shapes[4].lineTo(hexagonSize * farBeginning, hexagonSize * offsetClose)
-    shapes[4].lineTo(0, hexagonSize * slightlyClose)
-    shapes[4].lineTo(-Math.sqrt(3) * hexagonSize * partialTowardsCenter, hexagonSize * standardDisplacement)
-    shapes[4].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement - smallAmount)
-    shapes[4].lineTo(-Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
-    shapes[4].lineTo(0, hexagonSize)
-    //UR
-    shapes[5].moveTo(0, hexagonSize)
-    shapes[5].lineTo(-hexagonSize * farBeginning, hexagonSize * offsetClose)
-    shapes[5].lineTo(0, hexagonSize * slightlyClose)
-    shapes[5].lineTo(Math.sqrt(3) * hexagonSize * partialTowardsCenter, hexagonSize * standardDisplacement)
-    shapes[5].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement - smallAmount)
-    shapes[5].lineTo(Math.sqrt(3) * hexagonSize * standardDisplacement, hexagonSize * standardDisplacement)
-    shapes[5].lineTo(0, hexagonSize)
-
-    var borders = []
-    for (var i = 0; i < directions.length; i++) {
-        borders[i] = new THREE.Mesh(
-            new THREE.ExtrudeBufferGeometry(shapes[i], meshProperties),
-            new THREE.MeshLambertMaterial({ color: reachableOverlayColor })
-        );
-        borders[i].position.z = maxDepth + .01
-    }
-    return borders
+var ownerBorders = []
+for (var i = 0; i < directions.length; i++) {
+    ownerBorders[i] = new THREE.Mesh(
+        new THREE.ExtrudeBufferGeometry(ownerBorderShape, { depth: .05, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: .05, bevelThickness: .05 }),
+        new THREE.MeshLambertMaterial({ color: reachableOverlayColor, transparent: true, opacity: .95 })
+    );
+    ownerBorders[i].rotation.z = -Math.PI / 3 * i
 }
-var ownerBorders = makeTileBorderMeshes(.5, .44, 0, 0, .95, .9, { depth: .08, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: .05, bevelThickness: .05 })
-var reachableBorders = makeTileBorderMeshes(.5, .35, .1, .1, .85, .95, { depth: .02, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: .05, bevelThickness: .05 })
 
+reachableBorderShape = new THREE.Shape()
+reachableBorderShape.moveTo(Math.sqrt(3) * hexagonSize * .5, hexagonSize * .5)
+reachableBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .5, -hexagonSize * .5)
+reachableBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .35, -hexagonSize * .5 - .1)
+reachableBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .35, hexagonSize * .5)
+reachableBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .35, hexagonSize * .5 + .1)
+reachableBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .5, hexagonSize * .5)
+
+var reachableBorders = []
+for (var i = 0; i < directions.length; i++) {
+    reachableBorders[i] = new THREE.Mesh(
+        new THREE.ShapeBufferGeometry(reachableBorderShape),
+        new THREE.MeshLambertMaterial({ color: reachableOverlayColor })
+    );
+    reachableBorders[i].rotation.z = -Math.PI / 3 * i
+    reachableBorders[i].position.z = .001
+}
+
+gradientBorderShape = new THREE.Shape()
+gradientBorderShape.moveTo(Math.sqrt(3) * hexagonSize * .5, hexagonSize * .5)
+gradientBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .5, -hexagonSize * .5)
+gradientBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .2, -hexagonSize * .5 - .4)
+gradientBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .2, hexagonSize * .5)
+gradientBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .2, hexagonSize * .5 + .4)
+gradientBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .5, hexagonSize * .5)
+
+var gradientBorders = []
+for (var i = 0; i < directions.length; i++) {
+    gradientBorders[i] = new THREE.Mesh(
+        new THREE.ShapeBufferGeometry(gradientBorderShape),
+        new THREE.MeshLambertMaterial({ color: reachableOverlayColor })
+    );
+    gradientBorders[i].rotation.z = -Math.PI / 3 * i
+    gradientBorders[i].position.z = .1 + .01 * i
+}
+
+var fullLength = hexagonSize * .9
 var unitPathShape = new THREE.Shape()
 unitPathShape.moveTo(0, .05)
 unitPathShape.lineTo(0, -.05)
-unitPathShape.lineTo(hexagonSize * .88, -.05)
-unitPathShape.lineTo(hexagonSize * .88, .05)
+unitPathShape.lineTo(fullLength, -.05)
+unitPathShape.lineTo(fullLength, .05)
 unitPathShape.lineTo(0, .05)
+
+var unitPathHole1 = new THREE.Shape()
+unitPathHole1.moveTo(fullLength * .1, .07)
+unitPathHole1.lineTo(fullLength * .1, -.07)
+unitPathHole1.lineTo(fullLength * .4, -.07)
+unitPathHole1.lineTo(fullLength * .4, .07)
+unitPathHole1.lineTo(fullLength * .1, .07)
+var unitPathHole2 = new THREE.Shape()
+unitPathHole2.moveTo(fullLength * .6, .07)
+unitPathHole2.lineTo(fullLength * .6, -.07)
+unitPathHole2.lineTo(fullLength * .9, -.07)
+unitPathHole2.lineTo(fullLength * .9, .07)
+unitPathHole2.lineTo(fullLength * .8, .07)
+var commercePathShape = new THREE.Shape()
+commercePathShape.holes.push(unitPathHole1, unitPathHole2)
+
 var unitPathMesh = new THREE.Mesh(
-    new THREE.ExtrudeBufferGeometry( unitPathShape, {bevelEnabled: true, depth: .2, bevelSize: .05, bevelThickness: .05}),
+    new THREE.ExtrudeBufferGeometry(unitPathShape, { bevelEnabled: true, depth: .12, bevelSize: .02, bevelThickness: .02 }),
     new THREE.MeshLambertMaterial({ color: reachableOverlayColor })
+)
+var commercePathMesh = new THREE.Mesh(
+    new THREE.ExtrudeBufferGeometry(commercePathShape, { bevelEnabled: true, depth: .03, bevelSize: .15, bevelThickness: .01 }),
+    new THREE.MeshBasicMaterial({ color: new THREE.Color("#ffc117") })
 )
 
 var keys = {
@@ -179,20 +217,22 @@ var keys = {
             document.getElementById("drag-catch").style.pointerEvents = "none"
         }, active: false
     },
-    enter: { key: 13, keydown: function () { 
-                if(players[0].notificationsRemaining.length >= 1){
-                    players[0].notificationsRemaining[0].click() 
-                } else {
-                    players[0].endTurn() 
-                }
-            }, keyup: function () { }, active: false }
+    enter: {
+        key: 13, keydown: function () {
+            if (players[0].notificationsRemaining.length >= 1) {
+                players[0].notificationsRemaining[0].click()
+            } else {
+                players[0].endTurn()
+            }
+        }, keyup: function () { }, active: false
+    }
 }
 
-$(document).on("dragstart", function (event) {
+document.ondragstart = function (event) {
     if (event.target.nodeName.toUpperCase() == "IMG") {
         return false;
     }
-});
+};
 
 var dontHideReachable = false
 window.addEventListener('mousemove', function (eventData) {
@@ -200,12 +240,12 @@ window.addEventListener('mousemove', function (eventData) {
     cursor.x = eventData.pageX;
     cursor.lastMoved = 0;
 
-    if (cursor.active) {
-        mapOffset.x += eventData.movementX / 100
+    if (cursor.active && Math.abs(eventData.movementX) < 300 && Math.abs(eventData.movementY) < 300) {
+        mapOffset.x += Math.min(200, Math.abs(eventData.movementX)) / 100 * Math.sign(eventData.movementX)
         if (mapOffset.x < 0) {
             mapOffset.x = maxOffsetX
         }
-        mapOffset.y -= eventData.movementY / 100
+        mapOffset.y -= Math.min(200, Math.abs(eventData.movementY)) / 100 * Math.sign(eventData.movementY)
     }
 
     cameraMove()
@@ -216,19 +256,19 @@ window.addEventListener('mousemove', function (eventData) {
 });
 
 window.addEventListener('mousedown', function (eventData) {
-    if (eventData.which === 1) { //left
+    if (eventData.which === 1 || eventData.which === 2) { //left
         if (renderer.domElement.matches(':hover')) {
-            cursor.active = true;
+            cursor.active = true
             dontHideReachable = false
         }
-    }
+    } 
 })
 
-$(document).mouseleave(function () {
+document.mouseleave = function () {
     cursor.active = false
-});
+}
 
-$("body").mouseup(function (eventData) {
+document.onmouseup = function (eventData) {
     if (renderer.domElement.matches(':hover')) {
         if (eventData.which === 1) { //left
             cursor.active = false;
@@ -237,44 +277,72 @@ $("body").mouseup(function (eventData) {
                 Settlement.hideInfo()
                 Unit.deselectAllUnits()
 
-                if ((activeSelection == 0 || activeSelection == 1)
-                    && (activeSelection == 1 || !activeTile.developed)
-                    && (activeSelection == 0 || activeTile.features.includes(features.forest) || activeTile.features.includes(features.savanna))
-                    && activeSettlement.tiles.includes(activeTile)
-                    && activeTile.getDevelopment()) {
+                if ((activeSelection == 0 || activeSelection == 1 || activeSelection == 2)
+                    && (activeSelection != 0 || activeTile.developIcon != undefined)
+                    && (activeSelection != 1 || activeTile.clearIcon != undefined)
+                    && (activeSelection != 2 || activeTile.districtIcon != undefined)
+                    && activeSettlement.tiles.includes(activeTile)) {
                     activeSettlement.producible[activeSelection].target = activeTile
                     activeSettlement.setProduction(activeSelection)
                     activeSelection = undefined
                     activeSettlement.select("working")
                 }
 
-                if (activeSettlement != undefined &&
-                    (activeTile != undefined && activeTile.player != activeSettlement.player)) {
+                if (activeSettlement != undefined) {
                     activeSettlement.deselect()
                 }
             }
         } else if (eventData.which === 3) { //right
-            if ((selectedUnits.length == 1 || (Unit.selectedUnitsOnSameTile() && Unit.selectedUnitsHaveSameMovement()))
-                    && activeTile != undefined && activeTile != tiles[selectedUnits[0].pos.x][selectedUnits[0].pos.y]) {
-                if(selectedUnits[0].determineReachable().map(x => x.tile).includes(activeTile)){
-                    if (selectedUnits[0].disabled) {
-                        selectedUnits[0].activate()
+            if (selectedUnits.length >= 1
+                && Unit.selectedUnitsOnSameTile()
+                && Unit.selectedUnitsHaveSameMovement()
+                && activeTile != undefined
+                && activeTile != tiles[selectedUnits[0].pos.x][selectedUnits[0].pos.y]
+                && selectedUnits[0].determineReachable().map(x => x.tile).includes(activeTile)
+                && activeTile.attackOverlay == undefined) {
+                let tileDistance = activeTile.reachableOverlay.reachableDistance
+                for (var i = selectedUnits.length - 1; i >= 0; i--) {
+                    if (selectedUnits[i].disabled) {
+                        selectedUnits[i].activate()
                     }
-                    selectedUnits[0].move(activeTile.position, activeTile.reachableOverlay.reachableDistance)
-                    selectedUnits[0].assignPath(undefined)
-                } else {
-                    selectedUnits[0].setPath(activeTile)
+                    selectedUnits[i].assignPath(undefined)
+                    selectedUnits[i].move(activeTile.position, tileDistance)
                 }
+            }
+
+            if (selectedUnits.length >= 1
+                && activeTile != undefined
+                && activeTile.attackOverlay == undefined) {
+                for (var i = selectedUnits.length - 1; i >= 0; i--) {
+                    selectedUnits[i].setPath(activeTile)
+                }
+            }
+
+            if (activeTile.attackOverlay != undefined) {
+                selectedUnits.forEach(x => x.moveToAttack(activeTile))
+                Unit.resolveCombat(selectedUnits, activeTile.units)
+                if (activeTile.units.length == 0) {
+                    selectedUnits.slice(0).forEach(x => x.move(activeTile.position, x.determineReachable().filter(x => x.tile == activeTile).distance))
+                }
+                selectedUnits.slice(0).forEach(x => x.disactivate())
             }
 
             if (activeSettlement != undefined) {
                 activeSettlement.deselect()
             }
-        } else { //midle
-
+        } else { //middle
+            cursor.active = false
         }
     }
-})
+}
+
+function adjustCameraRotation() {
+    if (activeSettlement != undefined) {
+        camera.rotation.x = 0
+    } else {
+        camera.rotation.x = cameraRotationBase * (1 - (camera.position.z - minimumScrollIn) / (minimumScrollOut - minimumScrollIn))
+    }
+}
 
 document.body.addEventListener('wheel', function (event) {
     if (renderer.domElement.matches(':hover')) {
@@ -284,9 +352,7 @@ document.body.addEventListener('wheel', function (event) {
         } else if (camera.position.z < minimumScrollIn) {
             camera.position.z = minimumScrollIn
         }
-        if (activeSettlement == undefined) {
-            camera.rotation.x = cameraRotationBase * (1 - (camera.position.z - minimumScrollIn) / (minimumScrollOut - minimumScrollIn))
-        }
+        adjustCameraRotation()
         cameraMove()
         return false;
     }
@@ -310,7 +376,6 @@ document.addEventListener('keyup', function (event) {
     foundMatch.active = false
 });
 
-
 function t(pos, direction) {
     var used = pos
     var returnPosition = true
@@ -321,12 +386,12 @@ function t(pos, direction) {
     }
 
     switch (direction) {
-        case "l": final = { x: used.x - 1, y: used.y }; break;
-        case "r": final = { x: used.x + 1, y: used.y }; break;
-        case "ul": final = { x: used.x + (used.y % 2 == 0 ? -1 : 0), y: used.y + 1 }; break;
-        case "ur": final = { x: used.x + (used.y % 2 == 0 ? 0 : 1), y: used.y + 1 }; break;
-        case "dl": final = { x: used.x + (used.y % 2 == 0 ? -1 : 0), y: used.y - 1 }; break;
-        case "dr": final = { x: used.x + (used.y % 2 == 0 ? 0 : 1), y: used.y - 1 }; break;
+        case directions[0]: final = { x: used.x + 1, y: used.y }; break;
+        case directions[1]: final = { x: used.x + (used.y % 2 == 0 ? 0 : 1), y: used.y - 1 }; break;
+        case directions[2]: final = { x: used.x + (used.y % 2 == 0 ? -1 : 0), y: used.y - 1 }; break;
+        case directions[3]: final = { x: used.x - 1, y: used.y }; break;
+        case directions[4]: final = { x: used.x + (used.y % 2 == 0 ? -1 : 0), y: used.y + 1 }; break;
+        case directions[5]: final = { x: used.x + (used.y % 2 == 0 ? 0 : 1), y: used.y + 1 }; break;
     }
 
     if (final.x < 0) {
@@ -369,7 +434,7 @@ function nearby(tile, distance) {
 }
 
 document.getElementById("drag-catch").onmousedown = function (event) {
-    dragInitialPoint = {x: event.clientX, y: event.clientY}
+    dragInitialPoint = { x: event.clientX, y: event.clientY }
     document.getElementById("drag-catch-box").style.display = ""
     this.onmousemove(event)
 }
@@ -377,28 +442,28 @@ document.getElementById("drag-catch").onmousedown = function (event) {
 document.getElementById("drag-catch").onmouseup = function (event) {
     document.getElementById("drag-catch-box").style.display = "none"
 
-    if(!keys.ctrl.active){
+    if (!keys.ctrl.active) {
         Unit.deselectAllUnits()
     }
 
-    activePlayer.units.forEach(function(unit){
-        if(unit.iconDIV.getBoundingClientRect().left > dragTopLeftPoint.x
+    activePlayer.units.forEach(function (unit) {
+        if (unit.iconDIV.getBoundingClientRect().left > dragTopLeftPoint.x
             && unit.iconDIV.getBoundingClientRect().top > dragTopLeftPoint.y
             && unit.iconDIV.getBoundingClientRect().right < dragBottomRightPoint.x
-            && unit.iconDIV.getBoundingClientRect().bottom < dragBottomRightPoint.y){
-                unit.select()
+            && unit.iconDIV.getBoundingClientRect().bottom < dragBottomRightPoint.y) {
+            unit.select()
         }
     })
 }
-document.getElementById("drag-catch").onmouseout = function(){
-    if(cursor.active){
+document.getElementById("drag-catch").onmouseout = function () {
+    if (cursor.active) {
         document.getElementById("drag-catch").onmouseup()
     }
 }
 
 document.getElementById("drag-catch").onmousemove = function (event) {
-    dragTopLeftPoint = {x: Math.min(dragInitialPoint.x, event.clientX), y: Math.min(dragInitialPoint.y, event.clientY)}
-    dragBottomRightPoint = {x: Math.max(dragInitialPoint.x, event.clientX), y: Math.max(dragInitialPoint.y, event.clientY)}
+    dragTopLeftPoint = { x: Math.min(dragInitialPoint.x, event.clientX), y: Math.min(dragInitialPoint.y, event.clientY) }
+    dragBottomRightPoint = { x: Math.max(dragInitialPoint.x, event.clientX), y: Math.max(dragInitialPoint.y, event.clientY) }
     document.getElementById("drag-catch-box").style.left = dragTopLeftPoint.x + "px"
     document.getElementById("drag-catch-box").style.top = dragTopLeftPoint.y + "px"
     document.getElementById("drag-catch-box").style.width = Math.abs(dragTopLeftPoint.x - dragBottomRightPoint.x) + "px"
@@ -477,18 +542,39 @@ var yields = {
     food: new Yield("Food"),
     production: new Yield("Production"),
     science: new Yield("Science"),
-    gold: new Yield("Gold"),
-    culture: new Yield("Culture")
+    commerce: new Yield("Commerce"),
+    culture: new Yield("Culture"),
+    capital: new Yield("Capital")
 }
+
 var terrainAlpha = new THREE.TextureLoader().load("terrain/alpha.png");
-var riverMaterial = new THREE.MeshLambertMaterial({
-    alphaMap: new THREE.TextureLoader().load("terrain/river_alpha.png"),
-    map: new THREE.TextureLoader().load("terrain/river.png"),
+var riverMaterials = [
+    new THREE.MeshBasicMaterial({
+        alphaMap: new THREE.TextureLoader().load("terrain/river0_alpha.png"),
+        map: new THREE.TextureLoader().load("terrain/river0.png"),
+        transparent: true, depthWrite: false, side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+        alphaMap: new THREE.TextureLoader().load("terrain/river1_alpha.png"),
+        map: new THREE.TextureLoader().load("terrain/river1.png"),
+        transparent: true, depthWrite: false, side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+        alphaMap: new THREE.TextureLoader().load("terrain/river2_alpha.png"),
+        map: new THREE.TextureLoader().load("terrain/river2.png"),
+        transparent: true, depthWrite: false, side: THREE.DoubleSide
+    }),
+]
+
+var riverDeltaMaterial = new THREE.MeshBasicMaterial({
+    alphaMap: new THREE.TextureLoader().load("terrain/riverDelta_alpha.png"),
+    map: new THREE.TextureLoader().load("terrain/riverDelta.png"),
     transparent: true, depthWrite: false, side: THREE.DoubleSide
 })
+var borderGradientMap = new THREE.TextureLoader().load("weirdAlpha.png")
 
 /* Note: roads have not been implemented yet
-var roadMaterial =  new THREE.MeshLambertMaterial( { 
+var roadMaterial =  new THREE.MeshBasicMaterial( { 
     alphaMap: new THREE.TextureLoader().load("terrain/road_alpha.png"), 
     map: new THREE.TextureLoader().load("terrain/road.png"), 
     transparent: true, depthWrite: false,  side: THREE.DoubleSide } )
@@ -499,8 +585,8 @@ var roadMaterial =  new THREE.MeshLambertMaterial( {
  * @enum {string}
  */
 var terrainVariety = {
-    land: "land",
-    sea: "sea"
+    land: Symbol("land"),
+    sea: Symbol("sea")
 }
 // note: I am not pleased with this name right now, but it's the best I've thought of
 
@@ -521,7 +607,7 @@ var terrainTypes = {
     desertHills: new Terrain("Desert Hills", "terrain/desert-hills.png", terrainVariety.land, { production: 2 }),
     snow: new Terrain("Snow", "terrain/snow.png", terrainVariety.land, {}),
     snowHills: new Terrain("Snow Hills", "terrain/snow-hills.png", terrainVariety.land, { production: 1 }),
-    coast: new Terrain("Coast", "terrain/coast.png", terrainVariety.sea, { food: 1, gold: 1 }),
+    coast: new Terrain("Coast", "terrain/coast.png", terrainVariety.sea, { food: 1, commerce: 1 }),
     ocean: new Terrain("Ocean", "terrain/ocean.png", terrainVariety.sea, {}),
     lake: new Terrain("Lake", "terrain/lake.png", terrainVariety.sea, { food: 2 }),
     ice: new Terrain("Ice", "terrain/ice.png", terrainVariety.sea, {})
@@ -532,26 +618,26 @@ var terrainTypes = {
  * @enum {string}
  */
 var requirements = {
-    forest: "forest",
-    notForest: "notForest",
-    hills: "hills",
-    notHills: "notHills",
-    land: "land",
-    notLand: "notLand",
-    desert: "desert",
-    notDesert: "notDesert",
-    tundra: "tundra",
-    notTundra: "notTundra",
-    snow: "snow",
-    notSnow: "notSnow",
-    standard: "standard",
-    notStandard: "notStandard",
-    coastal: "coastal",
-    notCoastal: "notCoastal",
-    savanna: "savanna",
-    notSavanna: "notSavanna",
-    river: "river",
-    notRiver: "notRiver"
+    forest: Symbol("forest"),
+    notForest: Symbol("notForest"),
+    hills: Symbol("hills"),
+    notHills: Symbol("notHills"),
+    land: Symbol("land"),
+    notLand: Symbol("notLand"),
+    desert: Symbol("desert"),
+    notDesert: Symbol("notDesert"),
+    tundra: Symbol("tundra"),
+    notTundra: Symbol("notTundra"),
+    snow: Symbol("snow"),
+    notSnow: Symbol("notSnow"),
+    standard: Symbol("standard"),
+    notStandard: Symbol("notStandard"),
+    coastal: Symbol("coastal"),
+    notCoastal: Symbol("notCoastal"),
+    savanna: Symbol("savanna"),
+    notSavanna: Symbol("notSavanna"),
+    river: Symbol("river"),
+    notRiver: Symbol("notRiver")
 }
 
 /**
@@ -560,38 +646,45 @@ var requirements = {
  * @param {requirements} requirementsList A list of requirements that a Tile must pass to return true
  * @return {boolean} Whether the Tile passes all of the requirements listed
  */
-function testRequirements(tile, requirementsList) {
+function testRequirements(requirementsList, tile, settlement, district) {
     // the final return value that, while true, will be checked against the 'requirementsList' and set to false if it fails any of them
     var confirm = true
 
     requirementsList.forEach(function (e) {
-        switch (e) {
-            case requirements.forest: confirm = !confirm ? false : (tile.features.includes(features.forest)); break;
-            case requirements.notForest: confirm = !confirm ? false : (!tile.features.includes(features.forest)); break;
-            case requirements.hills: confirm = !confirm ? false : (tile.terrain.name.includes("Hill")); break;
-            case requirements.notHills: confirm = !confirm ? false : (!tile.terrain.name.includes("Hill")); break;
-            case requirements.land: confirm = !confirm ? false : (tile.terrain.variety == terrainVariety.land); break;
-            case requirements.notLand: confirm = !confirm ? false : (tile.terrain.variety != terrainVariety.land); break;
-            case requirements.desert: confirm = !confirm ? false : (tile.terrain.name.includes("Desert")); break;
-            case requirements.notDesert: confirm = !confirm ? false : !(tile.terrain.name.includes("Desert")); break;
-            case requirements.tundra: confirm = !confirm ? false : (tile.terrain.name.includes("Tundra")); break;
-            case requirements.notTundra: confirm = !confirm ? false : !(tile.terrain.name.includes("Tundra")); break;
-            case requirements.snow: confirm = !confirm ? false : (tile.terrain == terrainTypes.snow); break;
-            case requirements.notSnow: confirm = !confirm ? false : (tile.terrain != terrainTypes.snow); break;
-            case requirements.standard: confirm = !confirm ? false : (tile.terrain.name.includes("Plains")
-                || tile.terrain.name.includes("Grasslands")
-                || tile.terrain.name.includes("Floodlands")
-                || tile.terrain.name.includes("Wetlands")); break;
-            case requirements.notStandard: confirm = !confirm ? false : !(tile.terrain.name.includes("Plains")
-                || tile.terrain.name.includes("Grasslands")
-                || tile.terrain.name.includes("Floodlands")
-                || tile.terrain.name.includes("Wetlands")); break;
-            case requirements.coastal: confirm = !confirm ? false : (nearby(tile, 1).filter(x => x.terrain == terrainTypes.coast).length > 0); break;
-            case requirements.notCoastal: confirm = !confirm ? false : !(nearby(tile, 1).filter(x => x.terrain == terrainTypes.coast).length > 0); break;
-            case requirements.savanna: confirm = !confirm ? false : (tile.features.includes(features.savanna)); break;
-            case requirements.notSavanna: confirm = !confirm ? false : (!tile.features.includes(features.savanna)); break;
-            case requirements.river: confirm = !confirm ? false : (tile.river); break;
-            case requirements.notRiver: confirm = !confirm ? false : (!tile.river); break;
+        if (confirm) {
+            switch (e) {
+                // tile
+                case requirements.forest: confirm = (tile.features.includes(features.forest)); break;
+                case requirements.notForest: confirm = (!tile.features.includes(features.forest)); break;
+                case requirements.hills: confirm = (tile.terrain.name.includes("Hill")); break;
+                case requirements.notHills: confirm = (!tile.terrain.name.includes("Hill")); break;
+                case requirements.land: confirm = (tile.terrain.variety == terrainVariety.land); break;
+                case requirements.notLand: confirm = (tile.terrain.variety != terrainVariety.land); break;
+                case requirements.desert: confirm = (tile.terrain.name.includes("Desert")); break;
+                case requirements.notDesert: confirm = !(tile.terrain.name.includes("Desert")); break;
+                case requirements.tundra: confirm = (tile.terrain.name.includes("Tundra")); break;
+                case requirements.notTundra: confirm = !(tile.terrain.name.includes("Tundra")); break;
+                case requirements.snow: confirm = (tile.terrain == terrainTypes.snow); break;
+                case requirements.notSnow: confirm = (tile.terrain != terrainTypes.snow); break;
+                case requirements.standard: confirm = (
+                    tile.terrain.name.includes("Plains")
+                    || tile.terrain.name.includes("Grasslands")
+                    || tile.terrain.name.includes("Floodlands")
+                    || tile.terrain.name.includes("Wetlands")); break;
+                case requirements.notStandard: confirm = !(
+                    tile.terrain.name.includes("Plains")
+                    || tile.terrain.name.includes("Grasslands")
+                    || tile.terrain.name.includes("Floodlands")
+                    || tile.terrain.name.includes("Wetlands")); break;
+                case requirements.coastal: confirm = (nearby(tile, 1).filter(x => x.terrain == terrainTypes.coast).length > 0); break;
+                case requirements.notCoastal: confirm = !(nearby(tile, 1).filter(x => x.terrain == terrainTypes.coast).length > 0); break;
+                case requirements.savanna: confirm = (tile.features.includes(features.savanna)); break;
+                case requirements.notSavanna: confirm = (!tile.features.includes(features.savanna)); break;
+                case requirements.river: confirm = (tile.hasRiver); break;
+                case requirements.notRiver: confirm = (!tile.hasRiver); break;
+                // settlement
+                // district
+            }
         }
     })
 
@@ -600,71 +693,91 @@ function testRequirements(tile, requirementsList) {
 
 var developments = {
     farm: new Development("Farm", { food: 1 }),
-    plantation: new Development("Plantation", { gold: 1 }),
+    plantation: new Development("Plantation", { commerce: 1 }),
     fishery: new Development("Fishery", { food: 1 }),
-    mine: new Development("Mine", { gold: 1 }),
+    mine: new Development("Mine", { commerce: 1 }),
     quarry: new Development("Quarry", { production: 1 }),
     pasture: new Development("Pasture", { food: 1 }),
-    reserve: new Development("Reserve", { gold: 1 }),
+    reserve: new Development("Reserve", { commerce: 1 }),
     sawmill: new Development("Sawmill", { production: 1 })
 }
 
 var resources = {
     aggregate: new Resource("Aggregate", developments.quarry, { production: 2 }, [requirements.notHills, requirements.land]),
     //aluminum: new Resource(""          , {}             , [])                      ,
-    amber: new Resource("amber", developments.sawmill, { gold: 3 }, [requirements.forest]),
+    amber: new Resource("amber", developments.sawmill, { commerce: 3 }, [requirements.forest]),
     banana: new Resource("Banana", developments.plantation, { food: 2 }, [requirements.standard, requirements.forest]),
     cattle: new Resource("Cattle", developments.pasture, { food: 2 }, [requirements.standard, requirements.notForest]),
-    cinnamon: new Resource("Cinnamon", developments.plantation, { gold: 3 }, [requirements.standard, requirements.notHills, requirements.coastal]),
+    cinnamon: new Resource("Cinnamon", developments.plantation, { commerce: 3 }, [requirements.standard, requirements.notHills, requirements.coastal]),
     citrus: new Resource("Citrus", developments.plantation, { food: 1 }, [requirements.standard, requirements.notHills, requirements.forest]),
-    clams: new Resource("Clams", developments.fishery, { gold: 3 }, [requirements.notLand, requirements.coastal]),
-    cloves: new Resource("Cloves", developments.plantation, { gold: 3 }, [requirements.standard, requirements.notHills, requirements.coastal]),
+    clams: new Resource("Clams", developments.fishery, { commerce: 3 }, [requirements.notLand, requirements.coastal]),
+    cloves: new Resource("Cloves", developments.plantation, { commerce: 3 }, [requirements.standard, requirements.notHills, requirements.coastal]),
     coal: new Resource("Coal", developments.quarry, { production: 2 }, [requirements.land]),
-    cocoa: new Resource("Cocoa", developments.quarry, { gold: 3 }, [requirements.standard, requirements.forest]),
-    coffee: new Resource("Coffee", developments.plantation, { gold: 2, production: 1 }, [requirements.standard, requirements.forest]),
+    cocoa: new Resource("Cocoa", developments.quarry, { commerce: 3 }, [requirements.standard, requirements.forest]),
+    coffee: new Resource("Coffee", developments.plantation, { commerce: 2, production: 1 }, [requirements.standard, requirements.forest]),
     copper: new Resource("Copper", developments.mine, { production: 2 }, [requirements.land]),
     corn: new Resource("Corn", developments.farm, { food: 2 }, [requirements.standard, requirements.notHills]),
-    cotton: new Resource("Cotton", developments.plantation, { gold: 3 }, [requirements.standard, requirements.notHills]),
-    crabs: new Resource("Crabs", developments.fishery, { gold: 2, food: 1 }, [requirements.notLand, requirements.coastal]),
-    deer: new Resource("Deer", developments.reserve, { gold: 2, food: 1 }, [requirements.forest, requirements.notHill]),
-    diamonds: new Resource("Diamonds", developments.mine, { gold: 4, production: 1 }, [requirements.hills]),
-    elephants: new Resource("Elephants", developments.reserve, { gold: 4, food: 1 }, [requirements.savanna]),
+    cotton: new Resource("Cotton", developments.plantation, { commerce: 3 }, [requirements.standard, requirements.notHills]),
+    crabs: new Resource("Crabs", developments.fishery, { commerce: 2, food: 1 }, [requirements.notLand, requirements.coastal]),
+    deer: new Resource("Deer", developments.reserve, { commerce: 2, food: 1 }, [requirements.forest, requirements.notHill]),
+    diamonds: new Resource("Diamonds", developments.mine, { commerce: 4, production: 1 }, [requirements.hills]),
+    elephants: new Resource("Elephants", developments.reserve, { commerce: 4, food: 1 }, [requirements.savanna]),
     fish: new Resource("Fish", developments.fishery, { food: 2 }, [requirements.notLand, requirements.coastal]),
-    furbearers: new Resource("Furbearers", developments.reserve, { gold: 2, food: 1 }, [requirements.forest]),
-    gold: new Resource("Gold", developments.mine, { gold: 6 }, [requirements.hills]),
-    grapes: new Resource("Grapes", developments.plantation, { gold: 2, food: 1 }, [requirements.standard, requirements.notHills, requirements.coastal]),
+    furbearers: new Resource("Furbearers", developments.reserve, { commerce: 2, food: 1 }, [requirements.forest]),
+    gold: new Resource("Gold", developments.mine, { commerce: 6 }, [requirements.hills]),
+    grapes: new Resource("Grapes", developments.plantation, { commerce: 2, food: 1 }, [requirements.standard, requirements.notHills, requirements.coastal]),
     guano: new Resource("Guano", developments.mine, { production: 1, food: 1 }, [requirements.notStandard, requirements.coastal, requirements.land, requirements.notForest]),
-    gypsum: new Resource("Gypsum", developments.quarry, { gold: 2, production: 1 }, [requirements.hills]),
-    honeybees: new Resource("Honeybees", developments.pasture, { gold: 2, food: 1 }, [requirements.forest, requirements.standard]),
+    gypsum: new Resource("Gypsum", developments.quarry, { commerce: 2, production: 1 }, [requirements.hills]),
+    honeybees: new Resource("Honeybees", developments.pasture, { commerce: 2, food: 1 }, [requirements.forest, requirements.standard]),
     horse: new Resource("Horse", developments.pasture, { production: 2 }, [requirements.standard, requirements.notHills]),
     iron: new Resource("Iron", developments.mine, { production: 2 }, [requirements.land]),
-    jade: new Resource("Jade", developments.mine, { gold: 3 }, [requirements.hills]),
-    latex: new Resource("Latex", developments.plantation, { gold: 2, production: 1 }, [requirements.forest, requirements.standard]),
-    marble: new Resource("Marble", developments.quarry, { gold: 3 }, [requirements.hills]),
-    mercury: new Resource("Mercury", developments.mine, { gold: 3 }, [requirements.hills]),
-    murex: new Resource("Murex", developments.fishery, { gold: 3 }, [requirements.notLand, requirements.coastal]),
+    jade: new Resource("Jade", developments.mine, { commerce: 3 }, [requirements.hills]),
+    latex: new Resource("Latex", developments.plantation, { commerce: 2, production: 1 }, [requirements.forest, requirements.standard]),
+    marble: new Resource("Marble", developments.quarry, { commerce: 3 }, [requirements.hills]),
+    mercury: new Resource("Mercury", developments.mine, { commerce: 3 }, [requirements.hills]),
+    murex: new Resource("Murex", developments.fishery, { commerce: 3 }, [requirements.notLand, requirements.coastal]),
     nitre: new Resource("Nitre", developments.quarry, { production: 1, food: 1 }, [requirements.land]),
     //oil: new Resource("Oil"            , {production: 2}, [requirements.notForest]),
-    olives: new Resource("Olives", developments.plantation, { gold: 3 }, [requirements.standard, requirements.notHills, requirements.coastal]),
+    olives: new Resource("Olives", developments.plantation, { commerce: 3 }, [requirements.standard, requirements.notHills, requirements.coastal]),
     pigs: new Resource("Pigs", developments.pasture, { food: 2 }, [requirements.notHills, requirements.standard]),
-    platinum: new Resource("Platinum", developments.mine, { production: 2, gold: 1 }, [requirements.land]),
-    poppies: new Resource("Poppies", developments.plantation, { gold: 3 }, [requirements.standard, requirements.notHills]),
+    platinum: new Resource("Platinum", developments.mine, { production: 2, commerce: 1 }, [requirements.land]),
+    poppies: new Resource("Poppies", developments.plantation, { commerce: 3 }, [requirements.standard, requirements.notHills]),
     potato: new Resource("Potato", developments.farm, { food: 2 }, [requirements.standard, requirements.notHills]),
     rice: new Resource("Rice", developments.farm, { food: 2 }, [requirements.standard, requirements.river]),
-    sage: new Resource("Sage", developments.plantation, { gold: 3 }, [requirements.standard, requirements.notHills]),
-    salt: new Resource("Salt", developments.mine, { gold: 1, production: 2 }, [requirements.land, requirements.notCoastal]),
+    sage: new Resource("Sage", developments.plantation, { commerce: 3 }, [requirements.standard, requirements.notHills]),
+    salt: new Resource("Salt", developments.mine, { commerce: 1, production: 2 }, [requirements.land, requirements.notCoastal]),
     seaweed: new Resource("Seaweed", developments.fishery, { food: 2 }, [requirements.notLand, requirements.coastal]),
     sheep: new Resource("Sheep", developments.pasture, { food: 2 }, [requirements.land, requirements.notSnow]),
-    silkworms: new Resource("Silkworms", developments.pasture, { gold: 3 }, [requirements.forest]),
-    silver: new Resource("Silver", developments.mine, { gold: 2, production: 1 }, [requirements.land]),
-    spices: new Resource("Spices", developments.plantation, { gold: 3 }, [requirements.coastal, requirements.land, requirements.notSnow, requirements.notTundra]),
-    sugarcane: new Resource("Sugarcane", developments.plantation, { gold: 3 }, [requirements.land, requirements.coastal, requirements.notTundra, requirements.notSnow]),
-    tea: new Resource("Tea", developments.plantation, { gold: 3 }, [requirements.standard, requirements.coastal]),
-    tobacco: new Resource("Tobacco", developments.plantation, { gold: 3 }, [requirements.standard, requirements.coastal]),
-    turtles: new Resource("Turtles", developments.fishery, { gold: 2, food: 1 }, [requirements.notLand, requirements.coastal]),
+    silkworms: new Resource("Silkworms", developments.pasture, { commerce: 3 }, [requirements.forest]),
+    silver: new Resource("Silver", developments.mine, { commerce: 2, production: 1 }, [requirements.land]),
+    spices: new Resource("Spices", developments.plantation, { commerce: 3 }, [requirements.coastal, requirements.land, requirements.notSnow, requirements.notTundra]),
+    sugarcane: new Resource("Sugarcane", developments.plantation, { commerce: 3 }, [requirements.land, requirements.coastal, requirements.notTundra, requirements.notSnow]),
+    tea: new Resource("Tea", developments.plantation, { commerce: 3 }, [requirements.standard, requirements.coastal]),
+    tobacco: new Resource("Tobacco", developments.plantation, { commerce: 3 }, [requirements.standard, requirements.coastal]),
+    turtles: new Resource("Turtles", developments.fishery, { commerce: 2, food: 1 }, [requirements.notLand, requirements.coastal]),
     //uranium: new Resource("Uranium"    , {production: 2}, [requirements.land])     ,
-    whales: new Resource("Whales", developments.fishery, { gold: 2, food: 1 }, [requirements.notLand, requirements.coastal]),
+    whales: new Resource("Whales", developments.fishery, { commerce: 2, food: 1 }, [requirements.notLand, requirements.coastal]),
     wheat: new Resource("Wheat", developments.farm, { food: 2 }, [requirements.standard]),
+}
+
+var buildingModifiers = {
+    /** resources: [], bonus: {} */
+    resourceBonus: {
+        processModifier: function (district, building, modifier) {
+            district.settlement.tiles.forEach(function (tile) {
+                if (modifier.resources.includes(tile.resource)) {
+                    tile.addBuildingYields(modifier.bonus)
+                }
+            })
+        }
+    }
+}
+
+var buildings = {
+    granary: new Building("Granary", "granary", [], { food: 2 }, "A granary", [
+        { type: buildingModifiers.resourceBonus, resources: [resources.wheat], bonus: { food: 1 } }
+    ]),
+    watermill: new Building("Watermill", "watermill", [requirements.river], { production: 1, food: 1 }, "A watermill", [])
 }
 
 var features = {
@@ -680,7 +793,7 @@ var productionTileIcon = new THREE.Mesh(
         alphaMap: hexagonAlpha, transparent: true, opacity: .4, depthWrite: false
     })
 )
-productionTileIcon.position.z = maxDepth + .02
+productionTileIcon.position.z = .02
 
 var cultureTargetIcon = new THREE.Sprite(new THREE.SpriteMaterial({
     map: new THREE.TextureLoader().load("culture.png"),
@@ -689,8 +802,13 @@ var cultureTargetIcon = new THREE.Sprite(new THREE.SpriteMaterial({
 cultureTargetIcon.position.z = .02
 cultureTargetIcon.scale.set(2, 2, 2)
 
-var tileMeshGeometry = new THREE.ExtrudeBufferGeometry(hexagonShape, { depth: maxDepth, bevelEnabled: false })
-var tileMeshMaterial = new THREE.MeshLambertMaterial({ color: "#050505" })
+var attackOverlay = new THREE.Mesh(
+    hexagonGeometry, new THREE.MeshBasicMaterial({
+        map: new THREE.TextureLoader().load("attack-indicator.png"),
+        alphaMap: new THREE.TextureLoader().load("attack-indicator-alpha.png"), transparent: true, opacity: 1, depthWrite: false
+    })
+)
+attackOverlay.scale.set(.8, .68, 1);
 
 function addYields(y1, y2) {
     var final = {}
@@ -712,16 +830,21 @@ function renderReachable(unit) {
             e.tile.reachableOverlay = new THREE.Mesh(hexagonGeometry, overlayMaterial)
             e.tile.reachableOverlay.reachablePos = e.tile.position
             e.tile.reachableOverlay.reachableDistance = e.distance
-            e.tile.reachableOverlay.position.z = maxDepth + .08
-            e.tile.mesh.add(e.tile.reachableOverlay)
+            e.tile.reachableOverlay.position.z = .08
+            e.tile.face.add(e.tile.reachableOverlay)
 
             e.tile.reachableBorders = []
             directions.forEach(function (d, index) {
                 if (!reachable.map(x => x.tile).includes(t(e.tile, d))) {
                     e.tile.reachableBorders.push(reachableBorders[index].clone())
-                    e.tile.mesh.add(e.tile.reachableBorders[e.tile.reachableBorders.length - 1])
+                    e.tile.face.add(e.tile.reachableBorders[e.tile.reachableBorders.length - 1])
                 }
             })
+
+            if (e.tile.differentPlayerOnTile(unit.player)) {
+                e.tile.attackOverlay = attackOverlay.clone()
+                e.tile.face.add(e.tile.attackOverlay)
+            }
         })
     }
 }
@@ -733,24 +856,31 @@ function hideReachable() {
 
     reachableIsRendered = false
     tiles.forEach(z => z.forEach(function (e) {
-        e.mesh.remove(e.reachableOverlay)
+        e.face.remove(e.reachableOverlay)
         e.reachableOverlay = undefined
-        e.reachableBorders.forEach(x => e.mesh.remove(x))
+        e.reachableBorders.forEach(x => e.face.remove(x))
         e.reachableBorders = []
+        if (e.attackOverlay != undefined) {
+            e.face.remove(e.attackOverlay)
+            e.attackOverlay = undefined
+        }
     }))
     renderer.renderLists.dispose();
 }
 
 var notifications = [
-    new Notification("City Production", "notifications/production.png", function (p) {
-        return p.settlements.filter(x => x.producingID == undefined).length > 0
-    }, function () {
+    new Notification("City Production", "notifications/production.png", function (player) {
+        if (player.settlements != undefined) {
+            return player.settlements.filter(x => x.producingID == undefined).length > 0
+        }
+    }, function () { // on activation
         Settlement.changeCityInfoPanel(0)
         activePlayer.settlements.filter(x => x.producingID == undefined)[0].displayInfo()
         activePlayer.settlements.filter(x => x.producingID == undefined)[0].tile.centerCameraOnTile()
-    }), new Notification("Unit Movement", "notifications/unit.png", function (p) {
+    }),
+    new Notification("Unit Movement", "notifications/unit.png", function (p) {
         return p.units.filter(x => !x.disabled).length > 0
-    }, function () {
+    }, function () { // on activation
         var targetUnit = activePlayer.units.filter(x => !x.disabled)[0]
 
         if (selectedUnits.length == 1 && activePlayer.units.filter(x => !x.disabled).includes(selectedUnits[0])) {
@@ -762,7 +892,7 @@ var notifications = [
         }
 
         if (targetUnit != undefined) {
-            targetUnit.tile().centerCameraOnTile()
+            targetUnit.tile.centerCameraOnTile()
             targetUnit.select()
         } else {
             activePlayer.updateNotifications()
@@ -772,18 +902,18 @@ var notifications = [
 
 var actions = {
     wait: new Action("Wait", "wait.png", function () {
-        if (selectedUnits.length == 1) {
-            selectedUnits[0].wait()
+        for (var i = selectedUnits.length - 1; i >= 0; i--) {
+            selectedUnits[i].wait()
         }
     }),
     sleep: new Action("Sleep", "sleep.png", function () {
-        if (selectedUnits.length == 1) {
-            selectedUnits[0].sleep()
+        for (var i = selectedUnits.length - 1; i >= 0; i--) {
+            selectedUnits[i].sleep()
         }
     }),
     wakeUp: new Action("Wake Up", "wake.png", function () {
-        if (selectedUnits.length == 1) {
-            selectedUnits[0].wakeUp()
+        for (var i = selectedUnits.length - 1; i >= 0; i--) {
+            selectedUnits[i].wakeUp()
         }
     }),
     merge: new Action("Merge", "merge.png", function () {
@@ -799,22 +929,34 @@ var actions = {
         }
     }),
     move: new Action("Move", "move.png", function () {
-        if (selectedUnits.length == 1) {
+        if (Unit.selectedUnitsHaveSameMovement() && Unit.selectedUnitsOnSameTile()) {
             selectedUnits[0].moveButton()
         }
     })
 }
 
 var unitClasses = {
-    infantry: new UnitClass("Infantry", false),
-    ship: new UnitClass("Ship", false),
-    settler: new UnitClass("Settler", false)
+    infantry: new UnitClass("Infantry", 2, false),
+    lightCavalry: new UnitClass("Light Cavalry", 4, false),
+    heavyCavalry: new UnitClass("Heavy Cavalry", 3, false),
+    ranged: new UnitClass("Ranged", 2, false),
+    artillery: new UnitClass("Artillery", 2, false),
+    settler: new UnitClass("Settler", 2, false),
+    trader: new UnitClass("Trader", 1, false)
 }
 
+frontlineClasses = [unitClasses.infantry, unitClasses.lightCavalry, unitClasses.heavyCavalry]
+backlineClasses = [unitClasses.ranged, unitClasses.artillery]
+supportClasses = [unitClasses.settler]
+
 var unitTypes = {
-    infantry: new UnitType("Infantry", unitClasses.infantry, "infantry.png"),
-    sea: new UnitType("Sea", unitClasses.ship, "sea.png"),
-    settler: new UnitType("Settler", unitClasses.settler, "settler.png")
+    warrior: new UnitType("Warrior", unitClasses.infantry, "warrior.png", 1, 4),
+    horseman: new UnitType("Horseman", unitClasses.lightCavalry, "horseman.png", 2, 4),
+    chariot: new UnitType("Chariot", unitClasses.heavyCavalry, "chariot.png", 3, 4),
+    slinger: new UnitType("Slinger", unitClasses.ranged, "slinger.png", 3, 3),
+    catapult: new UnitType("Catapult", unitClasses.artillery, "catapult.png", 4, 2),
+    settler: new UnitType("Settler", unitClasses.settler, "settler.png", 0, 1),
+    trader: new UnitType("Trader", unitClasses.trader, "", 1, 1)
 }
 
 var technologyTypes = {
@@ -825,7 +967,7 @@ var technologyTypes = {
 }
 
 var technologies = {
-    animalHusbandry: new Technology("Animal Husbandry", "animalhusbandry", technologyTypes.none, [unitTypes.sea]),
+    animalHusbandry: new Technology("Animal Husbandry", "animalhusbandry", technologyTypes.none, []),
     archery: new Technology("Archery", "archery", technologyTypes.none, []),
     astrology: new Technology("Astrology", "astrology", technologyTypes.none, []),
     bronzeWorking: new Technology("Bronze Working", "bronzeworking", technologyTypes.none, []),
@@ -842,48 +984,48 @@ technologies.bronzeWorking.prerequisites = [technologies.mining]
 technologies.irrigation.prerequisites = [technologies.pottery]
 technologies.wheel.prerequisites = [technologies.mining]
 
-var players = [new Player(), new Player()]
+var players = [new Civilization(), new Civilization(), new Animals()]
 activePlayer = players[0]
 
 var producibleTypes = {
-    develop: "develop",
-    clear: "clear",
-    unit: "unit"
+    develop: Symbol("develop"),
+    clear: Symbol("clear"),
+    unit: Symbol("unit"),
+    district: Symbol("district"),
+    building: Symbol("building")
 }
 
 var activeSelection = undefined
 var workedIcon = new THREE.Sprite(
-    new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load("worked.png"), transparent: true, depthTest: false })
+    new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load("worked.png"), depthTest: false })
 )
 
 var unworkedIcon = new THREE.Sprite(
-    new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load("unworked.png"), transparent: true, depthTest: false })
+    new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load("unworked.png"), depthTest: false })
 )
 
 var developIcon = new THREE.Sprite(
-    new THREE.SpriteMaterial({
-        map: new THREE.TextureLoader().load("actions/build.png"),
-        transparent: true, depthTest: false
-    })
+    new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load("actions/build.png"), depthTest: false })
 )
 
 var clearIcon = new THREE.Sprite(
-    new THREE.SpriteMaterial({
-        map: new THREE.TextureLoader().load("actions/clear.png"),
-        transparent: true, depthWrite: false
-    })
+    new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load("actions/clear.png"), depthWrite: false })
 )
 
-var tileIcons = [workedIcon, unworkedIcon, developIcon, clearIcon]
+var districtIcon = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: new THREE.TextureLoader().load("actions/district.png"), depthWrite: false })
+)
+
+var tileIcons = [workedIcon, unworkedIcon, developIcon, clearIcon, districtIcon]
 tileIcons.forEach(function (e) {
     e.scale.set(.5, .5, .5)
-    e.position.z = maxDepth + .3
+    e.position.z = .3
     e.position.y = .6
 })
 
 
-var mapSizeX = 70
-var mapSizeY = 50
+var mapSizeX = 50
+var mapSizeY = 35
 var tiles = []
 var flatArrayTiles = []
 for (var i = 0; i < mapSizeX; i++) {
@@ -1098,8 +1240,9 @@ var riversCreated = 0
 var riverSource
 for (var i = 0; i < 5000 && riversCreated < riversLimit; i++) {
     riverSource = randomTile()
-    if ((riverSource.depth > 2.2 || (riverSource.depth > 1 && Math.random() < chanceToGenerateRiverDespiteDepth))
-        && nearby(riverSource, 5).filter(x => x.hasRiver).length == 0) {
+    if (riverSource.depth > 1
+        && !nearby(riverSource, 3).some(x => x.hasRiver)
+        && !nearby(riverSource, 2).some(y => y.terrain.variety == terrainVariety.sea)) {
         if (!riverSource.hasRiver && setRiver(riverSource)) {
             setMountainRange(riverSource, 0)
         }
@@ -1147,13 +1290,7 @@ tiles.forEach(function (x) {
 
 tiles.forEach(function (x) {
     x.forEach(function (e) {
-        if (e.terrain == terrainTypes.ocean &&
-            ((t(e, "r").terrain != terrainTypes.ocean && (t(e, "r").terrain != terrainTypes.coast)) ||
-                (t(e, "l").terrain != terrainTypes.ocean && (t(e, "l").terrain != terrainTypes.coast)) ||
-                (t(e, "ur").terrain != terrainTypes.ocean && (t(e, "ur").terrain != terrainTypes.coast)) ||
-                (t(e, "ul").terrain != terrainTypes.ocean && (t(e, "ul").terrain != terrainTypes.coast)) ||
-                (t(e, "dr").terrain != terrainTypes.ocean && (t(e, "dr").terrain != terrainTypes.coast)) ||
-                (t(e, "dl").terrain != terrainTypes.ocean && (t(e, "dl").terrain != terrainTypes.coast)))) {
+        if (e.terrain == terrainTypes.ocean && directions.some(direction => t(e, direction).terrain != terrainTypes.ocean && t(e, direction).terrain != terrainTypes.coast)) {
             e.terrain = terrainTypes.coast
         }
     })
@@ -1194,7 +1331,7 @@ tiles.forEach(function (x) {
             var escape = false
             for (var i = 0; i < 5 && !escape; i++) {
                 var resource = randomValueObj(resources)
-                if (testRequirements(e, resource.requirements)) {
+                if (testRequirements(resource.requirements, e)) {
                     escape = true
                     e.resource = resource
                     if (e.terrain == terrainTypes.ocean) {
@@ -1212,7 +1349,7 @@ tiles.forEach(function (x) {
             var escape = false
             for (var i = 0; i < 500 && !escape; i++) {
                 var resource = randomValueObj(resources)
-                if (testRequirements(e, resource.requirements)
+                if (testRequirements(resource.requirements, e)
                     && !e.features.includes(features.mountain)
                     && e.terrain != terrainTypes.ice) {
                     escape = true
@@ -1226,7 +1363,7 @@ tiles.forEach(function (x) {
     })
 });
 
-players.forEach(function (p) {
+players.filter(x => x instanceof Civilization).forEach(function (p) {
     var esc = false
 
     while (!esc) {
@@ -1235,17 +1372,17 @@ players.forEach(function (p) {
         if ([terrainTypes.grasslands, terrainTypes.plains].includes(spawnPoint.terrain)
             && !spawnPoint.features.includes(features.mountain)
             && nearby(spawnPoint, 3).filter(x => x.resource != undefined).length > 4
-            && nearby(spawnPoint, 10).filter(x => x.getUnits().length > 0).length == 0) {
+            && nearby(spawnPoint, 10).filter(x => x.units.length > 0).length == 0) {
             var nearbyPoint
-            directions.forEach(function (d) {
-                if (t(spawnPoint, d).depth > 1 && !t(spawnPoint, d).features.includes(features.mountain)) {
-                    nearbyPoint = t(spawnPoint, d)
+            nearby(spawnPoint, 4).forEach(function(tile){
+                if(!nearby(spawnPoint, 3).includes(tile) && tile.depth > 1 && !tile.features.includes(features.mountain)) {
+                    nearbyPoint = tile
                 }
             })
 
             if (nearbyPoint != undefined) {
-                p.units.push(new Unit([unitTypes.settler, unitTypes.infantry], p, spawnPoint.position))
-                p.units.push(new Unit(unitTypes.infantry, p, nearbyPoint.position))
+                p.units.push(new Unit([unitTypes.settler, unitTypes.warrior], p, spawnPoint.position))
+                p.units.push(new Unit(unitTypes.settler, p, nearbyPoint.position))
                 esc = true
             }
         }
@@ -1268,10 +1405,10 @@ runner.position.set(0,0,0);
 
 var modelsToLoad = 6
 var modelsLoaded = false
-var settlement
+var districtModel
 loader.load('scene.gltf', function (gltf) {
-    settlement = gltf.scene;
-    settlement.rotation.x = Math.PI / 2
+    districtModel = gltf.scene;
+    districtModel.rotation.x = Math.PI / 2
 
     allModelsLoaded()
 }, function (xhr) { }, function (error) { });
@@ -1299,15 +1436,19 @@ function calculateBorders() {
         if (e.player != undefined) {
             if (e.borderMeshes != undefined && e.borderMeshes.length > 0) {
                 for (var i = 0; i < e.borderMeshes.length; i++) {
-                    e.mesh.remove(e.borderMeshes[i])
+                    e.face.remove(e.borderMeshes[i])
                 }
             }
             e.borderMeshes = []
             for (var d = 0; d < directions.length; d++) {
                 if (t(e, directions[d]).player != e.player) {
                     e.borderMeshes.push(ownerBorders[d].clone())
-                    e.mesh.add(e.borderMeshes[e.borderMeshes.length - 1])
-                    e.borderMeshes[e.borderMeshes.length - 1].material.color = e.player.borderColor
+                    e.face.add(e.borderMeshes.last())
+                    e.borderMeshes.last().material.color = e.player.borderColor
+
+                    e.borderMeshes.push(gradientBorders[d].clone())
+                    e.face.add(e.borderMeshes.last())
+                    e.borderMeshes.last().material = e.player.borderGradientMaterial
                 }
             }
         }
@@ -1323,8 +1464,8 @@ function cameraMove() {
 
     tiles.forEach(function (x) {
         x.forEach(function (e) {
-            e.mesh.position.x = (((2 * e.position.x + (e.position.y % 2 == 0 ? 0 : 1)) * Math.sqrt(3) / 2 * hexagonSize) + mapOffset.x) % maxOffsetX
-            e.mesh.position.y = (hexagonSize * 3 / 2 * e.position.y) + mapOffset.y - (activeSettlement == undefined ? (camera.position.z - minimumScrollIn) : 0)
+            e.face.position.x = (((2 * e.position.x + (e.position.y % 2 == 0 ? 0 : 1)) * Math.sqrt(3) / 2 * hexagonSize) + mapOffset.x) % maxOffsetX
+            e.face.position.y = (hexagonSize * 3 / 2 * e.position.y) + mapOffset.y - (activeSettlement == undefined ? (camera.position.z - minimumScrollIn) : 0)
         })
     })
 }
@@ -1340,10 +1481,11 @@ function nextTurnButton() {
 var delta
 var intersects
 function animate() {
+    stats.begin();
+
     delta = clock.getDelta()
     // annie.update(1000 * delta)
     // annieAlpha.update(1000 * delta)
-    requestAnimationFrame(animate);
     renderer.render(scene, camera);
     css2DRenderer.render(scene, camera);
     css3DRenderer.render(scene, camera);
@@ -1367,13 +1509,13 @@ function animate() {
         }
     }
 
-    if(activeTile != previousActiveTile){
+    if (activeTile != previousActiveTile) {
         Unit.displayPaths(selectedUnits, activeTile)
     }
 
     if (activeTile != undefined && cursor.lastMoved > .25) {
         tooltipTile.innerHTML = ""
-        tooltipTile.innerHTML += activeTile.getTooltip()
+        tooltipTile.innerHTML += activeTile.tooltip
         tooltipTile.style.left = cursor.x + "px"
         tooltipTile.style.top = cursor.y + "px"
         tooltipTile.style.opacity = "1"
@@ -1384,15 +1526,38 @@ function animate() {
         tooltipTile.style.transition = ".2s opacity"
     }
 
+    document.body.style.cursor = ""
     tiles.forEach(function (x) {
         x.forEach(function (e) {
             if (e.active) {
-                e.mesh.position.z = e.depth + Math.min(.1, e.mesh.position.z - e.depth + 0.1)
+                e.face.position.z = e.depth// + Math.min(.1, e.face.position.z - e.depth + 0.1)
+                if (e.attackOverlay != undefined) {
+                    e.attackOverlay.rotation.z += .05
+                }
+                if (e.attackOverlay != undefined || e.developIcon != undefined || e.clearIcon != undefined || e.districtIcon != undefined) {
+                    document.body.style.cursor = "pointer"
+                }
             } else {
-                e.mesh.position.z = e.depth + Math.max(0, e.mesh.position.z - e.depth - 0.1)
+                e.face.position.z = e.depth //+ Math.max(0, e.face.position.z - e.depth - 0.1)
+            }
+
+            if (e.active || (viewedSettlement != undefined && viewedSettlement.tiles.includes(e))) {
+                e.yieldHolderDIV.style.opacity = "1"
+            } else {
+                e.yieldHolderDIV.style.opacity = "0"
+            }
+
+            if (e.face.material != undefined && e.face.material.opacity < 1) {
+                e.face.material.opacity += .1
+                if (e.face.material.opacity >= 1) {
+                    e.face.material = e.terrain.material
+                }
             }
         })
     })
+
+    stats.end();
+    requestAnimationFrame(animate);
 }
 
 function allModelsLoaded() {
@@ -1408,8 +1573,9 @@ function allModelsLoaded() {
         modelsLoaded = true
         animate();
         cameraMove()
-        players[0].units[0].tile().centerCameraOnTile()
-        players[0].units[0].select()
+        players[0].units[0].tile.centerCameraOnTile()
+        players[0].units[0].foundSettlement()
+        players[0].units[1].foundSettlement()
         players[0].detectSeen()
         players[0].beginTurn()
         Settlement.changeCityInfoPanel(0)

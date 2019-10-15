@@ -40,29 +40,34 @@ class Tile {
 
         /** The Settlement found on this Tile. Create one using 'foundSettlement' */
         this.settlement = undefined
+
+        /** Whether or not the Tile is within sight range of the active Player's Units */
+        this.seen = false
+        
+        /** Yields added to the tile thanks to a building/district */
+        this.buildingYields = {}
     }
 
     /**
     * Initializes the graphical representation of the tile on the current map
     */
     initialize() {
-        /** The main body of the Tile that contains all the other meshes related to it. Placed in the scene upon being seen by the active player. */
-        this.mesh = new THREE.Mesh(tileMeshGeometry, tileMeshMaterial);
-        /** A variable accessed after the raycast collides with a Tile to determine where it is within the main Map array */
-        this.mesh.gamePosition = this.position
-
         /** Used to show the texture of the Tile's terrain type ontop of the main mesh */
         this.face = new THREE.Mesh(hexagonGeometry);
-        this.face.material = this.terrain.material
-        this.mesh.add(this.face)
+        this.face.gamePosition = this.position
+        this.face.position.z = this.depth
 
         /** The meshes with the textures of each branch of river on the tile */
         this.riverMeshes = []
-        if (this.hasRiver && this.riverDirections.filter(x => x).length > 0) { // check to see if both 'riverDirections' and 'hasRiver' indicate that a river needs to be rendered
+        if (this.hasRiver && this.riverDirections.some(x => x)) { // check to see if both 'riverDirections' and 'hasRiver' indicate that a river needs to be rendered
             // for each direction, see if tile has a river pointing towards that direction then create its mesh and rotate it accordingly
             directions.forEach(function (d, index) {
                 if (this.riverDirections[index]) {
-                    this.riverMeshes.push(new THREE.Mesh(hexagonGeometry, riverMaterial))
+                    if(t(this, d).depth == 1){
+                        this.riverMeshes.push(new THREE.Mesh(hexagonGeometry, riverDeltaMaterial))
+                    } else {
+                        this.riverMeshes.push(new THREE.Mesh(hexagonGeometry, randomValue(riverMaterials)))
+                    }
                     this.riverMeshes.last().rotation.z = -Math.PI / 3 * index
                     // adding it to the face so that it automatically renders on top of the main mesh
                     this.face.add(this.riverMeshes.last())
@@ -76,7 +81,7 @@ class Tile {
             }
         } else {
             // if 'riverDirections' has a true value without 'hasRiver', then an error has occured during terrain generation
-            if (this.riverDirections.filter(x => x).length > 0) {
+            if (this.riverDirections.some(x => x)) {
                 this.riverDirections = [false, false, false, false, false, false]
                 console.warn("Error during terrain generation: 'riverDirections' set on tile without 'hasRiver' being true")
             }
@@ -107,8 +112,7 @@ class Tile {
         this.featureMeshes = []
         this.features.forEach(function (f) {
             this.featureMeshes.push(f.model.clone())
-            this.mesh.add(this.featureMeshes.last())
-            this.featureMeshes.last().position.z = maxDepth
+            this.face.add(this.featureMeshes.last())
             if (f.modelProperties.offsetZ != undefined) {
                 this.featureMeshes.last().position.z += f.modelProperties.offsetZ
             }
@@ -123,12 +127,11 @@ class Tile {
         this.resourceIcon = undefined
         if (this.resource != undefined) {
             this.resourceIcon = this.resource.icon.clone()
-            this.mesh.add(this.resourceIcon)
-            this.resourceIcon.position.z = maxDepth + .03
+            this.face.add(this.resourceIcon)
         }
 
         // Have to move the face up the full height of the mesh so that its at the top
-        this.face.position.z = maxDepth + .02
+        this.face.position.z = .02
 
         /** Borders which are generated when displaying Tiles a Unit can reach as part of the graphical indicator */
         this.reachableBorders = []
@@ -140,17 +143,17 @@ class Tile {
             cursor.active = false
         }
         this.buyLabel.onclick = function () {
-            if(activeSettlement.priceToBuyTile(this) <= activePlayer.accumulatedGold){
-                activePlayer.accumulatedGold -= activeSettlement.priceToBuyTile(this)
+            if (activeSettlement.priceToBuyTile(this) <= activePlayer.accumulatedCapital) {
+                activePlayer.accumulatedCapital -= activeSettlement.priceToBuyTile(this)
                 activeSettlement.acquireTile(this)
                 activePlayer.calculateYields()
                 activeSettlement.select("working")
                 activePlayer.updateTopbar()
             }
         }.bind(this)
-        /** The Gold icon that appears within the buy label */
+        /** The Capital icon that appears within the buy label */
         this.buyLabelIcon = document.createElement("IMG")
-        this.buyLabelIcon.src = "yields/gold_5.png"
+        this.buyLabelIcon.src = "yields/capital.png"
         this.buyLabel.appendChild(this.buyLabelIcon)
         /** The price text that appears within the buy label */
         this.buyLabelPrice = document.createElement("DIV")
@@ -163,18 +166,25 @@ class Tile {
         this.buyLabel2D.position.y = .5
 
         this.unitIconHolderDIV = document.createElement("DIV")
-        this.unitIconHolder = new THREE.CSS3DSprite(this.unitIconHolderDIV)
-        this.unitIconHolder.scale.set(.013, .013, .013)
+        this.unitIconHolder = new THREE.CSS2DObject(this.unitIconHolderDIV)
+        this.unitIconHolder.scale.set(.015, .015, .015)
         this.face.add(this.unitIconHolder)
-        this.unitIconHolder.rotation.x = Math.PI / 2
         this.unitIconHolder.position.z = .16
         this.unitIconHolder = unitIconHoverAboveTile
         this.unitIconHolderDIV.className = "unit-icon-holder"
-        this.unitIconHolderDIV.onmouseup = function(){
+        this.unitIconHolderDIV.onmouseup = function () {
             cursor.active = false
         }
 
+        this.yieldHolderDIV = document.createElement("DIV")
+        this.yieldHolder = new THREE.CSS2DObject(this.yieldHolderDIV)
+        this.face.add(this.yieldHolder)
+        this.yieldHolder.position.z = .1
+        this.yieldHolderDIV.className = "tile-yield-holder"
+
         this.pathMeshes = []
+
+        this.cultureInfluence = new Dictionary()
 
         this.calculateYields()
     }
@@ -183,7 +193,7 @@ class Tile {
     * Returns an array of all the Units with the same position as the tile.
     * @return {array} All the Units that are occupying this tile.
     */
-    getUnits() {
+    get units() {
         var final = []
         players.forEach(p => p.units.forEach(function (u) {
             if (u.pos.x == this.position.x && u.pos.y == this.position.y) {
@@ -197,8 +207,8 @@ class Tile {
      * @return {boolean} Whether or not this Tile can have a Settlement founded on it
     */
     canFoundSettlement() {
-        return nearby(this, 3).filter(x => x.settlement != undefined).length == 0 
-               && this.terrain.variety == terrainVariety.land
+        return nearby(this, 3).every(x => x.settlement == undefined)
+            && this.terrain.variety == terrainVariety.land
     }
 
     /**
@@ -215,7 +225,7 @@ class Tile {
     * @param {Feature} feature The specific Feature being cleared from the tile.
     */
     clearFeature(feature) {
-        this.mesh.remove(this.featureMeshes[this.features.indexOf(feature)])
+        this.face.remove(this.featureMeshes[this.features.indexOf(feature)])
         this.featureMeshes.splice(this.features.indexOf(feature), 1)
         this.features.splice(this.features.indexOf(features), 1)
         this.calculateYields() // Features affect tile yields, so must reevaluate immediately
@@ -234,7 +244,7 @@ class Tile {
      * Removes the Resource present on a tile then updates its yield.
     */
     clearResource() {
-        this.mesh.remove(this.resourceIcon)
+        this.face.remove(this.resourceIcon)
         this.resourceIcon = undefined
         this.resource = undefined
         this.calculateYields() // Resources affect tile yields, so must reevaluate immediately
@@ -244,38 +254,42 @@ class Tile {
      * Founds a new Settlement on this tile, clearing all of its Features and its Resource then recalculating its yields
      */
     foundSettlement() {
-        this.settlement = new Settlement(this.position, activePlayer)
         this.switchOwnership(activePlayer)
+        this.settlement = new Settlement(this.position, this.player)
         this.player.settlements.push(this.settlement)
-        this.settlement.tiles.push(this)
 
-        this.settlement.model.position.z = maxDepth
+        nearby(this, 1).forEach(function (tile) {
+            tile.switchOwnership(this.player)
+            this.settlement.tiles.push(tile)
+        }.bind(this))
 
-        for (var i = 0; i < directions.length; i++) {
-            t(this, directions[i]).switchOwnership(activePlayer)
-            this.settlement.tiles.push(t(this, directions[i]))
-        }
-
-        this.clearAllFeatures()
-        this.clearResource()
         this.calculateYields()
-        activePlayer.detectSeen()
-        activePlayer.updateNotifications()
+        this.player.detectSeen()
+        this.player.updateNotifications()
         this.player.calculateYields()
     }
 
     /**
-     * Changes the owner of the Tile to another Player, then refreshes visiblel borders accordingly
+     * Changes the owner of the Tile to another Player, then refreshes visible borders accordingly
      * @param {Player} player The Player which will become the new owner
      */
     switchOwnership(player) {
-        this.player = player
+        players.forEach(x => this.cultureInfluence.setValue(x, 0))
+        this.cultureInfluence.setValue(player, 100)
+        this.updateOwnership()
+    }
 
-        if (this.ownerOverlay == undefined) {
-            this.ownerOverlay = new THREE.Mesh(hexagonGeometry, this.player.overlayMaterial);
-            this.ownerOverlay.gamePosition = this.position
-            this.ownerOverlay.position.z = maxDepth + .025
-            this.mesh.add(this.ownerOverlay)
+    updateOwnership(){
+        if(this.settlement){
+            this.player = this.settlement.player
+        } else {
+            var topPlayer = players[0]
+            players.forEach(x => {
+                if(this.cultureInfluence.getValue(x) > this.cultureInfluence.getValue(topPlayer)){
+                    topPlayer = x
+                }
+            })
+            this.player = topPlayer
         }
 
         calculateBorders()
@@ -285,7 +299,7 @@ class Tile {
      * Gives the string used when displaying a Tile's tooltip
      * @return {string} The tooltip text for the Tile
      */
-    getTooltip() {
+    get tooltip() {
         var final = this.terrain.name + " (" + this.position.x + "," + this.position.y + ")<br>" + (this.hasRiver ? "River<br>" : "")
         for (var i = 0; i < this.features.length; i++) {
             final += this.features[i].name + "<br>"
@@ -301,7 +315,7 @@ class Tile {
      * Generates a string version of the Tile's data that can be used to save to localStorage
      * @return {string} The data of the Tile in a string format to be parsed
      */
-    getString() {
+    get string() {
         var finalString = ""
         finalString += this.position.x
         finalString += ","
@@ -325,7 +339,7 @@ class Tile {
      * Returns the Development that would be appropriate for the Tile with its current Features, Terrain, and Resource status. Used to update its Development.
      * @returns {Development} The Tile's appropriate Development
      */
-    getDevelopment() {
+    get plannedDevelopment() {
         var final
         if (this.terrain.name.includes("Hill")) {
             final = developments.quarry
@@ -359,8 +373,8 @@ class Tile {
     }
 
     updateDevelopment() {
-        if (this.getDevelopment()) {
-            this.development = this.getDevelopment()
+        if (this.plannedDevelopment) {
+            this.development = this.plannedDevelopment
         } else {
             return
         }
@@ -380,63 +394,100 @@ class Tile {
     /** Sets the development model to the current improvement of the tile or removes it */
     renderCurrentDevelopment() {
         if (!this.developed) {
-            this.mesh.remove(this.developmentModel)
+            this.face.remove(this.developmentModel)
             this.developmentModel = undefined
         } else {
             this.developmentModel = improvement.clone()
             this.developmentModel.scale.set(.005, .005, .005)
             this.developmentModel.rotation.y = Math.random() * Math.PI * 2
-            this.mesh.add(this.developmentModel)
-            this.developmentModel.position.z = maxDepth
+            this.face.add(this.developmentModel)
         }
 
     }
 
     calculateYields() {
-        var me = this
-        if (this.yieldIcons != undefined) {
-            this.yieldIcons.forEach(function (x) { me.mesh.remove(x); x = undefined })
-        }
-        this.yieldIcons = []
-
         this.yields = Object.assign({}, this.terrain.yields)
         if (this.features.includes(features.forest)) {
-            this.yields = addYields(this.yields, { production: 1 })
+            this.addYield({ production: 1 })
         }
         if (this.features.includes(features.savanna)) {
-            this.yields = addYields(this.yields, { food: 1 })
+            this.addYield({ food: 1 })
         }
         if (this.hasRiver) {
-            this.yields = addYields(this.yields, { food: 1 })
+            this.addYield({ food: 1 })
         }
 
-        if (this.getDevelopment() && this.developed && this.development != this.getDevelopment()) {
-            this.development = this.getDevelopment()
+        if (this.plannedDevelopment && this.developed && this.development != this.plannedDevelopment) {
+            this.development = this.plannedDevelopment
         } else if (this.developed) {
             this.clearDevelopment
         }
 
         if (this.developed) {
-            this.yields = addYields(this.yields, this.development.yields)
+            this.addYield(this.development.yields)
         }
 
         if (this.resource != undefined && this.resource.development == this.development) {
-            this.yields = addYields(this.yields, this.resource.yields)
+            this.addYield(this.resource.yields)
         }
 
-        if (this.features.includes(features.mountain) || this.features.includes(features.mesa) || this.settlement != undefined) {
+        if (this.features.includes(features.mountain) || this.features.includes(features.mesa) || this.district) {
             this.yields = {}
         }
 
-        for (var i = 0; i < Object.keys(this.yields).length; i++) {
-            this.yieldIcons.push(yields[Object.keys(this.yields)[i]].yieldIcons[Math.min(4, this.yields[Object.keys(this.yields)[i]] - 1)].clone())
-            this.yieldIcons[i].position.z = maxDepth + .1
-            this.mesh.add(this.yieldIcons[i])
-            this.yieldIcons[i].position.x = yieldWidth * (i - ((Object.keys(this.yields).length - 1) / 2))
-        }
+        this.addYield(this.buildingYields)
+
+        this.renderYieldIcons()
     }
 
-    clearPathMeshes(){
+    addYield(addition) {
+        this.yields = addYields(this.yields, addition)
+    }
+
+    addBuildingYields(addition){
+        this.buildingYields = addYields(this.buildingYields, addition)
+    }
+
+    resetBuildingYields(){
+        this.buildingYields = {}
+    }
+
+    renderYieldIcons() {
+        this.yieldHolderDIV.innerHTML = ""
+        Object.keys(this.yields).forEach(y => {
+            var yieldIcon = document.createElement("DIV")
+            var yieldIconText = document.createElement("SPAN")
+            yieldIconText.innerHTML = this.yields[y]
+            yieldIcon.appendChild(yieldIconText)
+            yieldIcon.className = "yield-icon-" + y
+            this.yieldHolderDIV.appendChild(yieldIcon)
+        })
+    }
+
+    displayAsSeen() {
+        this.seen = true
+        if (!this.hasBeenAdded) {
+            scene.add(this.face)
+            this.face.material = this.terrain.material.clone()
+            this.face.material.opacity = 0
+            this.hasBeenAdded = true
+        } else {
+            this.face.material = this.terrain.material
+        }
+        this.renderYieldIcons()
+    }
+
+    displayAsNotSeen() {
+        this.seen = false
+        this.face.material = this.terrain.materialDark
+        this.renderYieldIcons()
+    }
+
+    differentPlayerOnTile(player) {
+        return this.units.some(x => x.player != player)
+    }
+
+    clearPathMeshes() {
         this.pathMeshes.forEach(mesh => this.face.remove(mesh))
         this.pathMeshes = []
     }
