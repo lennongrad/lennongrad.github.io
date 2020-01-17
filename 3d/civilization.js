@@ -1,6 +1,6 @@
 class Civilization extends Player {
-    constructor() {
-        super()
+    constructor(map) {
+        super(map)
 
         this.settlements = []
         this.borderColor = new THREE.Color(adjustBrightness(this.color, 5))
@@ -144,13 +144,14 @@ class Civilization extends Player {
         }.bind(this))
 
         if (this == players[0]) {
-            tiles.forEach(x => x.forEach(function (tile) {
+            this.worldMap.forEach(tile => {
                 if (this.seen.includes(tile)) {
                     tile.displayAsSeen()
                 } else {
                     tile.displayAsNotSeen()
                 }
-            }.bind(this)))
+            })
+            this.worldMap.drawMap()
         }
     }
 

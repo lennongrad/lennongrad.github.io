@@ -22,15 +22,43 @@ class Yield {
     }
 }
 
+//var testBump = new THREE.TextureLoader().load("testBump.png")
+
 class Terrain {
-    constructor(name, texture, variety, yields) {
+    constructor(name, texture, elevationTexture, variety, yields, colour) {
         this.name = name
-        this.textureFilename = texture
-        this.texture = new THREE.TextureLoader().load(texture)
-        this.material = new THREE.MeshBasicMaterial({ alphaMap: hexagonAlpha, transparent: true, depthWrite: false, opacity: 1, map: this.texture })
-        this.materialDark = new THREE.MeshBasicMaterial({ alphaMap: hexagonAlpha, color: "#555", transparent: true, opacity: 1, depthWrite: false, map: this.texture })
+
+        this.textureFilename = "terrain2/" + texture
+
+        this.material = []
+        this.materialDark = []
+        directions.forEach((direction, index) => {
+            var texture = new THREE.TextureLoader().load(this.textureFilename)
+            texture.rotation = index * Math.PI / 3
+            texture.center = new THREE.Vector2(.5, .5)
+            this.material.push(new THREE.MeshBasicMaterial({ 
+                alphaMap: hexagonAlphaRotations[index],/* bumpScale: 2, bumpMap: testBump,*/ transparent: true, depthWrite: false, opacity: 1, map: texture }))
+            this.materialDark.push(new THREE.MeshBasicMaterial({ 
+                alphaMap: hexagonAlphaRotations[index], color: "#555", transparent: true, opacity: 1, depthWrite: false, map: texture }))
+        })
+
+        if(variety == terrainVariety.land){
+            this.elevationTextureFilename = "terrain2/" + elevationTexture + "-strip.png"
+            this.elevationTexture = new THREE.TextureLoader().load(this.elevationTextureFilename)
+            this.elevationMaterial = new THREE.MeshBasicMaterial({ map: this.elevationTexture, side: THREE.DoubleSide, alphaMap: stripAlpha, transparent: true, color: "#fff", opacity: 1 })
+            this.elevationMesh = new THREE.Mesh(
+                new THREE.ShapeBufferGeometry(elevationShape, { }),
+                this.elevationMaterial
+            )
+            this.elevationMeshVertical = new THREE.Mesh(
+                new THREE.ShapeBufferGeometry(elevationShapeVertical, { }),
+                this.elevationMaterial
+            )
+        }
+
         this.variety = variety
         this.yields = yields
+        this.colour = colour
     }
 }
 
@@ -189,15 +217,19 @@ class Technology {
             elementType.appendChild(elementTypeTitle)
             elementInfo.appendChild(elementType)
         }
+        this.element.appendChild(elementInfo)
+
+        var elementTurnsInfo = document.createElement("DIV")
+        elementTurnsInfo.className = "science-row-info-turns"
         this.elementTurns = document.createElement("SPAN")
         this.elementTurns.className = "science-row-turns"
         this.elementTurns.innerHTML = 0
-        elementInfo.appendChild(this.elementTurns)
+        elementTurnsInfo.appendChild(this.elementTurns)
         var elementTurnsIcon = document.createElement("IMG")
         elementTurnsIcon.className = "science-row-turns-icon"
         elementTurnsIcon.src = "clock.png"
-        elementInfo.appendChild(elementTurnsIcon)
-        this.element.appendChild(elementInfo)
+        elementTurnsInfo.appendChild(elementTurnsIcon)
+        this.element.appendChild(elementTurnsInfo)
 
         this.element.onclick = function(){
             activePlayer.chooseTechnology(this.getAttribute("indexInPicks"))
@@ -233,5 +265,30 @@ class Building{
         } else {
             return false
         }
+    }
+}
+
+class Troop{
+    constructor(type, unit){
+        this.type = type
+        this.constitution = type.constitution
+        this.unit = unit
+    }
+
+    takeDamage(damage){
+        this.constitution -= damage
+        this.unit.updateInfo()
+        if(this.constitution <= 0){
+            this.die()
+        }
+    }
+
+    die(){
+        this.unit.troops.splice(this.unit.troops.indexOf(this), 1)
+        this.unit.die()
+    }
+
+    get strength(){
+        return this.type.strength
     }
 }

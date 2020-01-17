@@ -7,7 +7,12 @@ body{
     overflow-x: hidden;
     overflow-y: hidden;
     padding: 0px;
-    margin: 0px
+    margin: 0px;
+    font-family: 'Roboto'
+}
+
+img[src*="yields"] {
+    border-radius: 3px;
 }
 
 .cssRenderer{
@@ -51,15 +56,17 @@ body{
     transform: translate(20px, -50%);
 }
 
-#nextturn{
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 215px;
-    height: 215px;
-    transform: translate(21%, 21%);
-    z-index: 5;
-    filter: drop-shadow(0px 0px 5px black);
+#nextturn {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 15vw;
+	height: 15vw;
+	transform: translate(21%, 21%);
+	z-index: 5;
+	filter: drop-shadow(0px 0px 5px black);
+	max-width: 200px;
+	max-height: 200px;
 }
 
 #nextturn:after{
@@ -88,14 +95,13 @@ body{
     filter: brightness(1.3) drop-shadow(0px 0px 5px black)
 }
 
-#nextturn-cover{
-    position: relative;
-    top: 50%;
-    left: 50%;
-    width: 185px;
-    height: 185px;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
+#nextturn-cover {
+	position: relative;
+	top: 50%;
+	left: 50%;
+	width: 85%;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
 }
 #nextturn-cover[src*="waiting"]{
     animation: rotate 8s infinite linear
@@ -105,38 +111,47 @@ body{
   to {transform: translate(-50%, -50%) rotate(1800deg)}
 }
 
-#unitactions{
-    position: absolute;
-    bottom: 0;
+#unitactions {
+	position: absolute;
+	bottom: 70px;
     height: 90px;
-    padding-left: 30px;
-    padding-right: 90px;
-    background: url("unitActions-back.png");
-    background-size: 100% 90px;
-    text-align: right;
-    -moz-user-select: none;
-    user-select: none;
-    transition: .25s;
-    line-height: 90px;
-    z-index: 4;
-    filter: drop-shadow(0px 0px 5px black);
+    left: -15px;
+	padding-left: 30px;
+	padding-right: 90px;
+	background-size: 100% 90px;
+	text-align: right;
+	-moz-user-select: none;
+	user-select: none;
+	transition: .25s;
+	line-height: 90px;
+	z-index: 4;
+	filter: drop-shadow(0px 0px 5px black);
 }
 
-#unitactions div{
-    display: inline-block;
-    background: url("glassBack.png"), darkslateblue;
-    background-size: contain;
-    border-radius: 100%;
-    padding: 4px;
-    margin-right: 10px;
-    transition: .1s;
-    width: 65px;
-    height: 65px;
-    vertical-align:middle;
-    line-height: 65px;
-    text-align: middle;
-    filter: drop-shadow(0px 0px 3px black);
-    cursor: pointer;
+#unitactions div {
+	display: inline-block;
+	background: url("glassBack.png"), linear-gradient(to bottom, #6458b0, #201a4d);
+	background-size: cover;
+	border-radius: 100%;
+	padding: 4px;
+	margin-right: 10px;
+	transition: .1s;
+	width: 45px;
+	height: 45px;
+	vertical-align: middle;
+	line-height: 45px;
+	filter: drop-shadow(0px 0px 3px black);
+	cursor: pointer;
+	border: 4px solid #463c33;
+	background-repeat: no-repeat;
+}
+
+#unitactions div:after{
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 50%;
+    background-color: black
 }
 
 #unitactions div[inactive="true"]{
@@ -159,23 +174,24 @@ body{
     vertical-align: middle;
 }
 
-.district-label{
-    position: absolute;
-    left: 50%;
-    top: -45px;
-    transform: translateX(-50%);
-    border-radius: 50px;
-    opacity: .9;
-    padding: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-    cursor: pointer;
-    pointer-events: all;
-    font-size: 15px;
-    font-family: 'Cinzel', sans-serif;
-    color: white;
-    text-shadow: 0 0 5px black;
-    filter: drop-shadow(2px 2px 2px black);
+.district-label {
+	position: absolute;
+	left: 50%;
+	top: -45px;
+	transform: translateX(-50%);
+	border-radius: 50px;
+	opacity: .9;
+	padding: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	cursor: pointer;
+	pointer-events: all;
+	font-size: 16px;
+	font-family: 'Cinzel', sans-serif;
+	color: white;
+	text-shadow: 0 0 1px black, 0 0 5px black;
+	filter: drop-shadow(2px 2px 2px black);
+	font-weight: bold;
 }
 .district-label:hover{
     filter: brightness(.85) drop-shadow(2px 2px 4px black);
@@ -185,7 +201,6 @@ body{
 }
 
 .city-label{
-    width: 185px;
     height: 40px;
     border-radius: 50px;
     filter: drop-shadow(2px 2px 2px black);
@@ -201,20 +216,20 @@ body{
     filter: drop-shadow(2px 2px 4px black);
 }
 
-.city-label-name{
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: calc(100% - 40px);
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    color: white;
-    font-size: 15px;
-    font-family: 'Cinzel', sans-serif;
-    cursor: pointer;
-    text-shadow: 0 0 5px black, 0 0 5px black
+.city-label-name {
+	left: 50%;
+	top: 50%;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	color: white;
+	font-size: 16px;
+	font-family: 'Cinzel', sans-serif;
+	cursor: pointer;
+	text-shadow: 0 0 1px black, 0 0 5px black;
+    font-weight: bold;
+    padding-left: 25px;
+    padding-right: 25px;
 }
 
 .city-label-name:hover{
@@ -238,12 +253,11 @@ body{
     cursor: pointer;
 }
 .city-label-pop{
-    left: 22px;
     transform: translate(-50%, -50%);
     color: green;
 }
 .city-label-prod{
-    right: 22px;
+    right: 0;
     transform: translate(50%, -50%);
     color: orange;
 }
@@ -274,13 +288,14 @@ body{
     border-radius: 100%;
     width: 40px;
     height: 40px;
+    z-index: -1;
 }
 .city-label-left-circle{
-    left: 22px;
+    left: 0;
     transform: translate(-50%, -50%);
 }
 .city-label-right-circle{
-    right: 22px;
+    right: 0;
     transform: translate(50%, -50%);
 }
 
@@ -301,13 +316,27 @@ body{
     clip-path: polygon(50% 0, 0 0, 0 100%, 50% 100%)
 }
 
-.city-yields-category{
-    position: relative;
-    width: calc(100% - 2px);
-    height: 60px;
-    border: 1px solid white;
-    font-size: 18px;
-    box-shadow: 0 0 5px inset rgba(0,0,0,.8);
+#city-yields {
+	text-align: right;
+	padding-right: 2px;
+	color: white;
+    margin-right: 24px;
+    height: 4.2vh;
+    line-height: 4.2vh;
+}
+
+.city-yields-category {
+	height: 1vw;
+	border: 1px solid grey;
+	font-size: .85vw;
+	box-shadow: 0 0 5px inset rgba(0,0,0,.8);
+	display: inline-block;
+	margin: -2px;
+	padding: 4px;
+	vertical-align: middle;
+	line-height: 1vw;
+    border-radius: 4px;
+    font-family: 'Copse';
 }
 .city-yields-category:hover{
     filter: brightness(1.2)
@@ -317,35 +346,27 @@ body{
 }
 #city-yields-capital{
     background: url("halftone.png"), #666934;
-    height:35px;
 }
 #city-yields-commerce{
     background: url("halftone.png"), #693434;
-    height:35px;
 }
 #city-yields-culture{
     background: url("halftone.png"), #693456;
 }
 #city-yields-science{
     background: url("halftone.png"), #343769;
-    height:35px;
 }
 #city-yields-production{
     background: url("halftone.png"), #694f34;
 }
 
-.city-yields-category img{
-    width: 20px;
-    height: 20px;
-    vertical-align: middle
-}
-
-.city-yields-category span{
-    vertical-align: middle;
+.city-yields-category img {
+	width: 1.25vw;
+	vertical-align: middle;
+	max-width: 20px;
 }
 
 .city-yields-category div{
-    position: absolute;
 }
 
 .city-yields-count{
@@ -379,39 +400,33 @@ body{
     top: 5px;
 }
 
-#city-info-header, #city-info-footer{
-    position: absolute;
-    bottom: 99%;
-    right: 0;
-    transition: .3s;
-    width: calc(100% + 10px);
-    height: 40px;
-    line-height: 2vw;
-    text-align: right;
-    background: url("cityinfobar.png");
-    background-size: 100% 100%;
-    color: black;
-    z-index: 15;
-    padding-right: 10px;
+#city-info-header, #city-info-footer {
+	position: relative;
+	right: 30px;
+	transition: .3s;
+	width: calc(100% + 20px);
+	height: 4.2vh;
+	line-height: 2vw;
+	text-align: right;
+	background: url("cityinfobar.png");
+	background-size: 100% 100%;
+	color: black;
+	z-index: 15;
+	padding-right: 10px;
 }
 
-#city-info-header div {
-    position: absolute;
-    left: 30px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 18px;
-    text-shadow: 0 0 1px white;
-    color: black;
-    font-weight: bold;
+#city-info-header-title {
+	position: absolute;
+	left: 45px;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 18px;
+	text-shadow: 0 0 1px white;
+	color: black;
+	font-weight: bold;
 }
 
-#city-info-footer{
-    top: 99%;
-    bottom: 0;
-}
-
-#city-info-footer div{
+.city-info-footer-flag{
     position: relative;
     width: 25px;
     height: 60px;
@@ -424,12 +439,12 @@ body{
 }
 
 
-#city-info-footer div:hover{
+.city-info-footer-flag:hover{
     height: 65px;
     filter: brightness(.85);
 }
 
-#city-info-footer div[currentPanel="true"], #city-info-footer div[currentPanel="true"]:hover{
+.city-info-footer-flag[currentPanel="true"], .city-info-footer-flag[currentPanel="true"]:hover{
     height: 70px;
 }
 
@@ -438,7 +453,7 @@ body{
     filter: brightness(.7)
 }
 
-#city-info-footer div img{
+.city-info-footer-flag img{
     position: absolute;
     bottom: 50%;
     left: 50%;
@@ -463,19 +478,32 @@ body{
     filter: brightness(1.6)
 }
 
-#city-info{
-    position: absolute;
-    top: 44px;
-    right: 0;
-    width: 18vw;
-    z-index: 14;
-    text-align: center;
-    box-shadow: 0px 0px 5px 1px white;
-    transition: .3s;
-    transform: translateY(-5px);
+#city-info {
+	position: absolute;
+	top: 7px;
+	right: 0;
+	width: 20vw;
+	min-width: 300px;
+	z-index: 14;
+	text-align: center;
+	transition: .3s;
     color: white;
-    text-shadow: 0px 0px 2px black;
-    will-change: right;
+    text-shadow: 0px 0px 1px black, 0px 0px 1px black, 0px 0px 1px black, 0px 0px 1px black, 0px 0px 1px black;
+	will-change: right;
+    filter: drop-shadow(0 0 1px black) drop-shadow(0 0 2px white);
+}
+
+#city-info-body{
+    height: 35vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-color: black white;
+    scrollbar-width: thin;
+}
+
+#city-production{
+    min-height: 100%;
+    background: url("subtle.png"), linear-gradient(to left, black, #333);
 }
 
 .city-production-item{
@@ -499,12 +527,14 @@ body{
     filter: brightness(.6)
 }
 
-.city-production-item-image{
-    width: 2.2vw;
-    height: 2.2vw;
-    padding: 5px;
-    padding-right: 8px;
-    background: linear-gradient(to right, black 0%, transparent)
+.city-production-item-image {
+	width: 3vw;
+	height: 3vw;
+	padding: 1px;
+	padding-right: 4px;
+    background: linear-gradient(to right, black 0%, transparent);
+    max-width: 40px;
+    max-height: 40px;
 }
 
 .city-production-item-image img{
@@ -513,17 +543,26 @@ body{
     filter: drop-shadow(2px 2px black);
 }
 
-.city-production-item-details{
+.city-production-item-cost, .city-production-item-name{
     position: absolute;
     top: 50%;
-    right: 10px;
     transform: translateY(-50%);
     text-align: right;
-    font-size: 1vw;
 }
 
-.city-production-item-name{
-    font-weight: bold
+.city-production-item-name {
+	font-weight: bold;
+	left: 3.4vw;
+    font-size: 1.3vw;
+}
+
+.city-production-item-cost {
+	position: absolute;
+	right: 10px;
+	width: 11vw;
+	top: 50%;
+	transform: translateY(-50%);
+    font-size: 1.05vw;
 }
 
 .city-production-item-cost span{
@@ -535,6 +574,7 @@ body{
     height: 16px;
     vertical-align: middle;
 }
+
 
 .city-district-item{
     position: relative;
@@ -578,7 +618,7 @@ body{
     position: absolute;
     top: 0;
     right: 0px;
-    width: 15.5vw;
+    width: calc(100% - 2vw);
     height: 2.5vw;
     background-color: #555;
     cursor: pointer;
@@ -597,9 +637,15 @@ body{
     text-shadow: 0 0 5px black;
 }
 
+#city-districts{
+    min-height: 100%;
+    background: url("subtle.png"), linear-gradient(to left, black, #333);
+}
+
 #city-districts-buildings {
     transition: .12s, .1s max-height;
     transform-origin: 50% 0;
+    padding: 5px;
 }
 
 #city-districts-list table{
@@ -609,40 +655,54 @@ body{
     border-spacing: 0;
     transition: .3s;
     transform-origin: 50% 0;
+    font-size: 1vw;
 }
 
 #city-districts-list td {
     padding: 2px;
 }
 
-#city-districts-list tr:first-child img {
-    width: 20px;
+#city-districts-list td:not(:first-child) {
+	border-left: 1px solid rgba(255, 255, 255, .3);
 }
 
-tr:last-child td {
+#city-districts-list tr:first-child img {
+    width: 20px;
+    vertical-align: middle;
+}
+
+#city-districts-list tr:last-child td {
     border-top: 2px solid white;
     padding-top: 5px;
 }
 
-tr:nth-last-child(2) td {
+#city-districts-list tr:nth-last-child(2) td {
     padding-bottom: 5px;
 }
 
-#city-commerce{
-    background: url("fabric.png"), repeating-radial-gradient(red, black)
+#city-districts-list td:not(:first-child) {
+	width: 29px;
 }
 
-#city-commerce-conversion{
-    width: 75%;
-    margin: auto;
-    background-image: url("tax_arrow.png");
-    background-size: 85% 4.5vw;
-    background-repeat: no-repeat;
-    position: relative;
-    height: 4vw;
-    padding-top: 10px;
-    padding-bottom: 10px;
+#city-commerce{
+    background: url("subtle.png"), linear-gradient(to right, gold, goldenrod);
+    padding-top: 5px;
+    min-height: 100%;
+}
+
+#city-commerce-conversion {
+	width: 75%;
+	margin: auto;
+	background-image: url("tax_arrow.png");
+	background-size: 85% calc(100% - 8px);
+	background-repeat: no-repeat;
+	position: relative;
+	height: 11vh;
+	padding-top: 10px;
+	padding-bottom: 10px;
     background-position: 50% 5px;
+    margin-bottom: 15px;
+    font-family: 'Copse';
 }
 
 #city-commerce-conversion div{
@@ -668,8 +728,9 @@ tr:nth-last-child(2) td {
 #city-commerce-conversion-initial{
     left: -20%;
 }
-#city-commerce-conversion-result{
-    right: -20%;
+#city-commerce-conversion-result {
+	right: -20%;
+	z-index: 50;
 }
 
 #city-commerce-conversion-initial-commerce, #city-commerce-conversion-result-commerce{
@@ -680,10 +741,16 @@ tr:nth-last-child(2) td {
 
 }
 
-#city-commerce-conversion-tax{
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
+#city-commerce-conversion-tax {
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	top: calc(50% + 2.5px);
+	width: 150px;
+	padding: 5px;
+	padding-bottom: 8px;
+	background-image: url("header-conversion.png");
+	background-size: 100% 100%;
 }
 
 #city-commerce-conversion-tax div{
@@ -714,45 +781,55 @@ tr:nth-last-child(2) td {
     margin: 4px;
 }
 
-#city-commerce-header{
-    width: 95%;
-    margin: auto;
-    border-top: 2px solid rgba(255,255,255,.5);
-    padding-bottom: 5px;
-    padding-top: 5px;
-    margin-top: 1px;
-    font-size: 1.3vw;
-    text-transform: uppercase;
+#city-commerce-header {
+	position: relative;
+	width: 90%;
+	margin: auto;
+	padding: 10px;
+	padding-bottom: 5px;
+	margin-top: -10px;
+	font-size: calc(1.3vw + 3px);
+	text-transform: uppercase;
+	background-image: url("topbar-header.png");
+	background-size: 100% 100%;
+	line-height: 24px;
+	z-index: 1;
+	font-family: 'Cinzel', sans-serif;
 }
 
-#city-commerce-next{
-    margin: auto;
-    width: 95%;
-    padding-bottom: 5px;
+#city-commerce-header b {
+    font-family: "Copse";
+}
+
+#city-commerce-next {
+    position: relative;
+	margin: auto;
+	width: 95%;
+	padding-bottom: 5px;
+	margin-top: -3px;
 }
 
 #city-commerce-next-bar{
     position: relative;
-    height: 24px;
+    height: 3.2vh;
     border: 2px solid white;
     background: url("glossy.png"), black;
     box-sizing: border-box;
-    border-radius: 10px;
+    border-radius: 4px;
 }
 
-#city-commerce-next-bar-fill{
-    position: absolute;
-    left: 0;
-    top: .5px;
-    height: 20.5px;
-    height: 21px;
-    background: url("glossy.png");
-    width: 30%;
-    border-radius: 9px;
+#city-commerce-next-bar-fill {
+	position: absolute;
+	left: 0;
+	height: 100%;
+	background: url("glossy.png"), linear-gradient(to left, #333, #888, #bbb 35px);
+	width: 53%;
+	border-radius: 2px;
 }
 
 #city-commerce-next-bar div {
     display: inline-block;
+    font-size: 2.2vh;
 }
 
 #city-commerce-next-bar-value{
@@ -771,33 +848,110 @@ tr:nth-last-child(2) td {
 }
 
 #city-commerce-next-bar-value-turns img {
-    width: 10px;
+	width: 2vh;
+	filter: drop-shadow(0 0 1px black) drop-shadow(0 0 1px black);
+	vertical-align: middle;
+}
+
+.city-commerce-subheader {
+	width: 100%;
+	background-image: url("topbar-subheader.png");
+	background-size: 100% 100%;
+	font-family: 'Cinzel', sans-serif;
+	font-size: 19px;
+	text-shadow: 0 0 1px white;
+}
+
+#city-commerce-routes {
+	border-spacing: 0;
+	width: 95%;
+    margin: auto;
+    font-size: .9vw;
 }
 
 .city-commerce-routes-item {
-    width: calc(100% - 1px);
-    cursor: pointer;
-    border: 1px solid white;
-    background: url("cardboard.png"), #383469;
+	width: calc(100% - 1px);
+	cursor: pointer;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	margin-bottom: 2px;
+	background: radial-gradient(rgba(255, 255, 255, .15), transparent 80%);
+	background-size: contain;
+}
+.city-commerce-routes-item:hover{
+    filter: brightness(.85)
+}
+.city-commerce-routes-item:active{
+    filter: brightness(.7)
+}
+
+.city-commerce-routes-item td:not(:first-child) {
+	font-family: 'Copse';
+}
+
+.city-commerce-routes-item[active="true"] {
+    color: #afa;
+}
+.city-commerce-routes-item[active="false"] td {
+	padding: 3px !important;
+}
+
+.city-commerce-routes-item img {
+	width: 16px !important;
+	margin-right: 5px !important;
+	display: none;
+	filter: drop-shadow(0 0 1px white);
+}
+.city-commerce-routes-item[active="true"] img{
+    display: unset;
+}
+
+#city-commerce-routes img {
+	width: 18px;
+	vertical-align: middle;
+	margin: 2px;
+}
+
+#city-commerce-routes-header td {
+	border-bottom: 1px solid rgba(255, 255, 255, .2);
+}
+#city-commerce-routes tr:first-child td{
+    border-top: none;
+}
+
+#city-commerce-routes tr:nth-child(2) {
+	box-shadow: 0 -6px 7px -6px white;
+}
+
+#city-commerce-routes td{
     padding-top: 4px;
     padding-bottom: 4px;
-    margin-bottom: 2px;
 }
 
-#notifications{
-    position: absolute;
-    bottom: 200px;
-    right: 10px;
-    filter: drop-shadow(0px 0px 5px black);
+#notifications {
+	position: absolute;
+	bottom: 1vw;
+    right: 0;
+	filter: drop-shadow(0px 0px 5px black);
+	background: url("notifications-back.png");
+	background-size: 100% 100%;
+	padding-left: 5vw;
+    padding-right: 13vw;
+    transition: .1s;
+    z-index: 2;
 }
 
-#notifications div{
-    border-radius: 100%;
-    background-color: blue;
-    border: 3px solid goldenrod;
-    cursor: pointer;
-    height: 75px;
-    margin-top: 8px;
+#notifications div {
+	border-radius: 100%;
+	background-color: blue;
+	border: 3px solid goldenrod;
+	cursor: pointer;
+	width: 6vw;
+	height: 6vw;
+	margin-top: 8px;
+	margin-bottom: 8px;
+	max-width: 80px;
+	max-height: 80px;
 }
 
 #notifications div:hover{
@@ -809,8 +963,8 @@ tr:nth-last-child(2) td {
 }
 
 #notifications img{
-    width: 75px;
-    height: 75px;
+    width: 100%;
+    height: 100%;
     transform: scale(1.05)
 }
 
@@ -938,13 +1092,13 @@ tr:nth-last-child(2) td {
 
 #science-holder{
     position: absolute;
-    top: 20%;
+    top: 30%;
     left: -215px;
     transition: .1s;
     z-index: 4;
 }
 
-#science-holder:hover{
+#science-holder:hover:not(:active){
     left: 0;
 }
 
@@ -957,18 +1111,19 @@ tr:nth-last-child(2) td {
     filter: drop-shadow(0 0 10px white)
 }
 
-.science-row{
-    position: relative;
-    height: 100px;
-    width: 260px;
-    margin-top: 5px;
-    background: url("subtle.png"), rgba(25, 25, 130, .75);
-    color: white;
-    font-weight: bold;
-    font-family: 'Cinzel', sans-serif;
-    cursor: pointer;
-    opacity: 0;
-    transition: .1s;
+.science-row {
+	position: relative;
+	height: 100px;
+	width: 260px;
+	margin-top: 5px;
+	background: radial-gradient(transparent, rgba(60, 60, 120, .8)), url("redox_01.png"), rgba(25, 25, 130, .75);
+	color: white;
+	font-weight: bold;
+	font-family: 'Cinzel', sans-serif;
+	cursor: pointer;
+	opacity: 0;
+	transition: .1s;
+	border: 1px solid #005;
 }
 
 .science-row:hover{
@@ -977,6 +1132,7 @@ tr:nth-last-child(2) td {
 
 .science-row:first-child{
     opacity: 1;
+    pointer-events: all;
 }
 
 .science-row-name{    
@@ -1021,21 +1177,22 @@ tr:nth-last-child(2) td {
     filter: invert(1);
 }
 
-.science-row-icon{
-    position: absolute;
-    right: 0;
-    top: 50%;
-    width: 70px;
-    height: 70px;
-    line-height: 70px;
-    text-align: center;
-    padding: 5px;
-    transform: translate(50%, -50%);
-    z-index: 2;
-    border-radius: 100%;
-    background: url("glassBack.png"), grey;
-    background-size: 100%;
-    box-shadow: inset 0px 0px 5px black;
+.science-row-icon {
+	position: absolute;
+	right: 0;
+	top: 50%;
+	width: 70px;
+	height: 70px;
+	line-height: 70px;
+	text-align: center;
+	padding: 5px;
+	transform: translate(50%, -50%);
+	z-index: 2;
+	border-radius: 100%;
+	background: url("glassBack.png"), grey;
+	background-size: 100%;
+	box-shadow: inset 0px 0px 5px black;
+	filter: drop-shadow(-1px 0 2px black);
 }
 
 .science-row-icon img{
@@ -1067,10 +1224,22 @@ tr:nth-last-child(2) td {
     transform: translate(-51%, -50%)
 }
 
-.science-row-info{
-    position: absolute;
-    bottom: 5px;
-    left: 10px;
+.science-row-info-turns {
+	position: absolute;
+	right: 0;
+	transform: translate(50%, -50%);
+	top: 70%;
+	z-index: 5;
+	background-color: rgba(0, 0, 0, .7);
+	width: 53px;
+	border-radius: 10px;
+	text-align: center;
+}
+
+.science-row-info {
+	position: absolute;
+	bottom: 5px;
+	padding-left: 10px;
 }
 
 .science-row-type{
@@ -1216,15 +1385,21 @@ tr:nth-last-child(2) td {
     background-color: green;
 }
 
-#troop-info{
-    position: absolute;
-    left: 0;
-    bottom: 90px;
+#troop-info {
+	position: absolute;
+	left: 0;
+	bottom: -2px;
+	z-index: 2;
+	width: 25vw;
+	background: url("subtle.png"), linear-gradient(to bottom, grey, black);
+	border: 2px solid black;
+	border-top-right-radius: 5px;
+	filter: drop-shadow(0 0 2px rgba(255, 255, 255, .5));
 }
 
 .troop-info-box{
     position: relative;
-    width: 100%;
+    display: inline-block;
     padding: 5px;
     text-align: center;
     background-color: #444;
@@ -1274,25 +1449,47 @@ tr:nth-last-child(2) td {
     transform: scale(1.2);
 }
 
-/* -----------------------------SCROLLBAR-------------------------------- */
-/* width */
-::-webkit-scrollbar {
-    width: 10px;
+#hexagon-map {
+	position: absolute;
+	left: -5px;
+	top: 50px;
+	width: 12vw;
+	height: 16vh;
+	border-radius: 5px;
+	border: 5px double #82700c;
+	z-index: 15;
+	filter: drop-shadow(0 0 2px black);
 }
 
-/* Track */
-::-webkit-scrollbar-track {
-    background: none; 
+#hexagon-map-plus, #hexagon-map-minus {
+	position: absolute;
+	left: 12vw;
+	width: 25px;
+	height: 25px;
+	cursor: pointer;
+	transform: translateX(-50%);
+	background: url("glassBack.png"), white;
+	border-radius: 100%;
+	z-index: 15;
+	line-height: 25px;
+	text-align: center;
+	font-size: 20px;
+	background-size: 100%;
+	border: 2px solid black;
 }
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: #888; 
-    border-radius: 5px;
+#hexagon-map-plus:hover, #hexagon-map-minus:hover {
+    filter: brightness(.85)
 }
 
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-    background: #555; 
-    border-radius: 5px;
+#hexagon-map-plus:active, #hexagon-map-minus:active {
+    filter: brightness(.7)
+}
+
+#hexagon-map-plus{
+    top: 65px;
+}
+
+#hexagon-map-minus{
+    top: 95px;
 }

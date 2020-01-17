@@ -1,5 +1,6 @@
 class Player{
-    constructor(){
+    constructor(map){
+        this.worldMap = map
         this.units = [] 
         this.color = "#" + decimalToHexString(Math.ceil(16777215 * Math.random())) 
         this.seen = []
@@ -31,6 +32,12 @@ class Player{
             } else {
                 document.getElementById("nextturn").style.backgroundImage = ""
             }
+
+            if(this.notificationsRemaining.length <= 1){
+                document.getElementById("notifications").style.right = "-500px"
+            } else {
+                document.getElementById("notifications").style.right = ""
+            }
         }
     }
 
@@ -51,7 +58,7 @@ class Player{
         this.units.forEach(x => x.resetTurn())
 
         selectedUnits = []
-        document.getElementById("unitactions").style.right = "-500px"
+        document.getElementById("unitactions").style.left = "-500px"
         hideReachable()
 
         if(this == players[0]){
@@ -68,15 +75,5 @@ class Player{
         this.units.forEach(function(unit){
             unit.detectSeen()
         }.bind(this))
-
-        if(this == players[0]){
-            tiles.forEach(x => x.forEach(function(tile){
-                if(this.seen.includes(tile)){
-                    tile.displayAsSeen()
-                } else {
-                    tile.displayAsNotSeen()
-                }
-            }.bind(this)))
-        }
     }
 }

@@ -8,7 +8,7 @@ class Animals extends Player{
             } else {
                 var unitMovement = copyAndRandomize(unit.determineReachable())
                 for(var i = 5; i > 1; i--){
-                    unitMovement = unitMovement.filter(x => nearby(x.tile, i).some(y => y.differentPlayerOnTile(this))).concat(unitMovement)
+                    unitMovement = unitMovement.filter(x => x.tile.nearby(i).some(y => y.differentPlayerOnTile(this))).concat(unitMovement)
                 }
     
                 for(var i = 0; i < unitMovement.length; i++){
@@ -23,10 +23,10 @@ class Animals extends Player{
 
         if(Math.random() < .7){
             for(var i = 0, created = 0; i < 150 && created < 3 && this.units.length < 25; i++){
-                var targetTile = randomTile()
+                var targetTile = this.worldMap.randomTile()
                 if(!targetTile.differentPlayerOnTile(this)
                 && targetTile.terrain.variety == terrainVariety.land){
-                    this.units.push(new Unit(unitTypes.warrior, this, targetTile.position))
+                    this.units.push(new Unit(unitTypes.warrior, this, targetTile.position, this.worldMap))
                     created++
                 }
             }

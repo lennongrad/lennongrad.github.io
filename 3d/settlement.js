@@ -1,9 +1,11 @@
 
 class Settlement {
-    constructor(pos, player) {
+    constructor(pos, player, map) {
         this.position = pos
-        this.tile = tiles[pos.x][pos.y]
+        this.worldMap = map
+        this.tile = this.worldMap.getTile(this.position)
         this.player = player
+        this.name = "Settlement"
 
         this.population = 1
         this.developmentLevel = 0
@@ -49,12 +51,13 @@ class Settlement {
         this.labelProd.appendChild(this.labelProdImage)
 
         this.labelName = document.createElement("DIV")
-        this.labelName.innerHTML = "SETTLEMENT"
+        this.labelName.innerHTML = this.name.toUpperCase()
         this.labelName.className = "city-label-name"
         this.labelName.style.backgroundColor = this.player.color
         this.labelDIV.appendChild(this.labelName)
 
         this.tile.unitIconHolderDIV.prepend(this.labelDIV)
+        this.worldMap.updateUnitIconHolders()
 
         this.labelDIV.onmouseup = function () {
             cursor.active = false
@@ -94,6 +97,13 @@ class Settlement {
     }
 
     beginTurn() {
+        this.tradeRoutes.forEach(function(route){
+            if(Settlement.unfilledTradeRouteTiles(route.path).length != 0){
+                Settlement.unfilledTradeRouteTiles(route.path)[0].addRoad()
+            }
+        })
+
+        this.calculateYields()
         this.incrementProduction(this.yields.production)
         this.incrementFood(this.yields.food)
         this.incrementCulture(this.yields.culture)
@@ -101,7 +111,6 @@ class Settlement {
 
     increaseDevelopmentLevel(){
         this.developmentLevel++;
-        this.tradeRoutes.push({settlement: undefined, path: undefined})
     }
 
     /**
@@ -115,7 +124,7 @@ class Settlement {
         if (tile.resource != undefined) {
             final *= 2
         }
-        if (tile.river) {
+        if (tile.hasRiver) {
             final *= 1.2
         }
         return final
@@ -130,7 +139,7 @@ class Settlement {
                 case producibleTypes.district: e.image = "actions/district.png"; break;
                 case producibleTypes.building: e.image = e.building.icon; break;
             }
-            e.cost = 3
+            e.cost = 30
         })
     }
 
@@ -139,14 +148,15 @@ class Settlement {
 
         document.getElementById("city-info").style.right = "0"
         document.getElementById("city-production").style.display = "none"
-        document.getElementById("city-yields").style.display = "none"
         document.getElementById("city-commerce").style.display = "none"
         document.getElementById("city-districts").style.display = "none"
+
+        this.displayYields()
+
         switch (activeCityInfoPanel) {
             case 0: this.displayProduction(); break;
-            case 1: this.displayYields(); break;
-            case 2: this.displayCommerce(); break;
-            case 3: this.displayDistricts(); break;
+            case 1: this.displayCommerce(); break;
+            case 2: this.displayDistricts(); break;
         }
     }
 
@@ -189,20 +199,18 @@ class Settlement {
             if (e.type == producibleTypes.unit) {
                 itemImageIMG.className = "invert"
             }
-
-            var itemDetails = document.createElement("DIV")
-            itemDetails.className = "city-production-item-details"
-            var itemDetailsName = document.createElement("DIV")
-            itemDetailsName.className = "city-production-item-name"
-            itemDetailsName.innerHTML = e.name
+            
             var itemDetailsCost = document.createElement("DIV")
             itemDetailsCost.append(document.getElementById("producible-cost").content.cloneNode(true))
             itemDetailsCost.className = "city-production-item-cost"
-            itemDetailsCost.getElementsByTagName("span")[0].innerHTML = ((e.progress != 0) ? (e.progress + " / ") : ("")) + e.cost
+            itemDetailsCost.getElementsByTagName("span")[0].innerHTML = ((e.progress != 0) ? (e.progress + "/") : ("")) + e.cost
             itemDetailsCost.getElementsByTagName("span")[1].innerHTML = Math.ceil((e.cost - e.progress) / this.yields.production)
-            itemDetails.appendChild(itemDetailsName)
-            itemDetails.appendChild(itemDetailsCost)
-            item.appendChild(itemDetails)
+            item.appendChild(itemDetailsCost)
+
+            var itemDetailsName = document.createElement("DIV")
+            itemDetailsName.className = "city-production-item-name"
+            itemDetailsName.innerHTML = e.name
+            item.appendChild(itemDetailsName)
 
             item.id = index
             item.onclick = function () {
@@ -232,50 +240,40 @@ class Settlement {
     }
 
     displayYields() {
-        document.getElementById("city-yields").style.display = ""
-
-        document.getElementById("city-yields-food-bar").style.width = this.foodCount / this.foodCost() * 100 + "%"
+        //document.getElementById("city-yields-food-bar").style.width = this.foodCount / this.foodCost() * 100 + "%"
         if (this.yields.food != undefined && this.yields.food > 0) {
-            document.getElementById("city-yields-food-turns").innerHTML = Math.ceil((this.foodCost() - this.foodCount) / this.yields.food)
             document.getElementById("city-yields-food-count").innerHTML = "+" + Math.floor(this.yields.food * 100) / 100
         } else {
-            document.getElementById("city-yields-food-turns").innerHTML = "?"
             document.getElementById("city-yields-food-count").innerHTML = "?"
         }
-        document.getElementById("city-yields-food-result").innerHTML = this.population
+        //document.getElementById("city-yields-food-result").innerHTML = this.population
 
-        document.getElementById("city-yields-culture-bar").style.width = this.cultureCount / this.cultureCost() * 100 + "%"
+        //document.getElementById("city-yields-culture-bar").style.width = this.cultureCount / this.cultureCost() * 100 + "%"
         if (this.yields.culture != undefined && this.yields.culture > 0) {
-            document.getElementById("city-yields-culture-turns").innerHTML = Math.ceil((this.cultureCost() - this.cultureCount) / this.yields.culture)
             document.getElementById("city-yields-culture-count").innerHTML = "+" + Math.floor(this.yields.culture * 100) / 100
         } else {
-            document.getElementById("city-yields-culture-turns").innerHTML = "?"
             document.getElementById("city-yields-culture-count").innerHTML = "?"
         }
-        document.getElementById("city-yields-culture-result").innerHTML = this.tiles.length
+        //document.getElementById("city-yields-culture-result").innerHTML = this.tiles.length
 
-        document.getElementById("city-yields-production-count").innerHTML = "+" + Math.floor(this.yields.production * 100) / 100
-        if (this.producingID != undefined) {
-            document.getElementById("city-yields-production").style.height = ""
-            document.getElementById("city-yields-turns-production").style.display = ""
-            document.getElementById("city-yields-bar-production").style.display = ""
-            document.getElementById("city-yields-production-turns").innerHTML = Math.ceil((this.producible[this.producingID].cost - this.producible[this.producingID].progress) / this.yields.production)
-            document.getElementById("city-yields-production-bar").style.width = this.producible[this.producingID].progress / this.producible[this.producingID].cost * 100 + "%"
+        if (this.yields.production != undefined && this.yields.production >= 0) {
+            document.getElementById("city-yields-production-count").innerHTML = "+" + Math.floor(this.yields.production * 100) / 100
         } else {
-            document.getElementById("city-yields-production").style.height = "35px"
-            document.getElementById("city-yields-turns-production").style.display = "none"
-            document.getElementById("city-yields-bar-production").style.display = "none"
+            document.getElementById("city-yields-production-count").innerHTML = "?"
         }
+
         if (this.yields.science != undefined && this.yields.science >= 0) {
             document.getElementById("city-yields-science-count").innerHTML = "+" + Math.floor(this.yields.science * 100) / 100
         } else {
             document.getElementById("city-yields-science-count").innerHTML = "?"
         }
+
         if (this.yields.commerce != undefined && this.yields.commerce >= 0) {
             document.getElementById("city-yields-commerce-count").innerHTML = "+" + Math.floor(this.yields.commerce * 100) / 100
         } else {
             document.getElementById("city-yields-commerce-count").innerHTML = "?"
         }
+
         if (this.yields.capital != undefined && this.yields.capital >= 0) {
             document.getElementById("city-yields-capital-count").innerHTML = "+" + Math.floor(this.yields.capital * 100) / 100
         } else {
@@ -289,19 +287,60 @@ class Settlement {
         document.getElementById("city-commerce-conversion-initial-commerce").getElementsByTagName("SPAN")[0].innerHTML = "+" + this.commerceValues.preTaxCommerce
         document.getElementById("city-commerce-conversion-result-commerce").getElementsByTagName("SPAN")[0].innerHTML = "+" + this.commerceValues.postTaxCommerce
         document.getElementById("city-commerce-conversion-result-capital").getElementsByTagName("SPAN")[0].innerHTML = "+" + this.commerceValues.postTaxCapital
-
         
-        document.getElementById("city-commerce-routes").innerHTML = ""
-        this.tradeRoutes.forEach(function(route){
-            var routeElement = document.createElement("DIV")
-            routeElement.className = "city-commerce-routes-item"
+        document.getElementById("city-commerce-header-level").innerHTML = this.developmentLevel
 
-            if(route.settlement != undefined){
-                routeElement.innerHTML = route.settlement.name
+        this.updateTradeRoutes()
+        document.getElementById("city-commerce-routes-header-count").innerHTML = this.tradeRoutes.filter(x => x.active).length + "/" + this.developmentLevel
+        document.getElementById("city-commerce-routes").innerHTML = ""
+        document.getElementById("city-commerce-routes").appendChild(tradeRouteHeader)
+        this.tradeRoutes.forEach(function(route){
+            var routeRow = document.createElement("TR")
+            routeRow.className = "city-commerce-routes-item"
+            routeRow.route= route
+  
+            var routeName = document.createElement("TD")            
+            routeName.innerHTML = route.settlement.name
+            routeName.innerHTML += " (" + (route.path.length - Settlement.unfilledTradeRouteTiles(route.path).length - 2) + "/" + (route.path.length - 2) + ")"
+
+            var routeNameIcon = document.createElement("IMG")
+            routeNameIcon.src = "checkmark.png"
+            routeName.prepend(routeNameIcon)
+            routeRow.appendChild(routeName)
+
+            yieldsTradeRouteOrder.forEach(function(y){
+                var routeYieldTD = document.createElement("TD")
+                if(route.benefits[y.name.toLowerCase()] != undefined){
+                    routeYieldTD.innerHTML = route.benefits[y.name.toLowerCase()] 
+                } else {
+                    routeYieldTD.innerHTML = "0"
+                }
+                routeRow.appendChild(routeYieldTD)
+            })
+
+            if(route.active){
+                routeRow.setAttribute("active", "true")
             } else {
-                routeElement.innerHTML = "No Trade Route selected"
+                routeRow.setAttribute("active", "false")
             }
-            document.getElementById("city-commerce-routes").appendChild(routeElement)
+
+            routeRow.onclick = function(){
+                if(viewedSettlement.tradeRoutes.filter(x => x.active).length < viewedSettlement.developmentLevel || this.route.active){
+                    this.route.active = !this.route.active
+                    viewedSettlement.calculateYields()
+                    viewedSettlement.displayCommerce()
+                }
+            }
+
+            routeRow.onmouseover = function(){
+                currentWorldMap.displayTradeRoutePath(this.route.path)
+            }
+
+            routeRow.onmouseout = function(){
+                currentWorldMap.clearPathMeshes()
+            }
+
+            document.getElementById("city-commerce-routes").appendChild(routeRow)
         })
     }
 
@@ -340,22 +379,17 @@ class Settlement {
                 itemImageIMG.className = "invert"
             }
 
-            var itemDetails = document.createElement("DIV")
-            itemDetails.className = "city-production-item-details"
+            var itemDetailsCost = document.createElement("DIV")
+            itemDetailsCost.append(document.getElementById("producible-cost").content.cloneNode(true))
+            itemDetailsCost.className = "city-production-item-cost"
+            itemDetailsCost.getElementsByTagName("span")[0].innerHTML = ((e.progress != 0) ? (e.progress + "/") : ("")) + e.cost
+            itemDetailsCost.getElementsByTagName("span")[1].innerHTML = Math.ceil((e.cost - e.progress) / this.yields.production)
+            item.appendChild(itemDetailsCost)
+            
             var itemDetailsName = document.createElement("DIV")
             itemDetailsName.className = "city-production-item-name"
             itemDetailsName.innerHTML = e.name
-            var itemDetailsCost = document.createElement("DIV")
-            itemDetailsCost.className = "city-production-item-cost"
-            var itemDetailsCostSpan = document.createElement("SPAN")
-            itemDetailsCostSpan.innerHTML = ((e.progress != 0) ? (e.progress + " / ") : ("")) + e.cost + " "
-            var itemDetailsCostImage = document.createElement("IMG")
-            itemDetailsCostImage.src = "yields/production.png"
-            itemDetailsCost.appendChild(itemDetailsCostSpan)
-            itemDetailsCost.appendChild(itemDetailsCostImage)
-            itemDetails.appendChild(itemDetailsName)
-            itemDetails.appendChild(itemDetailsCost)
-            item.appendChild(itemDetails)
+            item.appendChild(itemDetailsName)
 
             item.id = index
             item.onclick = function () {
@@ -399,7 +433,7 @@ class Settlement {
             this.changePopulation(1)
         }
 
-        this.labelLeftBar.style.transform = "translate(-50%, -50%) rotate(" + (Math.PI * this.foodCount / this.foodCost()) + "rad)"
+        this.labelLeftBar.style.transform = "translate(-50%, -50%) rotate(" + Math.min(Math.PI, Math.PI * this.foodCount / this.foodCost()) + "rad)"
     }
 
     incrementCulture(amount) {
@@ -443,7 +477,7 @@ class Settlement {
                     case producibleTypes.develop: this.producible[this.producingID].target.updateDevelopment(); break;
                     case producibleTypes.clear: this.producible[this.producingID].target.clearAllFeatures(); break;
                     case producibleTypes.district: this.buildDistrict(this.producible[this.producingID].target); break;
-                    case producibleTypes.unit: this.player.units.push(new Unit(this.producible[this.producingID].unit, this.player, this.tile.position));
+                    case producibleTypes.unit: this.player.units.push(new Unit(this.producible[this.producingID].unit, this.player, this.tile.position, this.worldMap));
                         this.tile.unitIconHolderDIV.appendChild(this.player.units.last().iconDIV); break;
                     case producibleTypes.building: this.producible[this.producingID].district.addBuilding(this.producible[this.producingID].building); break;
                 }
@@ -492,6 +526,12 @@ class Settlement {
             this.yields = addYields(this.yields, compareStrength[i].yields)
         }
 
+        this.tradeRoutes.forEach(function(route){
+            if(route.active && Settlement.unfilledTradeRouteTiles(route.path).length == 0){
+                this.yields = addYields(this.yields, route.benefits)
+            }
+        }.bind(this))
+
         this.commerceValues = { preTaxCommerce: this.yields.commerce, 
             postTaxCommerce: Math.ceil(this.yields.commerce * (100 - this.taxRate)) / 100, 
             postTaxCapital: this.yields.commerce * this.taxRate / 100 }
@@ -499,14 +539,11 @@ class Settlement {
         this.yields.commerce = this.commerceValues.postTaxCommerce
 
         this.cultureEligibleTiles = []
-        this.tiles.forEach(function (x) {
-            directions.forEach(function (d) {
-                var currentTile = t(x, d)
-                if (!this.cultureEligibleTiles.includes(currentTile) && currentTile.player == undefined && nearby(this.tile, 3).includes(currentTile)) {
-                    this.cultureEligibleTiles.push(currentTile)
-                }
-            }.bind(this))
-        }.bind(this))
+        this.tiles.forEach(tile => tile.nearby(1).forEach(currentTile => {
+            if (!this.cultureEligibleTiles.includes(currentTile) && currentTile.player == undefined && this.tile.nearby(3).includes(currentTile)) {
+                this.cultureEligibleTiles.push(currentTile)
+            }
+        }))
 
         this.cultureEligibleTiles.forEach(function (x) {
             x.buyLabelPrice.innerHTML = this.priceToBuyTile(x)
@@ -518,6 +555,8 @@ class Settlement {
         }.bind(this))
 
         this.cultureTarget = this.cultureEligibleTiles.sort((x, y) => this.getTileValue(y) - this.getTileValue(x))[0]
+
+        this.displayYields()
     }
 
     showDevelopEligible() {
@@ -575,7 +614,7 @@ class Settlement {
             }
         })
 
-        this.cultureEligibleTiles.forEach(x => x.buyLabel.setAttribute("inactive", "false"))
+        this.cultureEligibleTiles.forEach(x => x.face.add(x.buyLabel2D))
     }
 
     hideWorked() {
@@ -601,7 +640,7 @@ class Settlement {
             }
         })
 
-        tiles.forEach(y => y.forEach(x => x.buyLabel.setAttribute("inactive", "true")))
+        this.worldMap.forEach(tile => tile.face.remove(tile.buyLabel2D))
     }
 
     select(view) {
@@ -609,11 +648,12 @@ class Settlement {
         if (activeSettlement != undefined && activeSettlement != this) {
             activeSettlement.deselect(true)
         }
-        document.getElementById("unitactions").style.right = "-500px"
+        document.getElementById("unitactions").style.left = "-500px"
         hideReachable()
 
-        mapOffset.x = maxOffsetX + initialCameraOffsetX - (Math.sqrt(3) * hexagonSize * this.position.x)
-        mapOffset.y = initialCameraOffsetY - (2.05 * .75 * hexagonSize * this.position.y) + 2
+        camera.position.x = this.tile.face.position.x
+        camera.position.y = this.tile.face.position.y
+
         activeSettlement = this
         adjustCameraRotation()
         this.calculateYields()
@@ -629,20 +669,20 @@ class Settlement {
             this.cultureTarget.face.add(cultureTargetIcon)
         }
 
-        tiles.forEach(x => x.forEach(function (e) {
-            if (this.tiles.includes(e)
-                && (view != "develop" || e.developIcon != undefined)
-                && (view != "clear" || e.clearIcon != undefined)
-                && (view != "district" || e.districtIcon != undefined)) {
-                e.face.material = e.terrain.material
+        this.worldMap.forEach(tile => {
+            if (this.tiles.includes(tile)
+                && (view != "develop" || tile.developIcon != undefined)
+                && (view != "clear" || tile.clearIcon != undefined)
+                && (view != "district" || tile.districtIcon != undefined)) {
+                    tile.face.material = tile.terrain.material
             } else {
-                e.face.material = e.terrain.materialDark
+                tile.face.material = tile.terrain.materialDark
             }
-            if (e.productionTileIcon != undefined) {
-                e.face.remove(e.productionTileIcon)
-                e.productionTileIcon = undefined
+            if (tile.productionTileIcon != undefined) {
+                tile.face.remove(tile.productionTileIcon)
+                tile.productionTileIcon = undefined
             }
-        }.bind(this)))
+        })
 
         if (this.producingID != undefined && this.producible[this.producingID].target != undefined) {
             this.producible[this.producingID].target.productionTileIcon = productionTileIcon.clone()
@@ -666,32 +706,32 @@ class Settlement {
                 cultureTargetIcon.parent.remove(cultureTargetIcon)
             }
 
-            tiles.forEach(x => x.forEach(function (e) {
-                if (this.player.seen.includes(e)) {
-                    e.face.material = e.terrain.material
+            this.worldMap.forEach(tile => {
+                if (this.player.seen.includes(tile)) {
+                    tile.face.material = tile.terrain.material
                 } else {
-                    e.face.material = e.terrain.materialDark
+                    tile.face.material = tile.terrain.materialDark
                 }
-                if (e.productionTileIcon != undefined) {
-                    e.face.remove(e.productionTileIcon)
-                    e.productionTileIcon = undefined
+                if (tile.productionTileIcon != undefined) {
+                    tile.face.remove(tile.productionTileIcon)
+                    tile.productionTileIcon = undefined
                 }
-            }.bind(this)))
+            })
         }
     }
 
     buildDistrict(tile) {
         tile.clearDevelopment()
-        tile.district = new District(tile, this.player, this)
+        tile.district = new District(tile, this.player, this, this.worldMap)
         this.districts.push(tile.district)
-        tiles.forEach(x => x.forEach(y => y.calculateYields()))
+        this.worldMap.forEach(tile => tile.calculateYields)
         Object.keys(buildings).forEach(function (building) {
             this.producible.push({ type: producibleTypes.building, building: buildings[building], name: buildings[building].name, district: tile.district, progress: 0, })
         }.bind(this))
     }
 
     detectSeen() {
-        this.tiles.forEach(x => nearby(x, 2).forEach(function (tile) {
+        this.tiles.forEach(x => x.nearby(2).forEach(function (tile) {
             if (!this.player.seen.includes(tile)) {
                 this.player.seen.push(tile)
             }
@@ -702,22 +742,23 @@ class Settlement {
         return 20
     }
 
-    get possibleTradeRoutes(){
-        var possibleRoutes = []
-        var testUnit = new Unit(unitTypes.trader, this.player, this.position)
+    updateTradeRoutes(){
+        var activeRoutes = this.tradeRoutes.filter(x => x.active).map(x => x.settlement)
+        this.tradeRoutes = []
+        var testUnit = new Unit(unitTypes.trader, this.player, this.position, this.worldMap, true)
         players.filter(x => x.settlements != undefined).forEach(x => x.settlements.forEach(function(settlement){
             if(settlement != this){
                 var path = testUnit.getPathToTile(settlement.tile)
+                path.push(this.tile)
                 if(path.length < 10){
-                    possibleRoutes.push({settlement: settlement, path: path})
+                    this.tradeRoutes.push({settlement: settlement, active: activeRoutes.includes(settlement), path: path, benefits: {food: 1, production: 1, commerce: 1, culture: 1, science: 1}})
                 }
             }
         }.bind(this)))
-        return possibleRoutes
     }
 
     static hideInfo() {
-        document.getElementById("city-info").style.right = "-400px"
+        document.getElementById("city-info").style.right = "-500px"
         viewedSettlement = undefined
 
         Settlement.hideBuildingProduction()
@@ -729,18 +770,15 @@ class Settlement {
         Settlement.hideBuildingProduction()
 
         document.getElementById("city-info-header-production").setAttribute("currentPanel", "false")
-        document.getElementById("city-info-header-yields").setAttribute("currentPanel", "false")
         document.getElementById("city-info-header-district").setAttribute("currentPanel", "false")
         document.getElementById("city-info-header-commerce").setAttribute("currentPanel", "false")
 
         switch (newActivePanel) {
             case 0: document.getElementById("city-info-header-title").innerHTML = "Production";
                 document.getElementById("city-info-header-production").setAttribute("currentPanel", "true"); break;
-            case 1: document.getElementById("city-info-header-title").innerHTML = "Yields";
-                document.getElementById("city-info-header-yields").setAttribute("currentPanel", "true"); break;
-            case 2: document.getElementById("city-info-header-title").innerHTML = "Commerce";
+            case 1: document.getElementById("city-info-header-title").innerHTML = "Commerce";
                 document.getElementById("city-info-header-commerce").setAttribute("currentPanel", "true"); break;
-            case 3: document.getElementById("city-info-header-title").innerHTML = "Districts";
+            case 2: document.getElementById("city-info-header-title").innerHTML = "Districts";
                 document.getElementById("city-info-header-district").setAttribute("currentPanel", "true"); break;
         }
 
@@ -749,6 +787,16 @@ class Settlement {
                 viewedSettlement.displayInfo()
             }, 100)
         }
+    }
+
+    static unfilledTradeRouteTiles(path){
+        var invalidTiles = []
+        path.forEach(function(tile){
+            if(!testRequirements([requirements.passable], tile)){
+                invalidTiles.push(tile)
+            }
+        })
+        return invalidTiles
     }
 
     static hideBuildingProduction() {

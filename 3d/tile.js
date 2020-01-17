@@ -6,11 +6,13 @@ class Tile {
     /**
      * @param {Position} position 
      */
-    constructor(position) {
+    constructor(position, map) {
         /** The map coordinate of the Tile on the map. 
          * @type {Position}
         */
         this.position = position
+        this.worldMap = map
+        this.ring = Math.max(Math.abs(this.position.x), Math.abs(this.position.y), Math.abs(this.position.z))
 
         /** The elevation of the Tile. A depth of 1 is sealevel. Affects the z-offset of the Tile and what terrain effects can generate on it. */
         this.depth = 1
@@ -20,6 +22,9 @@ class Tile {
 
         /** Size 6 array of booleans. Directions of the Tiles to which the river on this Tile connects. See 'directions' for standard order. Only used for Tiles with 'hasRiver' set to true */
         this.riverDirections = [false, false, false, false, false, false]
+
+        /** Boolean value for whether or not the Tile has a road on it. */
+        this.hasRoad = false
 
         /** Boolean value for wheher or not the Tile has a road built on it. Does not need directions, as roads automatically connect to all nearby Tiles with roads. */
         // Note: roads have not been implemented yet
@@ -43,9 +48,16 @@ class Tile {
 
         /** Whether or not the Tile is within sight range of the active Player's Units */
         this.seen = false
-        
+
         /** Yields added to the tile thanks to a building/district */
         this.buildingYields = {}
+
+        /** Used to only run the neighbour and nearby functions once per input, saving lots of resources */
+        this._neighbours = {}
+        this._nearby = {}
+
+        /**  */
+        this.randomTexture = 0///Math.floor(Math.random() * 2) * 3
     }
 
     /**
@@ -55,7 +67,9 @@ class Tile {
         /** Used to show the texture of the Tile's terrain type ontop of the main mesh */
         this.face = new THREE.Mesh(hexagonGeometry);
         this.face.gamePosition = this.position
-        this.face.position.z = this.depth
+        this.face.position.x = (-this.position.y - this.position.z / 2) * hexagonSizeX * Math.sqrt(3)
+        this.face.position.y = hexagonSizeY * 3 / 2 * -this.position.z
+        this.face.position.z = this.heightLevel
 
         /** The meshes with the textures of each branch of river on the tile */
         this.riverMeshes = []
@@ -63,16 +77,18 @@ class Tile {
             // for each direction, see if tile has a river pointing towards that direction then create its mesh and rotate it accordingly
             directions.forEach(function (d, index) {
                 if (this.riverDirections[index]) {
-                    if(t(this, d).depth == 1){
+                    if (this.neighbour(d).depth == 1) {
                         this.riverMeshes.push(new THREE.Mesh(hexagonGeometry, riverDeltaMaterial))
+                    } else if (index == 0) {
+                        this.riverMeshes.push(new THREE.Mesh(hexagonGeometry, randomValue(riverMaterials.slice(1))))
                     } else {
-                        this.riverMeshes.push(new THREE.Mesh(hexagonGeometry, randomValue(riverMaterials)))
+                        this.riverMeshes.push(new THREE.Mesh(hexagonGeometry, riverMaterials[0]))
                     }
                     this.riverMeshes.last().rotation.z = -Math.PI / 3 * index
                     // adding it to the face so that it automatically renders on top of the main mesh
                     this.face.add(this.riverMeshes.last())
                     // hovers slightly above the face to avoid clipping issues
-                    this.riverMeshes.z = .01
+                    this.riverMeshes.last().position.z = .0125
                 }
             }.bind(this))
 
@@ -92,21 +108,6 @@ class Tile {
                 console.warn("Error during terrain generation: 'hasRiver' true despite no activated 'riverDirections'")
             }
         }
-
-        /* Roads are not implemented yet, and the following section will be moved out of initialization to a proper section once they are
-        // See above for similar implementation for the 'riverMeshes' 
-        this.roadMeshes = []
-        if(this.hasRoad){
-            directions.forEach(function(d, index){
-                if(t(this, d).hasRoad){
-                    this.roadMeshes.push(new THREE.Mesh(hexagonGeometry, roadMaterial))
-                    this.roadMeshes.last().rotation.z = -Math.PI / 3 * index
-                    this.face.add(this.roadMeshes.last())
-                    this.roadMeshes.last().position.z = .01
-                }
-            }.bind(this))
-        }
-        */
 
         /** The meshes that display features like forests that are appended to the mesh */
         this.featureMeshes = []
@@ -130,9 +131,6 @@ class Tile {
             this.face.add(this.resourceIcon)
         }
 
-        // Have to move the face up the full height of the mesh so that its at the top
-        this.face.position.z = .02
-
         /** Borders which are generated when displaying Tiles a Unit can reach as part of the graphical indicator */
         this.reachableBorders = []
 
@@ -151,6 +149,7 @@ class Tile {
                 activePlayer.updateTopbar()
             }
         }.bind(this)
+
         /** The Capital icon that appears within the buy label */
         this.buyLabelIcon = document.createElement("IMG")
         this.buyLabelIcon.src = "yields/capital.png"
@@ -158,19 +157,15 @@ class Tile {
         /** The price text that appears within the buy label */
         this.buyLabelPrice = document.createElement("DIV")
         this.buyLabel.appendChild(this.buyLabelPrice)
-        this.buyLabel.setAttribute("inactive", "true")
         /** A label that appears above the tile while viewing a nearby Settlement to allow the tile to be bought */
         this.buyLabel2D = new THREE.CSS2DObject(this.buyLabel)
-        this.face.add(this.buyLabel2D)
         this.buyLabel2D.position.z = .02
         this.buyLabel2D.position.y = .5
 
         this.unitIconHolderDIV = document.createElement("DIV")
         this.unitIconHolder = new THREE.CSS2DObject(this.unitIconHolderDIV)
         this.unitIconHolder.scale.set(.015, .015, .015)
-        this.face.add(this.unitIconHolder)
-        this.unitIconHolder.position.z = .16
-        this.unitIconHolder = unitIconHoverAboveTile
+        this.unitIconHolder.position.z = unitIconHoverAboveTile
         this.unitIconHolderDIV.className = "unit-icon-holder"
         this.unitIconHolderDIV.onmouseup = function () {
             cursor.active = false
@@ -178,9 +173,40 @@ class Tile {
 
         this.yieldHolderDIV = document.createElement("DIV")
         this.yieldHolder = new THREE.CSS2DObject(this.yieldHolderDIV)
-        this.face.add(this.yieldHolder)
         this.yieldHolder.position.z = .1
         this.yieldHolderDIV.className = "tile-yield-holder"
+
+        this.elevationMeshes = []
+        directions.forEach((direction, directionIndex) => {
+            if (this.neighbour(direction) != undefined
+                && this.neighbour(direction).heightLevel > this.heightLevel
+                && this.neighbour(direction).terrain.elevationMesh != undefined) {
+
+                if (this.terrain == terrainTypes.coast) {
+                    this.elevationMeshes.push(this.neighbour(direction).terrain.elevationMesh.clone())
+                    this.face.add(this.elevationMeshes.last())
+                    this.elevationMeshes.last().rotation.z = -Math.PI / 3 * directionIndex
+                    this.elevationMeshes.last().position.z = .1 + Math.random() * .05
+/*
+                    var angle = Math.atan((this.neighbour(direction).heightLevel - this.heightLevel) / hexagonSize)
+                    this.elevationMeshes.last().scale.set(1 / Math.cos(angle), 1, 1)
+                    this.elevationMeshes.last().position.z = Math.sin(angle) * -Math.sqrt(3) * hexagonSize * .35
+                    this.elevationMeshes.last().rotation.y = -angle
+                    this.elevationMeshes.last().rotation.order = "ZXY"*/
+                } else {/*
+                    this.elevationMeshes.push(this.neighbour(direction).terrain.elevationMeshVertical.clone())
+                    this.face.add(this.elevationMeshes.last())
+                    this.elevationMeshes.last().rotation.z = -Math.PI / 3 * directionIndex
+
+                    this.elevationMeshes.last().position.x = Math.cos(directionIndex * Math.PI / 3) * Math.sqrt(3) * hexagonSizeX * .5
+                    this.elevationMeshes.last().position.y = -Math.sin(directionIndex * Math.PI / 3) * Math.sqrt(3) * hexagonSizeY * .5
+                    this.elevationMeshes.last().scale.set(this.neighbour(direction).heightLevel - this.heightLevel, 1, 1)
+                    this.elevationMeshes.last().rotation.y = Math.PI / 2
+                    this.elevationMeshes.last().position.z = (this.neighbour(direction).heightLevel - this.heightLevel)
+                    this.elevationMeshes.last().rotation.order = "ZXY"*/
+                }
+            }
+        })
 
         this.pathMeshes = []
 
@@ -196,7 +222,7 @@ class Tile {
     get units() {
         var final = []
         players.forEach(p => p.units.forEach(function (u) {
-            if (u.pos.x == this.position.x && u.pos.y == this.position.y) {
+            if (u.position.x == this.position.x && u.position.y == this.position.y && u.position.z == this.position.z) {
                 final.push(u)
             }
         }.bind(this)))
@@ -207,7 +233,7 @@ class Tile {
      * @return {boolean} Whether or not this Tile can have a Settlement founded on it
     */
     canFoundSettlement() {
-        return nearby(this, 3).every(x => x.settlement == undefined)
+        return this.nearby(3).every(x => x.settlement == undefined)
             && this.terrain.variety == terrainVariety.land
     }
 
@@ -215,9 +241,8 @@ class Tile {
      * Changes the map offset so that the Tile is centered in view
     */
     centerCameraOnTile() {
-        mapOffset.x = maxOffsetX + initialCameraOffsetX - (Math.sqrt(3) * hexagonSize * this.position.x)
-        mapOffset.y = initialCameraOffsetY - (2.05 * .75 * hexagonSize * this.position.y) + 10
-        cameraMove()
+        camera.position.x = this.face.position.x
+        camera.position.y = this.face.position.y + (activeSettlement == undefined ? (camera.position.z - minimumScrollIn) : 0) * 1.65 - 7
     }
 
     /**
@@ -255,10 +280,10 @@ class Tile {
      */
     foundSettlement() {
         this.switchOwnership(activePlayer)
-        this.settlement = new Settlement(this.position, this.player)
+        this.settlement = new Settlement(this.position, this.player, this.worldMap)
         this.player.settlements.push(this.settlement)
 
-        nearby(this, 1).forEach(function (tile) {
+        this.nearby(1).forEach(function (tile) {
             tile.switchOwnership(this.player)
             this.settlement.tiles.push(tile)
         }.bind(this))
@@ -279,20 +304,20 @@ class Tile {
         this.updateOwnership()
     }
 
-    updateOwnership(){
-        if(this.settlement){
+    updateOwnership() {
+        if (this.settlement) {
             this.player = this.settlement.player
         } else {
             var topPlayer = players[0]
             players.forEach(x => {
-                if(this.cultureInfluence.getValue(x) > this.cultureInfluence.getValue(topPlayer)){
+                if (this.cultureInfluence.getValue(x) > this.cultureInfluence.getValue(topPlayer)) {
                     topPlayer = x
                 }
             })
             this.player = topPlayer
         }
 
-        calculateBorders()
+        this.worldMap.calculateBorders()
     }
 
     /**
@@ -300,7 +325,7 @@ class Tile {
      * @return {string} The tooltip text for the Tile
      */
     get tooltip() {
-        var final = this.terrain.name + " (" + this.position.x + "," + this.position.y + ")<br>" + (this.hasRiver ? "River<br>" : "")
+        var final = this.terrain.name + " (" + this.position.x + "," + this.position.y + "," + this.position.z + "," + this.ring + ")<br>" + (this.hasRiver ? "River<br>" : "")
         for (var i = 0; i < this.features.length; i++) {
             final += this.features[i].name + "<br>"
         }
@@ -320,6 +345,8 @@ class Tile {
         finalString += this.position.x
         finalString += ","
         finalString += this.position.y
+        finalString += ","
+        finalString += this.position.z
         finalString += ","
         finalString += this.depth
         finalString += ","
@@ -382,7 +409,7 @@ class Tile {
         this.developed = true
         this.renderCurrentDevelopment()
 
-        tiles.forEach(x => x.forEach(y => y.calculateYields()))
+        this.worldMap.forEach(tile => tile.calculateYields())
     }
 
     clearDevelopment() {
@@ -420,7 +447,7 @@ class Tile {
         if (this.plannedDevelopment && this.developed && this.development != this.plannedDevelopment) {
             this.development = this.plannedDevelopment
         } else if (this.developed) {
-            this.clearDevelopment
+            this.clearDevelopment()
         }
 
         if (this.developed) {
@@ -444,11 +471,11 @@ class Tile {
         this.yields = addYields(this.yields, addition)
     }
 
-    addBuildingYields(addition){
+    addBuildingYields(addition) {
         this.buildingYields = addYields(this.buildingYields, addition)
     }
 
-    resetBuildingYields(){
+    resetBuildingYields() {
         this.buildingYields = {}
     }
 
@@ -468,18 +495,18 @@ class Tile {
         this.seen = true
         if (!this.hasBeenAdded) {
             scene.add(this.face)
-            this.face.material = this.terrain.material.clone()
+            this.face.material = this.terrain.material[this.randomTexture].clone()
             this.face.material.opacity = 0
             this.hasBeenAdded = true
         } else {
-            this.face.material = this.terrain.material
+            this.face.material = this.terrain.material[this.randomTexture]
         }
         this.renderYieldIcons()
     }
 
     displayAsNotSeen() {
         this.seen = false
-        this.face.material = this.terrain.materialDark
+        this.face.material = this.terrain.materialDark[this.randomTexture]
         this.renderYieldIcons()
     }
 
@@ -490,5 +517,49 @@ class Tile {
     clearPathMeshes() {
         this.pathMeshes.forEach(mesh => this.face.remove(mesh))
         this.pathMeshes = []
+    }
+
+    addRoad() {
+        this.hasRoad = true
+        this.worldMap.updateRoadMeshes()
+    }
+
+
+    neighbour(direction) {
+        if (this._neighbours[direction] == undefined) {
+            this._neighbours[direction] = this.worldMap.getTile({
+                x: this.position.x + directionVectors[direction].x,
+                y: this.position.y + directionVectors[direction].y,
+                z: this.position.z + directionVectors[direction].z
+            })
+            if (this._neighbours[direction] == undefined) {
+                this._neighbours[direction] = 0
+            }
+        }
+
+        return this._neighbours[direction] == 0 ? undefined : this._neighbours[direction]
+    }
+
+    nearby(distance) {
+        if (this._nearby[distance] == undefined) {
+            var final = [this]
+            var lastSet = [this]
+
+            for (var i = 0; i < distance; i++) {
+                var nextSet = []
+                for (var e = 0; e < lastSet.length; e++) {
+                    directions.forEach(direction => {
+                        if (lastSet[e].neighbour(direction) != undefined && !final.includes(lastSet[e].neighbour(direction))) {
+                            final.push(lastSet[e].neighbour(direction))
+                            nextSet.push(lastSet[e].neighbour(direction))
+                        }
+                    })
+                }
+                lastSet = nextSet
+            }
+            this._nearby[distance] = final
+        }
+
+        return this._nearby[distance]
     }
 }

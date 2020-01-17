@@ -1,5 +1,5 @@
 class District {
-    constructor(tile, player, settlement) {
+    constructor(tile, player, settlement, map) {
         this.tile = tile
         this.player = player
         this.name = "District"
@@ -7,6 +7,7 @@ class District {
         this._buildings = []
         this._yields = []
         this.name = "District"
+        this.worldMap = map
 
         this.model = districtModel.clone()
         this.model.scale.set(.0025, .0025, .0025)
@@ -14,6 +15,7 @@ class District {
         this.tile.face.add(this.model)
 
         this.tile.district = this
+        this.tile.addRoad()
         this.tile.clearAllFeatures()
         this.tile.clearResource()
 
@@ -77,11 +79,12 @@ class District {
         this.districtLabel.className = "district-label"
         this.districtLabel.style.backgroundColor = this.player.color
         this.tile.unitIconHolderDIV.prepend(this.districtLabel)
+        this.worldMap.updateUnitIconHolders()
 
         this.districtLabel.district = this
         this.districtLabel.onclick = function(){
             this.district.settlement.displayInfo()
-            Settlement.changeCityInfoPanel(3)
+            Settlement.changeCityInfoPanel(2)
             this.district.elementName.onclick()
         }
     }

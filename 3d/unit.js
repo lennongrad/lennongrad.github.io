@@ -1,8 +1,9 @@
 class Unit {
-    constructor(type, player, pos) {
-        this.pos = pos
+    constructor(type, player, position, map, dontShow) {
+        this.position = position
         this.player = player
         this.movementRemaining = 0
+        this.worldMap = map
         this.asleep = false
 
         this.troops = []
@@ -38,6 +39,11 @@ class Unit {
         this.iconMoraleBarDIV = document.createElement("DIV")
         this.iconMoraleDIV.appendChild(this.iconMoraleBarDIV)
         this.iconDIV.appendChild(this.iconMoraleDIV)
+
+        if(!dontShow){
+            this.tile.unitIconHolderDIV.appendChild(this.iconDIV)
+            this.worldMap.updateUnitIconHolders()
+        }
 
         this.resetTurn()
         this.updateInfo()
@@ -86,7 +92,7 @@ class Unit {
                 }
             }
         }
-        Unit.displayPaths(selectedUnits)
+        this.worldMap.displayPaths(selectedUnits)
     }
 
     deselect() {
@@ -105,13 +111,13 @@ class Unit {
             document.getElementById("troop-info").innerHTML = ""
         }
         Unit.updateActions()
-        Unit.displayPaths(selectedUnits)
+        this.worldMap.displayPaths(selectedUnits)
     }
 
     split(index) {
         if(this.troops.length > 1){
-            this.player.units.push(new Unit(this.troops.splice(index, index + 1), this.player, this.pos))
-            this.player.units.last().move(this.pos)
+            this.player.units.push(new Unit(this.troops.splice(index, index + 1), this.player, this.position, this.worldMap))
+            this.player.units.last().move(this.position)
             this.updateInfo()
             return this.player.units.last()
         }
@@ -179,10 +185,11 @@ class Unit {
             this.updateInfo()
             Unit.updateActions()
         }
+        this.player.detectSeen()
     }
 
     get tile() {
-        return tiles[this.pos.x][this.pos.y]
+        return this.worldMap.getTile(this.position)
     }
 
     movementCost(tile, origin) {
@@ -223,7 +230,7 @@ class Unit {
 
     assignPath(path){
         this.path = path
-        Unit.displayPaths(selectedUnits)
+        this.worldMap.displayPaths(selectedUnits)
         //this.deselect()
     }
 
@@ -247,7 +254,7 @@ class Unit {
                 break
             }
 
-            nearby(current, 1).splice(1).forEach(function (next) {
+            current.nearby(1).slice(0).splice(1).forEach(function (next) {
                 if (this.movementCost(next, current) < cannotPassTile) {
                     var newCost = costSoFar.getValue(current) + this.movementCost(next, current)
                     if (costSoFar.getValue(next) == undefined || newCost < costSoFar.getValue(next)) {
@@ -277,23 +284,23 @@ class Unit {
 
     // will redo this at some point to use dictionary/priority queue
     determineReachable() {
-        var visited = [{ tile: tiles[this.pos.x][this.pos.y], distance: 0 }]
+        var visited = [{ tile: this.tile, distance: 0 }]
         var fringes = []
-        fringes.push([{ tile: tiles[this.pos.x][this.pos.y], distance: 0 }])
+        fringes.push([{ tile: this.tile, distance: 0 }])
 
         for (var i = 0; i < this.movementRemaining; i++) {
             fringes.push([])
             fringes[i].forEach(function (e) {
                 for (var d = 0; d < directions.length; d++) {
-                    var neighbor = t(e.tile, directions[d])
-                    if (e.distance + this.movementCost(neighbor, e.tile) <= this.movementRemaining) {
-                        var sameTiles = visited.filter(y => y.tile.position.x == neighbor.position.x && y.tile.position.y == neighbor.position.y)
+                    var neighbour = e.tile.neighbour(directions[d])
+                    if (neighbour != undefined && (e.distance + this.movementCost(neighbour, e.tile)) <= this.movementRemaining) {
+                        var sameTiles = visited.filter(y => y.tile.position.x == neighbour.position.x && y.tile.position.y == neighbour.position.y)
                         if (sameTiles.length == 0) {
-                            visited.push({ tile: neighbor, distance: e.distance + this.movementCost(neighbor, e.tile) })
-                            fringes[i + 1].push({ tile: neighbor, distance: e.distance + this.movementCost(neighbor, e.tile) })
-                        } else if (sameTiles[0].distance > e.distance + this.movementCost(neighbor, e.tile)) {
-                            sameTiles[0].distance = e.distance + this.movementCost(neighbor, e.tile)
-                            fringes[i + 1].push({ tile: neighbor, distance: e.distance + this.movementCost(neighbor, e.tile) })
+                            visited.push({ tile: neighbour, distance: e.distance + this.movementCost(neighbour, e.tile) })
+                            fringes[i + 1].push({ tile: neighbour, distance: e.distance + this.movementCost(neighbour, e.tile) })
+                        } else if (sameTiles[0].distance > e.distance + this.movementCost(neighbour, e.tile)) {
+                            sameTiles[0].distance = e.distance + this.movementCost(neighbour, e.tile)
+                            fringes[i + 1].push({ tile: neighbour, distance: e.distance + this.movementCost(neighbour, e.tile) })
                         }
                     }
                 }
@@ -343,11 +350,12 @@ class Unit {
     }
 
     move(position, cost) {
-        this.pos = position
+        this.position = position
         this.movementRemaining -= cost
 
-        tiles[position.x][position.y].unitIconHolderDIV.appendChild(this.iconDIV)
+        this.tile.unitIconHolderDIV.appendChild(this.iconDIV)
         this.player.detectSeen()
+        this.worldMap.updateUnitIconHolders()
 
         hideReachable()
         this.wakeUp()
@@ -361,7 +369,7 @@ class Unit {
 
     moveToAttack(tile){
         if(this.determineReachable().map(x => x.tile).includes(tile)){
-            while (!nearby(this.tile, 1).includes(tile)) {
+            while (!this.tile.nearby(1).includes(tile)) {
                 var pathToDefender = this.getPathToTile(tile).reverse()
                 this.move(pathToDefender[0].position, this.determineReachable().filter(x => x.tile == pathToDefender[0])[0].distance)
             }
@@ -374,14 +382,14 @@ class Unit {
         var unitOnHill = this.tile.terrain.name.includes("Hill")
         while(frontier.length >= 1){
             var currentTile = frontier.shift()
-            nearby(currentTile, 1).forEach(function(tile){
+            currentTile.nearby(1).forEach(function(tile){
                 if(!this.player.seen.includes(tile)){
                     this.player.seen.push(tile)
                 }
                 if(((!tile.terrain.name.includes("Hill") && !tile.features.includes(features.forest)) || unitOnHill)
                 && !tile.features.includes(features.mountain)
                 && !visited.includes(tile)
-                && nearby(this.tile, 1).includes(tile)){
+                && this.tile.nearby(1).includes(tile)){
                     frontier.push(tile)
                     visited.push(tile)
                 }
@@ -458,7 +466,7 @@ class Unit {
         }
 
         document.getElementById("unitactions").innerHTML = ""
-        document.getElementById("unitactions").style.left = "0"
+        document.getElementById("unitactions").style.left = ""
 
         unitActions.forEach(function (e) {
             var makeInactive = false
@@ -481,44 +489,6 @@ class Unit {
         document.getElementById("troop-info").innerHTML = ""
         selectedUnits.forEach(function(unit){
             document.getElementById("troop-info").appendChild(unit.troopInfo)
-        })
-    }
-
-    static displayPaths(units, destination) {
-        tiles.forEach(x => x.forEach(function (tile) {
-            tile.clearPathMeshes()
-        }))
-
-        units.forEach(function (unit) {
-            var pathwayTiles
-            if (unit.path != undefined) {
-                pathwayTiles = unit.path.slice()
-            } else if (destination != undefined && unit.getPathToTile(destination) != false) {
-                pathwayTiles = unit.getPathToTile(destination).reverse()
-            }
-
-            if (pathwayTiles != undefined) {
-                pathwayTiles.push(unit.tile)
-
-                tiles.forEach(x => x.forEach(function (tile) {
-                    if (pathwayTiles.includes(tile)) {
-                        directions.forEach(function (direction, directionIndex) {
-                            if (pathwayTiles.includes(t(tile, direction))) {
-                                tile.pathMeshes.push(unitPathMesh.clone())
-                                tile.face.add(tile.pathMeshes.last())
-                                tile.pathMeshes.last().rotation.z = -Math.PI / 3 * directionIndex
-
-                                if (t(tile, direction).depth > tile.depth) {
-                                    var angle = Math.atan((t(tile, direction).depth - tile.depth) / hexagonSize)
-                                    tile.pathMeshes.last().scale.set(1 / Math.cos(angle), 1, 1)
-                                    tile.pathMeshes.last().rotation.y = -angle * 1.1
-                                    tile.pathMeshes.last().rotation.order = "ZXY"
-                                }
-                            }
-                        })
-                    }
-                }))
-            }
         })
     }
 

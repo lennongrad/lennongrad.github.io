@@ -6,7 +6,8 @@
 	<meta charset=utf-8>
 	<link rel="stylesheet" href="3d.css">
 	<link rel="icon" href="favicon.ico" type="image/x-icon">
-	<link href="https://fonts.googleapis.com/css?family=Cinzel|Merriweather+Sans&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto|Copse|Cinzel|Open+Sans|Merriweather+Sans&display=swap"
+		rel="stylesheet">
 </head>
 
 <body>
@@ -30,116 +31,110 @@
 		</div>
 	</div>
 
-	<div id="city-info" onmouseup="cursor.active = false" style="right: -400px">
+	<canvas id="hexagon-map"></canvas>
+	<div id="hexagon-map-plus" onclick="currentWorldMap.decreaseMapZoom()">+</div>
+	<div id="hexagon-map-minus" onclick="currentWorldMap.increaseMapZoom()">-</div>
+
+	<div id="city-info" onmouseup="cursor.active = false" style="right: -500px">
+		<!-- <div class="city-yields-result"><span id="city-yields-culture-result">4</span> <img src="tiles.png"></div>
+		<div class="city-yields-result"><span id="city-yields-food-result">4</span> <img src="citizen.png"></div> -->
 		<div id="city-info-header">
-			<div id="city-info-header-title"></div>
+			<div id="city-yields">
+				<div class="city-yields-category" id="city-yields-production">
+					<div class="city-yields-count"><span id="city-yields-production-count">+10</span> <img
+							src="yields/production.png"></div>
+				</div>
+				<div class="city-yields-category" id="city-yields-food">
+					<div class="city-yields-count"><span id="city-yields-food-count">+10</span> <img src="yields/food.png">
+					</div>
+				</div>
+				<div class="city-yields-category" id="city-yields-culture">
+					<div class="city-yields-count"><span id="city-yields-culture-count">+10</span> <img
+							src="yields/culture.png">
+					</div>
+				</div>
+				<div class="city-yields-category" id="city-yields-commerce">
+					<div class="city-yields-count"><span id="city-yields-commerce-count">+10</span> <img
+							src="yields/commerce.png">
+					</div>
+				</div>
+				<div class="city-yields-category" id="city-yields-capital">
+					<div class="city-yields-count"><span id="city-yields-capital-count">+10</span> <img
+							src="yields/capital.png">
+					</div>
+				</div>
+				<div class="city-yields-category" id="city-yields-science">
+					<div class="city-yields-count"><span id="city-yields-science-count">+10</span> <img
+							src="yields/science.png">
+					</div>
+				</div>
+			</div>
 			<img src="xbutton.png" id="city-header-info-exit" onclick="Settlement.hideInfo()">
 		</div>
-		<div id="city-production"></div>
-		<div id="city-yields" style="display:none">
-			<div class="city-yields-category" id="city-yields-production">
-				<div class="city-yields-count"><span id="city-yields-production-count">+10</span> <img
-						src="yields/production.png"></div>
-				<div class="city-yields-bar" id="city-yields-bar-production">
-					<div id="city-yields-production-bar"></div>
+		<div id="city-info-body">
+			<div id="city-production"></div>
+			<div id="city-commerce">
+				<div id="city-commerce-header">
+					DEVELOPMENT LVL. <b id="city-commerce-header-level">3</b>
 				</div>
-				<div class="city-yields-turns" id="city-yields-turns-production">
-					<span id="city-yields-production-turns">8</span> <img src="clock.png">
-				</div>
-			</div>
-			<div class="city-yields-category" id="city-yields-food">
-				<div class="city-yields-count"><span id="city-yields-food-count">+10</span> <img src="yields/food.png">
-				</div>
-				<div class="city-yields-bar">
-					<div id="city-yields-food-bar"></div>
-				</div>
-				<div class="city-yields-turns"><span id="city-yields-food-turns">8</span> <img src="clock.png"></div>
-				<div class="city-yields-result"><span id="city-yields-food-result">4</span> <img src="citizen.png">
-				</div>
-			</div>
-			<div class="city-yields-category" id="city-yields-culture">
-				<div class="city-yields-count"><span id="city-yields-culture-count">+10</span> <img
-						src="yields/culture.png">
-				</div>
-				<div class="city-yields-bar">
-					<div id="city-yields-culture-bar"></div>
-				</div>
-				<div class="city-yields-turns"><span id="city-yields-culture-turns">8</span> <img src="clock.png"></div>
-				<div class="city-yields-result"><span id="city-yields-culture-result">4</span> <img src="tiles.png">
-				</div>
-			</div>
-			<div class="city-yields-category" id="city-yields-commerce">
-				<div class="city-yields-count"><span id="city-yields-commerce-count">+10</span> <img
-						src="yields/commerce.png">
-				</div>
-				<!--
-										<div class="city-yields-bar"><div id="city-yields-commerce-bar"></div></div>
-										<div class="city-yields-turns"><span id="city-yields-commerce-turns">8</span> <img src="clock.png"></div>
-										<div class="city-yields-result"><span id="city-yields-commerce-result">4</span> <img src="citizen.png"></div>-->
-			</div>
-			<div class="city-yields-category" id="city-yields-capital">
-				<div class="city-yields-count"><span id="city-yields-capital-count">+10</span> <img
-						src="yields/capital.png">
-				</div>
-			</div>
-			<div class="city-yields-category" id="city-yields-science">
-				<div class="city-yields-count"><span id="city-yields-science-count">+10</span> <img
-						src="yields/science.png">
-				</div>
-				<!--
-										<div class="city-yields-bar"><div id="city-yields-science-bar"></div></div>
-										<div class="city-yields-turns"><span id="city-yields-science-turns">8</span> <img src="clock.png"></div>
-										<div class="city-yields-result"><span id="city-yields-science-result">4</span> <img src="citizen.png"></div>-->
-			</div>
-		</div>
-		<div id="city-commerce">
-			<div id="city-commerce-conversion">
-				<div id="city-commerce-conversion-initial">
-					<div id="city-commerce-conversion-initial-commerce"><img src="yields/commerce.png"><span>+20</span>
+				<div id="city-commerce-next">
+					<div id="city-commerce-next-bar">
+						<div id="city-commerce-next-bar-fill"></div>
+						<div id="city-commerce-next-bar-value">
+							<div id="city-commerce-next-bar-value-cost">110 / 137</div>
+							<div id="city-commerce-next-bar-value-turns">(10 <img src="clock.png">)</div>
+						</div>
 					</div>
 				</div>
-				<div id="city-commerce-conversion-result">
-					<div id="city-commerce-conversion-result-commerce"><img src="yields/commerce.png"><span>+10</span>
+				<div class="city-commerce-subheader">
+					TAXATION
+				</div>
+				<div id="city-commerce-conversion">
+					<div id="city-commerce-conversion-initial">
+						<div id="city-commerce-conversion-initial-commerce"><img src="yields/commerce.png"><span>+20</span>
+						</div>
 					</div>
-					<br>
-					<div id="city-commerce-conversion-result-capital"><img src="yields/capital.png"><span>+10</span>
+					<div id="city-commerce-conversion-result">
+						<div id="city-commerce-conversion-result-commerce"><img src="yields/commerce.png"><span>+10</span>
+						</div>
+						<br>
+						<div id="city-commerce-conversion-result-capital"><img src="yields/capital.png"><span>+10</span>
+						</div>
+					</div>
+					<div id="city-commerce-conversion-tax">
+						<div id="city-commerce-conversion-arrow-minus" onclick="Settlement.decreaseTax()">-</div>
+						<div id="city-commerce-conversion-arrow-rate">50%</div>
+						<div id="city-commerce-conversion-arrow-plus" onclick="Settlement.increaseTax()">+</div>
 					</div>
 				</div>
-			</div>
-			<div id="city-commerce-conversion-tax">
-				<div id="city-commerce-conversion-arrow-minus" onclick="Settlement.decreaseTax()">-</div>
-				<div id="city-commerce-conversion-arrow-rate">50%</div>
-				<div id="city-commerce-conversion-arrow-plus" onclick="Settlement.increaseTax()">+</div>
-			</div>
-			<div id="city-commerce-header">
-				DEVELOPMENT LEVEL <b>3</b>
-			</div>
-			<div id="city-commerce-next">
-				<div id="city-commerce-next-bar">
-					<div id="city-commerce-next-bar-fill"></div>
-					<div id="city-commerce-next-bar-value">
-						<div id="city-commerce-next-bar-value-cost">110 / 137</div>
-						<div id="city-commerce-next-bar-value-turns">(10 <img src="clock.png">)</div>
-					</div>
+				<div class="city-commerce-subheader">
+					TRADE ROUTES (<span id="city-commerce-routes-header-count"></span>)
 				</div>
+				<table id="city-commerce-routes">
+					<tr id="city-commerce-routes-header">
+						<td style="width: 100%">Province</td>
+						<td><img src="yields/food.png"></td>
+						<td><img src="yields/production.png"></td>
+						<td><img src="yields/commerce.png"></td>
+						<td><img src="yields/science.png"></td>
+						<td><img src="yields/culture.png"></td>
+					</tr>
+				</table>
 			</div>
-			<div id="city-commerce-routes"></div>
-		</div>
-		<div id="city-districts">
-			<div id="city-districts-list"></div>
-			<div id="city-districts-buildings" style="transform: scaleY(0); max-height: 0"></div>
+			<div id="city-districts">
+				<div id="city-districts-list"></div>
+				<div id="city-districts-buildings" style="transform: scaleY(0); max-height: 0"></div>
+			</div>
 		</div>
 		<div id="city-info-footer">
-			<div id="city-info-header-production" onclick="Settlement.changeCityInfoPanel(0)">
+			<div id="city-info-header-title"></div>
+			<div id="city-info-header-production" class="city-info-footer-flag" onclick="Settlement.changeCityInfoPanel(0)">
 				<img src="cityinfo_production.png">
 			</div>
-			<div id="city-info-header-yields" onclick="Settlement.changeCityInfoPanel(1)">
-				<img src="cityinfo_yields.png">
-			</div>
-			<div id="city-info-header-commerce" onclick="Settlement.changeCityInfoPanel(2)">
+			<div id="city-info-header-commerce" class="city-info-footer-flag" onclick="Settlement.changeCityInfoPanel(1)">
 				<img src="cityinfo_commerce.png">
 			</div>
-			<div id="city-info-header-district" onclick="Settlement.changeCityInfoPanel(3)">
+			<div id="city-info-header-district" class="city-info-footer-flag" onclick="Settlement.changeCityInfoPanel(2)">
 				<img src="cityinfo_district.png">
 			</div>
 		</div>
@@ -165,7 +160,6 @@
 
 	<script src="basic.js"></script>
 	<script src="classes.js"></script>
-	<script src="troop.js"></script>
 	<script src="player.js"></script>
 	<script src="civilization.js"></script>
 	<script src="animals.js"></script>
@@ -173,6 +167,7 @@
 	<script src="district.js"></script>
 	<script src="tile.js"></script>
 	<script src="unit.js"></script>
+	<script src="worldmap.js"></script>
 	<script src="3d.js"></script>
 </body>
 

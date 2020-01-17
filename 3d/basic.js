@@ -73,6 +73,16 @@ function randomValue(array) {
     return array[randomIndex(array)]
 }
 
+/** Returns a shuffled version of the array */
+function shuffleArray(array) {
+    var tempArray = array.slice(0)
+    for (let i = tempArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tempArray[i], tempArray[j]] = [tempArray[j], tempArray[i]];
+    }
+    return tempArray
+}
+
 /**
  * Returns a random value from the input object.
  * @param {object} obj 

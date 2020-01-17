@@ -4,7 +4,7 @@ var versionTitle = "Initial"
 
 var scene = new THREE.Scene();
 //var cssScene = new THREE.Scene()
-var camera = new THREE.PerspectiveCamera(43, window.innerWidth / window.innerHeight, 0.1, 50);
+var camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1);
 var clock = new THREE.Clock();
 var loader = new THREE.GLTFLoader();
 var renderer = new THREE.WebGLRenderer({ powerPreference: "high-performance" });
@@ -13,11 +13,11 @@ var css3DRenderer = new THREE.CSS3DRenderer();
 var raycaster = new THREE.Raycaster();
 var stats = new Stats();
 raycaster.far = 22;
-camera.far = 18;
+camera.far = 17;
 camera.updateProjectionMatrix();
 var mouseVector = new THREE.Vector2();
 stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-stats.dom.style.top = "50px"
+stats.dom.style.left = "320px"
 document.body.appendChild(stats.dom);
 document.body.appendChild(renderer.domElement);
 document.body.appendChild(css2DRenderer.domElement);
@@ -26,38 +26,30 @@ css2DRenderer.domElement.className = "cssRenderer"
 css3DRenderer.domElement.className = "cssRenderer"
 css3DRenderer.domElement.id = "cssRenderer3D"
 
-function animate2() {
-
-    stats.begin();
-
-    // monitored code goes here
-
-    stats.end();
-
-    requestAnimationFrame(animate2);
-
-}
-
-requestAnimationFrame(animate2);
-
 window.onresize = function () {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
     css2DRenderer.setSize(window.innerWidth, window.innerHeight);
     css3DRenderer.setSize(window.innerWidth, window.innerHeight);
+    if(this.currentWorldMap != this.undefined){
+        currentWorldMap.drawMap()
+    }
 }
 window.onresize();
 
 var tooltipTile = document.getElementById("tooltip-tile")
 var buildingsList = document.getElementById("city-districts-buildings")
+var tradeRouteHeader = document.getElementById("city-commerce-routes-header")
 
-var chanceToContinue = .25
+var chanceToContinue = .1
 var chanceToBeSameElevation = .6
 var lengthDecreaseAmount = .1
 var minimumLengthToContinue = .25
 var maxDepth = 6
 var startingElevationBase = .25
 var startingElevationVariance = .75
-var minimumInitialElevations = 9
+var minimumInitialElevations = 2
 var chanceToNotContinueElevations = .25
 var chanceToSpreadCoast = .25
 var lengthAdditionModifier = .05
@@ -72,17 +64,18 @@ var minimumSpreadTerrain = 2
 var chanceToContinueMountain = .45
 var chanceToContinueForest = .2
 var forestsLimit = 25
+var resourceChance = .05
 
-var minimumScrollOut = 14
+var minimumScrollOut = 15
 var minimumScrollIn = 9
-var ambientLighting = 1.5
+var ambientLighting = 2
 var reachableOverlayColor = "#109fc9"
 var reachableOverlayOpacity = .1
 var ownerOverlayOpacity = .25
 var unitIconHoverAboveTile = .45
 var chanceToIgnoreDeepestTile = .8
-var initialCameraOffsetX = 70
-var initialCameraOffsetY = 5
+var initialCameraOffsetX = 0
+var initialCameraOffsetY = 0
 var cameraRotationBase = .75
 
 var debug = false;
@@ -106,6 +99,14 @@ Symbol("l"),
 Symbol("ul"),
 Symbol("ur")]
 
+var directionVectors = {}
+directionVectors[directions[0]] = { x: 1, y: -1, z: 0 }
+directionVectors[directions[1]] = { x: 0, y: -1, z: 1 }
+directionVectors[directions[2]] = { x: -1, y: 0, z: 1 }
+directionVectors[directions[3]] = { x: -1, y: +1, z: 0 }
+directionVectors[directions[4]] = { x: 0, y: 1, z: -1 }
+directionVectors[directions[5]] = { x: 1, y: 0, z: -1 }
+
 const hexagonSize = 1
 var hexagonShape = new THREE.Shape();
 hexagonShape.moveTo(0, -hexagonSize)
@@ -117,32 +118,21 @@ hexagonShape.lineTo(-Math.sqrt(3) * hexagonSize / 2, -hexagonSize / 2);
 hexagonShape.lineTo(0, -hexagonSize)
 
 const hexagonAlpha = new THREE.TextureLoader().load("terrain/alpha.png")
+var hexagonAlphaRotations = []
+directions.forEach((direction, index) => {
+    hexagonAlphaRotations.push(new THREE.TextureLoader().load("terrain2/alpha.png"))
+    hexagonAlphaRotations.last().center = new THREE.Vector2(.5, .5)
+    hexagonAlphaRotations.last().rotation = index * Math.PI / 3
+})
+const stripAlpha = new THREE.TextureLoader().load("terrain2/alpha-strip.png")
 const hexagonGeometry = new THREE.PlaneBufferGeometry(Math.sqrt(3) * hexagonSize, 2.05 * hexagonSize, 1, 1)
 
-ownerBorderShape = new THREE.Shape()
-ownerBorderShape.moveTo(Math.sqrt(3) * hexagonSize * .5, hexagonSize * .5)
-ownerBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .5, -hexagonSize * .5)
-ownerBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .44, -hexagonSize * .5)
-ownerBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .44, hexagonSize * .5)
-ownerBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .44, hexagonSize * .5)
-ownerBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .5, hexagonSize * .5)
-
-var ownerBorders = []
-for (var i = 0; i < directions.length; i++) {
-    ownerBorders[i] = new THREE.Mesh(
-        new THREE.ExtrudeBufferGeometry(ownerBorderShape, { depth: .05, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: .05, bevelThickness: .05 }),
-        new THREE.MeshLambertMaterial({ color: reachableOverlayColor, transparent: true, opacity: .95 })
-    );
-    ownerBorders[i].rotation.z = -Math.PI / 3 * i
-}
-
-reachableBorderShape = new THREE.Shape()
-reachableBorderShape.moveTo(Math.sqrt(3) * hexagonSize * .5, hexagonSize * .5)
-reachableBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .5, -hexagonSize * .5)
-reachableBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .35, -hexagonSize * .5 - .1)
-reachableBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .35, hexagonSize * .5)
-reachableBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .35, hexagonSize * .5 + .1)
-reachableBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .5, hexagonSize * .5)
+var reachableBorderShape = new THREE.Shape()
+reachableBorderShape.moveTo(Math.sqrt(3) * hexagonSize * .52, hexagonSize * .5 + .02)
+reachableBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .52, -hexagonSize * .5)
+reachableBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .4, -hexagonSize * .5 - .11)
+reachableBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .4, hexagonSize * .5 + .11)
+reachableBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .52, hexagonSize * .5 + .02)
 
 var reachableBorders = []
 for (var i = 0; i < directions.length; i++) {
@@ -157,10 +147,11 @@ for (var i = 0; i < directions.length; i++) {
 gradientBorderShape = new THREE.Shape()
 gradientBorderShape.moveTo(Math.sqrt(3) * hexagonSize * .5, hexagonSize * .5)
 gradientBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .5, -hexagonSize * .5)
-gradientBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .2, -hexagonSize * .5 - .4)
+gradientBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .2, -hexagonSize * .5 - .15)
 gradientBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .2, hexagonSize * .5)
-gradientBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .2, hexagonSize * .5 + .4)
+gradientBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .2, hexagonSize * .5 + .15)
 gradientBorderShape.lineTo(Math.sqrt(3) * hexagonSize * .5, hexagonSize * .5)
+
 
 var gradientBorders = []
 for (var i = 0; i < directions.length; i++) {
@@ -169,7 +160,7 @@ for (var i = 0; i < directions.length; i++) {
         new THREE.MeshLambertMaterial({ color: reachableOverlayColor })
     );
     gradientBorders[i].rotation.z = -Math.PI / 3 * i
-    gradientBorders[i].position.z = .1 + .01 * i
+    gradientBorders[i].position.z = .1 + .01 * (i + 1)
 }
 
 var fullLength = hexagonSize * .9
@@ -192,6 +183,7 @@ unitPathHole2.lineTo(fullLength * .6, -.07)
 unitPathHole2.lineTo(fullLength * .9, -.07)
 unitPathHole2.lineTo(fullLength * .9, .07)
 unitPathHole2.lineTo(fullLength * .8, .07)
+
 var commercePathShape = new THREE.Shape()
 commercePathShape.holes.push(unitPathHole1, unitPathHole2)
 
@@ -203,6 +195,22 @@ var commercePathMesh = new THREE.Mesh(
     new THREE.ExtrudeBufferGeometry(commercePathShape, { bevelEnabled: true, depth: .03, bevelSize: .15, bevelThickness: .01 }),
     new THREE.MeshBasicMaterial({ color: new THREE.Color("#ffc117") })
 )
+
+var hexagonSizeX = hexagonSize * .88 
+var hexagonSizeY = hexagonSize * .92
+var elevationShape = new THREE.Shape()
+elevationShape.moveTo(Math.sqrt(3) * hexagonSizeX * .6, hexagonSizeY * .5 - .09)
+elevationShape.lineTo(Math.sqrt(3) * hexagonSizeX * .6, -hexagonSizeY * .5)
+elevationShape.lineTo(Math.sqrt(3) * hexagonSizeX * .3, -hexagonSizeY * .5 - .15)
+elevationShape.lineTo(Math.sqrt(3) * hexagonSizeX * .3, hexagonSizeY * .5 + .15)
+elevationShape.lineTo(Math.sqrt(3) * hexagonSizeX * .6, hexagonSizeY * .5 - .09)
+
+var elevationShapeVertical = new THREE.Shape()
+elevationShapeVertical.moveTo(2, hexagonSizeY * .5)
+elevationShapeVertical.lineTo(2, -hexagonSizeY * .5)
+elevationShapeVertical.lineTo(0, -hexagonSizeY * .5)
+elevationShapeVertical.lineTo(0, hexagonSizeY * .5)
+elevationShapeVertical.lineTo(2, hexagonSizeY * .5)
 
 var keys = {
     up: { key: 87, keydown: function () { }, keyup: function () { }, active: false },
@@ -219,7 +227,7 @@ var keys = {
     },
     enter: {
         key: 13, keydown: function () {
-            if (players[0].notificationsRemaining.length >= 1) {
+            if (players[0].notificationsRemaining.length >= 1 && !keys.shift.active) {
                 players[0].notificationsRemaining[0].click()
             } else {
                 players[0].endTurn()
@@ -241,14 +249,11 @@ window.addEventListener('mousemove', function (eventData) {
     cursor.lastMoved = 0;
 
     if (cursor.active && Math.abs(eventData.movementX) < 300 && Math.abs(eventData.movementY) < 300) {
-        mapOffset.x += Math.min(200, Math.abs(eventData.movementX)) / 100 * Math.sign(eventData.movementX)
-        if (mapOffset.x < 0) {
-            mapOffset.x = maxOffsetX
-        }
-        mapOffset.y -= Math.min(200, Math.abs(eventData.movementY)) / 100 * Math.sign(eventData.movementY)
+        camera.position.x -= eventData.movementX / 100
+        camera.position.y += eventData.movementY / 100
+        currentWorldMap.drawMap()
     }
 
-    cameraMove()
     dontHideReachable = true
 
     mouseVector.x = (eventData.clientX / window.innerWidth) * 2 - 1;
@@ -261,12 +266,12 @@ window.addEventListener('mousedown', function (eventData) {
             cursor.active = true
             dontHideReachable = false
         }
-    } 
+    }
 })
 
-document.mouseleave = function () {
+document.body.addEventListener('mouseout', function (e) {
     cursor.active = false
-}
+});
 
 document.onmouseup = function (eventData) {
     if (renderer.domElement.matches(':hover')) {
@@ -297,7 +302,7 @@ document.onmouseup = function (eventData) {
                 && Unit.selectedUnitsOnSameTile()
                 && Unit.selectedUnitsHaveSameMovement()
                 && activeTile != undefined
-                && activeTile != tiles[selectedUnits[0].pos.x][selectedUnits[0].pos.y]
+                && activeTile != selectedUnits[0].tile
                 && selectedUnits[0].determineReachable().map(x => x.tile).includes(activeTile)
                 && activeTile.attackOverlay == undefined) {
                 let tileDistance = activeTile.reachableOverlay.reachableDistance
@@ -351,9 +356,12 @@ document.body.addEventListener('wheel', function (event) {
             camera.position.z = minimumScrollOut
         } else if (camera.position.z < minimumScrollIn) {
             camera.position.z = minimumScrollIn
+        } else {
+            camera.position.y += event.deltaY / 4
+            currentWorldMap.yDisplacement += event.deltaY / 4
         }
+        currentWorldMap.drawMap()
         adjustCameraRotation()
-        cameraMove()
         return false;
     }
 }, false);
@@ -375,63 +383,6 @@ document.addEventListener('keyup', function (event) {
     foundMatch.keyup()
     foundMatch.active = false
 });
-
-function t(pos, direction) {
-    var used = pos
-    var returnPosition = true
-    var final
-    if (pos.x == undefined) {
-        used = pos.position
-        returnPosition = false
-    }
-
-    switch (direction) {
-        case directions[0]: final = { x: used.x + 1, y: used.y }; break;
-        case directions[1]: final = { x: used.x + (used.y % 2 == 0 ? 0 : 1), y: used.y - 1 }; break;
-        case directions[2]: final = { x: used.x + (used.y % 2 == 0 ? -1 : 0), y: used.y - 1 }; break;
-        case directions[3]: final = { x: used.x - 1, y: used.y }; break;
-        case directions[4]: final = { x: used.x + (used.y % 2 == 0 ? -1 : 0), y: used.y + 1 }; break;
-        case directions[5]: final = { x: used.x + (used.y % 2 == 0 ? 0 : 1), y: used.y + 1 }; break;
-    }
-
-    if (final.x < 0) {
-        final.x = mapSizeX + final.x
-    }
-    if (final.y < 0) {
-        final.y = mapSizeY + final.y
-    }
-    if (final.x >= mapSizeX) {
-        final.x = final.x - mapSizeX
-    }
-    if (final.y >= mapSizeY) {
-        final.y = final.y - mapSizeY
-    }
-
-    if (returnPosition) {
-        return final
-    }
-    return tiles[final.x][final.y]
-}
-
-function nearby(tile, distance) {
-    var final = [tile]
-    var lastSet = [tile]
-
-    for (var i = 0; i < distance; i++) {
-        var nextSet = []
-        for (var e = 0; e < lastSet.length; e++) {
-            for (var d = 0; d < directions.length; d++) {
-                if (!final.includes(t(lastSet[e], directions[d]))) {
-                    final.push(t(lastSet[e], directions[d]))
-                    nextSet.push(t(lastSet[e], directions[d]))
-                }
-            }
-        }
-        lastSet = nextSet
-    }
-
-    return final
-}
 
 document.getElementById("drag-catch").onmousedown = function (event) {
     dragInitialPoint = { x: event.clientX, y: event.clientY }
@@ -468,10 +419,6 @@ document.getElementById("drag-catch").onmousemove = function (event) {
     document.getElementById("drag-catch-box").style.top = dragTopLeftPoint.y + "px"
     document.getElementById("drag-catch-box").style.width = Math.abs(dragTopLeftPoint.x - dragBottomRightPoint.x) + "px"
     document.getElementById("drag-catch-box").style.height = Math.abs(dragTopLeftPoint.y - dragBottomRightPoint.y) + "px"
-}
-
-function randomTile() {
-    return randomValue(randomValue(tiles))
 }
 
 function exportStr() {
@@ -541,11 +488,12 @@ var yieldWidth = yieldScale
 var yields = {
     food: new Yield("Food"),
     production: new Yield("Production"),
-    science: new Yield("Science"),
     commerce: new Yield("Commerce"),
+    science: new Yield("Science"),
     culture: new Yield("Culture"),
     capital: new Yield("Capital")
 }
+var yieldsTradeRouteOrder = [yields.food, yields.production, yields.commerce, yields.science, yields.culture]
 
 var terrainAlpha = new THREE.TextureLoader().load("terrain/alpha.png");
 var riverMaterials = [
@@ -573,12 +521,28 @@ var riverDeltaMaterial = new THREE.MeshBasicMaterial({
 })
 var borderGradientMap = new THREE.TextureLoader().load("weirdAlpha.png")
 
-/* Note: roads have not been implemented yet
-var roadMaterial =  new THREE.MeshBasicMaterial( { 
-    alphaMap: new THREE.TextureLoader().load("terrain/road_alpha.png"), 
-    map: new THREE.TextureLoader().load("terrain/road.png"), 
-    transparent: true, depthWrite: false,  side: THREE.DoubleSide } )
-*/
+var roadMaterials = [
+    new THREE.MeshBasicMaterial({
+        alphaMap: new THREE.TextureLoader().load("terrain/road0_alpha.png"),
+        map: new THREE.TextureLoader().load("terrain/road0.png"),
+        transparent: true, depthWrite: false, side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+        alphaMap: new THREE.TextureLoader().load("terrain/road1_alpha.png"),
+        map: new THREE.TextureLoader().load("terrain/road1.png"),
+        transparent: true, depthWrite: false, side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+        alphaMap: new THREE.TextureLoader().load("terrain/road2_alpha.png"),
+        map: new THREE.TextureLoader().load("terrain/road2.png"),
+        transparent: true, depthWrite: false, side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+        alphaMap: new THREE.TextureLoader().load("terrain/road3_alpha.png"),
+        map: new THREE.TextureLoader().load("terrain/road3.png"),
+        transparent: true, depthWrite: false, side: THREE.DoubleSide
+    })
+]
 
 /**
  * Whether a Terrain is 'land' or 'sea'
@@ -593,24 +557,24 @@ var terrainVariety = {
 /**
  * The type of Terrain a type has, such as 'grasslands' or 'coast'
  * @enum {Terrain}
- */
+ **/
 var terrainTypes = {
-    grasslands: new Terrain("Grasslands", "terrain/grasslands.png", terrainVariety.land, { food: 2 }),
-    grasslandsHills: new Terrain("Grasslands Hills", "terrain/grasslands-hills.png", terrainVariety.land, { food: 2, production: 1 }),
-    plains: new Terrain("Plains", "terrain/plains.png", terrainVariety.land, { food: 1, production: 1 }),
-    plainsHills: new Terrain("Plains Hills", "terrain/plains-hills.png", terrainVariety.land, { food: 1, production: 2 }),
-    tundra: new Terrain("Tundra", "terrain/tundra.png", terrainVariety.land, { food: 1 }),
-    tundraHills: new Terrain("Tundra Hills", "terrain/tundra-hills.png", terrainVariety.land, { food: 1, production: 1 }),
-    tundraWetlands: new Terrain("Tundra Wetlands", "terrain/tundra-wetlands.png", terrainVariety.land, { food: 2 }),
-    desert: new Terrain("Desert", "terrain/desert.png", terrainVariety.land, { production: 1 }),
-    desertFloodplains: new Terrain("Desert Floodplains", "terrain/desert-floodplains.png", terrainVariety.land, { food: 2, production: 1 }),
-    desertHills: new Terrain("Desert Hills", "terrain/desert-hills.png", terrainVariety.land, { production: 2 }),
-    snow: new Terrain("Snow", "terrain/snow.png", terrainVariety.land, {}),
-    snowHills: new Terrain("Snow Hills", "terrain/snow-hills.png", terrainVariety.land, { production: 1 }),
-    coast: new Terrain("Coast", "terrain/coast.png", terrainVariety.sea, { food: 1, commerce: 1 }),
-    ocean: new Terrain("Ocean", "terrain/ocean.png", terrainVariety.sea, {}),
-    lake: new Terrain("Lake", "terrain/lake.png", terrainVariety.sea, { food: 2 }),
-    ice: new Terrain("Ice", "terrain/ice.png", terrainVariety.sea, {})
+    grasslands: new Terrain("Grasslands", "grasslands.png", "grasslands", terrainVariety.land, { food: 2 }, "#82943C"),
+    grasslandsHills: new Terrain("Grasslands Hills", "grasslands-hills.png", "grasslands", terrainVariety.land, { food: 2, production: 1 }, "#82943C"),
+    plains: new Terrain("Plains", "plains.png", "plains", terrainVariety.land, { food: 1, production: 1 }, "#A1A539"),
+    plainsHills: new Terrain("Plains Hills", "plains-hills.png", "plains", terrainVariety.land, { food: 1, production: 2 }, "#A1A539"),
+    tundra: new Terrain("Tundra", "tundra.png", "tundra", terrainVariety.land, { food: 1 }, "#99C"),
+    tundraHills: new Terrain("Tundra Hills", "tundra-hills.png", "tundra", terrainVariety.land, { food: 1, production: 1 }, "#99C"),
+    tundraWetlands: new Terrain("Tundra Wetlands", "tundra-wetlands.png", "tundra", terrainVariety.land, { food: 2 }, "#99C"),
+    desert: new Terrain("Desert", "desert.png", "desert", terrainVariety.land, { production: 1 }, "#f0e4a8"),
+    desertFloodplains: new Terrain("Desert Floodplains", "desert-floodplains.png", "desert", terrainVariety.land, { food: 2, production: 1 }, "#f0e4a8"),
+    desertHills: new Terrain("Desert Hills", "desert-hills.png", "desert", terrainVariety.land, { production: 2 }, "#f0e4a8"),
+    snow: new Terrain("Snow", "snow.png", "snow", terrainVariety.land, {}, "#fff"),
+    snowHills: new Terrain("Snow Hills", "snow-hills.png", "snow", terrainVariety.land, { production: 1 }, "#fff"),
+    coast: new Terrain("Coast", "coast.png", "", terrainVariety.sea, { food: 1, commerce: 1 }, "#4080e6"),
+    ocean: new Terrain("Ocean", "ocean.png", "", terrainVariety.sea, {}, "#2969cf"),
+    lake: new Terrain("Lake", "lake.png", "", terrainVariety.sea, { food: 2 }, "#496da6"),
+    ice: new Terrain("Ice", "ice.png", "", terrainVariety.sea, {}, "#fff")
 }
 
 /**
@@ -637,7 +601,8 @@ var requirements = {
     savanna: Symbol("savanna"),
     notSavanna: Symbol("notSavanna"),
     river: Symbol("river"),
-    notRiver: Symbol("notRiver")
+    notRiver: Symbol("notRiver"),
+    passable: Symbol("passable")
 }
 
 /**
@@ -676,12 +641,13 @@ function testRequirements(requirementsList, tile, settlement, district) {
                     || tile.terrain.name.includes("Grasslands")
                     || tile.terrain.name.includes("Floodlands")
                     || tile.terrain.name.includes("Wetlands")); break;
-                case requirements.coastal: confirm = (nearby(tile, 1).filter(x => x.terrain == terrainTypes.coast).length > 0); break;
-                case requirements.notCoastal: confirm = !(nearby(tile, 1).filter(x => x.terrain == terrainTypes.coast).length > 0); break;
+                case requirements.coastal: confirm = (tile.nearby(1).filter(x => x.terrain == terrainTypes.coast).length > 0); break;
+                case requirements.notCoastal: confirm = !(tile.nearby(1).filter(x => x.terrain == terrainTypes.coast).length > 0); break;
                 case requirements.savanna: confirm = (tile.features.includes(features.savanna)); break;
                 case requirements.notSavanna: confirm = (!tile.features.includes(features.savanna)); break;
                 case requirements.river: confirm = (tile.hasRiver); break;
                 case requirements.notRiver: confirm = (!tile.hasRiver); break;
+                case requirements.passable: confirm = (tile.terrain.variety == terrainVariety.sea) || tile.hasRoad || tile.hasRiver; break;
                 // settlement
                 // district
             }
@@ -782,9 +748,9 @@ var buildings = {
 
 var features = {
     mountain: new Feature("Mountain", 'Mountain.glb', { offsetZ: -.05, scale: .67 }),
-    forest: new Feature("Forest", 'lowpoly_forest.glb', { scale: .15 }),
+    forest: new Feature("Forest", 'lowpoly_forest.glb', { scale: .13 }),
     mesa: new Feature("Mesa", 'mesa.glb', { offsetZ: -.05, scale: .6 }),
-    savanna: new Feature("Savanna", 'savanna.glb', { scale: .025 })
+    savanna: new Feature("Savanna", 'savanna.glb', { scale: .0235 })
 }
 
 var productionTileIcon = new THREE.Mesh(
@@ -835,7 +801,7 @@ function renderReachable(unit) {
 
             e.tile.reachableBorders = []
             directions.forEach(function (d, index) {
-                if (!reachable.map(x => x.tile).includes(t(e.tile, d))) {
+                if (!reachable.map(x => x.tile).includes(e.tile.neighbour(d))) {
                     e.tile.reachableBorders.push(reachableBorders[index].clone())
                     e.tile.face.add(e.tile.reachableBorders[e.tile.reachableBorders.length - 1])
                 }
@@ -855,16 +821,17 @@ function hideReachable() {
     }
 
     reachableIsRendered = false
-    tiles.forEach(z => z.forEach(function (e) {
-        e.face.remove(e.reachableOverlay)
-        e.reachableOverlay = undefined
-        e.reachableBorders.forEach(x => e.face.remove(x))
-        e.reachableBorders = []
-        if (e.attackOverlay != undefined) {
-            e.face.remove(e.attackOverlay)
-            e.attackOverlay = undefined
+    currentWorldMap.forEach(tile => {
+        tile.face.remove(tile.reachableOverlay)
+        tile.reachableOverlay = undefined
+        tile.reachableBorders.forEach(x => tile.face.remove(x))
+        tile.reachableBorders = []
+        if (tile.attackOverlay != undefined) {
+            tile.face.remove(tile.attackOverlay)
+            tile.attackOverlay = undefined
         }
-    }))
+    })
+
     renderer.renderLists.dispose();
 }
 
@@ -984,9 +951,6 @@ technologies.bronzeWorking.prerequisites = [technologies.mining]
 technologies.irrigation.prerequisites = [technologies.pottery]
 technologies.wheel.prerequisites = [technologies.mining]
 
-var players = [new Civilization(), new Civilization(), new Animals()]
-activePlayer = players[0]
-
 var producibleTypes = {
     develop: Symbol("develop"),
     clear: Symbol("clear"),
@@ -1023,385 +987,9 @@ tileIcons.forEach(function (e) {
     e.position.y = .6
 })
 
-
-var mapSizeX = 50
-var mapSizeY = 35
-var tiles = []
-var flatArrayTiles = []
-for (var i = 0; i < mapSizeX; i++) {
-    tiles.push([])
-    for (var e = 0; e < mapSizeY; e++) {
-        tiles[i].push(new Tile({ x: i, y: e }))
-        flatArrayTiles.push(tiles[i][e])
-    }
-}
-
-function setElevation(pos, length) {
-    var lengthModifier = 1
-    if (visitedTiles.filter(x => x.position.x == pos.x && x.position.y == pos.y).length < 1) {
-        lengthModifier = alreadyVisitedModifier
-    }
-    visitedTiles.push(tiles[pos.x][pos.y])
-
-    if (tiles[pos.x][pos.y].depth > maxDepth) {
-        return
-    }
-    tiles[pos.x][pos.y].depth = Math.max(1 + length, tiles[pos.x][pos.y].depth + length * lengthAdditionModifier * lengthModifier)
-
-    length -= lengthDecreaseAmount
-    if (length <= minimumLengthToContinue) {
-        return
-    }
-
-    var noLoss = [false, false, false, false, false, false]
-    if (Math.random() < chanceToBeSameElevation) {
-        noLoss[randomIndex(noLoss)] = true
-    }
-
-    for (var d = 0; d < directions.length; d++) {
-        if (Math.random() > chanceToContinue) {
-            setElevation(t(pos, directions[d]), noLoss[d] ? (length + lengthDecreaseAmount) : length)
-        }
-    }
-}
-
-function spreadTerrain(tile, terrain, length) {
-    tile.terrain = terrain
-
-    for (var d = 0; d < directions.length; d++) {
-        if (length < ((terrain == terrainTypes.desert ? (maxSpreadTerrainDesert) : (maxSpreadTerrainPlains)) * Math.random()) + minimumSpreadTerrain
-            && t(tile, directions[d]).depth > 1
-            && !t(tile, directions[d]).terrain.name.includes("Tundra")
-            && !t(tile, directions[d]).terrain.name.includes("Snow")
-            && t(tile, directions[d]).terrain != terrain) {
-            spreadTerrain(t(tile, directions[d]), terrain, length + 1)
-        }
-    }
-}
-
-function setRiver(tile) {
-    if (tile.hasRiver) {
-        return
-    }
-
-    var possibilities = []
-
-    for (var d = 0; d < directions.length; d++) {
-        if (t(tile, directions[d]).depth < tile.depth
-            && !t(tile, directions[d]).features.includes(features.mountain)
-            && !t(tile, directions[d]).features.includes(features.mesa)) {
-            possibilities.push({ direction: d, tile: t(tile, directions[d]) })
-        }
-    }
-
-    if ((possibilities.length == 0 && tile.terrain != terrainTypes.coast && tile.terrain != terrainTypes.ocean && tile.terrain != terrainTypes.ice)
-        || tile.terrain == terrainTypes.snow) {
-        tile.terrain = terrainTypes.lake
-        tile.depth = Math.max(1, tile.depth - .15)
-        return false
-    } else if (possibilities.length == 0) {
-        return false
-    }
-
-    var nextTile
-    if (Math.random() < chanceToIgnoreDeepestTile) {
-        nextTile = randomValue(possibilities)
-    } else {
-        nextTile = possibilities.sort(function (x, y) { return y.depth - x.depth })[0]
-    }
-    setRiver(nextTile.tile)
-    nextTile.tile.riverDirections[(nextTile.direction + 3) % 6] = true
-    tile.riverDirections[nextTile.direction] = true
-    tile.hasRiver = true
-    if (tile.terrain == terrainTypes.desert) {
-        tile.terrain = terrainTypes.desertFloodplains
-    }
-    if (tile.terrain == terrainTypes.tundra) {
-        tile.terrain = terrainTypes.tundraWetlands
-    }
-
-    return true
-}
-
-function setMountainRange(tile, length) {
-    if (tile.terrain == terrainTypes.desertFloodplains) {
-        tile.features.push(features.mesa)
-        tile.terrain = terrainTypes.desert
-    } else {
-        tile.features.push(features.mountain)
-    }
-
-    for (var d = 0; d < directions.length; d++) {
-        if (t(tile, directions[d]).depth > 1
-            && t(tile, directions[d]).terrain != terrainTypes.lake
-            && t(tile, directions[d]).terrain != terrainTypes.desert
-            && !t(tile, directions[d]).hasRiver
-            && Math.abs(t(tile, directions[d]).depth - tile.depth) < .45
-            && !t(tile, directions[d]).features.includes(features.mountain)
-            && !t(tile, directions[d]).features.includes(features.mesa)
-            && (Math.random() > chanceToContinueMountain * (length - 1))) {
-            t(tile, directions[d]).depth = tile.depth
-            setMountainRange(t(tile, directions[d]), length + 1)
-            return
-        }
-    }
-}
-
-function setForest(tile, length) {
-    tile.features.push(features.forest)
-
-    for (var d = 0; d < directions.length; d++) {
-        if (Math.abs(t(tile, directions[d]).depth - tile.depth) < .3
-            && t(tile, directions[d]).depth > 1
-            && t(tile, directions[d]).terrain != terrainTypes.lake
-            && t(tile, directions[d]).terrain != terrainTypes.desert
-            && t(tile, directions[d]).terrain != terrainTypes.desertFloodplains
-            && t(tile, directions[d]).terrain != terrainTypes.snow
-            && !t(tile, directions[d]).features.includes(features.forest)
-            && !t(tile, directions[d]).features.includes(features.savanna)
-            && (Math.random() > chanceToContinueForest * (length - 1))) {
-            setForest(t(tile, directions[d]), length + 1)
-        }
-    }
-}
-
-var visitedTiles = []
-for (var i = 0; i < minimumInitialElevations || Math.random() > chanceToNotContinueElevations; i++) {
-    var pos = { x: randomIndex(tiles), y: randomIndex(tiles[0]) }
-    setElevation(pos, startingElevationVariance * Math.random() + startingElevationBase)
-    visitedTiles = []
-}
-
-for (var i = 0; i < 300; i++) {
-    var islandSource = randomTile()
-    if (nearby(islandSource, 6).filter(x => x.depth > 1).length == 0) {
-        setElevation(islandSource.position, startingElevationVariance * Math.random() + startingElevationBase / 4)
-    }
-}
-
-tiles.forEach(x => x.forEach(function (e) {
-    if (e.depth > 1) {
-        e.terrain = terrainTypes.grasslands
-    } else {
-        e.terrain = terrainTypes.ocean
-    }
-}))
-
-tiles.forEach(x => x.forEach(function (e) {
-    if ((e.position.y < (6 + 3 * Math.random()) || e.position.y > mapSizeY - (6 + 3 * Math.random())) &&
-        (e.terrain == terrainTypes.grasslands)) {
-        e.terrain = terrainTypes.tundra
-    }
-
-    if ((e.position.y < (3 + 2 * Math.random()) || e.position.y > mapSizeY - (3 + 2 * Math.random())) &&
-        (e.terrain == terrainTypes.grasslands || e.terrain == terrainTypes.tundra)) {
-        e.terrain = terrainTypes.snow
-        e.features = []
-    }
-
-    if (e.position.y < (0 + 2 * Math.random()) || e.position.y > mapSizeY - (1 + 2 * Math.random())) {
-        e.depth = 1
-        e.terrain = terrainTypes.ice
-        e.features = []
-    }
-
-    if ((e.position.y < (10) || e.position.y > mapSizeY - (10))) {
-        var distance = Math.min(e.position.y, mapSizeY - e.position.y)
-        e.depth = Math.pow(Math.abs(e.depth), distance / 12 + 1 / 6)
-    }
-}))
-
-var desertsCreated = 0
-for (var i = 0; i < 500 && desertsCreated < desertsLimit; i++) {
-    var desertSource = randomTile()
-    if (desertSource.depth > 1 && desertSource.terrain != terrainTypes.snow && desertSource.terrain != terrainTypes.tundra) {
-        spreadTerrain(desertSource, terrainTypes.desert, 0)
-        desertsCreated++
-    }
-}
-/*
-for(var i = 0; i < 500; i++){
-    var plainsSource = randomTile()
-    if(plainsSource.terrain == terrainTypes.grasslands){
-        plainsSource.terrain = terrainTypes.plains
-    }
-}*/
-
-for (var i = 0; i < 4; i++) {
-    tiles.forEach(x => x.forEach(function (e) {
-        if ((nearby(e, 1).filter(x => x.terrain == terrainTypes.plains || x.terrain == terrainTypes.desert).length > 1)
-            && e.terrain == terrainTypes.grasslands) {
-            e.terrain = terrainTypes.plains
-        }
-    }))
-}
-
-var riversCreated = 0
-var riverSource
-for (var i = 0; i < 5000 && riversCreated < riversLimit; i++) {
-    riverSource = randomTile()
-    if (riverSource.depth > 1
-        && !nearby(riverSource, 3).some(x => x.hasRiver)
-        && !nearby(riverSource, 2).some(y => y.terrain.variety == terrainVariety.sea)) {
-        if (!riverSource.hasRiver && setRiver(riverSource)) {
-            setMountainRange(riverSource, 0)
-        }
-
-        riversCreated++
-    }
-}
-
-var forestsCreated = 0
-var forestSource
-for (var i = 0; i < 500 && forestsCreated < forestsLimit; i++) {
-    forestSource = randomTile()
-    if (forestSource.depth > 1
-        && !forestSource.features.includes(features.forest)
-        && !forestSource.features.includes(features.savanna)
-        && forestSource.terrain != terrainTypes.desert
-        && forestSource.terrain != terrainTypes.lake
-        && forestSource.terrain != terrainTypes.desertFloodplains
-        && forestSource.terrain != terrainTypes.snow
-        && nearby(forestSource, 7).filter(x => x.features.includes(features.forest)).length < 1
-        && nearby(forestSource, 7).filter(x => x.features.includes(features.savanna)).length < 1) {
-        setForest(forestSource, 0)
-        forestsCreated++
-    }
-}
-
-tiles.forEach(function (x) {
-    x.forEach(function (e) {
-        if (terrainTypes[e.terrain.name.toLowerCase() + "Hills"] != undefined && Math.random() > .6 && !e.hasRiver) {
-            e.terrain = terrainTypes[e.terrain.name.toLowerCase() + "Hills"]
-        }
-    })
-})
-
-tiles.forEach(function (x) {
-    x.forEach(function (e) {
-        if (e.terrain == terrainTypes.plains
-            && e.features.length == 0
-            && (nearby(e, 1).filter(x => x.features.includes(features.forest)).length > 0
-                || nearby(e, 1).filter(x => x.terrain == terrainTypes.desert).length > 0)) {
-            e.features.push(features.savanna)
-        }
-    })
-})
-
-tiles.forEach(function (x) {
-    x.forEach(function (e) {
-        if (e.terrain == terrainTypes.ocean && directions.some(direction => t(e, direction).terrain != terrainTypes.ocean && t(e, direction).terrain != terrainTypes.coast)) {
-            e.terrain = terrainTypes.coast
-        }
-    })
-})
-
-var coastalTiles = []
-tiles.forEach(function (x) {
-    x.forEach(function (e) {
-        if (e.terrain == terrainTypes.coast) {
-            coastalTiles.push(e)
-        }
-    })
-})
-
-coastalTiles.forEach(function (e) {
-    for (var d = 0; d < directions.length; d++) {
-        if (Math.random() < chanceToSpreadCoast && t(e, directions[d]).terrain == terrainTypes.ocean) {
-            t(e, directions[d]).terrain = terrainTypes.coast
-        }
-    }
-})
-
-tiles.forEach(function (x) {
-    x.forEach(function (e) {
-        if (e.depth > 1) {
-            e.depth = 1 + depthMultiplier * (Math.pow(Math.abs(e.depth), .4) - 1)
-        }
-    })
-});
-
-var resourceChance = .05
-tiles.forEach(function (x) {
-    x.forEach(function (e) {
-        if (Math.random() < resourceChance
-            && e.resource == undefined
-            && !e.features.includes(features.mountain)
-            && e.terrain != terrainTypes.ice) {
-            var escape = false
-            for (var i = 0; i < 5 && !escape; i++) {
-                var resource = randomValueObj(resources)
-                if (testRequirements(resource.requirements, e)) {
-                    escape = true
-                    e.resource = resource
-                    if (e.terrain == terrainTypes.ocean) {
-                        e.terrain = terrainTypes.coast
-                    }
-                }
-            }
-        }
-    })
-});
-
-tiles.forEach(function (x) {
-    x.forEach(function (e) {
-        if (nearby(e, 2).filter(x => x.resource != undefined).length == 0) {
-            var escape = false
-            for (var i = 0; i < 500 && !escape; i++) {
-                var resource = randomValueObj(resources)
-                if (testRequirements(resource.requirements, e)
-                    && !e.features.includes(features.mountain)
-                    && e.terrain != terrainTypes.ice) {
-                    escape = true
-                    e.resource = resource
-                    if (e.terrain == terrainTypes.ocean) {
-                        e.terrain = terrainTypes.coast
-                    }
-                }
-            }
-        }
-    })
-});
-
-players.filter(x => x instanceof Civilization).forEach(function (p) {
-    var esc = false
-
-    while (!esc) {
-        var spawnPoint = randomTile()
-
-        if ([terrainTypes.grasslands, terrainTypes.plains].includes(spawnPoint.terrain)
-            && !spawnPoint.features.includes(features.mountain)
-            && nearby(spawnPoint, 3).filter(x => x.resource != undefined).length > 4
-            && nearby(spawnPoint, 10).filter(x => x.units.length > 0).length == 0) {
-            var nearbyPoint
-            nearby(spawnPoint, 4).forEach(function(tile){
-                if(!nearby(spawnPoint, 3).includes(tile) && tile.depth > 1 && !tile.features.includes(features.mountain)) {
-                    nearbyPoint = tile
-                }
-            })
-
-            if (nearbyPoint != undefined) {
-                p.units.push(new Unit([unitTypes.settler, unitTypes.warrior], p, spawnPoint.position))
-                p.units.push(new Unit(unitTypes.settler, p, nearbyPoint.position))
-                esc = true
-            }
-        }
-    }
-})
-
-var maxOffsetX = mapSizeX * Math.sqrt(3) * hexagonSize
-var mapOffset = { x: maxOffsetX, y: 0 }
-
-/*
-var runnerTexture = new THREE.TextureLoader().load( 'exampleAnimation.png' );
-var runnerTextureAlpha = new THREE.TextureLoader().load( 'exampleAnimationAlpha.png' );
-annie = new TextureAnimator( runnerTexture, 10, 1, 10, 75 ); // texture, #horiz, #vert, #total, duration.
-annieAlpha = new TextureAnimator( runnerTextureAlpha, 10, 1, 10, 75 ); // texture, #horiz, #vert, #total, duration.
-var runnerMaterial = new THREE.MeshBasicMaterial( { map: runnerTexture, alphaMap: runnerTextureAlpha, side: THREE.DoubleSide, transparent: true } );
-var runnerGeometry = new THREE.PlaneGeometry(2, 2, 1, 1);
-var runner = new THREE.Mesh(runnerGeometry, runnerMaterial);
-runner.position.set(0,0,0);
-*/
+var mapSize = 25
+var currentWorldMap = new WorldMap(mapSize)
+currentWorldMap.generateMap()
 
 var modelsToLoad = 6
 var modelsLoaded = false
@@ -1427,48 +1015,7 @@ scene.add(hemisphereLight);
 camera.rotation.x = cameraRotationBase
 camera.position.z = minimumScrollIn
 camera.rotation.x = cameraRotationBase * (1 - (camera.position.z - minimumScrollIn) / (minimumScrollOut - minimumScrollIn))
-camera.position.x = initialCameraOffsetX
-camera.position.y = initialCameraOffsetY
 camera.rotation.order = "ZXY"
-
-function calculateBorders() {
-    tiles.forEach(z => z.forEach(function (e) {
-        if (e.player != undefined) {
-            if (e.borderMeshes != undefined && e.borderMeshes.length > 0) {
-                for (var i = 0; i < e.borderMeshes.length; i++) {
-                    e.face.remove(e.borderMeshes[i])
-                }
-            }
-            e.borderMeshes = []
-            for (var d = 0; d < directions.length; d++) {
-                if (t(e, directions[d]).player != e.player) {
-                    e.borderMeshes.push(ownerBorders[d].clone())
-                    e.face.add(e.borderMeshes.last())
-                    e.borderMeshes.last().material.color = e.player.borderColor
-
-                    e.borderMeshes.push(gradientBorders[d].clone())
-                    e.face.add(e.borderMeshes.last())
-                    e.borderMeshes.last().material = e.player.borderGradientMaterial
-                }
-            }
-        }
-    }))
-
-    cameraMove()
-}
-
-function cameraMove() {
-    if (!modelsLoaded) {
-        return
-    }
-
-    tiles.forEach(function (x) {
-        x.forEach(function (e) {
-            e.face.position.x = (((2 * e.position.x + (e.position.y % 2 == 0 ? 0 : 1)) * Math.sqrt(3) / 2 * hexagonSize) + mapOffset.x) % maxOffsetX
-            e.face.position.y = (hexagonSize * 3 / 2 * e.position.y) + mapOffset.y - (activeSettlement == undefined ? (camera.position.z - minimumScrollIn) : 0)
-        })
-    })
-}
 
 function nextTurnButton() {
     if (players[0].notificationsRemaining.length > 0) {
@@ -1494,23 +1041,23 @@ function animate() {
 
     var previousActiveTile = activeTile
     activeTile = undefined
-    tiles.forEach(function (x) {
-        x.forEach(function (e) {
-            e.active = false;
-        })
-    })
+    currentWorldMap.forEach(tile => tile.active = false)
 
     raycaster.setFromCamera(mouseVector, camera);
     intersects = raycaster.intersectObjects(scene.children)
     if (intersects[0] != undefined && intersects[0].object != undefined) {
         if (intersects[0].object.gamePosition != undefined) {
-            activeTile = tiles[intersects[0].object.gamePosition.x][intersects[0].object.gamePosition.y]
+            activeTile = currentWorldMap.getTile(intersects[0].object.gamePosition)
             activeTile.active = true
         }
     }
 
-    if (activeTile != previousActiveTile) {
-        Unit.displayPaths(selectedUnits, activeTile)
+    if (activeTile != previousActiveTile && activeTile != undefined && previousActiveTile != undefined) {
+        currentWorldMap.displayPaths(selectedUnits, activeTile)
+        activeTile.face.add(activeTile.yieldHolder)
+        activeTile.yieldHolderDIV.style.opacity = "1"
+        previousActiveTile.face.remove(previousActiveTile.yieldHolder)
+        previousActiveTile.yieldHolderDIV.style.opacity = "0"
     }
 
     if (activeTile != undefined && cursor.lastMoved > .25) {
@@ -1527,57 +1074,97 @@ function animate() {
     }
 
     document.body.style.cursor = ""
-    tiles.forEach(function (x) {
-        x.forEach(function (e) {
-            if (e.active) {
-                e.face.position.z = e.depth// + Math.min(.1, e.face.position.z - e.depth + 0.1)
-                if (e.attackOverlay != undefined) {
-                    e.attackOverlay.rotation.z += .05
-                }
-                if (e.attackOverlay != undefined || e.developIcon != undefined || e.clearIcon != undefined || e.districtIcon != undefined) {
-                    document.body.style.cursor = "pointer"
-                }
-            } else {
-                e.face.position.z = e.depth //+ Math.max(0, e.face.position.z - e.depth - 0.1)
+    currentWorldMap.forEach(tile => {
+        if (tile.active) {
+            if (tile.attackOverlay != undefined) {
+                tile.attackOverlay.rotation.z += .05
             }
+            if (tile.attackOverlay != undefined || tile.developIcon != undefined || tile.clearIcon != undefined || tile.districtIcon != undefined) {
+                document.body.style.cursor = "pointer"
+            }
+        }
 
-            if (e.active || (viewedSettlement != undefined && viewedSettlement.tiles.includes(e))) {
-                e.yieldHolderDIV.style.opacity = "1"
-            } else {
-                e.yieldHolderDIV.style.opacity = "0"
-            }
+        if (tile.active || (viewedSettlement != undefined && viewedSettlement.tiles.includes(tile))) {
+        } 
 
-            if (e.face.material != undefined && e.face.material.opacity < 1) {
-                e.face.material.opacity += .1
-                if (e.face.material.opacity >= 1) {
-                    e.face.material = e.terrain.material
-                }
+        if (tile.face.material != undefined && tile.face.material.opacity < 1) {
+            tile.face.material.opacity += .1
+            if (tile.face.material.opacity >= 1) {
+                tile.face.material = tile.terrain.material[tile.randomTexture]
             }
-        })
+        }
     })
+
+    if(Math.abs(currentWorldMap.mapZoomChange) < .05){
+        currentWorldMap.mapZoomChange = 0
+    }
+
+    if(currentWorldMap.mapZoomChange != 0){
+        var incrementValue = (.05 + ((Math.abs(currentWorldMap.mapZoomChange) >= 1) ? (Math.pow(Math.abs(currentWorldMap.mapZoomChange), .2) * .05) : 0)) * .75
+        if(currentWorldMap.mapZoomChange > 0){
+            currentWorldMap.mapZoomOut += incrementValue
+            currentWorldMap.mapZoomChange -= incrementValue
+        } else {
+            currentWorldMap.mapZoomOut -= incrementValue
+            currentWorldMap.mapZoomChange += incrementValue
+        }
+        currentWorldMap.drawMap()
+    }
 
     stats.end();
     requestAnimationFrame(animate);
 }
 
+
+var players = [new Civilization(currentWorldMap), new Civilization(currentWorldMap), new Animals(currentWorldMap)]
+activePlayer = players[0]
+
 function allModelsLoaded() {
     modelsToLoad--
     if (modelsToLoad == 0) {
-        tiles.forEach(function (x) {
-            x.forEach(function (e) {
-                e.initialize()
-            })
-        })
+        currentWorldMap.initialize()
+
+        //players.filter(x => x instanceof Civilization).forEach(function (p) {
+        p = players[0]
+        var esc = false
+
+        while (!esc) {
+            var spawnPoint = currentWorldMap.randomTile()
+
+            if ([terrainTypes.grasslands, terrainTypes.plains].includes(spawnPoint.terrain)
+                && !spawnPoint.features.includes(features.mountain)
+                && spawnPoint.nearby(3).filter(x => x.resource != undefined).length > 4) {
+                //  && spawnPoint.nearby(10).filter(x => x.units.length > 0).length == 0) {
+                var nearbyPoint1, nearbyPoint2
+                spawnPoint.nearby(4).forEach(function (tile) {
+                    if (!spawnPoint.nearby(3).includes(tile) && tile.depth > 1 && !tile.features.includes(features.mountain) && nearbyPoint2 == undefined) {
+                        if (nearbyPoint1 == undefined) {
+                            nearbyPoint1 = tile
+                        } else if (!nearbyPoint1.nearby(3).includes(tile)) {
+                            nearbyPoint2 = tile
+                        }
+                    }
+                })
+
+                p.units.push(new Unit([unitTypes.settler, unitTypes.warrior], p, spawnPoint.position, currentWorldMap))
+                if (nearbyPoint1 != undefined) {
+                    p.units.push(new Unit(unitTypes.settler, p, nearbyPoint1.position, currentWorldMap))
+                }
+                if (nearbyPoint2 != undefined) {
+                    p.units.push(new Unit(unitTypes.settler, p, nearbyPoint2.position, currentWorldMap))
+                }
+                esc = true
+            }
+        }
 
         hideTooltip()
         modelsLoaded = true
-        animate();
-        cameraMove()
+        animate()
         players[0].units[0].tile.centerCameraOnTile()
         players[0].units[0].foundSettlement()
         players[0].units[1].foundSettlement()
-        players[0].detectSeen()
         players[0].beginTurn()
+        players[0].detectSeen()
         Settlement.changeCityInfoPanel(0)
     }
 }
