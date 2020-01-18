@@ -414,22 +414,99 @@ class Dictionary{
 var horizontalDisplacement = 0
 var mouseDown = false
 
-document.getElementById("playfield").onmousedown = function(){
+document.getElementById("slider-image").onmousedown = function(){
     mouseDown = true
+    document.getElementById("slider").style.opacity = "1"
 }
 
 document.body.onmouseup = function(){
     mouseDown = false
+    document.getElementById("slider").style.opacity = ""
 }
 
 document.body.onmousemove = function(event){
-    if(mouseDown)
-    horizontalDisplacement += event.movementX * .1
+    if(mouseDown){
+        horizontalDisplacement = (event.clientX - document.getElementById("slider").getBoundingClientRect().x) / document.getElementById("slider").getBoundingClientRect().width * 100
+        horizontalDisplacement = Math.min(horizontalDisplacement, 100)
+        horizontalDisplacement = Math.max(horizontalDisplacement, 0)
+    }
 }
 
+var horizontalStageSize = 20
+var verticalStageSize = 6
+
 setInterval(function(){
-    document.getElementById("bg1").style.backgroundPositionX = horizontalDisplacement * 12 + "px"
-    document.getElementById("bg2").style.backgroundPositionX = horizontalDisplacement * 6 + "px"
-    document.getElementById("bg3").style.backgroundPositionX = horizontalDisplacement * 3 + "px"
-    document.getElementById("bg4").style.backgroundPositionX = horizontalDisplacement * 1 + "px"
+    document.getElementById("bg1").style.backgroundPositionX = -horizontalDisplacement * 4 + "px"
+    document.getElementById("bg2").style.backgroundPositionX = -horizontalDisplacement * 2 + "px"
+    document.getElementById("bg3").style.backgroundPositionX = -horizontalDisplacement * 1 + "px"
+    document.getElementById("bg4").style.backgroundPositionX = -horizontalDisplacement * .5 + "px"
+    document.getElementById("slider-image").style.left = horizontalDisplacement + "%"
+    document.getElementById("playfield-tiles").style.left = -16 - ((horizontalStageSize * 66 - 690) * horizontalDisplacement / 100) + "px"
 }, 1)
+
+var directions = ["right", "down", "left", "up"]
+
+class Tile{
+    constructor(x, y){
+        this.x = x
+        this.y = y
+
+        this.ground = false
+        this.ladder = false
+    }
+
+    adj(direction){
+        switch(direction){
+            case directions[0]: if(this.x < horizontalStageSize - 1) return tiles[(this.x + 1) * verticalStageSize + this.y]; break;
+            case directions[1]: if(this.y < verticalStageSize - 1) return tiles[this.x * verticalStageSize + (this.y + 1)]; break;
+            case directions[2]: if(this.x > 0) return tiles[(this.x - 1) * verticalStageSize + this.y]; break;
+            case directions[3]: if(this.y > 0) return tiles[this.x * verticalStageSize + (this.y - 1)]; break;
+        }
+        return undefined
+    }
+
+    finish(){
+        this.elem = document.createElement("DIV")
+        this.elem.className = "tile " + (this.ground ? "ground" : "") + " " + (this.ladder ? "ladder" : "")
+        this.elem.style.left = this.x * 65 + "px"
+        this.elem.style.top = this.y * 65 + "px"
+        document.getElementById("playfield-tiles").appendChild(this.elem)
+    }
+}
+
+var tiles = []
+for(var i = 0; i < horizontalStageSize; i++){
+    for(var e = 0; e < verticalStageSize; e++){
+        tiles.push(new Tile(i, e))
+    }
+}
+
+tiles.forEach(z => {
+    if(z.y == verticalStageSize - 1){
+        z.ground = true
+    }
+
+    var currTile = z
+    var accumulator = 0
+    while(Math.random() > (.85 - accumulator) && currTile != undefined){
+        currTile.ground = true
+        //currTile = currTile.adj(Math.random() > .5 ? directions[0] : directions[2])
+        currTile = currTile.adj(randomValue(directions))
+        accumulator = Math.min(.5, accumulator + .15)
+    }
+})
+
+tiles.forEach(z => {
+    if(z.y != 0){
+        if(z.ground && z.adj(directions[3]).ground && Math.random() > .2){
+            if(z.adj(directions[2]) == undefined || !z.adj(directions[2]).ladder){
+                z.ladder = true
+            } else if(Math.random() > .5){
+                z.adj(directions[2]).ladder = false
+                z.ladder = true
+            }
+        }
+    }
+})
+
+tiles.forEach(z => z.finish())

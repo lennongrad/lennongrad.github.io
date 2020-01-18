@@ -1,8 +1,9 @@
 body{
-    padding: 0;
+    margin: 0;
     width: 100%;
     height: 100%;
     position: absolute;
+    background-color: #111;
 }
 
 #main{
@@ -14,12 +15,19 @@ body{
 
 #playfield{
     position: relative;
-    width: 700px;
-    height: 300px;
+    width: 640px;
+    height: 361px;
     background-color: black;
-    padding: 15px;
-    border: 15px solid transparent;
+    padding: 16px;
+    border: 16px solid transparent;
     border-image: url("border.png") 30 stretch;
+    overflow: hidden
+}
+
+#playfield-tiles{
+    z-index: 1;
+    position: relative;
+    top: -16px;
 }
 
 .playfield-background{
@@ -31,7 +39,6 @@ body{
     background-repeat: repeat-x;
     background-size: auto 100%;
     user-select: none;
-    cursor: pointer;
 }
 
 #bg1{
@@ -48,4 +55,43 @@ body{
 
 #bg4{
     background-image:url("bg4.png");
+}
+
+#slider{
+    position: relative;
+    top: -24px;
+    width: calc(100% - 96px);
+    padding-right: 64px;
+    margin: auto;
+    opacity: 0;
+    transition: opacity .1s
+}
+
+#slider:hover{
+    opacity: 1
+}
+
+#slider-image{
+    position: relative;
+    cursor: pointer;
+}
+
+.tile{
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    border: 2px solid rgba(30, 30, 30, .2);
+    background-repeat: no-repeat;
+}
+
+.tile:hover{
+    border: 2px solid #999
+}
+
+.ground{
+    background-image: url("floor.png")
+}
+
+.ladder{
+    background-image: url("floor.png"), url("ladder.png")
 }
