@@ -258,7 +258,7 @@ function capitalize(str) {
 function showTooltip(elem) {
     document.getElementById("tooltip").innerHTML = elem.getAttribute("message")
     document.getElementById("tooltip").style.left = elem.getBoundingClientRect().left + elem.getBoundingClientRect().width / 2 + "px"
-    document.getElementById("tooltip").style.top = elem.getBoundingClientRect().top - window.innerHeight / 22 + "px"
+    document.getElementById("tooltip").style.top = elem.getBoundingClientRect().top + "px"
     document.getElementById("tooltip").style.opacity = .92
 }
 
@@ -409,40 +409,142 @@ class Dictionary{
     _push(key, value){
         this._arr.push({key: key, value: value})
     }
-}   
+}  
+
+function intersects(a,b,c,d,p,q,r,s){
+    var det, gamma, lambda;
+    det = (c - a) * (s - q) - (r - p) * (d - b);
+    if (det === 0) {
+      return false;
+    } else {
+      lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
+      gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
+      return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
+    }
+}
+
+function collides(a,b,c,d){
+    var finalValue = false
+    collisionSegments.forEach(x => {
+        if(intersects(a,b,c,d,x.a,x.b,x.c,x.d)){
+            finalValue = true
+        }
+    })
+    return finalValue
+}
 
 var horizontalDisplacement = 0
-var mouseDown = false
+var mouseDownScroll = false
+var mouseDownLine = false
+var mouseX, mouseY
+var scrollLeft = false
+var scrollRight = false
+var fogTimer = 0
+
+var showLine = false
+var lineOrigin = undefined
+var lineDestination = undefined
+
+document.getElementById("playfield-left").onmouseover = function(){
+    scrollLeft = true
+}
+
+document.getElementById("playfield-left").onmouseout = function(){
+    scrollLeft = false
+}
+
+document.getElementById("playfield-right").onmouseover = function(){
+    scrollRight = true
+}
+
+document.getElementById("playfield-right").onmouseout = function(){
+    scrollRight = false
+}
 
 document.getElementById("slider-image").onmousedown = function(){
-    mouseDown = true
+    mouseDownScroll = true
     document.getElementById("slider").style.opacity = "1"
 }
 
 document.body.onmouseup = function(){
-    mouseDown = false
+    mouseDownScroll = false
+    lineOrigin = undefined
     document.getElementById("slider").style.opacity = ""
 }
 
 document.body.onmousemove = function(event){
-    if(mouseDown){
+    if(mouseDownScroll){
         horizontalDisplacement = (event.clientX - document.getElementById("slider").getBoundingClientRect().x) / document.getElementById("slider").getBoundingClientRect().width * 100
         horizontalDisplacement = Math.min(horizontalDisplacement, 100)
         horizontalDisplacement = Math.max(horizontalDisplacement, 0)
     }
+    mouseX = event.clientX
+    mouseY = event.clientY
+    drawLine()
 }
+
+var collisionSegments = []
 
 var horizontalStageSize = 20
 var verticalStageSize = 6
 
-setInterval(function(){
-    document.getElementById("bg1").style.backgroundPositionX = -horizontalDisplacement * 4 + "px"
-    document.getElementById("bg2").style.backgroundPositionX = -horizontalDisplacement * 2 + "px"
-    document.getElementById("bg3").style.backgroundPositionX = -horizontalDisplacement * 1 + "px"
-    document.getElementById("bg4").style.backgroundPositionX = -horizontalDisplacement * .5 + "px"
-    document.getElementById("slider-image").style.left = horizontalDisplacement + "%"
-    document.getElementById("playfield-tiles").style.left = -16 - ((horizontalStageSize * 66 - 690) * horizontalDisplacement / 100) + "px"
-}, 1)
+function drawLine(){
+    canvasContext.clearRect(0, 0, horizontalStageSize * 65, verticalStageSize * 65)
+    if(lineOrigin != undefined){
+        var showRed = false
+        canvasContext.beginPath();
+        canvasContext.moveTo(lineOrigin.x * 65 + 33, lineOrigin.y * 65 + 33);
+        if(lineDestination != undefined){
+            canvasContext.lineTo(lineDestination.x * 65 + 33, lineDestination.y * 65 + 33);
+            showRed = collides(lineOrigin.x * 65 + 33, lineOrigin.y * 65 + 33, lineDestination.x * 65 + 33, lineDestination.y * 65 + 33)
+        } else {
+            canvasContext.lineTo(mouseX  - document.getElementById("playfield").getBoundingClientRect().x - 15 + ((horizontalStageSize * 66 - 690) * horizontalDisplacement / 100), 
+                                 mouseY - document.getElementById("playfield").getBoundingClientRect().y - 15);
+            showRed = collides(lineOrigin.x * 65 + 33, lineOrigin.y * 65 + 33, mouseX  - document.getElementById("playfield").getBoundingClientRect().x - 15 + ((horizontalStageSize * 66 - 690) * horizontalDisplacement / 100), 
+                                mouseY - document.getElementById("playfield").getBoundingClientRect().y - 15)
+        }
+        if(showRed){
+            canvasContext.strokeStyle = "#f00"
+            canvasContext.fillStyle = "#f00"
+        } else {
+            canvasContext.strokeStyle = "#fff"
+            canvasContext.fillStyle = "#fff"
+        }
+        canvasContext.stroke();
+
+      canvasContext.beginPath();
+      canvasContext.arc(lineOrigin.x * 65 + 33, lineOrigin.y * 65 + 33, 4, 0, 2 * Math.PI, false);
+      canvasContext.fill();
+      canvasContext.stroke();
+
+      if(lineDestination != undefined){
+        canvasContext.beginPath();
+        canvasContext.arc(lineDestination.x * 65 + 33, lineDestination.y * 65 + 33, 4, 0, 2 * Math.PI, false);
+        canvasContext.fill();
+        canvasContext.stroke();
+      }
+    }
+/*
+    collisionSegments.forEach(x => {
+        canvasContext.beginPath()
+        canvasContext.moveTo(x.a, x.b)
+        canvasContext.lineTo(x.c, x.d)
+        canvasContext.stroke()
+    })*/
+}
+
+document.getElementById("main").onmouseleave = function(){
+    lineOrigin = undefined
+}
+
+function lineButton(){
+    showLine = !showLine
+    if(showLine){
+        document.getElementById("buttons-line").src = "button_active.png"
+    } else {
+        document.getElementById("buttons-line").src = "button_inactive.png"
+    }
+}
 
 var directions = ["right", "down", "left", "up"]
 
@@ -465,12 +567,42 @@ class Tile{
         return undefined
     }
 
+    setGroundTrue(){
+        this.ground = true
+        collisionSegments.push({a: this.x * 65 + 5, b: this.y * 65 + 60, c: (this.x + 1) * 65 - 5, d: this.y * 65 + 60})
+    }
+
     finish(){
         this.elem = document.createElement("DIV")
         this.elem.className = "tile " + (this.ground ? "ground" : "") + " " + (this.ladder ? "ladder" : "")
         this.elem.style.left = this.x * 65 + "px"
         this.elem.style.top = this.y * 65 + "px"
         document.getElementById("playfield-tiles").appendChild(this.elem)
+
+        var z = this
+        this.elem.onmousedown = function(){
+            if(showLine){
+                lineOrigin = z
+            }
+        }
+
+        this.targetElem = document.createElement("DIV")
+        this.targetElem.className = "tile-target"
+        this.elem.appendChild(this.targetElem)
+
+        this.targetElem.onmouseover = function(){
+            lineDestination = z
+        }
+        this.targetElem.onmouseout = function(){
+            lineDestination = undefined
+        }
+    }
+}
+
+class Player{
+    constructor(){
+        this.attack = Math.ceil(Math.random() * 100)
+        this.defense = Math.ceil(Math.random() * 100)
     }
 }
 
@@ -483,13 +615,13 @@ for(var i = 0; i < horizontalStageSize; i++){
 
 tiles.forEach(z => {
     if(z.y == verticalStageSize - 1){
-        z.ground = true
+        z.setGroundTrue()
     }
 
     var currTile = z
     var accumulator = 0
     while(Math.random() > (.85 - accumulator) && currTile != undefined){
-        currTile.ground = true
+        currTile.setGroundTrue()
         //currTile = currTile.adj(Math.random() > .5 ? directions[0] : directions[2])
         currTile = currTile.adj(randomValue(directions))
         accumulator = Math.min(.5, accumulator + .15)
@@ -510,3 +642,41 @@ tiles.forEach(z => {
 })
 
 tiles.forEach(z => z.finish())
+
+document.getElementById("canvas").width = horizontalStageSize * 66
+document.getElementById("canvas").height = verticalStageSize * 66
+var canvasContext = document.getElementById("canvas").getContext("2d")
+canvasContext.lineWidth = 3
+
+setInterval(function(){
+    if(scrollLeft){
+        horizontalDisplacement -= .25
+    }
+    if(scrollRight){
+        horizontalDisplacement += .25
+    }
+    horizontalDisplacement = Math.min(horizontalDisplacement, 100)
+    horizontalDisplacement = Math.max(horizontalDisplacement, 0)
+
+    document.getElementById("bg5").style.backgroundPositionX = (fogTimer += .025) - horizontalDisplacement * 5 + "px"
+    document.getElementById("bg6").style.backgroundPositionX = (fogTimer += .025) * -2 - horizontalDisplacement * 5 + "px"
+    document.getElementById("bg1").style.backgroundPositionX = -horizontalDisplacement * 4 + "px"
+    document.getElementById("bg2").style.backgroundPositionX = -horizontalDisplacement * 2 + "px"
+    document.getElementById("bg3").style.backgroundPositionX = -horizontalDisplacement * 1 + "px"
+    document.getElementById("bg4").style.backgroundPositionX = -horizontalDisplacement * .5 + "px"
+    document.getElementById("slider-image").style.left = horizontalDisplacement + "%"
+    document.getElementById("playfield-tiles").style.left = -16 - ((horizontalStageSize * 66 - 690) * horizontalDisplacement / 100) + "px"
+    document.getElementById("canvas").style.left = -((horizontalStageSize * 66 - 690) * horizontalDisplacement / 100) + "px"
+
+    if(horizontalDisplacement == 0){
+        document.getElementById("playfield-left").style.pointerEvents = "none"
+    } else {
+        document.getElementById("playfield-left").style.pointerEvents = ""
+    }
+
+    if(horizontalDisplacement == 100){
+        document.getElementById("playfield-right").style.pointerEvents = "none"
+    } else {
+        document.getElementById("playfield-right").style.pointerEvents = ""
+    }
+}, 1)

@@ -1,9 +1,29 @@
-body{
+@font-face {
+    font-family: Pixel;
+    src: url("Retro\ Gaming.ttf");
+}
+  
+  body{
     margin: 0;
     width: 100%;
     height: 100%;
     position: absolute;
+    user-select: none;
     background-color: #111;
+    font-family: Pixel;
+}
+
+#tooltip {
+    width: 140px;
+    position: absolute;
+    padding: 8px;
+    border: 8px solid transparent;
+    border-image: url("border.png") 30 stretch;
+    background-color: rgba(0,0,0,.8);
+    color: white;
+    font-size: 12px;
+    transform: translate(-50%, -100%);
+    z-index: 3;
 }
 
 #main{
@@ -24,6 +44,24 @@ body{
     overflow: hidden
 }
 
+#playfield-left{
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 50px;
+    z-index: 3;
+}
+
+#playfield-right{
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 50px;
+    z-index: 3;
+}
+
 #playfield-tiles{
     z-index: 1;
     position: relative;
@@ -38,6 +76,7 @@ body{
     height: 100%;
     background-repeat: repeat-x;
     background-size: auto 100%;
+    pointer-events: none;
     user-select: none;
 }
 
@@ -55,6 +94,28 @@ body{
 
 #bg4{
     background-image:url("bg4.png");
+}
+
+#bg5{
+    background-image:url("bg5.png");
+    animation: fog 10s alternate infinite;
+}
+
+#bg6{
+    background-image:url("bg5.png");
+    animation: fog 10s alternate infinite;
+    animation-delay: -4s;
+}
+
+@keyframes fog{
+    0% {
+        opacity: .4;
+        transform: scale(1);
+    }
+    100% {
+        opacity: .2;
+        transform: scale(1.25);
+    }
 }
 
 #slider{
@@ -85,7 +146,7 @@ body{
 }
 
 .tile:hover{
-    border: 2px solid #999
+    border: 2px solid #bbb
 }
 
 .ground{
@@ -94,4 +155,48 @@ body{
 
 .ladder{
     background-image: url("floor.png"), url("ladder.png")
+}
+
+.tile-target{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+}
+
+#canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    pointer-events: none;
+    user-select: none;
+}
+
+#buttons{
+    position: absolute;
+    right: calc(100% + 8px);
+    bottom: 34px;
+}
+
+#buttons div{
+    width: 140px;
+    color: white;
+    cursor: help;
+}
+
+#buttons img{
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+#buttons img:hover{
+    filter: brightness(1.2)
+}
+
+#buttons img:active{
+    filter: brightness(1.4);
+    transform: translateY(4px)
 }
