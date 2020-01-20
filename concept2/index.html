@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset=utf-8>
+	<link rel="stylesheet" href="style.css">
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
+	<link href="https://fonts.googleapis.com/css?family=Roboto|Copse|Cinzel|Open+Sans|Merriweather+Sans&display=swap"
+		rel="stylesheet">
+		
+		<style>
+		@keyframes hedgehog{
+			0% {color: blue}
+			100% {color: white}
+		}
+		</style>
+</head>
+<body>
+<div style="position: absolute; left: 50%; cursor: pointer; top: 50%; transform: translate(-50%, -50%); animation: hedgehog .25s linear infinite alternate">I JUST LOVE THAT BIG, BLUE HEDGEHOG!</div>
+  <audio id="sonic"><source src="26f8b9_sonic_ring_sound_effect.mp3" type="audio/mp3"></audio>
+  <script>document.body.onclick = function(){document.getElementById("sonic").play()}</script>
+</body>
+
+</html>
