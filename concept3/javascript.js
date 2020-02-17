@@ -525,9 +525,9 @@ var typings = {
 }
 
 class Block{
-    constructor(width, height, details, x, y){
-        this.width = width
-        this.height = height
+    constructor(details, x, y){
+        this.width = details.width
+        this.height = details.height
         this.placed = false
         this.active = false
         this.details = details
@@ -557,11 +557,15 @@ class Block{
 
         this.elem.onmouseover = elementShowTooltip
         this.elem.onmouseout = hideTooltip
-        this.elem.setAttribute("message", details.typing.description.replace(/X/g, details.value))
+        this.elem.setAttribute("message", Block.getDescription(details))
         
         this.icon = document.createElement("IMG")
         this.icon.src = this.details.typing.icon
         this.elem.appendChild(this.icon)
+    }
+
+    static getDescription(details){
+        return details.width + "x" + details.height + "<br>" + details.typing.description.replace(/X/g, details.value)
     }
 
     getTiles(){
@@ -597,6 +601,11 @@ class Block{
         }
 
         setTimeout(function(){removeElement(elem)}, 200)
+    }
+
+    remove(){
+        blocks.splice(blocks.indexOf(this), 1)
+        removeElement(this.elem)
     }
 
     nudge(direction, func){
@@ -698,8 +707,8 @@ class Block{
 }
 
 var intentions = {
-    attack: {image: "skull.png", message: "This creature intends to insert a damaging block this turn.", blockType: {typing: typings.enemyAttack, value: 3}},
-    heal: {image: "heart.png", message: "This creature intends to insert a healing block this turn.", blockType: {typing: typings.enemyHeal, value: 3}}
+    attack: {image: "skull.png", message: "This creature intends to insert a damaging block this turn.", blockType: {typing: typings.enemyAttack, value: 3, width: 1, height: 1}},
+    heal: {image: "heart.png", message: "This creature intends to insert a healing block this turn.", blockType: {typing: typings.enemyHeal, value: 3, width: 1, height: 1}}
 }
 
 var monsters = {
@@ -765,7 +774,7 @@ class Combatant{
 
     endTurn(){
         if(this.intentionCounter != undefined){
-            blocks.push(new Block(1, 1, this.monster.intentions[this.intentionCounter].blockType))
+            blocks.push(new Block(this.monster.intentions[this.intentionCounter].blockType))
             blocks.last().insert(Math.floor((verticalStageSize + horizontalStageSize) * 2 * Math.random()))
 
             this.intentionCounter = (this.intentionCounter + 1) % this.monster.intentions.length
@@ -806,6 +815,96 @@ class Combatant{
     }
 }
 
+var cardEffects = {
+    summon: {description: "Summon this Block xY:<br>"},
+    cardDraw: {description: "Draw Y card(s)"}
+}
+
+var cardTypes = {
+    fireball: {cost: 1, name: "Fireball", icon: "sword.png", effects: [{effect: cardEffects.summon, value: 1, block: {width: 1, height: 1, typing: typings.playerAttack, value: 3}}]},
+    magicmissile: {cost: 0, name: "Magic Missile", icon: "sword.png", effects: [{effect: cardEffects.summon, value: 1, block: {width: 1, height: 1, typing: typings.playerAttack, value: 1}}]},
+    flamewall: {cost: 2, name: "Flame Wall", icon: "sword.png", effects: [{effect: cardEffects.summon, value: 1, block: {width: 1, height: 3, typing: typings.playerAttack, value: 4}}]},
+    carddraw: {cost: 1, name: "Card Draw", icon: "card-draw.png", effects: [{effect: cardEffects.cardDraw, value: 2}]}
+}
+
+class Card{
+    constructor(cardType){
+        this.cardType = cardType
+
+        this.elem = document.createElement("DIV")
+        this.elem.className = "card"
+        
+        this.cost = document.createElement("DIV")
+        this.cost.innerHTML = this.cardType.cost
+        this.cost.className = "card-cost"
+        this.elem.appendChild(this.cost)
+        
+        this.name = document.createElement("DIV")
+        this.name.innerHTML = this.cardType.name
+        this.name.className = "card-name"
+        this.elem.appendChild(this.name)
+        
+        this.icon = document.createElement("div")
+        this.icon.className = "card-icon"
+        this.iconImage = document.createElement("IMG")
+        this.iconImage.src = this.cardType.icon
+        this.iconImage.setAttribute("draggable", "false")
+        this.icon.appendChild(this.iconImage)
+        this.elem.appendChild(this.icon)
+        
+        this.description = document.createElement("DIV")
+        this.description.innerHTML = Card.getDescription(cardType)
+        this.description.className = "card-description"
+        this.elem.appendChild(this.description)
+
+        document.getElementById("cards").appendChild(this.elem)
+
+        this.elem.card = this
+        this.elem.onclick = function(){this.card.click()}
+    }
+
+    static getDescription(cardType){
+        var string = ""
+        cardType.effects.forEach(x => {
+            string += x.effect.description.replace(/Y/g, x.value)
+            switch(x.effect){
+                case cardEffects.summon: string += Block.getDescription(x.block); break;
+            }
+        })
+        return string;
+    }
+
+    click(){
+        if(playerEnergy >= this.cardType.cost){
+            this.play()
+        }
+    }
+
+    play(){
+        playerEnergy -= this.cardType.cost
+
+        this.cardType.effects.forEach(x => {
+            switch(x.effect){
+                case cardEffects.summon: 
+                    for(var i = 0; i < x.value; i++){
+                        blocks.push(new Block(x.block));
+                     }; break;
+                case cardEffects.cardDraw: drawCards(x.value); break;
+            }
+        })
+
+        this.elem.style.animation = "2s played"
+        var elem = this.elem
+        setTimeout(function(){removeElement(elem)}, 200)
+        playerHand.splice(playerHand.indexOf(this), 1)
+
+        updateDisplay()
+    }
+}
+
+var playerHand = []
+var playerEnergy = 0
+
 var combatants = []
 combatants.push(new Combatant(monsters.player))
 combatants.push(new Combatant(monsters.skeleton))
@@ -821,6 +920,7 @@ for(var i = 0; i < horizontalStageSize; i++){
 var arrows = []
 for(var i = 0; i < verticalStageSize; i++){
     arrows.push(document.createElement("img"));
+    arrows.last().style.left = "0px"
     arrows.last().style.top = 66 * i + 45 + "px"
     arrows.last().src = "arrow.png"
 }
@@ -863,17 +963,31 @@ document.getElementById("canvas").height = verticalStageSize * 66
 var canvasContext = document.getElementById("canvas").getContext("2d")
 canvasContext.lineWidth = 3
 
+function drawCards(cardAmount){
+    for(var i = 0; i < cardAmount; i++){
+        playerHand.push(new Card(randomValueObj(cardTypes)))
+    }
+}
+
+function startTurn(){
+    drawCards(4 - playerHand.length)
+    playerEnergy = 3
+    updateDisplay()
+}
+startTurn()
+
 function nextTurn(){
+    updateDisplay()
+    blocks.filter(x => !x.placed).forEach(x => x.remove())
     combatants.forEach(x => x.endTurn())
     startTurn()
 }
 
-function startTurn(){
-    for(var i = 0; i < 2; i++){
-        blocks.push(new Block(Math.ceil(Math.random() * 2), Math.ceil(Math.random() * 2), {typing: typings.playerAttack, value: Math.ceil(Math.random() * 4)}))
-    }
+function updateDisplay(){
+    document.getElementById("energy-number").innerHTML = playerEnergy + "/3"
+    document.getElementById("energy-name").setAttribute("message", "You start each turn with `Y Energy, and spend it to play cards. You currently have `X Energy left to spend this turn.".replace(/`Y/g, 3).replace(/`X/g, playerEnergy))
+    document.getElementById("card-name").setAttribute("message", "You have `X cards left to play. At the start of each turn you draw cards until you have at least `Y in your hand.".replace(/`Y/g, 4).replace(/`X/g, playerHand.length))
 }
-startTurn()
 
 setInterval(function(){
     if(scrollLeft){

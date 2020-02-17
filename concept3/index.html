@@ -12,25 +12,36 @@
 <body>
     <div id="tooltip"></div>
     <div id="main">
-        <div id="combatregion">
-            <div id="light"></div>
-            <div id="ground"></div>
-            <div id="combatants"></div>
-        </div>
-        <div id="waitingBlocks"></div>
-        <div id="blockregion">
-            <div id="board">
-                <div id="playfield">
-                    <div id="playfield-tiles"></div>
-                    <canvas id="canvas" draggable=false></canvas>
-                    <div id="bg7" class="playfield-background"></div>
-                    <div id="bg5" class="playfield-background"></div>
-                    <div id="bg6" class="playfield-background"></div>
-                </div>
-                <div id="arrows"></div>
+        <div id="upperlayer">
+            <div id="combatregion">
+                <div id="light"></div>
+                <div id="ground"></div>
+                <div id="combatants"></div>
             </div>
-            <div id="buttons">
-                 <div onmouseover="showTooltip(this)" onmouseout="hideTooltip()" message="Once your turn is ended, each enemy will perform their action, and then you will get new blocks to insert"  onclick="nextTurn()"><img id="buttons-line" src="nextturn.png"> Next Turn </div>
+            <div id="waitingBlocks"></div>
+            <div id="blockregion">
+                <div id="board">
+                    <div id="playfield">
+                        <div id="playfield-tiles"></div>
+                        <canvas id="canvas" draggable=false></canvas>
+                        <div id="bg7" class="playfield-background"></div>
+                        <div id="bg5" class="playfield-background"></div>
+                        <div id="bg6" class="playfield-background"></div>
+                    </div>
+                    <div id="arrows"></div>
+                </div>
+                <div id="buttons">
+                     <div onmouseover="showTooltip(this)" onmouseout="hideTooltip()" message="Once your turn is ended, each enemy will perform their action, and then you will get new blocks to insert"  onclick="nextTurn()"><img id="buttons-line" src="nextturn.png"> Next Turn </div>
+                </div>
+            </div>
+        </div>
+        <div id="lowerlayer">
+            <div id="cards"></div>
+            <div id="energy">
+                <div id="energy-number" onmouseover="showTooltip(this)" onmouseout="hideTooltip()" >3/3</div>
+                <div id="energy-name" onmouseover="showTooltip(this)" onmouseout="hideTooltip()" ><span>ENERGY</span> <img src="energy.png"></div>
+                <div id="card-number" onmouseover="showTooltip(this)" onmouseout="hideTooltip()" >3/4</div>
+                <div id="card-name" onmouseover="showTooltip(this)" onmouseout="hideTooltip()" ><span>CARDS</span> <img src="card.png"></div>
             </div>
         </div>
     </div>
