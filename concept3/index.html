@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css?family=Roboto|Copse|Cinzel|Open+Sans|Merriweather+Sans&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="tooltip"></div>
+    <div id="main">
+        <div id="combatregion">
+            <div id="light"></div>
+            <div id="ground"></div>
+            <div id="combatants"></div>
+        </div>
+        <div id="waitingBlocks"></div>
+        <div id="blockregion">
+            <div id="board">
+                <div id="playfield">
+                    <div id="playfield-tiles"></div>
+                    <canvas id="canvas" draggable=false></canvas>
+                    <div id="bg7" class="playfield-background"></div>
+                    <div id="bg5" class="playfield-background"></div>
+                    <div id="bg6" class="playfield-background"></div>
+                </div>
+                <div id="arrows"></div>
+            </div>
+            <div id="buttons">
+                 <div onmouseover="showTooltip(this)" onmouseout="hideTooltip()" message="Once your turn is ended, each enemy will perform their action, and then you will get new blocks to insert"  onclick="nextTurn()"><img id="buttons-line" src="nextturn.png"> Next Turn </div>
+            </div>
+        </div>
+    </div>
+    <footer>Created by <a href="http://lennongrad.com">lennongrad</a>. Enemy designs and imagery by <a
+            href="https://opengameart.org/users/redshrike">Stephen "Redshrike" Challener</a>, hosted by <a
+            href="https://opengameart.org/">OpenGameArt.org</a></footer>
+    <script src="javascript.js"></script>
+
+</body>
+
+</html>

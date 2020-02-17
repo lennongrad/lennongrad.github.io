@@ -1,0 +1,539 @@
+@font-face {
+    font-family: Pixel;
+    src: url("Retro\ Gaming.ttf");
+}
+  
+  body{
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    user-select: none;
+    background-color: #111;
+    font-family: Pixel;
+}
+
+#tooltip {
+    width: 140px;
+    position: absolute;
+    padding: 8px;
+    border: 8px solid transparent;
+    border-image: url("border.png") 30 stretch;
+    background-color: rgba(0,0,0,.8);
+    color: white;
+    font-size: 12px;
+    transform: translate(-50%, -100%);
+    z-index: 3;
+    pointer-events: none;
+}
+
+#main{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+}
+
+#combatregion{
+    position: relative;
+    padding: 50px;
+    padding-top: 75px;
+    padding-bottom: 10px;
+    background-image: url(spotlight.png);
+    background-size: 100% 100%;
+    overflow: visible;
+    min-width: 264px;
+}
+
+#ground{
+    position: absolute;
+    width: 79%;
+    height: 32px;
+    border-radius: 100%;
+    top: 124px;
+    left: 33px;
+    z-index: 1;
+    filter: blur(8px);
+    animation: 2s flicker infinite linear alternate-reverse;
+}
+
+#light{
+    position: absolute;
+    width: 56px;
+    height: 62px;
+    border-radius: 34%;
+    top: -30px;
+    left: calc(50% - 15px);
+    z-index: 1;
+    filter: blur(6px);
+    background-color: #aaa;
+    border: 5px solid #555;
+    box-sizing: border-box;
+}
+
+@keyframes flicker{
+    0%{
+        background-color: #aaa;
+    }
+    90%{
+        background-color: #ddd
+    }
+    100%{
+        background-color: #fff
+    }
+}
+
+#combatants{
+    z-index: 3;
+    position: relative;
+}
+
+#combatants div{
+    display: inline-block;
+    position: relative;
+}
+
+#combatants img{
+    width: 64px;
+    height: 64px;
+    image-rendering: pixelated;
+    position: relative;
+    z-index: 1;
+}
+
+.hexcircle{
+    display: inline-block;
+    position: absolute !important;
+    bottom: 6px;
+    left: 0px;
+    transform: translateY(50%) scaleX(1.5) scaleY(.5);
+    filter: drop-shadow(0 0 1px black) drop-shadow(0 0 1px black);
+}
+
+.hexcircle img{
+    image-rendering: unset !important;
+    animation: 5s rotate infinite linear;
+}
+
+@keyframes rotate{
+    0%{
+        transform: rotate(0);
+    }
+    100%{
+        transform: rotate(360deg);
+    }
+}
+
+#player{
+    margin-right: 50px;
+}
+
+.enemy{
+    margin-right: 10px
+}
+
+.lifebar{
+    width: 110%;
+    height: 11px;
+    background-color: black;
+    position: absolute !important;
+    left: 50%;
+    top: calc(100% + 28px);
+    border-radius: 10px;
+    transform: translateX(-50%);
+    border: 2px solid white;
+}
+
+.lifebar-bar{
+    background-color: red;
+    border-radius: 10px;
+    height: 9px;
+    top: -5px;
+    border: 1px solid white;
+    border-right: 2px solid white;
+    transition: 1s
+}
+
+.lifebar-number{
+    color: white;
+    font-size: 12px;
+    left: 50%;
+    top: -14px;
+    transform: translateX(-50%);
+    position: absolute !important;
+    width: 59px;
+}
+
+.intention{
+    position: absolute !important;
+    left: 50%;
+    top: -37px;
+    width: 32px !important;
+    height: 32px !important;
+    filter: invert(1) drop-shadow(0 0 3px black);
+    animation: 1s intention infinite alternate-reverse linear;
+}
+
+@keyframes intention{
+    0%{
+        transform: translate(-50%, 0);
+    }
+    50%{
+        transform: translate(-50%, -5px);
+    }
+    100%{
+        transform: translate(-50%, 0px);
+    }
+}
+
+#combatants .animations {
+    position: absolute;
+    left: 0;
+    top: -100px;
+    height: calc(100% + 100px);
+    pointer-events: none;
+}
+
+#combatants .animations img {
+    height: 100%;
+    image-rendering: unset;
+    transform-origin: 50% 100%;
+    opacity: 0;
+}
+
+@keyframes lightning{
+    0%{
+        opacity: 0;
+    }
+    5%{
+        opacity: 1;
+    }
+    15%{
+        opacity: .1;
+    }
+    20%{
+        opacity: 0;
+        transform: rotate(0deg);
+    }
+    30%{
+        opacity: 0;
+        transform: rotate(15deg);
+    }
+    55%{
+        opacity: 1;
+        transform: rotate(15deg);
+    }
+    65%{
+        opacity: 0;
+        transform: rotate(15deg);
+    }
+    80%{
+        opacity: 0;
+        transform: rotate(-15deg);
+    }
+    85%{
+        opacity: 1;
+        transform: rotate(-15deg);
+    }
+    90%{
+        opacity: 0;
+        transform: rotate(-15deg)
+    }
+}
+
+#blockregion, #combatregion{
+    position: relative;
+    display: inline-block
+}
+
+#board{
+    position: relative;
+    display: inline-block
+}
+
+#playfield{
+    position: relative;
+    width: 640px;
+    height: 361px;
+    background-color: black;
+    padding: 16px;
+    border: 16px solid transparent;
+    border-image: url("border.png") 30 stretch;
+    overflow: hidden;
+    display: inline-block;
+}
+
+#playfield-tiles{
+    z-index: 1;
+    position: relative;
+    top: -16px;
+    left: -16px;
+}
+
+.playfield-background{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-repeat: repeat-x;
+    background-size: auto 100%;
+    pointer-events: none;
+    user-select: none;
+}
+
+#bg1{
+    background-image:url("bg1.png");
+}
+
+#bg2{
+    background-image:url("bg2.png");
+}
+
+#bg3{
+    background-image:url("bg3.png");
+}
+
+#bg4{
+    background-image:url("bg4.png");
+}
+
+#bg5{
+    background-image:url("bg5.png");
+    animation: fog 10s alternate infinite;
+}
+
+#bg6{
+    background-image:url("bg5.png");
+    animation: fog 10s alternate infinite;
+    animation-delay: -4s;
+}
+
+#bg7{
+    background-image: url("cobblestone.jpg");
+}
+
+@keyframes fog{
+    0% {
+        opacity: .5;
+        transform: scale(2);
+    }
+    100% {
+        opacity: .4;
+        transform: scale(2.25);
+    }
+}
+
+#slider{
+    position: relative;
+    top: -24px;
+    width: calc(100% - 96px);
+    padding-right: 64px;
+    margin: auto;
+    opacity: 0;
+    transition: opacity .1s
+}
+
+#slider:hover{
+    opacity: 1
+}
+
+#slider-image{
+    position: relative;
+    cursor: pointer;
+}
+
+.tile{
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    border: 2px solid rgba(30, 30, 30, .35);
+    background-repeat: no-repeat;
+    filter: blur(2px)
+}
+
+.block{
+    box-sizing: border-box;
+    position: absolute;
+    background: linear-gradient(to bottom right, rgba(77, 77, 77, .9), rgba(88, 88, 88, .9)), url(softstone.jpg);
+    border: 5px outset rgba(110, 110, 110, .5);
+    filter: drop-shadow(0px 3px 5px black);
+    transition: .1s;
+    cursor: pointer;
+    background-size: 223%;
+    block-size: 
+}
+
+.block:hover{
+    transform: translateY(-5px);
+    filter: drop-shadow(0 8px 5px black);
+    animation: .75s jiggle infinite linear;
+}
+
+@keyframes jiggle{
+    0%{
+        transform: translateY(-5px) rotate(0deg);
+    }
+    25%{
+        transform: translateY(-5px) rotate(-2deg);
+    }
+    50%{
+        transform: translateY(-5px) rotate(0deg);
+    }
+    75%{
+        transform: translateY(-5px) rotate(2deg);
+    }
+    100%{
+        transform: translateY(-5px) rotate(0deg);
+    }
+}
+
+.block img{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 25px;
+    height: 25px;
+    transform: translate(-50%, -50%);
+    opacity: .5;
+    filter: blur(.5px);
+}
+
+.block div{
+    position: absolute;
+    width: calc(100% + 12px);
+    height: calc(100% + 12px);
+    left: -6px;
+    top: -6px;
+    opacity: .2;
+    pointer-events: none;
+    z-index: 0;
+}
+
+#arrows{
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+
+.arrow{
+    position: absolute;;
+    width: 40px;
+    height: 40px;
+    transform: translate(-50%, -50%);
+    opacity: .15;
+    cursor: pointer;
+    transition: .1s;
+    filter: drop-shadow(1px 1px 2px black);
+}
+
+.arrow:hover{
+    opacity: 1 !important;
+}
+
+.arrow:active{
+    transform: translate(-50%, -50%) scale(1.5);
+}
+
+#canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    pointer-events: none;
+    user-select: none;
+}
+
+#waitingBlocks{
+    display: inline-block;
+    text-align: center;
+    width: 150px;
+    overflow-y: scroll;
+    background: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .7)), url(marblefloor.png);
+    border: 16px solid transparent;
+    border-image: url(border.png) 30 stretch;
+    transform: translate(13px, -1px);
+}
+
+#waitingBlocks .block{
+    position: static;
+    display: inline-block;
+    margin: 5px;
+}
+
+#waitingBlocks .block[selected = "true"]{
+    filter: drop-shadow(0px 0px 1px white) drop-shadow(0px 0px 1px white) drop-shadow(0px 0px 1px white) drop-shadow(0px 0px 1px white);
+}
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  cursor: pointer;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, .4);; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+#buttons{
+    position: absolute;
+    left: calc(100% + 8px);
+    bottom: 34px;
+}
+
+#buttons div{
+    width: 140px;
+    color: white;
+    cursor: help;
+}
+
+#buttons img{
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+#buttons img:hover{
+    filter: brightness(1.2)
+}
+
+#buttons img:active{
+    filter: brightness(1.4);
+    transform: translateY(4px)
+}
+
+@keyframes disintegrate{
+    0%{
+        transform: unset;
+        filter: unset;
+    }
+    100%{
+        transform: scale(10);
+        filter: blur(1000px)
+    }
+}
+
+footer{
+    position: absolute;
+    bottom: 0;
+    background-color: black;
+    color: white;
+    font-size: 13px;
+    padding: 1px;
+}
