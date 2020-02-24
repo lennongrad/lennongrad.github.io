@@ -2,6 +2,10 @@ Array.prototype.last = function () {
     return this[this.length - 1];
 };
 
+Array.prototype.first = function () {
+    return this[0];
+};
+
 function elementShowTooltip(){
     showTooltip(this)
 }
@@ -43,6 +47,12 @@ function removeElement(element) {
     if(element.parentNode != undefined){
         element.parentNode.removeChild(element);
     }
+}
+
+var elementsToRemove = []
+function removeElementArray(){
+    removeElement(elementsToRemove.last())
+    elementsToRemove.splice(elementsToRemove.length - 1, 1)
 }
 
 function insertAfter(newNode, referenceNode) {
@@ -591,23 +601,24 @@ class Block{
     cast(direction){
         this.nudge(direction)
         blocks.splice(blocks.indexOf(this), 1)
-        var elem = this.elem
         this.elem.style.animation = "2s disintegrate"
 
         switch(this.details.typing){
             case typings.enemyAttack: combatants[0].damage(this.details.value); break;
-            case typings.enemyHeal: combatants[1].heal(this.details.value); break;
-            case typings.playerAttack: combatants[1].damage(this.details.value); break;
+            case typings.enemyHeal: if(combatants[1] != undefined) combatants[1].heal(this.details.value); break;
+            case typings.playerAttack: if(combatants[1] != undefined) combatants[1].damage(this.details.value); break;
         }
 
-        setTimeout(function(){removeElement(elem)}, 200)
+        elementsToRemove.push(this.elem)
+        setTimeout(function(){removeElementArray()}, 200)
     }
 
     remove(){
         blocks.splice(blocks.indexOf(this), 1)
-        removeElement(this.elem)
+        elementsToRemove.push(this.elem)
+        setTimeout(function(){removeElementArray()}, 200)
     }
-
+ 
     nudge(direction, func){
         switch(direction){
             case directions[0]: this.elem.style.transform = "translateX(100px)"; break;
@@ -713,9 +724,11 @@ var intentions = {
 
 var monsters = {
     player: {maxHP: 40, image: "player_warlock.png"},
-    skeleton: {maxHP: 15, image: "enemy_skeleton.png", intentions: [intentions.attack]},
-    slime: {maxHP: 15, image: "enemy_slime.png", intentions: [intentions.attack, intentions.heal]}
+    skeleton: {maxHP: 6, image: "enemy_skeleton.png", intentions: [intentions.attack]},
+    slime: {maxHP: 4, image: "enemy_slime.png", intentions: [intentions.attack, intentions.heal]}
 }
+
+level1Monsters = [monsters.skeleton, monsters.slime]
 
 class Combatant{
     constructor(monster){
@@ -802,6 +815,9 @@ class Combatant{
     die(){
         removeElement(this.elem)
         combatants.splice(combatants.indexOf(this), 1)
+        if(combatants.length == 1){
+            combatWon()
+        }
     }
 
     updateDisplay(){
@@ -825,6 +841,13 @@ var cardTypes = {
     magicmissile: {cost: 0, name: "Magic Missile", icon: "sword.png", effects: [{effect: cardEffects.summon, value: 1, block: {width: 1, height: 1, typing: typings.playerAttack, value: 1}}]},
     flamewall: {cost: 2, name: "Flame Wall", icon: "sword.png", effects: [{effect: cardEffects.summon, value: 1, block: {width: 1, height: 3, typing: typings.playerAttack, value: 4}}]},
     carddraw: {cost: 1, name: "Card Draw", icon: "card-draw.png", effects: [{effect: cardEffects.cardDraw, value: 2}]}
+}
+
+function randomCardType(){
+    var tempArray = []
+    Object.keys(cardTypes).forEach(key => tempArray.push(cardTypes[key]))
+    shuffleArray(tempArray)
+    return tempArray
 }
 
 class Card{
@@ -857,10 +880,21 @@ class Card{
         this.description.className = "card-description"
         this.elem.appendChild(this.description)
 
-        document.getElementById("cards").appendChild(this.elem)
-
         this.elem.card = this
         this.elem.onclick = function(){this.card.click()}
+
+        this.thumbnailElem = this.elem.cloneNode(true)
+        this.thumbnailElem.card = this
+        this.thumbnailElem.onclick = function(){
+            if(rewardCards.includes(this.card)){
+                document.getElementById("rewards").style.opacity = 0
+                document.getElementById("rewards").style.pointerEvents = "none"
+                document.getElementById("main").className = ""
+
+                playerDeck.push(this.card)
+                backToMap()
+            }
+        }
     }
 
     static getDescription(cardType){
@@ -897,18 +931,133 @@ class Card{
         var elem = this.elem
         setTimeout(function(){removeElement(elem)}, 200)
         playerHand.splice(playerHand.indexOf(this), 1)
+        playerDiscard.push(this)
+        console.l
 
         updateDisplay()
     }
 }
 
+class Room{
+    constructor(x, y){
+        this.x = x
+        this.y = y
+        this.active = false
+        this.playerStart = false
+        this.cleared = false
+    }
+
+    adj(direction){
+        switch(direction){
+            case directions[0]: if(this.x < roomSizeX - 1) return rooms[(this.x + 1) * roomSizeY + this.y]; break;
+            case directions[1]: if(this.y < roomSizeY - 1) return rooms[this.x * roomSizeY + (this.y + 1)]; break;
+            case directions[2]: if(this.x > 0) return rooms[(this.x - 1) * roomSizeY + this.y]; break;
+            case directions[3]: if(this.y > 0) return rooms[this.x * roomSizeY + (this.y - 1)]; break;
+        }
+        return undefined
+    }
+
+    initialize(){
+        this.active = true
+
+        this.elem = document.createElement("DIV")
+        this.elem.className = "room"
+        this.elem.style.left = this.x * 100 + 40 + "px"
+        this.elem.style.top = this.y * 100 + 40 + "px"
+
+        this.clearIndicator = document.createElement("IMG")
+        this.clearIndicator.className = "clearIndicator"
+
+        if(this.playerStart){
+            this.cleared = true
+        }
+
+        this.elem.id = "room" + (this.x * roomSizeY + this.y)
+        this.elem.onclick = function(){
+            rooms[Number(this.id.substring(4))].visit()
+        }
+
+        document.getElementById("rooms").appendChild(this.elem)
+    }
+
+    update(){
+        this.canBeSeen = this.cleared
+        directions.forEach(direction => {
+            if(this.adj(direction) != undefined && this.adj(direction).cleared){
+                this.canBeSeen = true
+            }
+        })
+
+        if(this.canBeSeen){
+            this.elem.style.opacity = 1
+            this.elem.appendChild(this.clearIndicator)
+        } else {
+            this.elem.style.opacity = .5
+        }
+
+        if(this.cleared){
+            this.clearIndicator.src = "checkmark.png"
+        } else {
+            this.clearIndicator.src = "skull.png"
+        }
+    }
+
+    visit(ignoreCleared){
+        this.update()
+
+        if(this.canBeSeen && (!this.cleared || ignoreCleared)){
+            if(!this.cleared){
+                resetCombat()
+            }
+
+            playerRoom = this
+            this.cleared = true
+            visitedRooms.forEach(x => x.update())
+        }
+    }
+}
+
+var roomSizeX = 6
+var roomSizeY = 5
+var playerRoom
+var playerMapIcon = document.createElement("IMG")
+playerMapIcon.src = "playerMapIcon.png"
+playerMapIcon.id = "playerMapIcon"
+var rooms = []
+
+for(var e = 0; e < roomSizeX; e++){
+    for(var i = 0; i < roomSizeY; i++){
+        rooms.push(new Room(e, i))
+    }
+}
+document.getElementById("rooms").style.width = roomSizeX * 100 + "px"
+document.getElementById("rooms").style.height = roomSizeY * 100 + "px"
+
+var visitedRooms = []
+var roomQueue = [randomValue(rooms)]
+while(roomQueue.length != 0){
+    visitedRooms.push(roomQueue.first())
+    directions.forEach(direction => {
+        if((Math.random() < .35  || visitedRooms.length < 4) && (visitedRooms.length < 8) && roomQueue.first().adj(direction) != undefined && !visitedRooms.includes(roomQueue.first().adj(direction))){
+            roomQueue.push(roomQueue.first().adj(direction))
+        }
+    })
+    roomQueue.splice(0, 1)
+} 
+visitedRooms = Array.from(new Set(visitedRooms))
+
+randomValue(visitedRooms).playerStart = true
+visitedRooms.forEach(x => x.initialize())
+visitedRooms.filter(x => x.playerStart)[0].visit(true)
+
 var playerHand = []
+var playerDraw = []
+var playerDiscard = []
 var playerEnergy = 0
 
-var combatants = []
-combatants.push(new Combatant(monsters.player))
-combatants.push(new Combatant(monsters.skeleton))
-combatants.push(new Combatant(monsters.slime))
+var combatants
+var player = new Combatant(monsters.player)
+var playerDeck = [new Card(cardTypes.magicmissile), new Card(cardTypes.magicmissile), new Card(cardTypes.magicmissile), new Card(cardTypes.fireball), new Card(cardTypes.fireball), new Card(cardTypes.flamewall)]
 
 var tiles = []
 for(var i = 0; i < horizontalStageSize; i++){
@@ -963,10 +1112,63 @@ document.getElementById("canvas").height = verticalStageSize * 66
 var canvasContext = document.getElementById("canvas").getContext("2d")
 canvasContext.lineWidth = 3
 
+function showDrawPile(){
+    if(playerDraw.length > 0){
+        document.getElementById("main").className = "blur"
+        document.getElementById("thumbnails").style.opacity = 1
+        playerDraw.forEach(x => document.getElementById("thumbnails-hold").appendChild(x.thumbnailElem))
+    }
+}
+
+function showDiscardPile(){
+    if(playerDiscard.length > 0){
+        document.getElementById("main").className = "blur"
+        document.getElementById("thumbnails").style.opacity = 1
+        playerDiscard.forEach(x => document.getElementById("thumbnails-hold").appendChild(x.thumbnailElem))
+    }
+}
+
+function showDeckPile(){
+    document.getElementById("main").className = "blur"
+    document.getElementById("thumbnails").style.opacity = 1
+    playerDeck.forEach(x => document.getElementById("thumbnails-hold").appendChild(x.thumbnailElem))
+}
+
+function hideThumbnails(){
+    document.getElementById("main").className = ""
+    document.getElementById("thumbnails").style.opacity = 0
+    document.getElementById("thumbnails-hold").innerHTML = ""
+}
+
 function drawCards(cardAmount){
     for(var i = 0; i < cardAmount; i++){
-        playerHand.push(new Card(randomValueObj(cardTypes)))
+        if(playerDraw.length == 0){
+            playerDraw = playerDiscard.slice()
+            playerDiscard = []
+        }
+
+        playerHand.push(playerDraw.splice(randomIndex(playerDraw), 1)[0])
+        document.getElementById("cards").appendChild(playerHand.last().elem)
+        playerHand.last().elem.style.animation = ""
     }
+}
+
+function resetCombat(){
+    combatants = [player]
+
+    for(var i = 0; i < 1 || (i < 3 && Math.random() < .5); i++){
+        combatants.push(new Combatant(monsters.slime))
+    }
+
+    blocks.slice().reverse().forEach(x => x.remove())
+    Array.prototype.slice.call(document.getElementsByClassName("block")).slice().reverse().forEach(x => removeElement(x))
+
+    playerDraw = playerDeck.slice()
+
+    document.getElementById("map").style.opacity = 0
+    document.getElementById("map").style.pointerEvents = "none"         
+    document.getElementById("map").style.filter = "blur(50px)"
+    startTurn()
 }
 
 function startTurn(){
@@ -974,20 +1176,50 @@ function startTurn(){
     playerEnergy = 3
     updateDisplay()
 }
-startTurn()
 
 function nextTurn(){
     updateDisplay()
     blocks.filter(x => !x.placed).forEach(x => x.remove())
     combatants.forEach(x => x.endTurn())
-    startTurn()
+
+    if(combatants.length == 1){
+        combatWon()
+    } else {
+        startTurn()
+    }
+}
+
+var rewardCards = []
+function combatWon(){
+    document.getElementById("main").className = "blur"
+    rewardCards = randomCardType().slice(0, 3).map(x => new Card(x))
+    rewardCards.forEach(card => {
+        document.getElementById("rewards-hold").appendChild(card.thumbnailElem)
+    })
+    document.getElementById("rewards").style.opacity = 1
+    document.getElementById("rewards").style.pointerEvents = ""
+}
+
+function backToMap(){
+    document.getElementById("map").style.opacity = 1
+    document.getElementById("map").style.filter = ""
+    document.getElementById("map").style.pointerEvents = ""
+    updateDisplay()
 }
 
 function updateDisplay(){
     document.getElementById("energy-number").innerHTML = playerEnergy + "/3"
+    document.getElementById("card-number").innerHTML = playerHand.length + "/4"
+    document.getElementById("draw").innerHTML = playerDraw.length
+    document.getElementById("discard").innerHTML = playerDiscard.length
+    document.getElementById("deck-number").innerHTML = playerDeck.length
     document.getElementById("energy-name").setAttribute("message", "You start each turn with `Y Energy, and spend it to play cards. You currently have `X Energy left to spend this turn.".replace(/`Y/g, 3).replace(/`X/g, playerEnergy))
     document.getElementById("card-name").setAttribute("message", "You have `X cards left to play. At the start of each turn you draw cards until you have at least `Y in your hand.".replace(/`Y/g, 4).replace(/`X/g, playerHand.length))
+    document.getElementById("draw").setAttribute("message", "There are `X cards left in your draw pile. This is where cards are drawn from at the beginning of your turn.".replace(/`X/g, playerDraw.length))
+    document.getElementById("discard").setAttribute("message", "There are `X cards left in your discard pile. This is where cards are put after they are played.".replace(/`X/g, playerDiscard.length))
+    document.getElementById("deck-name").setAttribute("message", "There are `X cards in your deck.".replace(/`X/g, playerDeck.length))
 }
+updateDisplay()
 
 setInterval(function(){
     if(scrollLeft){
@@ -1007,4 +1239,6 @@ setInterval(function(){
    // document.getElementById("bg4").style.backgroundPositionX = -horizontalDisplacement * .5 + "px"
     document.getElementById("playfield-tiles").style.left = -16 - ((horizontalStageSize * 66 - 690) * horizontalDisplacement / 100) + "px"
     document.getElementById("canvas").style.left = -((horizontalStageSize * 66 - 690) * horizontalDisplacement / 100) + "px"
+
+    playerRoom.elem.appendChild(playerMapIcon)
 }, 1)

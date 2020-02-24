@@ -27,12 +27,199 @@
     pointer-events: none;
 }
 
+#thumbnails{
+    position: absolute;
+    left: 0;
+    bottom: 100px;
+    height: calc(100% - 100px);
+    width: 100%;
+    background-color: rgba(50, 0, 50, .3);
+    pointer-events: none;
+}
+
+#thumbnails-hold{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background-color: rgba(0, 0, 0, .5);
+    transform: translate(-50%, -50%) scale(.75) ;
+    padding: 20px;
+    padding-right: 28px;
+    border-radius: 5px;
+    filter: drop-shadow(0px 0px 5px black) drop-shadow(0px 0px 5px black);
+    text-align: center;
+}
+
+#rewards{
+    position: absolute;
+    left: 0;
+    bottom: 100px;
+    height: calc(100% - 100px);
+    width: 100%;
+    background-color: rgba(30, 30, 30, .7);
+}
+
+#rewards-hold{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background-color: rgba(0, 0, 0, .5);
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    padding-right: 28px;
+    border-radius: 5px;
+    filter: drop-shadow(0px 0px 5px black) drop-shadow(0px 0px 5px black);
+    text-align: center;
+}
+
+#map{
+    position: absolute;
+    bottom: 100px; 
+    left: 0;
+    width: 100%;
+    height: calc(100% - 100px);
+    overflow: hidden;
+    animation: .10s map-back infinite linear;
+    transition: 1s;
+    background: linear-gradient(#636, #000);
+}
+
+#map-back1, #map-back2, #map-back3, #map-back4{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150vw;
+    height: 150vw;
+    background-image: url("void.jpg");
+}
+
+#map-back1{
+    animation: 10s map-back-rotate1 infinite linear;
+    opacity: .5;
+}
+
+#map-back3{
+    animation: 15.9s map-back-rotate1 infinite linear;
+    opacity: .4;
+}
+
+@keyframes map-back-rotate1{
+    0%{
+        transform: translate(-50%, -50%) rotate(0)
+    }
+    100%{
+        transform: translate(-50%, -50%)  rotate(360deg)
+    }
+}
+
+#map-back2{
+    animation: 11.3s map-back-rotate1 infinite linear;
+    opacity: .3;
+}
+
+#map-back4{
+    animation: 19.445s map-back-rotate1 infinite linear;
+    opacity: .2;
+}
+
+@keyframes map-back-rotate2{
+    0%{
+        transform: translate(-50%, -50%) rotate(0)
+    }
+    100%{
+        transform: translate(-50%, -50%)  rotate(-360deg)
+    }
+}
+
+#rooms{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    padding: 40px;
+    background-color: rgba(0, 0, 0, .2);
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 0 5px black);
+    border-radius: 5px;
+}
+
+.room{
+    position: absolute;
+    width: 96px;
+    height: 96px;
+    background: linear-gradient(to top, rgba(0, 0, 0, .3), rgba(50, 50, 50, 0)), url(softstone.jpg);
+    box-shadow: 1px 1px 3px black inset, 1px 1px 15px black inset;
+    background-size: contain;
+    border: 2px solid black;
+    cursor: pointer;
+}
+
+.room:hover{
+    filter: brightness(1.1)
+}
+
+img.clearIndicator {
+    position: absolute;
+    top: 10px;
+    left: 9px;
+    width: 24px;
+    filter: drop-shadow(0px 1px 4px #444);
+}
+
+.room:hover img.clearIndicator{
+    animation: .5s clearjiggle linear infinite
+}
+
+#playerMapIcon {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    width: 36px;
+    filter: drop-shadow(0px 1px 4px #444);
+    transform: translate(-50%, -50%)
+}
+
+@keyframes clearjiggle{
+    0%{
+        transform: translateY(-5px) rotate(0deg);
+    }
+    25%{
+        transform: translateY(-5px) rotate(-20deg);
+    }
+    50%{
+        transform: translateY(-5px) rotate(0deg);
+    }
+    75%{
+        transform: translateY(-5px) rotate(20deg);
+    }
+    100%{
+        transform: translateY(-5px) rotate(0deg);
+    }
+}
+
 #main{
     position: absolute;
     left: 50%;
     top: 45%;
     transform: translate(-50%, -50%);
     text-align: center;
+}
+
+.blur{
+    filter: blur(5px)
+}
+
+#toplayer{
+    position: absolute;
+    bottom: 18px;
+    left: 0;
+    width: calc(100% - 90px);
+    color: white;
+    background-color: rgba(20, 0, 20, .5);
+    padding: 10px;
+    padding-right: 80px;
+    border-radius: 7px;
+    filter: drop-shadow(0 0 3px rgb(20, 0, 20));
+    text-align: right;
 }
 
 #upperlayer{
@@ -54,24 +241,24 @@
     transform: translateX(-50%);
 }
 
-#energy-name, #card-name{
+#energy-name, #card-name, #deck-name{
     display: inline-block;
     margin-left: -10px;
     padding-left: 10px;
     border-bottom: 2px solid white;
 }
 
-#energy-name span, #card-name span {
+#energy-name span, #card-name span, #deck-name span {
     vertical-align: middle;
 }
 
-#energy-name img, #card-name img {
+#energy-name img, #card-name img, #deck-name img {
     filter: invert(1);
     width: 20px;
     vertical-align: middle;
 }
 
-#energy-number, #card-number {
+#energy-number, #card-number, #deck-number {
     display: inline-block;
     padding: 10px;
     border: 2px solid white;
@@ -80,6 +267,29 @@
     height: 37px;
     line-height: 37px;
     margin-left: 10px;
+    text-align: center;
+}
+
+#draw, #discard {
+    position: absolute;
+    top: 100%;
+    padding: 10px;
+    border: 2px solid white;
+    border-radius: 100%;
+    width: 37px;
+    height: 37px;
+    line-height: 37px;
+    color: white;
+    transform: translateY(-50%);
+    background-color: #111;
+}
+
+#draw{
+    left: 0
+}
+
+#discard{
+    right: 0
 }
 
 #cards{
@@ -181,7 +391,7 @@
     background-image: url(spotlight.png);
     background-size: 100% 100%;
     overflow: visible;
-    min-width: 264px;
+    min-width: 340px;
 }
 
 #ground{
@@ -198,7 +408,7 @@
 
 #light{
     position: absolute;
-    width: 56px;
+    width: 64px;
     height: 62px;
     border-radius: 34%;
     top: -30px;
@@ -674,4 +884,5 @@ footer{
     color: white;
     font-size: 13px;
     padding: 1px;
+    width: calc(100% - 2px);
 }

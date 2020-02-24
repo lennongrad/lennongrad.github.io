@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <title>Sensus</title>
     <meta charset=utf-8>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
@@ -38,11 +39,34 @@
         <div id="lowerlayer">
             <div id="cards"></div>
             <div id="energy">
-                <div id="energy-number" onmouseover="showTooltip(this)" onmouseout="hideTooltip()" >3/3</div>
+                <div id="energy-number" >3/3</div>
                 <div id="energy-name" onmouseover="showTooltip(this)" onmouseout="hideTooltip()" ><span>ENERGY</span> <img src="energy.png"></div>
-                <div id="card-number" onmouseover="showTooltip(this)" onmouseout="hideTooltip()" >3/4</div>
+                <div id="card-number">3/4</div>
                 <div id="card-name" onmouseover="showTooltip(this)" onmouseout="hideTooltip()" ><span>CARDS</span> <img src="card.png"></div>
             </div>
+            <div id="draw" onmouseover="showTooltip(this); showDrawPile()" onmouseout="hideTooltip(); hideThumbnails();" >30</div>
+            <div id="discard" onmouseover="showTooltip(this); showDiscardPile()" onmouseout="hideTooltip(); hideThumbnails()" >30</div>
+        </div>
+    </div>
+    <div id="map">
+        <div id="map-back1"></div>
+        <div id="map-back2"></div>
+        <div id="map-back3"></div>
+        <div id="map-back4"></div>
+        <div id="rooms"></div>
+    </div>
+    <div id="rewards" style="opacity: 0; pointer-events: none;">
+        <div id="rewards-hold">
+
+        </div>
+    </div>
+    <div id="toplayer">
+        <div id="deck-number">3</div>
+        <div id="deck-name" onmouseover="showTooltip(this); showDeckPile()" onmouseout="hideTooltip();  hideThumbnails()" ><span>DECK</span> <img src="deck.png"></div>
+    </div>
+    <div id="thumbnails" style="opacity: 0">
+        <div id="thumbnails-hold">
+
         </div>
     </div>
     <footer>Created by <a href="http://lennongrad.com">lennongrad</a>. Enemy designs and imagery by <a
