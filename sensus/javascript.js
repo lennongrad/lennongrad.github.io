@@ -529,9 +529,10 @@ function activeBlock(){
 }
 
 var typings = {
-    playerAttack: {color: "blue", icon: "sword.png", description: "<b>Cast</b>: Deal X damage to the closest enemy"},
-    enemyAttack: {color: "red", icon: "skull.png", description: "<b>Cast</b>: Deal X damage to yourself"},
-    enemyHeal: {color: "red", icon: "heart.png", description: "<b>Cast</b>: Heal the closest enemy for X damage"}
+    playerAttack: {color: "blue", icon: "card_fireball.png", description: "<b>Cast</b>: Deal `X damage to the closest enemy."},
+    enemyAttack: {color: "red", icon: "attack.png", description: "<b>Cast</b>: Deal `X damage to yourself."},
+    enemyHeal: {color: "red", icon: "card_poisonmushroom.png", description: "<b>Cast</b>: Heal the closest enemy for `X damage."},
+    playerAttackFreeze: {color: "blue", icon: "card_iceball.png", description: "<b>Cast</b>: Deal `X damage to the closest enemy and lower their attack stat by `Y"}
 }
 
 class Block{
@@ -575,7 +576,7 @@ class Block{
     }
 
     static getDescription(details){
-        return details.width + "x" + details.height + "<br>" + details.typing.description.replace(/X/g, details.value)
+        return details.width + "x" + details.height + "<br>" + details.typing.description.replace(/`X/g, details.value).replace(/`Y/g, details.valueY)
     }
 
     getTiles(){
@@ -607,10 +608,16 @@ class Block{
             case typings.enemyAttack: combatants[0].damage(this.details.value); break;
             case typings.enemyHeal: if(combatants[1] != undefined) combatants[1].heal(this.details.value); break;
             case typings.playerAttack: if(combatants[1] != undefined) combatants[1].damage(this.details.value); break;
+            case typings.playerAttackFreeze: if(combatants[1] != undefined){
+                combatants[1].damage(this.details.value)
+                combatants[1].attack -= 1;
+             }; break;
         }
 
         elementsToRemove.push(this.elem)
         setTimeout(function(){removeElementArray()}, 200)
+
+        updateDisplay()
     }
 
     remove(){
@@ -718,22 +725,26 @@ class Block{
 }
 
 var intentions = {
-    attack: {image: "skull.png", message: "This creature intends to insert a damaging block this turn.", blockType: {typing: typings.enemyAttack, value: 3, width: 1, height: 1}},
-    heal: {image: "heart.png", message: "This creature intends to insert a healing block this turn.", blockType: {typing: typings.enemyHeal, value: 3, width: 1, height: 1}}
+    directAttack: {image: "attack.png", message: "This creature intends to directly attack you this turn."},
+    directHeal: {image: "card_poisonmushroom.png", message: "This creature intends to directly heal itself."},
+    blockAttack: {image: "attack.png", message: "This creature intends to insert an attack block this turn.", blockType: {typing: typings.enemyAttack, width: 1, height: 1}},
+    blockHeal: {image: "card_poisonmushroom.png", message: "This creature intends to insert a healing block this turn.", blockType: {typing: typings.enemyHeal, width: 1, height: 1}}
 }
 
 var monsters = {
-    player: {maxHP: 40, image: "player_warlock.png"},
-    skeleton: {maxHP: 6, image: "enemy_skeleton.png", intentions: [intentions.attack]},
-    slime: {maxHP: 4, image: "enemy_slime.png", intentions: [intentions.attack, intentions.heal]}
+    player: {maxHP: 40, image: "mario.png", frames: 9},
+    goomba: {maxHP: 6, image: "enemy_goomba.png", frames: 4, intentions: [{intention: intentions.directAttack, value: 3}, {intention: intentions.directAttack, value: 3}]},
+    gloomba: {maxHP: 4, image: "enemy_gloomba.png", frames: 4, intentions: [{intention: intentions.blockAttack, value: 3}, {intention: intentions.blockHeal, value: 3}]}
 }
 
-level1Monsters = [monsters.skeleton, monsters.slime]
+level1Monsters = [monsters.goomba, monsters.gloomba]
 
 class Combatant{
     constructor(monster){
         this.monster = monster
         this.hp = this.monster.maxHP
+        this.attack = 0
+        this.defense = 0
 
         this.elem = document.createElement("DIV")
         if(this.monster == monsters.player){
@@ -743,17 +754,17 @@ class Combatant{
             this.intentionCounter = 0
         }
 
-        this.image = document.createElement("IMG")
-        this.image.src = this.monster.image
-        this.image.setAttribute("draggable", "false")
+        var animationDelay = Math.random() + "s"
+        this.image = document.createElement("DIV")
+        this.image.className = "combatant-image frames" + this.monster.frames
+        this.image.style.backgroundImage = "url(" + this.monster.image + ")"
+        this.image.style.animationDelay = animationDelay
         this.elem.appendChild(this.image)
-
-        this.elemHex = document.createElement("DIV")
-        this.elemHex.className = "hexcircle"
-        this.elemHexImage = document.createElement("IMG")
-        this.elemHexImage.src = "PNW_Dex1.png"
-        this.elemHex.appendChild(this.elemHexImage)
-        this.elem.appendChild(this.elemHex)
+        this.imageShadow = document.createElement("DIV")
+        this.imageShadow.className = "combatant-image-shadow frames" + this.monster.frames
+        this.imageShadow.style.backgroundImage = "url(" + this.monster.image + ")"
+        this.imageShadow.style.animationDelay = animationDelay
+        this.elem.appendChild(this.imageShadow)
 
         this.lifebar = document.createElement("DIV")
         this.lifebar.className = "lifebar"
@@ -770,8 +781,34 @@ class Combatant{
             this.intentionDisplay.className = "intention"
             this.intentionDisplay.onmouseover = elementShowTooltip
             this.intentionDisplay.onmouseout = hideTooltip
+            this.intentionDisplay.style.animationDelay = animationDelay
             this.elem.appendChild(this.intentionDisplay)
+
+            this.intentionValue = document.createElement("DIV")
+            this.intentionValue.className = "intention-value"
+            this.intentionValue.style.animationDelay = animationDelay
+            this.elem.appendChild(this.intentionValue)
         }
+
+        this.debuffDisplay = document.createElement("DIV")
+        this.debuffDisplay.className = "debuff-display"
+        this.attackDisplay = document.createElement("DIV")
+        this.attackDisplay.className = "attack-display"
+        this.attackDisplayImage = document.createElement("IMG")
+        this.attackDisplayImage.src = "attack-up.png"
+        this.attackDisplayValue = document.createElement("SPAN")
+        this.attackDisplay.appendChild(this.attackDisplayImage)
+        this.attackDisplay.appendChild(this.attackDisplayValue)
+        
+        this.defenseDisplay = document.createElement("DIV")
+        this.defenseDisplay.className = "defense-display"
+        this.defenseDisplayImage = document.createElement("IMG")
+        this.defenseDisplayImage.src = "defense-up.png"
+        this.defenseDisplayValue = document.createElement("SPAN")
+        this.defenseDisplay.appendChild(this.defenseDisplayImage)
+        this.defenseDisplay.appendChild(this.defenseDisplayValue)
+
+        this.elem.appendChild(this.debuffDisplay)
 
         this.animations = document.createElement("DIV")
         this.animations.className = "animations"
@@ -787,8 +824,17 @@ class Combatant{
 
     endTurn(){
         if(this.intentionCounter != undefined){
-            blocks.push(new Block(this.monster.intentions[this.intentionCounter].blockType))
-            blocks.last().insert(Math.floor((verticalStageSize + horizontalStageSize) * 2 * Math.random()))
+            var tempValue = this.monster.intentions[this.intentionCounter].value + this.attack
+            switch(this.monster.intentions[this.intentionCounter].intention){
+                case intentions.directAttack: combatants[0].damage(tempValue); break;
+                case intentions.directHeal:  this.heal(tempValue); break;
+                case intentions.blockAttack:
+                case intentions.blockHeal:  
+                                        var blockType = Object.assign({}, this.monster.intentions[this.intentionCounter].intention.blockType)
+                                        blockType.value = tempValue
+                                        blocks.push(new Block(blockType)); 
+                                        blocks.last().insert(Math.floor((verticalStageSize + horizontalStageSize) * 2 * Math.random())); break;
+            }
 
             this.intentionCounter = (this.intentionCounter + 1) % this.monster.intentions.length
         }
@@ -797,7 +843,7 @@ class Combatant{
     }
 
     damage(amount){
-        this.hp -= amount
+        this.hp -= Math.max(0, amount - this.defense)
         if(this.hp <= 0){
             this.die()
         } else {
@@ -825,22 +871,45 @@ class Combatant{
         this.lifebarBar.style.width = this.hp / this.monster.maxHP * 100 + "%"
 
         if(this.intentionCounter != undefined){
-            this.intentionDisplay.src = this.monster.intentions[this.intentionCounter].image
-            this.intentionDisplay.setAttribute("message", this.monster.intentions[this.intentionCounter].message)
+            this.intentionDisplay.src = this.monster.intentions[this.intentionCounter].intention.image
+            this.intentionDisplay.setAttribute("message", this.monster.intentions[this.intentionCounter].intention.message)
+            if(this.monster.intentions[this.intentionCounter].intention.blockType != undefined){
+                this.intentionDisplay.className = "intention intention-block"
+            } else {
+                this.intentionDisplay.className = "intention"
+            }
+            this.intentionValue.innerHTML = this.monster.intentions[this.intentionCounter].value + this.attack
+        }
+
+        this.debuffDisplay.innerHTML = ""
+        if(this.attack != 0){
+            this.attackDisplayValue.innerHTML = this.attack
+            this.debuffDisplay.appendChild(this.attackDisplay)
+        }
+
+        if(this.defense != 0){
+            this.defenseDisplayValue.innerHTML = this.defense
+            this.debuffDisplay.appendChild(this.defenseDisplay)
         }
     }
 }
 
 var cardEffects = {
-    summon: {description: "Summon this Block xY:<br>"},
-    cardDraw: {description: "Draw Y card(s)"}
+    summon: {description: "Summon this Block x`Y:<br>", affectedByAttack: false},
+    cardDraw: {description: "Draw `Y card`Z. ", affectedByAttack: false}, 
+    userAttackUp: {description: "Increase your attack stat by +`Y. ", affectedByAttack: false},
+    userDefenseUp: {description: "Increase your defense stat by +`Y. ", affectedByAttack: false},
+    addFireball: {description: "Add `Y Fireball card`Z into your hand. ", affectedByAttack: false},
+    addIceball: {description: "Add `Y Iceball card`Z into your hand. ", affectedByAttack: false}
 }
 
 var cardTypes = {
-    fireball: {cost: 1, name: "Fireball", icon: "sword.png", effects: [{effect: cardEffects.summon, value: 1, block: {width: 1, height: 1, typing: typings.playerAttack, value: 3}}]},
-    magicmissile: {cost: 0, name: "Magic Missile", icon: "sword.png", effects: [{effect: cardEffects.summon, value: 1, block: {width: 1, height: 1, typing: typings.playerAttack, value: 1}}]},
-    flamewall: {cost: 2, name: "Flame Wall", icon: "sword.png", effects: [{effect: cardEffects.summon, value: 1, block: {width: 1, height: 3, typing: typings.playerAttack, value: 4}}]},
-    carddraw: {cost: 1, name: "Card Draw", icon: "card-draw.png", effects: [{effect: cardEffects.cardDraw, value: 2}]}
+    iceball: {cost: 1, name: "Iceball", icon: "card_iceball.png",  effects: [{effect: cardEffects.summon, value: 1, block: {width: 1, height: 1, typing: typings.playerAttackFreeze, value: 2, valueY: 1}}]},
+    fireball: {cost: 1, name: "Fireball", icon: "card_fireball.png", effects: [{effect: cardEffects.summon, value: 1, block: {width: 1, height: 1, typing: typings.playerAttack, value: 3}}]},
+    fireflower: {cost: 2, exhaust: true, name: "Fire Flower", icon: "card_fireflower.png", effects: [{effect: cardEffects.userAttackUp, value: 2}, {effect: cardEffects.addFireball, value: 1}]},
+    iceflower: {cost: 2, name: "Ice Flower", icon: "card_iceflower.png", effects: [{effect: cardEffects.userDefenseUp, value: 2}, {effect: cardEffects.addIceball, value: 1}]},
+    boomerangflower: {cost: 3, name: "Boomerang Flower", icon: "card_boomerangflower.png", effects: [{effect: cardEffects.userAttackUp, value: 2}, {effect: cardEffects.userDefenseUp, value: 1}]},
+    timer: {cost: 1, name: "Timer", icon: "card_timer.png", effects: [{effect: cardEffects.cardDraw, value: 2}]}
 }
 
 function randomCardType(){
@@ -869,16 +938,21 @@ class Card{
         
         this.icon = document.createElement("div")
         this.icon.className = "card-icon"
+        var animationDelay = Math.random() + "s"
+        this.iconBackground = document.createElement("DIV")
+        this.iconBackground.style.backgroundImage = "url('world11.jpg')"
+        this.iconBackground.style.animationDelay = animationDelay
         this.iconImage = document.createElement("IMG")
         this.iconImage.src = this.cardType.icon
         this.iconImage.setAttribute("draggable", "false")
+        this.icon.appendChild(this.iconBackground)
         this.icon.appendChild(this.iconImage)
         this.elem.appendChild(this.icon)
         
         this.description = document.createElement("DIV")
-        this.description.innerHTML = Card.getDescription(cardType)
         this.description.className = "card-description"
         this.elem.appendChild(this.description)
+        this.update()
 
         this.elem.card = this
         this.elem.onclick = function(){this.card.click()}
@@ -900,9 +974,10 @@ class Card{
     static getDescription(cardType){
         var string = ""
         cardType.effects.forEach(x => {
-            string += x.effect.description.replace(/Y/g, x.value)
+            var tempValue = x.value + (x.affectedByAttack ? combatants[0].attack : 0)
+            string += x.effect.description.replace(/`Y/g, tempValue).replace(/`Z/g, tempValue != 1 ? "s" : "")
             switch(x.effect){
-                case cardEffects.summon: string += Block.getDescription(x.block); break;
+                case cardEffects.summon: var tempBlock = Object.assign({}, x.block); tempBlock.value += ((combatants != undefined) ? combatants[0].attack : 0); console.log(tempBlock); string += Block.getDescription(tempBlock); break;
             }
         })
         return string;
@@ -921,9 +996,21 @@ class Card{
             switch(x.effect){
                 case cardEffects.summon: 
                     for(var i = 0; i < x.value; i++){
-                        blocks.push(new Block(x.block));
+                        var tempBlock = Object.assign({}, x.block)
+                        tempBlock.value += combatants[0].attack
+                        blocks.push(new Block(tempBlock));
                      }; break;
                 case cardEffects.cardDraw: drawCards(x.value); break;
+                case cardEffects.userAttackUp: combatants[0].attack += x.value; break;
+                case cardEffects.userDefenseUp: combatants[0].defense += x.value; break;
+                case cardEffects.addFireball: 
+                    for(var i = 0; i < x.value; i++){
+                        addCardToHand(new Card(cardTypes.fireball)); 
+                    }; break;
+                case cardEffects.addIceball: 
+                    for(var i = 0; i < x.value; i++){
+                        addCardToHand(new Card(cardTypes.iceball)); 
+                    }; break;
             }
         })
 
@@ -932,9 +1019,12 @@ class Card{
         setTimeout(function(){removeElement(elem)}, 200)
         playerHand.splice(playerHand.indexOf(this), 1)
         playerDiscard.push(this)
-        console.l
 
         updateDisplay()
+    }
+
+    update(){
+        this.description.innerHTML = Card.getDescription(this.cardType)
     }
 }
 
@@ -1057,7 +1147,7 @@ var playerEnergy = 0
 
 var combatants
 var player = new Combatant(monsters.player)
-var playerDeck = [new Card(cardTypes.magicmissile), new Card(cardTypes.magicmissile), new Card(cardTypes.magicmissile), new Card(cardTypes.fireball), new Card(cardTypes.fireball), new Card(cardTypes.flamewall)]
+var playerDeck = [new Card(cardTypes.fireball), new Card(cardTypes.fireball), new Card(cardTypes.iceball), new Card(cardTypes.fireflower), new Card(cardTypes.iceflower), new Card(cardTypes.timer)]
 
 var tiles = []
 for(var i = 0; i < horizontalStageSize; i++){
@@ -1140,16 +1230,22 @@ function hideThumbnails(){
     document.getElementById("thumbnails-hold").innerHTML = ""
 }
 
+function addCardToHand(card){
+    playerHand.push(card)
+    document.getElementById("cards").appendChild(playerHand.last().elem)
+    playerHand.last().elem.style.animation = ""
+}
+
 function drawCards(cardAmount){
     for(var i = 0; i < cardAmount; i++){
-        if(playerDraw.length == 0){
+        if(playerDraw.length == 0 && playerDiscard.length != 0){
             playerDraw = playerDiscard.slice()
             playerDiscard = []
+        } else if(playerDraw.length == 0){
+            return
         }
 
-        playerHand.push(playerDraw.splice(randomIndex(playerDraw), 1)[0])
-        document.getElementById("cards").appendChild(playerHand.last().elem)
-        playerHand.last().elem.style.animation = ""
+        addCardToHand(playerDraw.splice(randomIndex(playerDraw), 1)[0])
     }
 }
 
@@ -1157,7 +1253,7 @@ function resetCombat(){
     combatants = [player]
 
     for(var i = 0; i < 1 || (i < 3 && Math.random() < .5); i++){
-        combatants.push(new Combatant(monsters.slime))
+        combatants.push(new Combatant(randomValue(level1Monsters)))
     }
 
     blocks.slice().reverse().forEach(x => x.remove())
@@ -1180,7 +1276,9 @@ function startTurn(){
 function nextTurn(){
     updateDisplay()
     blocks.filter(x => !x.placed).forEach(x => x.remove())
-    combatants.forEach(x => x.endTurn())
+    if(combatants != undefined){
+        combatants.forEach(x => x.endTurn())
+    }
 
     if(combatants.length == 1){
         combatWon()
@@ -1193,6 +1291,7 @@ var rewardCards = []
 function combatWon(){
     document.getElementById("main").className = "blur"
     rewardCards = randomCardType().slice(0, 3).map(x => new Card(x))
+    document.getElementById("rewards-hold").innerHTML = " "
     rewardCards.forEach(card => {
         document.getElementById("rewards-hold").appendChild(card.thumbnailElem)
     })
@@ -1218,6 +1317,14 @@ function updateDisplay(){
     document.getElementById("draw").setAttribute("message", "There are `X cards left in your draw pile. This is where cards are drawn from at the beginning of your turn.".replace(/`X/g, playerDraw.length))
     document.getElementById("discard").setAttribute("message", "There are `X cards left in your discard pile. This is where cards are put after they are played.".replace(/`X/g, playerDiscard.length))
     document.getElementById("deck-name").setAttribute("message", "There are `X cards in your deck.".replace(/`X/g, playerDeck.length))
+
+    if(combatants != undefined){
+        combatants.forEach(x => x.updateDisplay())
+    }
+
+    if(playerHand != undefined){
+        playerHand.forEach(x => x.update())
+    }
 }
 updateDisplay()
 

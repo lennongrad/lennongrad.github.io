@@ -57,6 +57,7 @@
     height: calc(100% - 100px);
     width: 100%;
     background-color: rgba(30, 30, 30, .7);
+    transition: 2s;
 }
 
 #rewards-hold{
@@ -65,11 +66,15 @@
     top: 50%;
     background-color: rgba(0, 0, 0, .5);
     transform: translate(-50%, -50%);
-    padding: 20px;
-    padding-right: 28px;
+    padding: 50px;
+    padding-right: 62px;
     border-radius: 5px;
     filter: drop-shadow(0px 0px 5px black) drop-shadow(0px 0px 5px black);
     text-align: center;
+}
+
+#rewards-hold .card {
+    margin-left: 22px;
 }
 
 #map{
@@ -302,8 +307,8 @@ img.clearIndicator {
 .card {
     position: relative;
     display: inline-block;
-    width: 120px;
-    height: 160px;
+    width: 125px;
+    height: 162px;
     background: white;
     box-sizing: border-box;
     border: 6px solid white;
@@ -348,7 +353,7 @@ img.clearIndicator {
 .card-name{
     position: absolute;
     left: 50%;
-    top: 7px;
+    top: 3px;
     color: white;
     filter: drop-shadow(3px 3px 0px black);
     transform: translateX(-50%);
@@ -359,24 +364,51 @@ img.clearIndicator {
 .card-icon{
     position: absolute;
     left: 50%;
-    top: 35px;
+    top: 21px;
     color: white;
     transform: translateX(-50%);
+    background-color: red;
+    width: 99%;
+    height: 50px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    overflow: hidden;
+    box-shadow: 0 0 3px white, 0 0 3px white, 0 0 3px white, 0 0 3px white, 0 0 3px white, 0 0 3px white;
 }
 
 .card-icon img {
     width: 50px;
-    filter: invert(1) drop-shadow(3px 3px 0px black);
+    filter: drop-shadow(3px 3px 0px black);
+    image-rendering: pixelated;
+}
+
+.card-icon div{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    filter: blur(3px);
+    transform: scale(1.2);
+    animation: cardIconAnimation 30s infinite linear;
+    box-shadow: inset 0 0 16px black, inset 0 0 16px black;
+}
+
+@keyframes cardIconAnimation{
+    100%{
+        background-position: -625px;
+    }
 }
 
 .card-description{
     position: absolute;
     left: 50%;
-    bottom: 4px;
+    bottom: 2px;
     color: white;
     transform: translateX(-50%);
     width: 93%;
-    height: 50px;
+    height: 66px;
     font-size: 9px;
     line-height: 11px;
     font-family: arial;
@@ -396,14 +428,48 @@ img.clearIndicator {
 
 #ground{
     position: absolute;
-    width: 79%;
-    height: 32px;
-    border-radius: 100%;
-    top: 124px;
-    left: 33px;
+    width: 70%;
+    height: 50px;
+    border-radius: 24%;
+    top: 107px;
+    left: 65px;
     z-index: 1;
     filter: blur(8px);
+    opacity: .3;
     animation: 2s flicker infinite linear alternate-reverse;
+}
+
+#blocks1{
+    position: absolute;
+    width: 79%;
+    height: 32px;
+    top: 156px;
+    left: 33px;
+    z-index: 1;
+    background: url(blocks-background.png);
+    background-size: 32px 32px;
+}
+
+#blocks2 {
+    position: absolute;
+    width: 79%;
+    height: 64px;
+    top: 98px;
+    left: 42px;
+    z-index: 1;
+    background: url(blocks-background.png);
+    background-size: 32px 32px;
+    transform: scaleY(.8) skew(-16deg);
+    filter: drop-shadow(0 0 5px #111);
+}
+
+#blocks1 div, #blocks2 div{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, #111, transparent, #111);
 }
 
 #light{
@@ -436,11 +502,13 @@ img.clearIndicator {
     z-index: 3;
     position: relative;
     text-align: left;
+    top: -9px
 }
 
 #combatants div{
     display: inline-block;
     position: relative;
+    image-rendering: pixelated;
 }
 
 #combatants img{
@@ -482,15 +550,51 @@ img.clearIndicator {
     margin-right: 10px
 }
 
-.lifebar{
+.combatant-image{
+    width: 64px;
+    height: 64px;
+}
+
+.frames4{
+    animation: frames4Animation 0.4s steps(4) infinite alternate-reverse;
+    background-size: 256px 64px;
+}
+
+@keyframes frames4Animation{
+    100%{background-position: 256px}
+}
+
+.frames9{
+    animation: frames9Animation 0.9s steps(9) infinite;
+    background-size: 576px 64px;
+}
+
+@keyframes frames9Animation{
+    100%{background-position: 576px}
+}
+
+.combatant-image-shadow{
+    width: 64px;
+    height: 64px;
+    left: -64px;
+    filter: brightness(0) blur(3px);
+    z-index: -1;
+    transform: scaleY(-.3) skew(14deg);
+    transform-origin: 0 100%;
+    margin-right: -64px;
+    opacity: .75;
+}
+
+.lifebar {
     width: 110%;
     height: 11px;
     background-color: black;
     position: absolute !important;
     left: 50%;
-    top: calc(100% + 28px);
+    top: calc(100% + 35px);
     border-radius: 10px;
     transform: translateX(-50%);
+    filter: drop-shadow(0px 0px 4px black);
     border: 2px solid white;
 }
 
@@ -520,8 +624,34 @@ img.clearIndicator {
     top: -37px;
     width: 32px !important;
     height: 32px !important;
-    filter: invert(1) drop-shadow(0 0 3px black);
+    filter: drop-shadow(0 0 3px black);
     animation: 1s intention infinite alternate-reverse linear;
+}
+
+.intention-block{
+    box-sizing: border-box;
+    position: absolute;
+    background: linear-gradient(to bottom right, rgba(77, 77, 77, .9), rgba(88, 88, 88, .9)), url(softstone.jpg);
+    border: 5px outset rgba(110, 110, 110, .5);
+    transition: .1s;
+    background-size: 223%;
+}
+
+.intention-value {
+    position: absolute !important;
+    left: calc(50% + 10px);
+    top: -20px;
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    filter: drop-shadow(0 0 4px black);
+    animation: 1s intention infinite alternate-reverse linear;
+    color: white;
+    background-color: #111;
+    border-radius: 100%;
+    z-index: 2;
+    pointer-events: none
 }
 
 @keyframes intention{
@@ -589,6 +719,41 @@ img.clearIndicator {
         opacity: 0;
         transform: rotate(-15deg)
     }
+}
+
+.debuff-display {
+    position: absolute !important;
+    left: 50%;
+    top: calc(100% + 47px);
+    transform: translateX(-50%);
+    width: 110%;
+    text-align: center;
+    font-size: 13px;
+}
+
+.debuff-display img {
+    width: 16px !important;
+    height: 16px !important;
+    vertical-align: middle;
+}
+
+.attack-display{
+    color: red
+}
+
+.defense-display{
+    color: green;
+    margin-left: -5px;
+}
+
+.debuff-display span {
+    vertical-align: middle;
+    position: relative;
+    left: -5px;
+    top: 5px;
+    z-index: 6;
+    background-color: #222;
+    border-radius: 100%;
 }
 
 #blockregion, #combatregion{
@@ -742,11 +907,12 @@ img.clearIndicator {
     position: absolute;
     left: 50%;
     top: 50%;
-    width: 25px;
-    height: 25px;
+    width: 32px;
+    height: 32px;
     transform: translate(-50%, -50%);
     opacity: .5;
     filter: blur(.5px);
+    image-rendering: pixelated;
 }
 
 .block div{
