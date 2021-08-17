@@ -1,39 +1,120 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ennongrad</title>
-    <meta name="description" content=".lennongrad's Portfolio">
+    <title>Brock Dilley</title> 
+	<meta name="viewport" content="width=device-width">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta name="description" content="Brock Dilley">
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@lennongrad" />
-    <meta name="twitter:title" content=".lennongrad" />
-    <meta name="twitter:description" content=".lennongrad" />
+    <meta name="twitter:title" content="lennongrad.com" />
+    <meta name="twitter:description" content="Brock Dilley's portfolio" />
     <meta name="twitter:image" content="https://i.imgur.com/LG0k3wB.png" />
     <link rel="stylesheet" href="index.css">
-    <link rel="icon" href="faviconmain.ico" type="image/x-icon">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="icon" href="https://raw.githubusercontent.com/lennongrad/lennongrad.github.io/master/LIcon.ico" type="image/x-icon">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Abel&display=swap" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="index.js"></script>
 </head>
 <body>
-        <div id="header">.lennongrad</div>
-        <div id="bottom">
-            <div id="work">
-                <span>Projects</span>
-                <a href="catchem.html">Catch 'Em!</a>
-                <a href="agr.html">Agriculture</a>
-                <a href="cybercrawl.html">Cybercrawl</a>
-                <a href="spacers.html">Spacers</a>
-                <a href="spacestar.html">SpaceStar</a>
-            </div>
-            <div id="contact">
-                <span>Contact Info</span>
-                <div>
-                    <a href="mailto:brockdilley2000@gmail.com" target="_top">Email</a><br>
-                    <a href="https://github.com/lennongrad/">Github</a><br>
-                    <a href="https://twitter.com/lennongrad_">Twitter</a>
-                </div>
-            </div>
-        </div>
+		<div id="top">
+			<div id="toc">
+				<span id="toc-aboutme" onclick="window.scrollTo(0, document.getElementById('about-header').getBoundingClientRect().top)">About Me</span> • <span id="toc-work" onclick="window.scrollTo(0, document.getElementById('work-header').getBoundingClientRect().top)">Project History</span>
+			</div>
+		</div>
+        <div id="header">
+			<div id="title" onclick="window.scrollTo(0,0)">
+				<div id="title-left"><img src="https://raw.githubusercontent.com/lennongrad/lennongrad.github.io/master/LIconLeft.png"></div>
+				<div id="title-name">LENNONGRAD.com</div>
+				<div id="title-right"><img src="https://raw.githubusercontent.com/lennongrad/lennongrad.github.io/master/LIconRight.png"></div>
+			</div>
+			<div id="my-name">BROCK DILLEY</div>
+			<div id="contact">
+				<a href="mailto:brockdilley2000@gmail.com" target="_top"><img src="https://i.imgur.com/EhuI789.png"></a>
+				<a href="https://github.com/lennongrad/"><img src="https://i.imgur.com/JLtOfTR.png"></a>
+				<a href="https://twitter.com/lennongrad_"><img src="https://i.imgur.com/Bvj2g9f.png"></a>
+			</div>
+		</div>
+		<h1 id="about-header">ABOUT ME</h1>
+		<div id="aboutme">
+			<div>I am a 20 year old currently studying computer science at the University of Texas at Dallas. I have experience with multiple areas of software development, but my expertise is in the web and game development fields. I have additional interests and skills in graphic design, game design, education, and hardware engineering.</div>
+			<ul>
+			<li>5+ years of experience developing with web technologies and C++</li>
+			<li>Experience developing games using frameworks as well as engines such as Godot</li> 
+			<li>Several personal web projects and small web apps</li>
+			<li>Good interpersonal skills and a great team worker</li>
+			<li>Enthusiastic to teach and educate</li>
+			<li>Desire to make the world a better place</li>
+			</ul>
+		</div>		
+		
+		<h1 id="work-header">PERSONAL PROJECT HISTORY</h1>
+		<div id="work-holder">
+			<div id="work">
+				<div class="project-section" id="agriculture-section">
+					<div class="project-time">October 2017</div>
+					<h2>AGRICULTURE</h2>
+					<div class="project-description">My first web development project which has been continually updated over time. A simple but addictive clicking game.</div>
+					<a class="project-link" href="http://lennongrad.com/agr">Visit</a>
+				</div>
+				<div class="project-section" id="agriculture-section">
+					<div class="project-time">March 2018</div>
+					<h2>SPACE</h2>
+					<div class="project-description">An arcade shoot-em-up with a unique control scheme and ruthless difficulty. Try to get a high score!</div>
+					<a class="project-link" href="http://lennongrad.com/spacestar">Visit</a>
+				</div>
+				<div class="project-section" id="agriculture-section">
+					<div class="project-time">June 2018</div>
+					<h2>RPG</h2>
+					<div class="project-description">A strategy RPG with real-time action elements featuring cute characters.</div>
+					<a class="project-link" href="http://lennongrad.com/rpg">Visit</a>
+				</div>
+				<div class="project-section" id="agriculture-section">
+					<div class="project-time">October 2018</div>
+					<h2>slashGOV</h2>
+					<div class="project-description">A satirical news publication site created to cover my class' mock government.</div>
+					<a class="project-link" href="http://lennongrad.com/gov">Visit</a>
+				</div>
+				<div class="project-section" id="agriculture-section">
+					<div class="project-time">March 2019</div>
+					<h2>DRAGONS</h2>
+					<div class="project-description">Hatch, care for, and train dragons in this pet simulator game with unique sprites.</div>
+					<a class="project-link" href="http://lennongrad.com/dragons">Visit</a>
+				</div>
+				<div class="project-section" id="agriculture-section">
+					<div class="project-time">September 2019</div>
+					<h2>SOCIETY</h2>
+					<div class="project-description">A demo for a 3D strategy 4X game inspired by the <i>Civilization</i> series created using <a href="https://threejs.org/">three.js</a>.</div>
+					<a class="project-link" href="http://lennongrad.com/3d">Visit</a>
+				</div>
+				<div class="project-section" id="agriculture-section">
+					<div class="project-time">June 2020</div>
+					<h2>WEASEL</h2>
+					<div class="project-description">A simple yet effective demonstration of <a href="https://en.wikipedia.org/wiki/Weasel_program">Dawkins' weasel</a>.</div>
+					<a class="project-link" href="http://lennongrad.com/weasel">Visit</a>
+				</div>
+				<div class="project-section" id="agriculture-section">
+					<div class="project-time">August 2020</div>
+					<h2>PUZZLE LEAGUE</h2>
+					<div class="project-description">A deep and fully featured, open source puzzle game based on an SNES classic. Play against CPUs or against friends to get the best score. My first finished project using Godot engine.</div>
+					<a class="project-link" href="https://github.com/lennongrad/mariopuzzleleague">Visit</a>
+				</div>
+				<div class="project-section" id="agriculture-section">
+					<div class="project-time">October 2020</div>
+					<h2>PAPER</h2>
+					<div class="project-description">A demo for a 3D RPG made in Godot engine, with a complex battle system and overworld platforming.</div>
+					<a class="project-link" href="https://github.com/lennongrad/PMFG">Visit</a>
+				</div>
+				<!--<div class="project-section" id="agriculture-section">
+					<div class="project-time">April 2021</div>
+					<h2>COMPUTER</h2>
+					<div class="project-description">A (mostly) 8-bit computer made entirely in Logisim with an LED output and keyboard input.</div>
+					<a class="project-link">Visit</a>
+				</div>-->
+				<br>
+			</div>
+		</div>
 </body>
 </html>
