@@ -1,0 +1,12 @@
+Each state has three separate levels of infastructure, each representing different aspects of the state's development. Increasing a level of one of the infastructures requires time and a development slot as described in the [[#Development]] section, although some events and interactions can increase a state's infastructure for free. The maximum infastructure of a state is determined by its total population as well as the current technologies of its controller. While each level gives predictable bonuses based on the type, there are other levels that give unique bonuses, such as new available [[#Local Systems]].
+
+===Administrative Infastructure===
+Represents the complexity and effectiveness of a state's local governance. Because the stronger government of the state is more capable of maintaining accurate actuarial tables, holding censuses, and enforcing tax and conscription laws, developing Admin Infastructure increases a state's Tax Efficiency and Manpower Efficiency, meaning it is best to increase it in states with high population and thus Tax and Manpower Bases. Higher levels of Admin Infastructure also give special bonuses which assist with maintaining a state's stability as the local government holds tighter control over the populace and can quell minor unrest.
+
+===Economic Infastructure===
+Represents the extent of local production and trading that occurs in cities within the state. Developing Economic Infastructure means growing the local marketplaces in cities and increasing trade across those cities as well as encouraging local manufacturies and the cottage industry in general; as a result, it increases the state's Goods Production Efficiency and Tariff Efficiency, meaning it is best to develop in states with access to trade and skilled Pops. Higher levels also give special bonuses which allow for the promotion of specific goods and increasing resource usage efficiency.
+
+===Harvest Infastructure===
+Represents the ability of the state to extract and cultivate natural resources, such as minerals, livestock, and agriculture. Developing Harvest Infastructure means investing in farm estates and mines and advancing access to more efficient techniques and technology to benefit both commercial and substinence agriculture, resulting in the state receiving increased Resource Production Efficiency and Growth Efficiency, meaning it is best to develop in states with high mineral wealth and a growing population.
+
+==Military Infastructure==
