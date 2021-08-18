@@ -657,7 +657,7 @@ class Unit{
         this.maskElem.className = "mask"
         if(alignment_){
             this.dataElem = document.getElementById("unit_data_temp").content.cloneNode(true).querySelector("div")
-            if(toFile(this.name) == "bean" || toFile(this.name) == "nick" || toFile(this.name) == "mason"){
+            if(toFile(this.name) == "bean" || toFile(this.name) == "nick" || toFile(this.name) == "marina"){
                 this.spriteElem.src = "rpg/ally_sprite_" + toFile(this.name) + ".gif"
             } else {
                 this.spriteElem.src = "rpg/ally_sprite_" + "andrew" + ".gif"
@@ -922,16 +922,14 @@ var expCap = function(level){
 var allies = {
     andrew: new Unit("Andrew", true,   [classes.artist, classes.writer, classes.gamer]       ,{maxHealth: 15, maxTech: 05, strength: 30, vitality: 25, stamina: 5, agility: 10}),
     tucker: new Unit("Tucker", true,   [classes.artist, classes.writer, classes.animator]    ,{maxHealth: 15, maxTech: 20, strength: 10, vitality: 15, stamina: 15, agility: 10}),
-    mason:  new Unit("Mason", true,    [classes.artist, classes.writer, classes.student]     ,{maxHealth: 15, maxTech: 05, strength: 20, vitality: 35, stamina: 10, agility: 05}),
+    marina:  new Unit("Marina", true,  [classes.artist, classes.writer, classes.student]     ,{maxHealth: 15, maxTech: 05, strength: 20, vitality: 35, stamina: 10, agility: 05}),
     sam:    new Unit("Sam", true,      [classes.artist, classes.baller, classes.gamer]       ,{maxHealth: 20, maxTech: 05, strength: 32, vitality: 14, stamina: 14, agility: 05}), 
     bean:   new Unit("Bean", true,     [classes.artist, classes.programmer, classes.spriter] ,{maxHealth: 11, maxTech: 23, strength: 05, vitality: 23, stamina: 13, agility: 17}), 
     hayden: new Unit("Hayden", true,   [classes.artist, classes.student, classes.gamer]      ,{maxHealth: 27, maxTech: 14, strength: 13, vitality: 15, stamina: 08, agility: 13}),
-    lorenzo:new Unit("Lorenzo", true,  [classes.artist, classes.writer, classes.musician]    ,{maxHealth: 10, maxTech: 36, strength: 05, vitality: 13, stamina: 10, agility: 14}),
+    karlo:new Unit("Karlo", true,      [classes.artist, classes.writer, classes.musician]    ,{maxHealth: 10, maxTech: 36, strength: 05, vitality: 13, stamina: 10, agility: 14}),
     nicole: new Unit("Nicole", true,   [classes.artist, classes.musician, classes.programmer],{maxHealth: 18, maxTech: 20, strength: 16, vitality: 06, stamina: 08, agility: 22}),
-    rick:   new Unit("Rick", true,     [classes.artist, classes.spriter, classes.gamer]      ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}), 
-    lumiet: new Unit("Lumiet", true,   [classes.artist, classes.programmer, classes.gamer]   ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}),
-    cass:   new Unit("Cass", true,     [classes.artist, classes.writer, classes.gamer]       ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}),
-    amy:    new Unit("Amy", true,      [classes.artist, classes.animator, classes.gamer]     ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15})
+    rick:   new Unit("Rick", true,     [classes.artist, classes.spriter, classes.gamer]      ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15}),
+    cass:   new Unit("Cass", true,     [classes.artist, classes.writer, classes.gamer]       ,{maxHealth: 15, maxTech: 15, strength: 15, vitality: 15, stamina: 15, agility: 15})
 }
 
 var enemies = {
@@ -956,7 +954,7 @@ var recruit = function(person){
     }
     switch(party.length){
         case 0: y = allies.bean; break;
-        case 1: y = allies.mason; break;
+        case 1: y = allies.marina; break;
         case 2: y = allies.nicole; break;
     }
     var coords = {x: Math.floor(Math.random() * board.length / 2), y: Math.floor(Math.random() * board[0].length) }
