@@ -1,0 +1,12 @@
+ <div class="tooltip" *ngIf="hoveredSkill != undefined" [ngStyle]="{'top.px': top, 'left.px': left}">
+    <div class="header">
+        <div class="icon">{{hoveredSkill!.icon}}</div> 
+        <div class="title">
+            <span class="name">{{hoveredSkill!.name}}</span><br>
+            <span class="type">{{hoveredSkill!.name}}</span>
+        </div>
+    </div>
+    <div class="divider"></div>
+    <div class="description">{{hoveredSkill.description()}}</div>
+    <div class="flavour">"{{hoveredSkill.flavour}}"</div>
+</div>

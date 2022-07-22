@@ -1,0 +1,13 @@
+<div class="skill-selector">
+    <h2>My Heroes</h2>
+    <ul class="heroes">
+        <li *ngFor="let skill of skills">
+            <button [class.selected]="skill === selectedSkill" type="button" (click)="onSelect(skill)">
+                <span class="badge">{{skill.icon}} </span>
+                <span class="name">{{skill.name}}</span>
+            </button>
+        </li>
+    </ul>
+
+    <app-skill-tooltip [hoveredSkill]="selectedSkill == undefined ? skills[1] : selectedSkill"></app-skill-tooltip>
+</div>
