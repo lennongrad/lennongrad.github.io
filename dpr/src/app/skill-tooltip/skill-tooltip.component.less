@@ -13,6 +13,7 @@
     transition: opacity .05s;
     width: 100vw;
     position: absolute;
+    z-index: 3;
 }
 
 .tooltip{
@@ -28,7 +29,7 @@
 
     background: linear-gradient(135deg, rgba(40, 40, 40, .5), rgba(0,0,0,.5) 24%), url('../../assets/checkerboard.png') 0px/50px, #000;
     animation-name: MOVE-BG;
-    animation-duration: 30s;
+    animation-duration: 25s;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     
@@ -79,10 +80,6 @@
     margin-bottom: 3px;
     background: linear-gradient(to right, transparent, #333 10% 90%, transparent);
     transform: scaleX(1.05);
-}
-
-.description{
-
 }
 
 .flavour{

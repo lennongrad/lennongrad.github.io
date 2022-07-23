@@ -2,7 +2,7 @@ import { Skill } from './skill';
 
 export const SKILLS: Skill[] = [
   {
-    icon: '⚔️', name: 'Melee',
+    icon: 'skill_16.png', name: 'Melee',
     description: () => {
       return "Deal 3 damage to each enemy."
     },
@@ -12,7 +12,7 @@ export const SKILLS: Skill[] = [
     },
   },
   {
-    icon: '🏹', name: 'Ranged',
+    icon: 'skill_36.png', name: 'Ranged',
     description: () => {
       return "Deal 3 damage to target enemy that may be chosen by the user at their leisure and whom feels pain in their chest."
     },

@@ -1,22 +1,31 @@
 @import (reference) "../app.component.less";
-@slot-width: 30px;
-@slot-height: 30px;
+@icon-width: 16px;
+@icon-padding: 4px;
+@icon-margins: 2px;
+@slot-width: @icon-width + @icon-padding * 2 + @icon-margins * 2;
 
-.timeline {
-    width: 0px;
-    table-layout: fixed;
-    border-spacing: 0;
-
+.timeline-scroll{
+    display: block;
+    width: 100%;
     overflow-x: scroll;
-    overflow-y: clip;
     white-space: nowrap;
     scrollbar-width: none;
 
     &::-webkit-scrollbar {
         display: none;
     }
+}
 
-    background-color: black;
+.timeline {
+    width: 0px;
+    table-layout: fixed;
+    border-spacing: 0;
+
+    background: url("../../assets/trackslot.png");
+    background-size: @slot-width;
+
+    border-top: 1px solid #352F2F;
+    border-bottom: 1px solid #3F3B38;
 
     &.dragging {
         .slot.selected{
@@ -25,11 +34,11 @@
     } 
     &:not(.dragging){
         .slot:hover{
-            background-color: red;
+            background-color: rgba(0, 0, 100, .3);
         }
 
         .slot.time{
-            box-shadow: inset 0px 0px 7px blue;
+            box-shadow: inset 0px 0px 7px rgba(150, 0, 0, .9);
         }
     }
 }
@@ -38,14 +47,13 @@
 .slot {
     position: relative;
     width: @slot-width;
-    height: @slot-height;
+    height: @slot-width;
     cursor: pointer;
     vertical-align: top;
 
     border: none;
     padding: 0;
     outline: none;
-    background-color: transparent;
 
     &.selected{
         .icon{
@@ -54,8 +62,6 @@
     }
 
     &:hover{
-        z-index: 2;
-
         app-skill-tooltip{
             opacity: 1;
         }
@@ -64,13 +70,24 @@
 
 .icon {
     position: absolute;
-    top: 4px;
-    left: 4px;
-    width: calc(@slot-width - 8px);
-    height: calc(@slot-height - 8px);
-    line-height: calc(@slot-height - 6px);
+    top: calc(@icon-margins + 1px);
+    left: @icon-margins;
+    width: @icon-width;
+    height: @icon-width;
+    padding: calc(@icon-padding - 3px);
+    line-height: @icon-width;
 
     background-color: white;
+    border: 3px solid transparent;
+    border-image: url("../../assets/cookieclickerframe.png") 4 round;
+
+    img{
+        width: @icon-width;
+        height: @icon-width;
+
+        image-rendering: pixelated;
+        filter: drop-shadow(1px 1px 1px #999);
+    }
 }
 
 .hint {
@@ -110,8 +127,4 @@
 
 .cdk-drag-animating {
     transition: transform 120ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-app-skill-tooltip{
-    opacity: 0;
 }

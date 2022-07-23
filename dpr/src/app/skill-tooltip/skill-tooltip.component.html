@@ -1,4 +1,5 @@
- <div class="tooltip" *ngIf="hoveredSkill != undefined" [ngStyle]="{'top.px': top, 'left.px': left}">
+<div #tooltipbox class="tooltip" *ngIf="hoveredSkill != undefined" 
+        [ngStyle]="{'top.px': topOffset, 'left.px': leftOffset, 'opacity': opacity}">
     <div class="header">
         <div class="icon">{{hoveredSkill!.icon}}</div> 
         <div class="title">

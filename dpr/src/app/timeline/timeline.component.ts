@@ -29,6 +29,10 @@ export class TimelineComponent implements OnInit {
   currentTime = -1;
   timeLength = 0;
 
+  hoveredTooltipSkill ?: Skill;
+  hoveredElement ?: Element;
+  hoveredOpacity = 0;
+
   processTime(){
     if(this.timeLength > 0){
       if(isNaN(this.currentTime)){
@@ -158,6 +162,16 @@ export class TimelineComponent implements OnInit {
     this.selectedSlots = [];
     this.dragging = false;
     this.updateSlots()
+  }
+
+  mouseoverSlot(event: any, hoveredSkill: Skill){
+    this.hoveredTooltipSkill = hoveredSkill;
+    this.hoveredElement = event.toElement;
+    this.hoveredOpacity = .9;
+  }
+
+  mouseoutSlot(event: any, hoveredSkill: Skill){
+    this.hoveredOpacity = 0;
   }
 
   constructor() { }
