@@ -17,7 +17,7 @@
 }
 
 .tooltip{
-    position: absolute;
+    position: fixed;
     
     min-width: 120px;
     max-width: 250px;
@@ -44,8 +44,6 @@
 }
 
 .header{
-
-
     div{
         display: inline-block;
         vertical-align: middle;
@@ -57,10 +55,18 @@
 
         text-align: center;
         font-size: 30px;
-        line-height: 40px;
         
         background-color: rgba(100,100,100,.3);
         border-radius: 4px;
+
+        img{
+            display: block;
+            width: 32px;
+            height: 32px;
+            image-rendering: pixelated;
+            margin: 4px;
+            filter: drop-shadow(1px 1px 2px #008) drop-shadow(-1px -1px 3px #111);
+        }
     }
 
     .title{

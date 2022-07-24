@@ -10,6 +10,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { TimelineBuilderComponent } from './timeline-builder/timeline-builder.component';
 import { SkillTooltipComponent } from './skill-tooltip/skill-tooltip.component';
 import { CommonModule } from '@angular/common';
+import { HorizontalScrollDirective } from './horizontal-scroll-directive.directive';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { CommonModule } from '@angular/common';
     TimelineComponent,
     SkillSelectorComponent,
     TimelineBuilderComponent,
-    SkillTooltipComponent
+    SkillTooltipComponent,
+    HorizontalScrollDirective
   ],
   imports: [
     BrowserModule,

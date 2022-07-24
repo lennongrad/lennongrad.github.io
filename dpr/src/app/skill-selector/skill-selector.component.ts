@@ -22,6 +22,20 @@ export class SkillSelectorComponent implements OnInit {
     this.selectedSkillChange.emit(this.selectedSkill);
   }
 
+  hoveredTooltipSkill ?: Skill;
+  hoveredElement ?: Element;
+  hoveredOpacity = 0;
+
+  mouseoverSlot(event: any, hoveredSkill: Skill){
+    this.hoveredTooltipSkill = hoveredSkill;
+    this.hoveredElement = event.toElement;
+    this.hoveredOpacity = .9;
+  }
+
+  mouseoutSlot(event: any, hoveredSkill: Skill){
+    this.hoveredOpacity = 0;
+  }
+
   constructor() { }
 
   ngOnInit(): void {

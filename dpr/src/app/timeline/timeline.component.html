@@ -1,22 +1,30 @@
-<app-skill-tooltip [hoveredSkill]="hoveredTooltipSkill" [element]="hoveredElement" [opacity]="hoveredOpacity"></app-skill-tooltip>
-<div class="timeline-scroll">
-    <table class="timeline"  [class.dragging]="dragging" (window:keydown.delete)="deleteSkills()">
-        <tr *ngFor="let row of this.skillSlots; index as rowIndex" cdkDropList cdkDropListOrientation="horizontal"
+<app-skill-tooltip [hoveredSkill]="hoveredTooltipSkill" [element]="hoveredElement" [opacity]="hoveredOpacity">
+</app-skill-tooltip>
+
+<div class="scroll-container">
+    <div class="timeline-scroll" appHorizontalScroll>
+        <table class="timeline" [class.dragging]="dragging" [class.placing]="selectedSkill != undefined"
+            (window:keydown.delete)="deleteSkills()">
+            <tr *ngFor="let row of this.skillSlots; index as rowIndex" cdkDropList cdkDropListOrientation="horizontal"
                 [cdkDropListDisabled]="selectedSkill != undefined" (cdkDropListDropped)="drop($event)">
-            <td class="slot" type="button" *ngFor="let skill of row; index as slotIndex" 
-                    cdkDrag (click)="clickSlot(slotIndex, rowIndex, $event)"  [cdkDragDisabled]="skill == undefined" 
-                    cdkDragLockAxis="x" (cdkDragStarted)="onDragStart($event, rowIndex)" [class.time]="currentTime == slotIndex"
+                <td class="slot" type="button" *ngFor="let skill of row; index as slotIndex" cdkDrag
+                    (click)="clickSlot(slotIndex, rowIndex, $event)" [cdkDragDisabled]="skill == undefined"
+                    cdkDragLockAxis="x" (cdkDragStarted)="onDragStart($event, rowIndex)"
+                    (cdkDragMoved)="dragMove($event)" [class.time]="currentTime == slotIndex"
                     [class.selected]="selectedRow == rowIndex && selectedSlots.includes(slotIndex)">
-                <div *ngIf="skill != undefined" class="icon" 
-                        (mouseover)="mouseoverSlot($event, skill)" (mouseout)="mouseoutSlot($event, skill)" >
-                    <img src="../../assets/{{skill.icon}}"/>
-                </div>
-                <div *ngIf="selectedSlots.length > 1" class="drag-preview">
-                  {{ selectedSlots.length }}
-                </div>
-            </td>
-        </tr>
-    </table>
+                    <div class="select-beam"></div>
+                    <div *ngIf="skill != undefined" class="icon" (mouseover)="mouseoverSlot($event, skill)"
+                        (mouseout)="mouseoutSlot($event, skill)">
+                        <img src="../../assets/{{skill.icon}}" />
+                    </div>
+                    <div *ngIf="selectedSlots.length > 1" class="drag-preview">
+                        {{ selectedSlots.length }}
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="scroll-border"></div>
 </div>
 
 <button (click)="processTime()">{{currentTime}}/{{timeLength}}</button>

@@ -2,7 +2,7 @@ import { Skill } from './skill';
 
 export const SKILLS: Skill[] = [
   {
-    icon: 'skill_16.png', name: 'Melee',
+    icon: 'skill_alt_154.png', name: 'Melee',
     description: () => {
       return "Deal 3 damage to each enemy."
     },

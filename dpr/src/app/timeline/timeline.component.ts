@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output } from '@angular/core';
 import { Skill } from '../skill';
-import { DragDropModule, CdkDragDrop, CdkDragStart, moveItemInArray } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop, CdkDragStart, CdkDragMove, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EventEmitter } from '@angular/core';
 import * as _ from 'underscore';
 
@@ -20,6 +20,10 @@ export class TimelineComponent implements OnInit {
     }
     this.selectedSkillChange.emit(this.selectedSkill);
   }
+
+  trackNoise = new Audio("../../assets/tracknoise.mp3");
+
+  slotWidth = 30;
 
   skillSlots = Array<Array<Skill | undefined>>(3).fill([]).map(() => new Array());
   selectedSlots = Array<number>();
@@ -126,6 +130,36 @@ export class TimelineComponent implements OnInit {
     }
   }
 
+  dragMove(event: CdkDragMove<string[]>){
+    if(event.delta.x > 0){
+      for(var i = event.distance.x - event.delta.x; i < event.distance.x; i++){
+        if(i % this.slotWidth == 0){
+          this.playTrackNoise(3, .5);
+        }
+      }
+    } else{
+      for(var i = event.distance.x - event.delta.x; i > event.distance.x; i--){
+        if(i % this.slotWidth == 0){
+          this.playTrackNoise(3, .5);
+        }
+      }
+    }
+  }
+
+  playTrackNoise(playbackRate: number, volume: number){
+    // ts wont let me do preservesPitch unless i cast it as any
+    var trackNoise =  new Audio("../../assets/tracknoise.mp3") as any;
+    trackNoise.playbackRate = playbackRate;
+    trackNoise.volume = volume;
+    if ('preservesPitch' in trackNoise) {
+      trackNoise.preservesPitch = false;
+    }
+    else if ('mozPreservesPitch' in trackNoise) { //deprecated
+      trackNoise.mozPreservesPitch = false;
+    }
+    trackNoise.play();
+  }
+
   drop(event: CdkDragDrop<string[]>) {
     if (this.selectedSlots.length > 1) {
       // If multiple selections exist
@@ -158,6 +192,8 @@ export class TimelineComponent implements OnInit {
       // If a single selection
       moveItemInArray(this.skillSlots[this.selectedRow], event.previousIndex, event.currentIndex);
     }
+
+    this.playTrackNoise(2, 1);
 
     this.selectedSlots = [];
     this.dragging = false;
