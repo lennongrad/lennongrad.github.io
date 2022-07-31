@@ -14,8 +14,8 @@ export class SkillTooltipComponent implements OnInit {
   @Input() opacity = 1;
 
   // calculated so that the tooltip is not offscreen
-  topOffset = 0;
-  leftOffset = 0;
+  topOffset = -1000;
+  leftOffset = -1000;
 
   constructor() { }
 
@@ -25,11 +25,13 @@ export class SkillTooltipComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     if (this.element != undefined && this.tooltipBox != undefined) {
       var elementRect = this.element.getBoundingClientRect();
-      var tooltipRect = this.tooltipBox.nativeElement.getBoundingClientRect();
-      
       this.leftOffset = elementRect.x + elementRect.width;
-      if(this.leftOffset + tooltipRect.width > document.body.clientWidth){
-        this.leftOffset = document.body.clientWidth -  tooltipRect.width;
+
+      if(this.tooltipBox != undefined){
+        var tooltipRect = this.tooltipBox.nativeElement.getBoundingClientRect();
+        if(this.leftOffset + tooltipRect.width > document.body.clientWidth){
+          this.leftOffset = document.body.clientWidth -  tooltipRect.width;
+        }
       }
 
       this.topOffset = elementRect.y + elementRect.height;

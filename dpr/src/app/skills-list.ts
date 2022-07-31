@@ -1,5 +1,18 @@
 import { Skill } from './skill';
 
+function genericSkill(): Skill{
+  return {
+    icon: 'skill_36.png', name: 'Melee',
+    description: () => {
+      return "Deal 3 damage to each enemy."
+    },
+    flavour: 'A swift flurry of blows.',
+    effect: () => {
+      console.log("h")
+    },
+  };
+}
+
 export const SKILLS: Skill[] = [
   {
     icon: 'skill_alt_154.png', name: 'Melee',
@@ -22,3 +35,11 @@ export const SKILLS: Skill[] = [
     },
   }
 ];
+
+for(var i = 0; i < 40; i++){
+  SKILLS.push(genericSkill());
+}
+
+for(var i = 0; i < SKILLS.length; i++){
+  SKILLS[i].id = i;
+}

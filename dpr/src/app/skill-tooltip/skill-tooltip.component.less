@@ -1,14 +1,5 @@
 @import (reference) "../app.component.less";
 
-@keyframes MOVE-BG {
-    from {
-        background-position: 0% 0%
-    }
-    to { 
-        background-position: 100% 100%
-    }
-}
-
 :host{
     transition: opacity .05s;
     width: 100vw;
@@ -28,10 +19,7 @@
     white-space: pre-wrap;
 
     background: linear-gradient(135deg, rgba(40, 40, 40, .5), rgba(0,0,0,.5) 24%), url('../../assets/checkerboard.png') 0px/50px, #000;
-    animation-name: MOVE-BG;
-    animation-duration: 25s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
+    animation: MOVE-BG 25s linear infinite;
     
     padding: 4px 8px;
     margin: 4px;

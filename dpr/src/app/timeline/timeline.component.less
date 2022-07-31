@@ -4,9 +4,37 @@
 @icon-margins: 2px;
 @slot-width: @icon-width + @icon-padding * 2 + @icon-margins * 2;
 
+.header{
+    height: 28px;
+    margin-right: 40px;
+    margin-left: 80px;
+
+    position: relative;
+    background-image: url("/assets/headerframe-middle.png");
+    background-repeat: repeat-x;
+    background-size: contain;
+
+    .left,.right{
+        height: 100%;
+        position: absolute;
+    }
+    .left{
+        left: 0;
+        transform: translateX(-98%);
+    }
+    .right{
+        right: 0;
+        transform: translateX(98%);
+    }
+
+    button{
+        display: none;
+    }
+}
+
 .scroll-container{
     position: relative;
-    padding: 8px;
+    padding: 10px;
 }
 
 .scroll-border{
@@ -16,7 +44,7 @@
     width: 100%;
     height: 100%;
     border: 18px solid transparent;
-    border-image: url("../../assets/metalframe.png") 23 stretch;
+    border-image: url("/assets/metalframe.png") 23 stretch;
     filter: drop-shadow(1px 1px 3px black);
     box-sizing: border-box;
     pointer-events: none;
@@ -80,6 +108,8 @@
                 opacity: 1;
             }
         }
+
+        //.slot .icon{top: calc(@icon-margins + 1px) !important;}
     }
 }
 
@@ -96,7 +126,7 @@
 
     &.selected {
         .icon {
-            box-shadow: 0px 0px 1px rgb(0 0 255 / 50%), 0px 0px 2px rgb(0 0 255 / 50%), 0px 0px 3px rgb(0 0 255 / 50%);
+            background: linear-gradient(45deg, #22A 10%, #55A)
         }
     }
 }
@@ -161,7 +191,7 @@
     position: absolute;
     top: 10px;
     left: 30px;
-    background: red;
+    background: #44A;
     color: white;
     font-weight: bold;
     padding: 0.25em 0.5em 0.2em;

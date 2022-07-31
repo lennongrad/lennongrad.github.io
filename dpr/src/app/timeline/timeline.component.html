@@ -1,21 +1,26 @@
 <app-skill-tooltip [hoveredSkill]="hoveredTooltipSkill" [element]="hoveredElement" [opacity]="hoveredOpacity">
 </app-skill-tooltip>
 
+<div class="header">
+    <img src="/assets/headerframe-left.png" class="left" />
+    <img src="/assets/headerframe-right.png" class="right" />
+    <button (click)="processTime()">{{currentTime}}/{{timeLength}}</button>
+</div>
 <div class="scroll-container">
     <div class="timeline-scroll" appHorizontalScroll>
         <table class="timeline" [class.dragging]="dragging" [class.placing]="selectedSkill != undefined"
-            (window:keydown.delete)="deleteSkills()">
+            (window:keydown.delete)="deleteSkills()" cdkDropListGroup>
             <tr *ngFor="let row of this.skillSlots; index as rowIndex" cdkDropList cdkDropListOrientation="horizontal"
-                [cdkDropListDisabled]="selectedSkill != undefined" (cdkDropListDropped)="drop($event)">
-                <td class="slot" type="button" *ngFor="let skill of row; index as slotIndex" cdkDrag
+                [cdkDropListDisabled]="selectedSkill != undefined" (cdkDropListDropped)="onDragDrop($event, rowIndex)">
+                <td class="slot" type="button" *ngFor="let skill of row; index as slotIndex" cdkDrag [cdkDragFreeDragPosition]="{x: 0, y: 0}"
                     (click)="clickSlot(slotIndex, rowIndex, $event)" [cdkDragDisabled]="skill == undefined"
-                    cdkDragLockAxis="x" (cdkDragStarted)="onDragStart($event, rowIndex)"
-                    (cdkDragMoved)="dragMove($event)" [class.time]="currentTime == slotIndex"
+                    (cdkDragStarted)="onDragStart($event, rowIndex)" (cdkDragReleased)="onDragRelease($event)"
+                    (cdkDragMoved)="onDragMove($event, rowIndex)" [class.time]="currentTime == slotIndex"
                     [class.selected]="selectedRow == rowIndex && selectedSlots.includes(slotIndex)">
                     <div class="select-beam"></div>
                     <div *ngIf="skill != undefined" class="icon" (mouseover)="mouseoverSlot($event, skill)"
                         (mouseout)="mouseoutSlot($event, skill)">
-                        <img src="../../assets/{{skill.icon}}" />
+                        <img src="/assets/{{skill.icon}}" />
                     </div>
                     <div *ngIf="selectedSlots.length > 1" class="drag-preview">
                         {{ selectedSlots.length }}
@@ -26,6 +31,3 @@
     </div>
     <div class="scroll-border"></div>
 </div>
-
-<button (click)="processTime()">{{currentTime}}/{{timeLength}}</button>
-<div class="hint">Placing: {{selectedSkill?.icon}} {{selectedSkill?.name}}</div>

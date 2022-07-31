@@ -11,6 +11,11 @@ import { TimelineBuilderComponent } from './timeline-builder/timeline-builder.co
 import { SkillTooltipComponent } from './skill-tooltip/skill-tooltip.component';
 import { CommonModule } from '@angular/common';
 import { HorizontalScrollDirective } from './horizontal-scroll-directive.directive';
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SkillSelectorPopupComponent } from './skill-selector/skill-selector-popup/skill-selector-popup.component';
 
 @NgModule({
   declarations: [
@@ -19,17 +24,24 @@ import { HorizontalScrollDirective } from './horizontal-scroll-directive.directi
     SkillSelectorComponent,
     TimelineBuilderComponent,
     SkillTooltipComponent,
-    HorizontalScrollDirective
+    HorizontalScrollDirective,
+    SkillSelectorPopupComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     NoopAnimationsModule,
     DragDropModule,
-    CommonModule
+    CommonModule,
+    MatDialogModule,
+    MatSelectModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [SkillSelectorPopupComponent]
 })
 export class AppModule {
- }
+}
