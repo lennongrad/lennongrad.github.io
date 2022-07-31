@@ -6,6 +6,9 @@ import { SoundInfo } from '../soundinfo';
 import { SelectedSkillService } from '../selected-skill.service';
 import { SoundEffectPlayerService } from '../sound-effect-player.service';
 import * as _ from 'underscore';
+import { initial } from 'underscore';
+
+interface SlotIndex { x: number, y: number };
 
 @Component({
   selector: 'app-timeline',
@@ -22,9 +25,12 @@ export class TimelineComponent implements OnInit {
   slotHeight = 31
 
   skillSlots = Array<Array<Skill | undefined>>(3).fill([]).map(() => new Array());
-  selectedSlots = Array<number>();
+  selectedSlots = Array<Array<boolean>>(3).fill([]).map(() => new Array());
+  numberSelected = 0
   selectedRow = 0;
   dragging = false;
+  initialDragIndex?: SlotIndex;
+  currentDragIndex?: SlotIndex;
 
   currentTime = -1;
   timeLength = 0;
@@ -50,7 +56,7 @@ export class TimelineComponent implements OnInit {
     concurrentMaximum: 1,
     replacePrevious: true
   }
-  
+
   processTime() {
     if (this.timeLength > 0) {
       if (isNaN(this.currentTime)) {
@@ -74,15 +80,28 @@ export class TimelineComponent implements OnInit {
 
   clickSlot(slotIndex: number, rowIndex: number, event: MouseEvent): void {
     if (this.selectedSkill != undefined) {
-      this.insertSkill(slotIndex, rowIndex, event.ctrlKey);
+      this.insertSkill(slotIndex, rowIndex, this.selectedSkill);
+
+      if (this.selectedSkill != undefined) {
+        this.selectedSkillService.useSkill(this.selectedSkill);
+      }
+
+      if (!event.ctrlKey) {
+        this.onSelect(undefined);
+      }
+
+      this.soundEffectPlayer.playSound(this.trackPlacementNoise);
+  
+      this.forEachSlot((rowIndex, slotIndex) => this.selectedSlots[rowIndex][slotIndex] = false);
+      this.updateNumberSelected();
     } else {
       this.selectSlot(slotIndex, rowIndex, event.shiftKey);
     }
   }
 
-  insertSkill(slotIndex: number, rowIndex: number, holdingCTRL: boolean): void {
+  insertSkill(slotIndex: number, rowIndex: number, skill: Skill): void {
     var currentIndex = slotIndex;
-    var movingSkill = this.selectedSkill;
+    var movingSkill = skill;
     while (this.skillSlots[rowIndex][currentIndex] != undefined) {
       var nextSkill = this.skillSlots[rowIndex][currentIndex];
       this.skillSlots[rowIndex][currentIndex] = movingSkill;
@@ -94,28 +113,24 @@ export class TimelineComponent implements OnInit {
     this.skillSlots[rowIndex][currentIndex] = movingSkill;
     this.setMaxSkillSlots(currentIndex + 8)
 
-    if (this.selectedSkill != undefined) {
-      this.selectedSkillService.useSkill(this.selectedSkill);
-    }
-
-    if (!holdingCTRL) {
-      this.onSelect(undefined);
-    }
     this.updateSlots()
-
-    this.soundEffectPlayer.playSound(this.trackPlacementNoise);
   }
 
   deleteSkills() {
-    for (var index in this.selectedSlots) {
-      this.skillSlots[this.selectedRow][this.selectedSlots[index]] = undefined;
-    }
+    this.forEachSlot((rowIndex, slotIndex) => {
+      if (this.selectedSlots[rowIndex][slotIndex]) {
+        this.skillSlots[rowIndex][slotIndex] = undefined;
+        this.selectedSlots[rowIndex][slotIndex] = false;
+      }
+    })
+    this.updateNumberSelected();
   }
 
   setMaxSkillSlots(newMax: number): void {
     for (var rowIndex in this.skillSlots) {
       while (this.skillSlots[rowIndex].length < newMax) {
         this.skillSlots[rowIndex].push(undefined);
+        this.selectedSlots[rowIndex].push(false);
       }
     }
   }
@@ -123,64 +138,106 @@ export class TimelineComponent implements OnInit {
   selectSlot(slotIndex: number, rowIndex: number, holdingSHIFT: boolean): void {
     if (rowIndex != this.selectedRow) {
       this.selectedRow = rowIndex;
-      this.selectedSlots = [];
     }
 
-    if (holdingSHIFT) {
-      if (_.contains(this.selectedSlots, slotIndex)) {
-        this.selectedSlots = _.without(this.selectedSlots, slotIndex);
+    if (this.skillSlots[rowIndex][slotIndex] != undefined) {
+      if (holdingSHIFT) {
+        this.selectedSlots[rowIndex][slotIndex] = !this.selectedSlots[rowIndex][slotIndex];
       } else {
-        this.selectedSlots.push(slotIndex);
+        var previouslySelected = this.selectedSlots[rowIndex][slotIndex]
+        this.forEachSlot((rowIndex, slotIndex) => this.selectedSlots[rowIndex][slotIndex] = false);
+        this.selectedSlots[rowIndex][slotIndex] = !previouslySelected
       }
+      this.soundEffectPlayer.playSound(this.trackPlacementNoise);
     } else {
-      if (_.contains(this.selectedSlots, slotIndex)) {
-        this.selectedSlots = [];
-      } else {
-        this.selectedSlots = [slotIndex];
-      }
+      this.forEachSlot((rowIndex, slotIndex) => this.selectedSlots[rowIndex][slotIndex] = false);
     }
-    
-    this.soundEffectPlayer.playSound(this.trackPlacementNoise);
+
+    this.updateNumberSelected();
   }
 
-  onDragStart(event: CdkDragStart<string[]>, rowIndex: number) {
+  isDisplaced(slotIndex: number, rowIndex: number): boolean{
+    if(this.initialDragIndex == undefined || this.currentDragIndex == undefined){
+      return false;
+    }
+
+    if(this.initialDragIndex.y == rowIndex && this.currentDragIndex.y == rowIndex){
+      var rightOfDrag = this.initialDragIndex.x < slotIndex && slotIndex < this.currentDragIndex.x
+      var leftOfDrag = this.initialDragIndex.x > slotIndex - 1 && slotIndex > this.currentDragIndex.x
+      return rightOfDrag || leftOfDrag
+    }
+
+    return false;
+  }
+
+  isDisplacedRight(slotIndex: number, rowIndex: number): boolean{
+    if(this.initialDragIndex == undefined || this.currentDragIndex == undefined){
+      return false;
+    }
+
+    if(this.initialDragIndex.y == rowIndex && this.currentDragIndex.y != rowIndex){
+      return slotIndex > this.currentDragIndex.x;
+    }
+
+    return false;
+  }
+
+  isDisplacedLeft(slotIndex: number, rowIndex: number): boolean{
+    if(this.initialDragIndex == undefined || this.currentDragIndex == undefined){
+      return false;
+    }
+
+    if(this.initialDragIndex.y != rowIndex && this.currentDragIndex.y == rowIndex){
+      return slotIndex > this.currentDragIndex.x;
+    }
+
+    return false;
+  }
+
+  forEachSlot(callback: (rowIndex: number, slotIndex: number) => void): void {
+    _.forEach(this.skillSlots, (row, rowIndex) => {
+      _.forEach(row, (_skill, slotIndex) => {
+        callback(rowIndex, slotIndex);
+      })
+    })
+  }
+
+  updateNumberSelected(): void {
+    this.numberSelected = 0
+    this.forEachSlot((rowIndex, slotIndex) => {
+      if (this.selectedSlots[rowIndex][slotIndex]) {
+        this.numberSelected += 1;
+      }
+    })
+  }
+
+  onDragStart(event: CdkDragStart<string[]>, slotIndex: number, rowIndex: number) {
     this.dragging = true;
+    this.initialDragIndex = {x: slotIndex, y: rowIndex};
 
     if (rowIndex != this.selectedRow) {
       this.selectedRow = rowIndex;
-      this.selectedSlots = [];
     }
   }
 
   onDragMove(event: CdkDragMove<string[]>, rowIndex: number) {
     var originalEvent = event.event as any;
+    const rowElement = event.source.dropContainer.element.nativeElement as HTMLElement;
+    var xDistance = event.pointerPosition.x - rowElement.getBoundingClientRect().left
+    var yDistance = event.pointerPosition.y - rowElement.getBoundingClientRect().top
+
+    this.currentDragIndex = {x: Math.max(Math.floor(xDistance / this.slotWidth), 0),
+       y: Math.max(Math.min(Math.floor(yDistance / this.slotHeight) + rowIndex, 2), 0)};
 
     const previewElement = document.querySelector(".cdk-drag.cdk-drag-preview") as HTMLElement;
-    const rowElement = event.source.dropContainer.element.nativeElement as HTMLElement;
-    if(previewElement != null){
+    if (previewElement != null) {
       const iconElement = previewElement.querySelector(".icon") as HTMLElement;
 
-      var yDistance = event.pointerPosition.y - rowElement.getBoundingClientRect().top
-      var currentRowPosition = Math.floor(yDistance / this.slotHeight) + rowIndex
-      currentRowPosition = Math.max(Math.min(currentRowPosition, 2), 0)
-      var yGoal = rowElement.getBoundingClientRect().top + this.slotHeight * (currentRowPosition - rowIndex)
+      var yGoal = rowElement.getBoundingClientRect().top + this.slotHeight * (this.currentDragIndex.y - rowIndex)
 
       var yOffset = yGoal - previewElement.getBoundingClientRect().top
-
-      /*
-      console.log(yDistance)
-      var yOffset = -(yDistance % this.slotWidth) 
-      
-      if(yDistance > this.slotWidth * (2 - rowIndex)){
-        yOffset = (this.slotWidth * (2 - rowIndex) - yDistance)
-      } else if (yDistance < this.slotWidth * -rowIndex){
-        yOffset = this.slotWidth * -rowIndex - yDistance
-      }*/
-
       iconElement.style.top = yOffset + 3 + "px";
     }
-
-    //console.log(draggedElement.style.top);
 
     if (event.delta.x > 0) {
       for (var i = event.pointerPosition.x - originalEvent.movementX; i < event.pointerPosition.x; i++) {
@@ -199,57 +256,65 @@ export class TimelineComponent implements OnInit {
     }
   }
 
-  onDragRelease(event: CdkDragRelease<string[]>){
+  onDragRelease(event: CdkDragRelease<string[]>) {
     const previewElement = document.querySelector(".cdk-drag.cdk-drag-preview") as HTMLElement;
-    if(previewElement != null){
+    if (previewElement != null) {
       const iconElement = previewElement.querySelector(".icon") as HTMLElement;
       iconElement.style.top = "";
     }
   }
 
   onDragDrop(event: CdkDragDrop<string[]>, dropRow: number) {
-    if (this.selectedSlots.length > 1) {
+    if (this.numberSelected > 1) {
       // If multiple selections exist
       let newIndex = event.currentIndex;
       let indexCounted = false;
 
-      // create an array of the selected items
-      // set newCurrentIndex to currentIndex - (any items before that index)
-      this.selectedSlots = _.sortBy(this.selectedSlots, s => s);
-      const selectedItems = _.map(this.selectedSlots, s => {
-        if (s < event.currentIndex) {
-          newIndex--;
-          indexCounted = true;
+      const selectedSlotIndices = Array<SlotIndex>();
+      const selectedItems = Array<Skill>();
+      this.forEachSlot((rowIndex, slotIndex) => {
+        if (this.selectedSlots[rowIndex][slotIndex]) {
+          selectedSlotIndices.push({ x: slotIndex, y: rowIndex })
+          selectedItems.push(this.skillSlots[rowIndex][slotIndex])
+
+          if (rowIndex == dropRow && slotIndex < event.currentIndex) {
+            newIndex--;
+            indexCounted = true;
+          }
         }
-        return this.skillSlots[this.selectedRow][s];
-      });
+      })
 
       // correct the index
       if (indexCounted) {
         newIndex++;
       }
 
-      for (var i = this.selectedSlots.length - 1; i >= 0; i--) {
-        this.skillSlots[this.selectedRow].splice(this.selectedSlots[i], 1);
+      for (var i = selectedSlotIndices.length - 1; i >= 0; i--) {
+        this.skillSlots[selectedSlotIndices[i].y][selectedSlotIndices[i].x] = undefined;
+        this.insertSkill(newIndex, dropRow, selectedItems[i]);
       }
 
       // add selected items at new index
-      this.skillSlots[dropRow].splice(newIndex, 0, ...selectedItems);
+      //this.skillSlots[dropRow].splice(newIndex, 0, ...selectedItems);
     } else {
       // If a single selection
+      //const removedSkill = this.skillSlots[this.selectedRow].splice(event.previousIndex, 1)[0];
+      const removedSkill =  this.skillSlots[this.selectedRow][event.previousIndex]
+      this.skillSlots[this.selectedRow][event.previousIndex] = undefined;
 
+      this.insertSkill(event.currentIndex, dropRow, removedSkill);
+      //this.skillSlots[dropRow].splice(event.currentIndex, 0, removedElement);
 
-      const removedElement = this.skillSlots[this.selectedRow].splice(event.previousIndex, 1)[0];
-      this.skillSlots[dropRow].splice(event.currentIndex, 0, removedElement);
-      
       //moveItemInArray(this.skillSlots[dropRow], event.previousIndex, event.currentIndex);
     }
 
     this.soundEffectPlayer.playSound(this.trackPlacementNoise);
+    this.initialDragIndex = undefined;
 
-    this.selectedSlots = [];
+    this.forEachSlot((rowIndex, slotIndex) => this.selectedSlots[rowIndex][slotIndex] = false);
     this.dragging = false;
     this.updateSlots()
+    this.updateNumberSelected();
   }
 
   mouseoverSlot(event: any, hoveredSkill: Skill) {

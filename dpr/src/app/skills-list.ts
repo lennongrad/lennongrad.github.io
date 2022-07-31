@@ -1,8 +1,10 @@
 import { Skill } from './skill';
 
+var rangedTotal = 0
 function genericSkill(): Skill{
+  rangedTotal += 1
   return {
-    icon: 'skill_36.png', name: 'Melee',
+    icon: 'skill_36.png', name: 'Ranged' + rangedTotal,
     description: () => {
       return "Deal 3 damage to each enemy."
     },

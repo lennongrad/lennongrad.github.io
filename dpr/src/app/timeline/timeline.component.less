@@ -85,7 +85,11 @@
 
     &.dragging {
         .slot.selected {
-            opacity: 0;
+            opacity: .1;
+        }
+        
+        .slot:not(.cdk-drag-placeholder, .cdk-drag-preview){
+            opacity: .6;
         }
     }
 
@@ -124,10 +128,24 @@
     padding: 0;
     outline: none;
 
+    transition: opacity .15s;
+
     &.selected {
         .icon {
             background: linear-gradient(45deg, #22A 10%, #55A)
         }
+    }
+
+    &.holder {
+        transform: none !important;
+    }
+
+    &.holder-left{
+        transform: translateX(-@slot-width) !important;
+    }
+
+    &.holder-right{
+        transform: translateX(@slot-width) !important;
     }
 }
 
@@ -187,9 +205,14 @@
     opacity: 0;
 }
 
+.placeholder{
+    background-color: green;
+    width:  @slot-width;
+    height: 4px;
+}
+
 .drag-preview {
     position: absolute;
-    top: 10px;
     left: 30px;
     background: #44A;
     color: white;

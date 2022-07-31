@@ -53,11 +53,11 @@ body {
 
 @keyframes MOVE-BG {
     from {
-        background-position: 0% 0%, 100% 0%, 0 50%;
+        background-position: 0% 0%, 100% 0%, 0 100%, 0% 0%;
     }
 
     to {
-        background-position: 100% 125%, 0% 25%, 150% -150%;
+        background-position: 100% 200%, 0% -100%, 200% -200%, -300% 200%;
     }
 }
 
@@ -70,10 +70,15 @@ body {
     }
 }
 
-.dialog-backdrop {
-    background: url("/assets/galaxy-3.png"), url("/assets/galaxy-2.png"), url("/assets/galaxy-1.png"), rgba(50,0,50,.1);
+.dialog-backdrop{
+    background-color: rgba(0,0,0,.5);
+}
+
+.cosmic {
+    background: url("/assets/galaxy-3.png"), url("/assets/galaxy-4.png"), url("/assets/galaxy-2.png"), url("/assets/galaxy-1.png");
     background-origin: content-box;
-    background-size: 12.5% 12.5%, 25% 25%, 25% 25%;
-    animation: MOVE-BG 60s linear infinite, ROTATE-BG 150s linear infinite;
-    opacity: .6 !important;
+    background-size: 12.5% 12.5%, 25% 25%, 25% 25%, 25% 25%;
+    animation: MOVE-BG 200s linear infinite, ROTATE-BG 150s linear infinite;
+    opacity: .4 !important;
+    filter: blur(1px);
 }

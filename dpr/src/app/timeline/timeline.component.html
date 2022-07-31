@@ -14,17 +14,21 @@
                 [cdkDropListDisabled]="selectedSkill != undefined" (cdkDropListDropped)="onDragDrop($event, rowIndex)">
                 <td class="slot" type="button" *ngFor="let skill of row; index as slotIndex" cdkDrag [cdkDragFreeDragPosition]="{x: 0, y: 0}"
                     (click)="clickSlot(slotIndex, rowIndex, $event)" [cdkDragDisabled]="skill == undefined"
-                    (cdkDragStarted)="onDragStart($event, rowIndex)" (cdkDragReleased)="onDragRelease($event)"
+                    (cdkDragStarted)="onDragStart($event, slotIndex, rowIndex)" (cdkDragReleased)="onDragRelease($event)"
                     (cdkDragMoved)="onDragMove($event, rowIndex)" [class.time]="currentTime == slotIndex"
-                    [class.selected]="selectedRow == rowIndex && selectedSlots.includes(slotIndex)">
+                    [class.selected]="selectedSlots[rowIndex][slotIndex]" 
+                    [class.holder]="isDisplaced(slotIndex, rowIndex)"
+                    [class.holder-left]="isDisplacedLeft(slotIndex, rowIndex)"
+                    [class.holder-right]="isDisplacedRight(slotIndex, rowIndex)">
                     <div class="select-beam"></div>
                     <div *ngIf="skill != undefined" class="icon" (mouseover)="mouseoverSlot($event, skill)"
                         (mouseout)="mouseoutSlot($event, skill)">
                         <img src="/assets/{{skill.icon}}" />
                     </div>
-                    <div *ngIf="selectedSlots.length > 1" class="drag-preview">
-                        {{ selectedSlots.length }}
+                    <div *ngIf="numberSelected > 1" class="drag-preview">
+                        {{ numberSelected  }}
                     </div>
+                    <!--<div *cdkDragPlaceholder class="placeholder" [ngStyle]='{"width.px": numberSelected * 30}'></div>-->
                 </td>
             </tr>
         </table>
