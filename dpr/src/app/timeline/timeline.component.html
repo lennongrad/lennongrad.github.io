@@ -1,4 +1,5 @@
-<app-skill-tooltip [hoveredSkill]="hoveredTooltipSkill" [element]="hoveredElement" [opacity]="hoveredOpacity">
+<app-skill-tooltip [hoveredSkill]="hoveredTooltipSkill" *ngIf="initialDragIndex == undefined" [element]="hoveredElement"
+    [opacity]="hoveredOpacity">
 </app-skill-tooltip>
 
 <div class="header">
@@ -8,27 +9,22 @@
 </div>
 <div class="scroll-container">
     <div class="timeline-scroll" appHorizontalScroll>
-        <table class="timeline" [class.dragging]="dragging" [class.placing]="selectedSkill != undefined"
-            (window:keydown.delete)="deleteSkills()" cdkDropListGroup>
-            <tr *ngFor="let row of this.skillSlots; index as rowIndex" cdkDropList cdkDropListOrientation="horizontal"
-                [cdkDropListDisabled]="selectedSkill != undefined" (cdkDropListDropped)="onDragDrop($event, rowIndex)">
-                <td class="slot" type="button" *ngFor="let skill of row; index as slotIndex" cdkDrag [cdkDragFreeDragPosition]="{x: 0, y: 0}"
-                    (click)="clickSlot(slotIndex, rowIndex, $event)" [cdkDragDisabled]="skill == undefined"
-                    (cdkDragStarted)="onDragStart($event, slotIndex, rowIndex)" (cdkDragReleased)="onDragRelease($event)"
-                    (cdkDragMoved)="onDragMove($event, rowIndex)" [class.time]="currentTime == slotIndex"
-                    [class.selected]="selectedSlots[rowIndex][slotIndex]" 
-                    [class.holder]="isDisplaced(slotIndex, rowIndex)"
-                    [class.holder-left]="isDisplacedLeft(slotIndex, rowIndex)"
-                    [class.holder-right]="isDisplacedRight(slotIndex, rowIndex)">
+        <table class="timeline" [class.dragging]="initialDragIndex != undefined"
+            [class.placing]="selectedSkill != undefined" (window:keydown.delete)="deleteSkills()" cdkDropListGroup>
+            <tr *ngFor="let row of this.skillSlots; index as rowIndex">
+                <td class="slot" type="button" *ngFor="let skill of row; index as slotIndex"
+                    (click)="clickSlot(slotIndex, rowIndex, $event)" draggable="true"
+                    (dragstart)="onDragStart(slotIndex, rowIndex, $event)"
+                    (dragover)="onDragOver(slotIndex, rowIndex, $event)" (dragend)="onDragEnd($event)"
+                    [class.time]="currentTime == slotIndex" [class.selected]="selectedSlots[rowIndex][slotIndex]">
                     <div class="select-beam"></div>
-                    <div *ngIf="skill != undefined" class="icon" (mouseover)="mouseoverSlot($event, skill)"
-                        (mouseout)="mouseoutSlot($event, skill)">
+                    <div [ngStyle]="getTransformation(slotIndex, rowIndex)" *ngIf="skill != undefined" class="icon"
+                        (mouseover)="mouseoverSlot($event, skill)" (mouseout)="mouseoutSlot($event, skill)">
                         <img src="/assets/{{skill.icon}}" />
                     </div>
                     <div *ngIf="numberSelected > 1" class="drag-preview">
-                        {{ numberSelected  }}
+                        {{ numberSelected }}
                     </div>
-                    <!--<div *cdkDragPlaceholder class="placeholder" [ngStyle]='{"width.px": numberSelected * 30}'></div>-->
                 </td>
             </tr>
         </table>

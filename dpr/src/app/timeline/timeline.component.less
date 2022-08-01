@@ -53,6 +53,7 @@
 .timeline-scroll {
     display: block;
     overflow-x: scroll;
+    overflow-y: hidden;
     white-space: nowrap;
 
     &::-webkit-scrollbar {
@@ -85,14 +86,13 @@
 
     &.dragging {
         .slot.selected {
-            opacity: .1;
-        }
-        
-        .slot:not(.cdk-drag-placeholder, .cdk-drag-preview){
-            opacity: .6;
+            opacity: .4;
+        } 
+        .icon{
+            pointer-events: none;
+            filter: drop-shadow(0 1px 1px black);
         }
     }
-
     &:not(.dragging) {
         &.placing {
             .slot {
@@ -112,8 +112,6 @@
                 opacity: 1;
             }
         }
-
-        //.slot .icon{top: calc(@icon-margins + 1px) !important;}
     }
 }
 
@@ -134,18 +132,6 @@
         .icon {
             background: linear-gradient(45deg, #22A 10%, #55A)
         }
-    }
-
-    &.holder {
-        transform: none !important;
-    }
-
-    &.holder-left{
-        transform: translateX(-@slot-width) !important;
-    }
-
-    &.holder-right{
-        transform: translateX(@slot-width) !important;
     }
 }
 
