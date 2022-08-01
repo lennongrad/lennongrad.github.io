@@ -1,12 +1,9 @@
-import { Component, OnInit, Input, Output, ElementRef } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Skill } from '../skill';
-import { DragDropModule, CdkDragDrop, CdkDragStart, CdkDragMove, CdkDragRelease, moveItemInArray } from '@angular/cdk/drag-drop';
-import { EventEmitter } from '@angular/core';
 import { SoundInfo } from '../soundinfo';
 import { SelectedSkillService } from '../selected-skill.service';
 import { SoundEffectPlayerService } from '../sound-effect-player.service';
 import * as _ from 'underscore';
-import { initial } from 'underscore';
 
 interface SlotIndex { x: number, y: number };
 
@@ -20,6 +17,12 @@ export class TimelineComponent implements OnInit {
   onSelect(skill?: Skill): void {
     this.selectedSkillService.changeSelectedSkill(skill);
   }
+  
+  pressedKeys: {[keycode: string]: boolean} = {};
+  @HostListener('window:keydown', ['$event'])
+  onKeyUp(event: KeyboardEvent) { this.pressedKeys[event.key] = true; }
+  @HostListener('document:keyup', ['$event'])
+  onKeyDown(event: KeyboardEvent) { this.pressedKeys[event.key] = false; }
 
   slotWidth = 30;
   slotHeight = 31
@@ -32,6 +35,8 @@ export class TimelineComponent implements OnInit {
   initialDragIndex?: SlotIndex;
   currentDragIndex?: SlotIndex;
   dragDisplacement?: SlotIndex;
+  dragBox = { left: -1, right: -1, top: -1, bottom: -1 };
+  draggingSkill?: Boolean;
 
   currentTime = -1;
   timeLength = 0;
@@ -127,6 +132,26 @@ export class TimelineComponent implements OnInit {
     this.updateNumberSelected();
   }
 
+  duplicateSkills(){
+    var firstX = 10000;
+    var lastX = 0;
+    this.forEachSlot((rowIndex, slotIndex) => {
+      if(this.selectedSlots[rowIndex][slotIndex]){
+        if(slotIndex < firstX){
+          firstX = slotIndex
+        }
+        if(slotIndex > lastX){
+          lastX = slotIndex
+        }
+      }
+    })
+    this.forEachSlot((rowIndex, slotIndex) => {
+      if(this.selectedSlots[rowIndex][slotIndex]){
+        this.insertSkill(slotIndex + (lastX - firstX) + 1, rowIndex, this.skillSlots[rowIndex][slotIndex])
+      }
+    })
+  }
+
   setMaxSkillSlots(newMax: number): void {
     for (var rowIndex in this.skillSlots) {
       while (this.skillSlots[rowIndex].length < newMax) {
@@ -174,22 +199,50 @@ export class TimelineComponent implements OnInit {
     })
   }
 
-  getTransformation(slotIndex: number, rowIndex: number): any {
-    if (!this.selectedSlots[rowIndex][slotIndex] || this.dragDisplacement == undefined) {
+  getSlotStyle(slotIndex: number, rowIndex: number): any {
+    if (this.initialDragIndex == undefined
+      || this.currentDragIndex == undefined
+      || this.dragDisplacement == undefined) {
       return {};
     }
 
-    var translateX = "translateX(" + (this.dragDisplacement.x * this.slotWidth) + "px)"
-    var translateY = "translateY(" + (this.dragDisplacement.y * this.slotHeight) + "px)"
+    var style: { [klass: string]: any } = {};
 
-    return { "transform": translateX + " " + translateY };
+    if (!this.draggingSkill && slotIndex >= this.dragBox.left && slotIndex <= this.dragBox.right
+      && rowIndex >= this.dragBox.top && rowIndex <= this.dragBox.bottom) {
+      style["background-color"] = "rgba(20, 20, 200, .3)";
+    }
+
+    return style;
+  }
+
+  getIconStyle(slotIndex: number, rowIndex: number): any {
+    if (this.initialDragIndex == undefined
+      || this.currentDragIndex == undefined
+      || this.dragDisplacement == undefined) {
+      return {};
+    }
+
+    var style: { [klass: string]: any } = {};
+
+    if (this.selectedSlots[rowIndex][slotIndex] && this.draggingSkill) {
+      var translateX = "translateX(" + (this.dragDisplacement.x * this.slotWidth) + "px)"
+      var translateY = "translateY(" + (this.dragDisplacement.y * this.slotHeight) + "px)"
+      style["transform"] = translateX + " " + translateY;
+      style["opacity"] = ".4"
+    }
+
+    return style;
   }
 
   onDragStart(slotIndex: number, rowIndex: number, event: any): void {
     event.dataTransfer.setDragImage(new Image(), 0, 0);
     this.initialDragIndex = { x: slotIndex, y: rowIndex };
+    this.draggingSkill = this.skillSlots[rowIndex][slotIndex] != undefined;
 
-    this.selectedSlots[rowIndex][slotIndex] = true;
+    if (this.draggingSkill) {
+      this.selectedSlots[rowIndex][slotIndex] = true;
+    }
   }
 
   onDragOver(slotIndex: number, rowIndex: number, event: any): void {
@@ -203,8 +256,15 @@ export class TimelineComponent implements OnInit {
       x: this.currentDragIndex.x - this.initialDragIndex.x,
       y: this.currentDragIndex.y - this.initialDragIndex.y
     }
+    this.dragBox = {
+      left: Math.min(this.initialDragIndex.x, this.currentDragIndex.x),
+      right: Math.max(this.initialDragIndex.x, this.currentDragIndex.x),
+      top: Math.min(this.initialDragIndex.y, this.currentDragIndex.y),
+      bottom: Math.max(this.initialDragIndex.y, this.currentDragIndex.y)
+    }
 
-    if (lastDisplacement != undefined && (lastDisplacement.x != this.dragDisplacement.x || lastDisplacement.y != this.dragDisplacement.y)) {
+    if (lastDisplacement && this.draggingSkill &&
+      (lastDisplacement.x != this.dragDisplacement.x || lastDisplacement.y != this.dragDisplacement.y)) {
       this.soundEffectPlayer.playSound(this.trackPingNoise);
     }
 
@@ -212,36 +272,49 @@ export class TimelineComponent implements OnInit {
   }
 
   onDragEnd(event: any): void {
-    if (this.initialDragIndex != undefined && this.currentDragIndex != undefined && this.dragDisplacement) {
-      const selectedSlotIndices = Array<SlotIndex>();
-      const selectedItems = Array<Skill>();
-      this.forEachSlot((rowIndex, slotIndex) => {
-        if (this.selectedSlots[rowIndex][slotIndex]) {
-          selectedSlotIndices.push({ x: slotIndex, y: rowIndex });
-          selectedItems.push(this.skillSlots[rowIndex][slotIndex]);
-          this.skillSlots[rowIndex][slotIndex] = undefined;
+    if (this.initialDragIndex && this.currentDragIndex && this.dragDisplacement) {
+      if(this.draggingSkill){
+        const selectedSlotIndices = Array<SlotIndex>();
+        const selectedItems = Array<Skill>();
+        this.forEachSlot((rowIndex, slotIndex) => {
+          if (this.selectedSlots[rowIndex][slotIndex]) {
+            selectedSlotIndices.push({ x: slotIndex, y: rowIndex });
+            selectedItems.push(this.skillSlots[rowIndex][slotIndex]);
+            this.skillSlots[rowIndex][slotIndex] = undefined;
+          }
+        })
+  
+        for (var i = selectedSlotIndices.length - 1; i >= 0; i--) {
+          var displacedIndex = {
+            x: Math.max(0, Math.min(this.skillSlots[0].length, selectedSlotIndices[i].x + this.dragDisplacement.x)),
+            y: Math.max(0, Math.min(2, selectedSlotIndices[i].y + this.dragDisplacement.y))
+          }
+  
+          this.insertSkill(displacedIndex.x, displacedIndex.y, selectedItems[i]);
         }
-      })
-
-      for (var i = selectedSlotIndices.length - 1; i >= 0; i--) {
-        var displacedIndex = {
-          x: Math.max(0, Math.min(this.skillSlots[0].length, selectedSlotIndices[i].x + this.dragDisplacement.x)),
-          y: Math.max(0, Math.min(2, selectedSlotIndices[i].y + this.dragDisplacement.y))
+  
+        this.soundEffectPlayer.playSound(this.trackPlacementNoise);
+  
+        this.updateSlots()
+        this.forEachSlot((rowIndex, slotIndex) => this.selectedSlots[rowIndex][slotIndex] = false);
+      } else{
+        if(!this.pressedKeys["Shift"]){
+          this.forEachSlot((rowIndex, slotIndex) => this.selectedSlots[rowIndex][slotIndex] = false);
         }
 
-        this.insertSkill(displacedIndex.x, displacedIndex.y, selectedItems[i]);
+        for(var x = this.dragBox.left; x <= this.dragBox.right; x++){
+          for(var y = this.dragBox.top; y <= this.dragBox.bottom; y++){
+            this.selectedSlots[y][x] = true;
+          }
+        }
       }
-
-      this.soundEffectPlayer.playSound(this.trackPlacementNoise);
-
-      this.updateSlots()
     }
 
     this.initialDragIndex = undefined;
     this.currentDragIndex = undefined;
     this.dragDisplacement = undefined;
+    this.draggingSkill = undefined;
 
-    this.forEachSlot((rowIndex, slotIndex) => this.selectedSlots[rowIndex][slotIndex] = false);
     this.updateNumberSelected();
   }
 

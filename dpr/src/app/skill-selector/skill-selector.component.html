@@ -1,5 +1,6 @@
 <app-skill-tooltip [hoveredSkill]="hoveredTooltipSkill" [element]="hoveredElement" [opacity]="hoveredOpacity">
 </app-skill-tooltip>
+<div (click)="openPopup()" class="popup-button">!</div>
 <div class="skill-selector">
     <img src="/assets/iconholder-left-back.png" class="left" />
     <img src="/assets/iconholder-right-back.png" class="right" />
@@ -14,5 +15,4 @@
     </div>
     <img src="/assets/iconholder-left.png" class="left frame" />
     <img src="/assets/iconholder-right.png" class="right frame" />
-    <button (click)="openPopup()" style="position: absolute;">Popup</button>
 </div>

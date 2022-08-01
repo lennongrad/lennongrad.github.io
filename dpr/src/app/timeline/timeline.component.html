@@ -10,15 +10,16 @@
 <div class="scroll-container">
     <div class="timeline-scroll" appHorizontalScroll>
         <table class="timeline" [class.dragging]="initialDragIndex != undefined"
-            [class.placing]="selectedSkill != undefined" (window:keydown.delete)="deleteSkills()" cdkDropListGroup>
+            [class.placing]="selectedSkill != undefined" (window:keydown.delete)="deleteSkills()"
+            (window:keydown.shift.d)="duplicateSkills()">
             <tr *ngFor="let row of this.skillSlots; index as rowIndex">
                 <td class="slot" type="button" *ngFor="let skill of row; index as slotIndex"
                     (click)="clickSlot(slotIndex, rowIndex, $event)" draggable="true"
-                    (dragstart)="onDragStart(slotIndex, rowIndex, $event)"
+                    (dragstart)="onDragStart(slotIndex, rowIndex, $event)" [ngStyle]="getSlotStyle(slotIndex, rowIndex)"
                     (dragover)="onDragOver(slotIndex, rowIndex, $event)" (dragend)="onDragEnd($event)"
                     [class.time]="currentTime == slotIndex" [class.selected]="selectedSlots[rowIndex][slotIndex]">
                     <div class="select-beam"></div>
-                    <div [ngStyle]="getTransformation(slotIndex, rowIndex)" *ngIf="skill != undefined" class="icon"
+                    <div [ngStyle]="getIconStyle(slotIndex, rowIndex)" *ngIf="skill != undefined" class="icon"
                         (mouseover)="mouseoverSlot($event, skill)" (mouseout)="mouseoutSlot($event, skill)">
                         <img src="/assets/{{skill.icon}}" />
                     </div>
