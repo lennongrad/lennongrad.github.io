@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import * as _ from 'underscore';
 import { Skill } from './skill';
+import { cloneable } from './cloneable';
 
 export type SkillGrid = Array<Array<Skill | undefined>>
 export interface SlotIndex { x: number, y: number };
@@ -10,14 +11,18 @@ export interface SlotIndex { x: number, y: number };
   providedIn: 'root'
 })
 export class TimelineService {
-  currentSkillGrid = Array<Array<Skill | undefined>>(3).fill([]).map(() => new Array());
+  currentSkillGrid: SkillGrid = Array<Array<Skill | undefined>>(3).fill([]).map(() => new Array());
   currentGridChange = new Subject<SkillGrid>();
 
   currentTime = -1;
   gridTimeMax = 0;
 
-  distributeSkillGrid(){
-    this.currentGridChange.next(this.currentSkillGrid);
+  getGridMax(): number{
+    return this.getCurrentSkillGrid()[0].length;
+  }
+
+  getCurrentSkillGrid(): SkillGrid{
+    return this.currentSkillGrid;
   }
 
   processTime() {
@@ -27,8 +32,8 @@ export class TimelineService {
       }
       this.currentTime = (this.currentTime + 1) % this.gridTimeMax;
 
-      for (var rowIndex in this.currentSkillGrid) {
-        this.currentSkillGrid[rowIndex][this.currentTime]?.effect();
+      for (var rowIndex in this.getCurrentSkillGrid()) {
+        this.getCurrentSkillGrid()[rowIndex][this.currentTime]?.effect();
       }
     } else {
       this.currentTime = -1;
@@ -38,45 +43,47 @@ export class TimelineService {
   insertSkill(slotIndex: number, rowIndex: number, skill: Skill | undefined): SlotIndex {
     var currentIndex = slotIndex;
     var movingSkill = skill;
-    while (this.currentSkillGrid[rowIndex][currentIndex] != undefined) {
-      var nextSkill = this.currentSkillGrid[rowIndex][currentIndex];
-      this.currentSkillGrid[rowIndex][currentIndex] = movingSkill;
+    while (this.getCurrentSkillGrid()[rowIndex][currentIndex] != undefined) {
+      var nextSkill = this.getCurrentSkillGrid()[rowIndex][currentIndex];
+      this.getCurrentSkillGrid()[rowIndex][currentIndex] = movingSkill;
       movingSkill = nextSkill;
 
       currentIndex += 1;
       this.setGridMax(currentIndex);
     }
-    this.currentSkillGrid[rowIndex][currentIndex] = movingSkill;
+    this.getCurrentSkillGrid()[rowIndex][currentIndex] = movingSkill;
     this.setGridMax(currentIndex + 8)
-
-    this.updateSlots()
 
     return {x: currentIndex, y: rowIndex};
   }
 
   deleteSkill(rowIndex: number, slotIndex: number) {
-    this.currentSkillGrid[rowIndex][slotIndex] = undefined;
-    this.updateSlots()
-  }
-
-  getGridMax(): number{
-    return this.currentSkillGrid[0].length;
+    this.getCurrentSkillGrid()[rowIndex][slotIndex] = undefined;
   }
 
   setGridMax(newMax: number): void {
-    for (var rowIndex in this.currentSkillGrid) {
-      while (this.currentSkillGrid[rowIndex].length < newMax) {
-        this.currentSkillGrid[rowIndex].push(undefined);
+    for (var rowIndex in this.getCurrentSkillGrid()) {
+      while (this.getCurrentSkillGrid()[rowIndex].length < newMax) {
+        this.getCurrentSkillGrid()[rowIndex].push(undefined);
       }
     }
-    this.distributeSkillGrid();
   }
 
-  updateSlots() {
-    this.gridTimeMax = 1 + _.reduce(this.currentSkillGrid, (highest: number, arr: Array<number>) => {
+  forEachSlot(callback: (rowIndex: number, slotIndex: number) => void): void {
+    _.forEach(this.getCurrentSkillGrid(), (row, rowIndex) => {
+      _.forEach(row, (_skill, slotIndex) => {
+        callback(rowIndex, slotIndex);
+      })
+    })
+  }
+
+  updateGrid(): void {
+    this.gridTimeMax = 1 + _.reduce(this.getCurrentSkillGrid(), (highest: number, arr: Array<Skill | undefined>) => {
       return Math.max(highest, _.max(arr.map((value, index) => value == undefined ? -1 : index)));
     }, 0)
+
+    this.currentGridChange.next(this.getCurrentSkillGrid());
   }
 
-  constructor() { }
+  constructor() {   }
 }

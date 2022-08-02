@@ -70,7 +70,7 @@ export class TimelineComponent implements OnInit {
   }
 
   getSkillGrid(): SkillGrid {
-    return this.timelineService.currentSkillGrid;
+    return this.timelineService.getCurrentSkillGrid();
   }
 
   getCurrentTime(): number {
@@ -117,16 +117,8 @@ export class TimelineComponent implements OnInit {
     return style;
   }
 
-  forEachSlot(callback: (rowIndex: number, slotIndex: number) => void): void {
-    _.forEach(this.selectedSlots, (row, rowIndex) => {
-      _.forEach(row, (_skill, slotIndex) => {
-        callback(rowIndex, slotIndex);
-      })
-    })
-  }
-
   forEachSelected(callback: (rowIndex: number, slotIndex: number) => void): void {
-    this.forEachSlot((rowIndex, slotIndex) => {
+    this.timelineService.forEachSlot((rowIndex, slotIndex) => {
       if (this.selectedSlots[rowIndex][slotIndex]) {
         callback(rowIndex, slotIndex);
       }
@@ -147,6 +139,7 @@ export class TimelineComponent implements OnInit {
 
       this.soundEffectPlayer.playSound(this.trackPlacementNoise);
       this.clearSelection();
+      this.timelineService.updateGrid();
     } else {
       this.selectSlot(slotIndex, rowIndex, event.shiftKey);
     }
@@ -176,6 +169,7 @@ export class TimelineComponent implements OnInit {
       this.timelineService.deleteSkill(rowIndex, slotIndex);
       this.selectedSlots[rowIndex][slotIndex] = false;
     })
+    this.timelineService.updateGrid();
   }
 
   duplicateSelection() {
@@ -189,12 +183,14 @@ export class TimelineComponent implements OnInit {
     this.forEachSelected((rowIndex, slotIndex) => {
       this.timelineService.insertSkill(slotIndex + (lastX - firstX) + 1, rowIndex, this.getSkillGrid()[rowIndex][slotIndex])
     })
+
+    this.timelineService.updateGrid();
   }
 
   moveSelection(displacement: SlotIndex) {
     const selectedSlotIndices = Array<SlotIndex>();
     const selectedItems = Array<Skill | undefined>();
-    this.forEachSlot((rowIndex, slotIndex) => {
+    this.timelineService.forEachSlot((rowIndex, slotIndex) => {
       if (this.selectedSlots[rowIndex][slotIndex]) {
         selectedSlotIndices.push({ x: slotIndex, y: rowIndex });
         selectedItems.push(this.getSkillGrid()[rowIndex][slotIndex]);
@@ -211,19 +207,20 @@ export class TimelineComponent implements OnInit {
       }
 
       var endIndex = this.timelineService.insertSkill(displacedIndex.x, displacedIndex.y, selectedItems[i]);
-      if(this.selectedSlots[endIndex.y][endIndex.x])
+      if(this.selectedSlots[displacedIndex.y][displacedIndex.x])
       {
-        this.selectedSlots[displacedIndex.y][displacedIndex.x] = true
-      } else {
         this.selectedSlots[endIndex.y][endIndex.x] = true;
+      } else {
+        this.selectedSlots[displacedIndex.y][displacedIndex.x] = true
       }
     }
 
     this.soundEffectPlayer.playSound(this.trackPlacementNoise);
+    this.timelineService.updateGrid();
   }
 
   clearSelection() {
-    this.forEachSlot((rowIndex, slotIndex) => this.selectedSlots[rowIndex][slotIndex] = false);
+    this.timelineService.forEachSlot((rowIndex, slotIndex) => this.selectedSlots[rowIndex][slotIndex] = false);
   }
 
   onDragStart(slotIndex: number, rowIndex: number, event: any): void {
