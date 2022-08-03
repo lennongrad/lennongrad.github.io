@@ -40,7 +40,7 @@ import { APP_BASE_HREF } from '@angular/common';
     ReactiveFormsModule,
     MatInputModule
   ],
-  providers: [{ provide: APP_BASE_HREF, useValue: '/' }],
+  providers: [],
   bootstrap: [AppComponent],
   entryComponents: [SkillSelectorPopupComponent]
 })
