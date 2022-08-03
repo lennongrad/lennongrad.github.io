@@ -76,7 +76,6 @@ export class TimelineService {
       })
     })
   }
-  
 
   updateGrid(): void {
     this.gridTimeMax = 1 + _.reduce(this.getCurrentSkillGrid(), (highest: number, arr: Array<Skill | undefined>) => {
