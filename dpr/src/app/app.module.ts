@@ -16,6 +16,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SkillSelectorPopupComponent } from './skill-selector/skill-selector-popup/skill-selector-popup.component';
+import { APP_BASE_HREF } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,7 @@ import { SkillSelectorPopupComponent } from './skill-selector/skill-selector-pop
     ReactiveFormsModule,
     MatInputModule
   ],
-  providers: [],
+  providers: [{ provide: APP_BASE_HREF, useValue: '/' }],
   bootstrap: [AppComponent],
   entryComponents: [SkillSelectorPopupComponent]
 })
