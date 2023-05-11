@@ -6,8 +6,14 @@ var initialTop = 50
 var initialLeft = 50
 var initialWidth = 55
 var initialOpacity = 1
-var initialScale = 6
+var initialScale = .6
 var initialTopWork = -150
+
+var finalTop = -1.5
+var finalLeft = -2
+var finalWidth = 9
+var finalOpacity = 0
+var finalScale = .5
 
 var currentTop = initialTop
 var currentLeft = initialLeft
@@ -27,41 +33,47 @@ setInterval(function() {
 	var goalTopWork = initialTopWork
 	switch(true){
 		case ($(window).width() > 950):
-			goalScale = 16
-			break;
-		case ($(window).width() > 700):
-			goalScale = 11
+			goalScale = 1
 			break;
 		case ($(window).width() > 500):
-			goalScale = 9
+			goalScale = .8
 			break;
 	}
 	
 	if(scrollTop > screen.height * .3){
-		goalTop = 0
-		goalLeft = 0
-		goalWidth = 9
-		goalOpacity = 0
-		goalScale = 8
+		goalTop = finalTop
+		goalLeft = finalLeft
+		goalWidth = finalWidth
+		goalOpacity = finalOpacity
+		goalScale = finalScale
+
+		/*if($(window).width() < 500){
+			goalTop -= 1;
+			goalLeft -= 1.2;
+		}*/
 	}
 	
 	if(scrollTop > document.getElementById("work-header").getBoundingClientRect().top + 10){
 		goalTopWork = 1
 	}
 
-	currentTop = lerp(currentTop, goalTop, .05)
-	currentLeft = lerp(currentLeft, goalLeft, .05)
-	currentWidth = lerp(currentWidth, goalWidth, .025)
-	currentOpacity = lerp(currentOpacity, goalOpacity, .025)
-	currentScale = lerp(currentScale, goalScale, .025)
-	currentTopWork = lerp(currentTopWork, goalTopWork, .035)
+	var currentLerp = .05
+	if(Math.abs(currentTop - goalTop) < .01){
+		currentLerp = .8
+	}
+
+	currentTop = lerp(currentTop, goalTop, currentLerp)
+	currentLeft = lerp(currentLeft, goalLeft, currentLerp)
+	currentWidth = lerp(currentWidth, goalWidth, currentLerp * .5)
+	currentOpacity = lerp(currentOpacity, goalOpacity, currentLerp * .5)
+	currentScale = lerp(currentScale, goalScale, currentLerp * .5)
+	currentTopWork = lerp(currentTopWork, goalTopWork, currentLerp * .65)
 	
 	document.getElementById("title").style.bottom = "calc(" + currentTop + "vh + 5px)"
 	document.getElementById("title").style.left = "calc(" + currentLeft + "vw - 5px)"
 	document.getElementById("title").style.width = currentWidth + "em"
-	document.getElementById("title").style.transform = "translate(-" + 50 * currentOpacity + "%)"
+	document.getElementById("title").style.transform = "translate(-" + 50 * currentOpacity + "%) scale(" + currentScale + ")"
 	document.getElementById("title-name").style.opacity = currentOpacity
 	document.getElementById("toc").style.opacity = currentOpacity
-	document.getElementById("header").style.fontSize = currentScale + "px"
-	//document.getElementById("work").style.top = currentTopWork + "rem"
+	//document.getElementById("header").style.fontSize = currentScale + "px" 
 }, 1);
