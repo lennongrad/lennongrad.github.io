@@ -197,7 +197,7 @@ h2{
 }
 
 .project-image img{
-	width: 500px;
+	width: 310px;
 	border: 2px solid #AAA;
 }
 
@@ -238,6 +238,10 @@ h2{
 		width: 60vw;
 		font-size: 4.5rem;
 		line-height: 4.5rem;
+	}
+
+	.project-image img{
+		width: 500px;
 	}
 }
 
