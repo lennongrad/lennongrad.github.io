@@ -1,0 +1,350 @@
+<script>
+
+var creatures = []
+var target = ""
+var currentType = ""
+var difficulty = 1
+var timer = 10
+var stop_timer = 0
+var bonus_timer = 0
+var round_timer = 0
+
+var maxExtent = 640
+var iconSize = 64
+
+var heroes = ["mario", "luigi", "yoshi", "wario"]
+var typeChoices = ["static", "moving", "same_moving"]
+
+function shuffleArray(array) {
+    for (var i = array.length - 1; i >= 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
+
+function clickCreature(ct, cd){
+	var bonus = document.getElementById("bonus")
+	var prisonRect = document.getElementById("prison").getBoundingClientRect();
+	
+	if(stop_timer > 0){
+		return
+	}
+	
+	if(ct != target){
+		timer -= 10
+		bonus.innerHTML = "-10"
+	} else {
+		bonus.innerHTML = "+5"
+		timer += 5
+		stop_timer = 150
+	}
+	round_timer = 0
+	bonus.style.left = cd["position_x"] + prisonRect.left + "px"
+	bonus.style.top = cd["position_y"] + prisonRect.top + "px"
+	bonus_timer = 40
+}
+
+function startSpawn(){
+	var prison = document.getElementById("prison")
+	var wanted = document.getElementById("topbar")
+	difficulty += .5
+	
+	var lastTarget = target;
+	while(target == lastTarget){
+		target = heroes[Math.floor(Math.random() * 4)]
+	}
+	wanted.src = "wanted_" + target + ".png"
+	
+	var lastType = currentType;
+	while(currentType == lastType){
+		currentType = typeChoices[Math.floor(Math.random() * 3)]
+	}
+	
+	prison.innerHTML = ""
+	creatures = []
+	
+	var creatureQueue = []
+	
+	
+	var speed = Math.sqrt(difficulty)
+	var amount = Math.floor(difficulty)
+	
+	if(currentType == "static" || currentType == "grid"){
+		speed = 0
+	}
+	if(currentType == "static"){
+		amount *= 3;
+	}
+	
+	var hero_moves = {
+		"mario": [Math.random() * speed, Math.random() * speed],
+		"luigi": [Math.random() * speed, Math.random() * speed],
+		"yoshi": [Math.random() * speed, Math.random() * speed],
+		"wario": [Math.random() * speed, Math.random() * speed],
+	}
+	
+	heroes.forEach(key => {
+		var hero_amount = amount
+		if(key == target){
+			hero_amount = 1
+		}
+		
+		for(var i = 0; i < hero_amount; i++){
+			creatureQueue.push(key)
+		}
+	})
+	
+	shuffleArray(creatureQueue)
+	
+	creatureQueue.forEach(key => {
+		var newElement = document.createElement("img")
+		prison.appendChild(newElement)
+		newElement.className = "creature"
+		newElement.src = key + ".png"
+		newElement.ct = key
+		
+		newElement.onmousedown = function() {
+			clickCreature(this.ct, this.cd)
+			this.cd["active"] = false
+		}
+		
+		var newCreature = {
+			"type": key,
+			"position_x": Math.random() * maxExtent,
+			"position_y": Math.random() * maxExtent,
+			"velocity_x": currentType == "same_moving" ? hero_moves[key][0] : Math.random() * speed,
+			"velocity_y": currentType == "same_moving" ? hero_moves[key][1] : Math.random() * speed,
+			"active": true,
+			"element": newElement
+		}
+		creatures.push(newCreature)
+		
+		newElement.cd = newCreature
+	})
+	
+}
+
+function tick(){
+	var prison = document.getElementById("prison")
+	round_timer += 1
+	
+	creatures.forEach(creature => {
+		if(creature["type"] == target && round_timer > 500){
+			creature["element"].style.zIndex = 10;
+		}
+	
+		if(stop_timer == 0){
+			if(currentType == "same_moving"){
+				creature["position_x"] += creature["velocity_x"]
+				if(creature["position_x"] + iconSize > maxExtent + 128){
+					creature["position_x"] -= maxExtent - iconSize + 128
+				} else if(creature["position_x"] < 0){
+					creature["position_x"] += maxExtent
+				}
+				creature["position_y"] += creature["velocity_y"]
+				if(creature["position_y"] + iconSize > maxExtent + 128){
+					creature["position_y"] -= maxExtent - iconSize + 128
+				} else if(creature["position_y"] < 0){
+					creature["position_y"] += maxExtent
+				}
+		
+				creature["element"].style.left = creature["position_x"] - 64 + "px"
+				creature["element"].style.top = creature["position_y"] - 64 + "px"
+			} else {
+				creature["position_x"] += creature["velocity_x"]
+				if(creature["position_x"] + iconSize > maxExtent){
+					creature["position_x"] = maxExtent - iconSize
+					creature["velocity_x"] = -creature["velocity_x"]
+				} else if(creature["position_x"] < 0){
+					creature["position_x"] = 0
+					creature["velocity_x"] = -creature["velocity_x"]
+				}
+				creature["position_y"] += creature["velocity_y"]
+				if(creature["position_y"] + iconSize > maxExtent){
+					creature["position_y"] = maxExtent - iconSize
+					creature["velocity_y"] = -creature["velocity_y"]
+				} else if(creature["position_y"] < 0){
+					creature["position_y"] = 0
+					creature["velocity_y"] = -creature["velocity_y"]
+				}
+		
+				creature["element"].style.left = creature["position_x"] + "px"
+				creature["element"].style.top = creature["position_y"] + "px"
+			}
+		}
+		
+		if(!creature["active"] || (stop_timer > 0 && creature["element"].ct != target)){
+			creature["element"].style.display = "none"
+		}
+	})
+	
+	var bonus = document.getElementById("bonus")
+	bonus_timer -= 1
+	if(bonus_timer > 0){
+		bonus.style.display = "block"
+		bonus.style.top = Number(bonus.style.top.slice(0,-2)) - bonus_timer * .1 + "px"
+	} else {
+		bonus.style.display = "none"
+	}
+	
+	if(timer > 0){
+		timer -= 0.01
+		document.getElementById("timer").innerHTML = Math.ceil(timer)
+		
+		if(stop_timer > 0){
+			prison.style.backgroundColor = "#CAB739"
+			stop_timer -= 1
+			if(stop_timer == 0){
+				startSpawn()
+			}
+		} else {
+			prison.style.backgroundColor = "black"
+		}
+	}
+	
+	var restart = document.getElementById("restart")
+	if(timer < 0){
+		prison.style.backgroundColor = "#CA2F39"
+		document.getElementById("timer").innerHTML = 0
+		difficulty = 1
+		creatures = []
+		prison.innerHTML = ""
+		restart.style.display = "block"
+	} else {
+		restart.style.display = "none"
+	}
+}
+setInterval(tick, 10)
+  
+                  
+</script>
+
+
+<style>
+	body{
+		background-image: url('bricks.png');
+		background-size: 128px 64px;
+		image-rendering: pixelated;
+	}
+		
+	#prison{
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 640px;
+		height: 640px;
+		transform: translate(-50%, -50%);
+		background-color: black;
+		overflow: hidden;
+	}
+	
+	.creature{
+		position: absolute;
+		width: 64px;
+		height: 64px;
+		image-rendering: pixelated;
+		cursor: pointer;
+		user-select: none;
+	}
+	
+	.creature:hover{
+		filter: brightness(1.2);
+	}
+	
+	#timer{
+		background-color: #333;
+		width: 100px;
+		border-radius: 15px;
+		position: absolute;
+		bottom: 5%;
+		left: 50%;
+		transform: translateX(-50%);
+		color: yellow;
+	}
+	
+	#timer-title{
+		position: absolute;
+		bottom: calc(5% + 54px);
+		font-size: 35px;
+		left: 50%;
+		transform: translateX(-50%);
+		color: yellow;
+		-webkit-text-stroke: 2px black;
+	}
+	
+	#bonus{
+		position: absolute;
+		color: #CA5D39;
+	}
+	
+	.texto{
+		text-align: center;
+		font-size: 60px;
+		font-weight: bold;
+		-webkit-text-stroke: 3px black;
+		text-stroke: 3px black;
+		font-family: 'Arial';
+		user-select: none;
+	}
+	
+	#restart{
+		position: absolute;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 150px;
+		height: 50px;
+		font-size: 20px;
+		background-color: white;
+		text-align: center;
+		line-height: 50px;
+		font-family: 'Arial';
+		user-select: none;
+		cursor: pointer;
+		transform: translate(-50%, -50%);
+	}
+	
+	#restart:hover{
+		filter: brightness(1.2);
+		transform: translate(-50%, -48%);
+	}
+	
+	#topbar{
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
+		top: 2.5%;
+		width: 200px;
+	}
+	
+	footer{
+		background-color: black;
+		color: white;
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		width: calc(100%-10px);
+		padding: 5px;
+		font-family: 'Arial'
+	}
+	
+	footer a{
+		color: white;
+	}
+	
+</style>
+
+<div id="prison"></div>
+<div id="timer" class="texto"></div>
+<div id="timer-title" class="texto">TIMER</div>
+<div id="bonus" class="texto">+5</div>
+<img id="topbar" src="wanted_mario.png">
+<div id="restart" onclick="timer = 10; startSpawn()">Restart?</div>
+
+<footer>Check out my other projects at <a href="lennongrad.com">lennongrad.com</a></footer>
+
+<script>
+startSpawn()
+</script>
