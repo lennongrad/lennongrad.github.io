@@ -1,0 +1,3497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spoiler set="">
+  <card>
+    <name>Acquisition Cat</name>
+    <cost>3W</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Cat </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>First strike
+Whenever this creature attacks, create a tapped 1/1 blue Fish creature token for each attacking Cat you control.
+1, Sacrifice a Fish, Rat, or Bird: Put a +1/+1 counter on target Cat.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>3</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>John Stanko</illustrator>
+    <number>0001</number>
+  </card>
+  <card>
+    <name>Alberiusâ€™ Memorial</name>
+    <cost>4WW</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Create a 4/4 white Angel creature token with flying for each creature that died under your control this turn.
+Cycling 1W (1W, Discard this card: Draw a card.)</rules>
+    <flavor>â€œA great man who revived a great cause, and who believe in a great future for our great people.â€
+â€” Etha, leader of the watch</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Sidharth Chaturvedi</illustrator>
+    <number>0002</number>
+  </card>
+  <card>
+    <name>Angel of Collections</name>
+    <cost>1WWW</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Angel Cleric </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Flying, protection from black (This creature canâ€™t be blocked, targeted, dealt damage, enchanted, or equipped by anything black.)
+W, Tap an untapped creature you control: Tap target untapped creature.
+W, Remove a stun counter from a creature you control: Put a stun counter on target tapped creature.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>3</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Randy Gallegos</illustrator>
+    <number>0003</number>
+  </card>
+  <card>
+    <name>Anointed Healer</name>
+    <cost>1W</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Zombie Cleric </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>As long as youâ€™re divine, this creature gets +1/+1 and has lifelink.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor>The mummified servant class remained subservient as ever, disturbing visitors.</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Lake Hurwitz</illustrator>
+    <number>0004</number>
+  </card>
+  <card>
+    <name>Appeal to Life</name>
+    <cost>1W</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Choose target permanent card in your graveyard that was put there from the battlefield this turn. Return it to the battlefield tapped.
+Cycling 1W (1W, Discard this card: Draw a card.)</rules>
+    <flavor>Everyone saw something for themselves in the religious order, but Alberiusâ€™ focus was singular: return the dead back to the world of the living.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Brian Horton</illustrator>
+    <number>0005</number>
+  </card>
+  <card>
+    <name>Basri, the Missionary</name>
+    <cost>1WW</cost>
+    <type>
+      <supertype>Legendary Planeswalker</supertype>
+      <subtype>Basri </subtype>
+    </type>
+    <rarity>M</rarity>
+    <rules></rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Raymond Swanland</illustrator>
+    <number>0006</number>
+  </card>
+  <card>
+    <name>Basriâ€™s Supervision</name>
+    <cost>1W</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Put a +1/+1 counter on each of up to two target creatures. If either had a stun counter on it, draw a card.</rules>
+    <flavor>Basri knew how to lead a group. What once took weeks of preparation for the devoted now took only days.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness> 
+    </stats>
+    <illustrator> James Ryman</illustrator>
+    <number>0007</number>
+  </card>
+  <card>
+    <name>Beast of the Mirage</name>
+    <cost>1WW</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Camel </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>When this creature enters, return up to one other target creature you control to its ownerâ€™s hand.
+1W, Tap an untapped Desert you control: Exile this creature, then return it to the battlefield tapped under its ownerâ€™s control.</rules>
+    <flavor>By body mass, the majority of the desertâ€™s ecosystem was camels and beetles.</flavor>
+    <stats>
+      <power>3</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Aaron Miller</illustrator>
+    <number>0008</number>
+  </card>
+  <card>
+    <name>Cloud Drift</name>
+    <cost>W</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Exile target creature you control, then return it to the battlefield under its ownerâ€™s control.
+Cycling 2W (2W, Discard this card: Draw a card.)
+When you cycle Cloud Drift, exile up to one target creature you control. Return it to the battlefield under its ownerâ€™s control at the beginning of the next end step.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Stephanie Law</illustrator>
+    <number>0009</number>
+  </card>
+  <card>
+    <name>Earthen Retribution</name>
+    <cost>1W</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Earthen Retribution deals 3 damage to target attacking or blocking creature. If you control a Desert or thereâ€™s a Desert card in your graveyard, it deals 4 damage to that creature instead.
+Cycling 1W (1W, Discard this card: Draw a card.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>John Matson</illustrator>
+    <number>0010</number>
+  </card>
+  <card>
+    <name>Encase in Sand</name>
+    <cost>1WW</cost>
+    <type>
+      <supertype>Enchantment</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this enchantment enters, exile target creature an opponent controls until this enchantment leaves the battlefield.
+When this enchantment enters, if you control a Desert or thereâ€™s a Desert card in your graveyard, surveil 2. (Look at the top two cards of your library, then put any number of them into your graveyard and the rest on top of your library in any order.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Jon Foster</illustrator>
+    <number>0011</number>
+  </card>
+  <card>
+    <name>Furnish the Dead</name>
+    <cost>W</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Create a 2/2 black Zombie creature token with decayed, then you may attach an Equipment you control to it.  (It canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Flashback 2W (You may cast this card from your graveyard for its flashback cost. Then exile it.)</rules>
+    <flavor>As Tezzeret rounded up the Anointed, he took to augmenting their form for better performance much like his old master once had.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Scott M. Fischer</illustrator>
+    <number>0012</number>
+  </card>
+  <card>
+    <name>Gauntlets of Banishing</name>
+    <cost>1W</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Husk (When this enters, create a 2/2 black Zombie creature token with decayed, then attach this to it. A creature with decayed canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Whenever equipped creature dies, exile target creature or planeswalker until this Equipment leaves the battlefield. 
+Equip 4</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Roger Raupp</illustrator>
+    <number>0013</number>
+  </card>
+  <card>
+    <name>Glittering Carapace </name>
+    <cost>W</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Husk (When this enters, create a 2/2 black Zombie creature token with decayed, then attach this to it. A creature with decayed canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Equipped creature gets +0/+2.
+Equip 1</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Nicholas Gregory</illustrator>
+    <number>0014</number>
+  </card>
+  <card>
+    <name>Gluttonous Feline</name>
+    <cost>W</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Cat </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Whenever this creature attacks, you may put a stun counter on it. If you do, you gain 2 life. (If a permanent with a stun counter would become untapped, remove one from it instead.)
+Cycling 2W (2W, Discard this card: Draw a card.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>2</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Shreya Shetty</illustrator>
+    <number>0015</number>
+  </card>
+  <card>
+    <name>Guardian Devotee</name>
+    <cost>2W</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this creature dies, scry 1. Then draw a card if youâ€™re divine. (To scry 1, look at the top card of your library. You may put that card on the bottom of your library.)
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor>Not all at Khnum were fueled by religious fervor,  but they all felt a kinship with themselves.</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Magali Villeneuve</illustrator>
+    <number>0016</number>
+  </card>
+  <card>
+    <name>Harrier of Dark Skies</name>
+    <cost>1WW</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Zombie Bird Warrior </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Flash
+Flying
+Cycling 1W (1W, Discard this card: Draw a card.)
+When you cycle Harrier of Dark Skies, tap up to two target creatures without flying.</rules>
+    <flavor>â€œHear the winged call, desertâ€™s hold befallâ€               </flavor>
+    <stats>
+      <power>3</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Tomasz Jedruszek</illustrator>
+    <number>0017</number>
+  </card>
+  <card>
+    <name>Horde Mastermind</name>
+    <cost>3W</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>When this creature enters, put three +1/+1 counters on target Zombie you control.
+Whenever a Zombie you control dies during your turn, if it had counters on it, put those counters on another target Zombie you control.</rules>
+    <flavor>Cowed into silence following Bolasâ€™ downfall, the wranglers of the dead returned to follow Tezzeret after his ascent.</flavor>
+    <stats>
+      <power>1</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>Jason A. Engle</illustrator>
+    <number>0018</number>
+  </card>
+  <card>
+    <name>Khnum Evangel</name>
+    <cost>3W</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this creature enters while youâ€™re divine or you become divine for the first time, put two +1/+1 counters on target creature.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor>â€œHave we not suffered enough?â€</flavor>
+    <stats>
+      <power>3</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>A. M. Sartor</illustrator>
+    <number>0019</number>
+  </card>
+  <card>
+    <name>Khnum-Bane Retriever</name>
+    <cost>1W</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Zombie Jackal Warrior </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Whenever this creature attacks, you may put a stun counter on it. If you do, it gains first strike until end of turn. (If a permanent with a stun counter would become untapped, remove one from it instead.)</rules>
+    <flavor>While the assault was led by the degenerated gods, most of the combat was between bands of Anointed soldiers.</flavor>
+    <stats>
+      <power>3</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Gabor Szikszai</illustrator>
+    <number>0020</number>
+  </card>
+  <card>
+    <name>Makhrehi, Tairinâ€™s Speaker </name>
+    <cost>1W</cost>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>As long as you control a God creature, creatures canâ€™t attack you or planeswalkers you control unless their controller pays 1 for each creature they control thatâ€™s attacking you.</rules>
+    <flavor>The child was chosen by Tairin after he bravely risked his life to save an orphaned child from the onslaught at Khnum.</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Christopher Moeller</illustrator>
+    <number>0021</number>
+  </card>
+  <card>
+    <name>Oketraâ€™s Might</name>
+    <cost>3W</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Consecrate 3WW (You may cast this spell by sacrificing a creature and paying its Consecrate cost reduced by that creatureâ€™s power. If you do, put this spell onto the battlefield transformed as it resolves.)
+Create three 1/1 white Human Soldier    creature tokens.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Volkan Baga</illustrator>
+    <number>0022a</number>
+  </card>
+  <card>
+    <name>Regnant Sandseer</name>
+    <cost>1WW</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Bird Wizard </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Flying
+As long as youâ€™re divine, your opponents canâ€™t cast more than one spell each turn.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor>While humans and khenra flocked to false idols, the Aven believed in a greater power.</flavor>
+    <stats>
+      <power>3</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Tim Hildebrandt</illustrator>
+    <number>0023</number>
+  </card>
+  <card>
+    <name>Sickle of Accursed Sorrow</name>
+    <cost>2W</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Husk (When this enters, create a 2/2 black Zombie creature token with decayed, then attach this to it. A creature with decayed canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Equipped creature gets +3/+3 and has flying and vigilance.
+Equipâ€”Pay 2 and sacrifice equipped creature.
+Equip 6</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Svetlin Velinov</illustrator>
+    <number>0024</number>
+  </card>
+  <card>
+    <name>Summon the Sands</name>
+    <cost>W</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Target creature gets +1/+1 and gains flying until end of turn. Remove any number of stun counters from among creatures you control.</rules>
+    <flavor>Rather than be bound by the sandstorms surrounding the city, some opted to try and control them; some even succeeded.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Jason Rainville</illustrator>
+    <number>0025</number>
+  </card>
+  <card>
+    <name>Terror of the Wastes</name>
+    <cost>5WW</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Horror </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Flying
+Ward 2 (Whenever this creature becomes the target of a spell or ability an opponent controls, counter it unless that player pays 2.)
+Cycling 1W (1W, Discard this card: Draw a card.)</rules>
+    <flavor>Once obscured by the Hekma, now the citizens of Naktamun can see untold horrors peaking out from behind the numerous desert sandstorms.</flavor>
+    <stats>
+      <power>6</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Martin M Barbudo</illustrator>
+    <number>0026</number>
+  </card>
+  <card>
+    <name>Vizier of Construction</name>
+    <cost>2W</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Artificer </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>When this creature enters, look at the top four cards of your library. You may reveal an artifact card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.
+1, T: Put your choice of a brick counter or a charge counter on target artifact. Activate only as a sorcery.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>2</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator> Victor Adame Minguez</illustrator>
+    <number>0027</number>
+  </card>
+  <card>
+    <name>Warrior of Wrapped Wings</name>
+    <cost>1WW</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Zombie Bird Warrior </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Flying
+Whenever this creature attacks, you may put a stun counter on it. When you do, put a +1/+1 counter on target creature with a stun counter on it. (If a permanent with a stun counter would become untapped, remove one from it instead.)</rules>
+    <flavor>In life renowned warriors, the many Anointed were put to use in the battle among cities.</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Jakub Kasper</illustrator>
+    <number>0028</number>
+  </card>
+  <card>
+    <name>Witness to Conflict</name>
+    <cost>2WW</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Angel Cleric </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Flying
+Whenever this creature attacks, untap target attacking creature.</rules>
+    <flavor>Angels had served to imprison the people of Amonkhet for generations, and the newest conflict gave them no guidance on sides to take.</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>rk post</illustrator>
+    <number>0029</number>
+  </card>
+  <card>
+    <name>Atemsisâ€™ Keeper</name>
+    <cost>3UU</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Sphinx </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Flying
+Whenever you discard a nonland card, you may return target creature with lesser mana value than the discarded card to its ownerâ€™s hand. Do this only once each turn.
+Whenever you discard a land card, you may draw a card. Do this only once each turn.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>5</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Chris Rahn
+
+</illustrator>
+    <number>0030</number>
+  </card>
+  <card>
+    <name>Become Mirage</name>
+    <cost>1U</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Target creature becomes a black Horror with base power and toughness 4/4 until end of turn. If youâ€™ve discarded a card this turn, you may instead have it become a green Snake with base power and toughness 1/1 until end of turn.
+Draw a card.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Matt Cavotta</illustrator>
+    <number>0031</number>
+  </card>
+  <card>
+    <name>Cavern Seer</name>
+    <cost>1U</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this creature enters, look at the top three cards of your library. You may reveal a noncreature. nonland card from among them and put it into your hand. Put the rest on the bottom of your library in any order.</rules>
+    <flavor>Some things canâ€™t be seen in sunlight.              </flavor>
+    <stats>
+      <power>1</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Glen Angus</illustrator>
+    <number>0032</number>
+  </card>
+  <card>
+    <name>Challenge Belief</name>
+    <cost>XU</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Counter target spell unless its controller pays X.
+Cycling 3U (3U, Discard this card: Draw a card.)
+When you cycle Challenge Belief, if an opponent controls more lands than you, draw a card.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Jaime Jones</illustrator>
+    <number>0033</number>
+  </card>
+  <card>
+    <name>Consult the Texts</name>
+    <cost>1U</cost>
+    <type>
+      <supertype>Enchantment</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>At the beginning of your first main phase, draw a card, then discard a card unless youâ€™re divine.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor>â€œAccording to the earliest known literature on the founding of Naktamun, the three gods once held these forms...â€</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Magali Villeneuve</illustrator>
+    <number>0034</number>
+  </card>
+  <card>
+    <name>Desertâ€™s Rejection</name>
+    <cost>3UU</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>The owner of target artifact, creature, or enchantment puts it on the top or bottom of their library.
+Cycling 1U (1U, Discard this card: Draw a card.)</rules>
+    <flavor>â€œWhat you heard was wrong. The sand doesnâ€™t distinguish between natural and unnatural.â€</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Min Yum</illustrator>
+    <number>0035</number>
+  </card>
+  <card>
+    <name>Diviner of the Hidden Path</name>
+    <cost>1U</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Vigilance
+As long as youâ€™re divine, this creature canâ€™t be blocked.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor>The path Khnum would take did not come from nowhere; it was put together through the efforts of many devoted scribes.</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Bastien L. Deharme</illustrator>
+    <number>0036</number>
+  </card>
+  <card>
+    <name>Drake Summoning</name>
+    <cost>2UU</cost>
+    <type>
+      <supertype>Enchantment</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Whenever you discard a card, create a 2/2 blue Drake creature token with flying. This ability triggers only once each turn.
+As long as youâ€™ve discarded a card this turn, Drake creatures you control get +1/+0.</rules>
+    <flavor>Fish bait works perfectly well to catch a drake, so long as sufficient quantities are used.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Izzy</illustrator>
+    <number>0037</number>
+  </card>
+  <card>
+    <name>Heavenly Recounter</name>
+    <cost>1UU</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>When this creature enters while youâ€™re divine or you become divine for the first time, the owner of target creature puts it on the top or bottom of their library.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor>â€œWitness the ambling dead and pray for a better afterlife in your own times.â€</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Jakub Kasper</illustrator>
+    <number>0038</number>
+  </card>
+  <card>
+    <name>Intercept</name>
+    <cost>1UU</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Counter target spell. If it was a noncreature spell, create a tapped Treasure token. (Itâ€™s an artifact with â€œT, Sacrifice this artifact: Add one mana of any color.â€)</rules>
+    <flavor>The young courier helped in two ways; the urgent message never reached Gulfield, and now those at Khnum knew what would come.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Zara Alfonso</illustrator>
+    <number>0039</number>
+  </card>
+  <card>
+    <name>Kefnetâ€™s Might</name>
+    <cost>2U</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Consecrate 3UU (You may cast this spell by sacrificing a creature and paying its Consecrate cost reduced by that creatureâ€™s power. If you do, put this spell onto the battlefield transformed as it resolves.)
+Counter target spell unless its  controller pays 3.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Denys Tsiperko</illustrator>
+    <number>0040a</number>
+  </card>
+  <card>
+    <name>Legionary Jumpsuit</name>
+    <cost>U</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Husk (When this enters, create a 2/2 black Zombie creature token with decayed, then attach this to it. A creature with decayed canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Equipped creature has flying. If itâ€™s a Zombie, it also has â€œWhenever this creature deals combat damage to a player, draw a card.â€
+Equip 3</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Jason Felix</illustrator>
+    <number>0041</number>
+  </card>
+  <card>
+    <name>Makhrehiâ€™s Decree</name>
+    <cost>1U</cost>
+    <type>
+      <supertype>Legendary Enchantment</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>As this enchantment enters, each opponent reveals their hand, then choose a nonland card name.
+Whenever an opponent casts a spell with the chosen name, counter that spell. Then sacrifice this enchantment unless youâ€™re divine.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Jason Felix</illustrator>
+    <number>0042</number>
+  </card>
+  <card>
+    <name>Mirror of Livelihood</name>
+    <cost>2U</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Husk (When this enters, create a 2/2 black Zombie creature token with decayed, then attach this to it. A creature with decayed canâ€™t block. When it attacks, sacrifice it at end of combat.)
+At the beginning of combat on your turn, equipped creature becomes a copy of up to one other target creature.
+Equip 3</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Scott Chou</illustrator>
+    <number>0043</number>
+  </card>
+  <card>
+    <name>Naktamun Skirmisher</name>
+    <cost>1U</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Zombie Snake Warrior </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Whenever this creature becomes blocked, defending player loses 2 life.
+Whenever this creature attacks and isnâ€™t blocked, you may cast a noncreature spell from your hand with mana value 2 or less.</rules>
+    <flavor>While once painful for the cityâ€™s inhabitants, the mummification processâ€™ preservation of combat skills now proved useful for its defense.</flavor>
+    <stats>
+      <power>1</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Victor Adame Minguez</illustrator>
+    <number>0044</number>
+  </card>
+  <card>
+    <name>Nightmare Stalker</name>
+    <cost>1U</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Illusion </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Flying
+When this creature becomes the target of a spell or ability, sacrifice it.
+When this creature dies, target opponent reveals their hand. You may choose nonland card from it. If you do, they put that card on the bottom of their library, then draw a card.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>2</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Nils Hamm</illustrator>
+    <number>0045</number>
+  </card>
+  <card>
+    <name>Plead to the Gods</name>
+    <cost>7UUU</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>M</rarity>
+    <rules>Shuffle your hand and graveyard into your library. Then if you cast this spell from your hand and mana was spent to cast it, draw seven cards and take an extra turn after this one. Exile Plead to the Gods.
+Cycling 1U (1U, Discard this card: Draw a card.)</rules>
+    <flavor>A belief in belief itself: the idea that through faith they could bring about a more prosperous world of the living.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Dave Kendall</illustrator>
+    <number>0046</number>
+  </card>
+  <card>
+    <name>Ravenous Sandwhale</name>
+    <cost>5UUU</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Whale </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>This spell costs 1 less to cast for each Desert you control and each Desert card in your graveyard.
+Blocking creatures your opponents control get -1/-0.
+Cycling 2U (2U, Discard this card: Draw a card.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>9</power>
+      <toughness>9</toughness>
+    </stats>
+    <illustrator>Ineedascotch</illustrator>
+    <number>0047</number>
+  </card>
+  <card>
+    <name>Retrieve Valuables</name>
+    <cost>2U</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Draw three cards, then discard two cards.</rules>
+    <flavor>The ones who walk away from Naktamun do so for many reasons. For the Silver-Clad, the contradictions between the city now and how it had been needed urgent explanation, and only a new city could bring this about.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Ben Maier</illustrator>
+    <number>0048</number>
+  </card>
+  <card>
+    <name>Silver-Clad Seer</name>
+    <cost>1U</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Whenever this creature attacks, you may put a stun counter on it. When you do, choose one:
+â€¢ Target creature gets -4/-0 until end of turn.
+â€¢ Target player mills four cards.
+â€¢ Scry 2. (Look at the top two cards of your library, then put any number of them on the bottom and the rest on top in any order.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>2</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Danny Schwartz</illustrator>
+    <number>0049</number>
+  </card>
+  <card>
+    <name>Starlit Duneweaver</name>
+    <cost>2U</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Artificer  </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Flying
+T: Untap target non-Artificer permanent.
+T: Tap target permanent. Activate only if youâ€™ve discarded a card this turn.</rules>
+    <flavor>â€œI donâ€™t need any sort of priest. The stars will guide me, same as ever.â€</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Tommy Arnold</illustrator>
+    <number>0050</number>
+  </card>
+  <card>
+    <name>Suppress Innovation</name>
+    <cost>1U</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Counter target artifact or enchantment spell.
+Cycling 1U (1U, Discard this card: Draw a card.)</rules>
+    <flavor>Though he only just arrived in person, Tezzeret had been planning this incursion for years, and the citizens had little to know for it.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Izzy</illustrator>
+    <number>0051</number>
+  </card>
+  <card>
+    <name>Swirl of Consciousness</name>
+    <cost>2UU</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Create a tapped token thatâ€™s a copy of target creature you control.
+Madness 1U (If you discard this card, discard it into exile. When you do, cast it for its madness cost or put it into your graveyard.)</rules>
+    <flavor>â€œWee!!â€</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Daarken</illustrator>
+    <number>0052</number>
+  </card>
+  <card>
+    <name>Tezzeretâ€™s Dismissal</name>
+    <cost>UU</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Counter target spell. If you havenâ€™t discarded a card this turn, put a card from your hand on the bottom of your library.</rules>
+    <flavor>â€œYou come to lecture me about morality, and yet you went along with my plan until it hurt you. Who is truly to blame then?â€</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Chris Rahn</illustrator>
+    <number>0053</number>
+  </card>
+  <card>
+    <name>Treasure-Cache Slitherer</name>
+    <cost>6UU</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Serpent </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this creature dies, draw two cards.
+Cycling 1U (1U, Discard this card: Draw a card.)</rules>
+    <flavor>Rarely, a traveler would happen upon a collection of glittering coins. Strangely, news of such riches never traveled far.</flavor>
+    <stats>
+      <power>6</power>
+      <toughness>6</toughness>
+    </stats>
+    <illustrator>Adrian Smith</illustrator>
+    <number>0054</number>
+  </card>
+  <card>
+    <name>Unbearable Exertion</name>
+    <cost>1UU</cost>
+    <type>
+      <supertype>Enchantment</supertype>
+      <subtype>Aura </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Enchant creature
+When this enchantment enters, tap enchanted creature.
+Enchanted creature doesnâ€™t untap during its controllerâ€™s untap step.
+Cycling 1U (1U, Discard this card: Draw a card.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Darrell Riche</illustrator>
+    <number>0055</number>
+  </card>
+  <card>
+    <name>Wastelands Scout</name>
+    <cost>3U</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Drake Scout </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Flying
+This creature enters with a +1/+1 counter on it if youâ€™ve discarded a card this turn.
+Cycling 2U (2U, Discard this card: Draw a card.)</rules>
+    <flavor>Insurance was hard to come by, so trade companies avoided in-person exploration.                </flavor>
+    <stats>
+      <power>3</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Gerry Grace</illustrator>
+    <number>0056</number>
+  </card>
+  <card>
+    <name>Abandon</name>
+    <cost>3B</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Destroy target creature.
+Cycling 1B (1B, Discard this card: Draw a card.)</rules>
+    <flavor>With so much of the city once reserved for trials under disuse, a teenager dare can easily turn deadly.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Eytan Zana</illustrator>
+    <number>0057</number>
+  </card>
+  <card>
+    <name>Abhorrent Punisher</name>
+    <cost>4B</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Demon Horror </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Whenever this creature attacks or blocks while youâ€™re not divine, discard a card. If you canâ€™t, sacrifice a creature of your choice at end of combat.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor>It is said that Angels bring poorly-behaved children to Ifnir in the night, never to return.</flavor>
+    <stats>
+      <power>6</power>
+      <toughness>6</toughness>
+    </stats>
+    <illustrator>Carl Critchlow</illustrator>
+    <number>0058</number>
+  </card>
+  <card>
+    <name>Angel of Debts</name>
+    <cost>1BBB</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Angel Cleric </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Flying, protection from white (This creature canâ€™t be blocked, targeted, dealt damage, enchanted, or equipped by anything white.)
+B, Sacrifice a creature you control: Target creature gets -1/-1 until end of turn.
+B, Sacrifice a creature you control with toughness less than its base toughness: Exile target creature.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>3</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>rk post</illustrator>
+    <number>0059</number>
+  </card>
+  <card>
+    <name>Archfiend of Deceit</name>
+    <cost>3BB</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Demon </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Flying, trample
+Creatures your opponents control get -1/-1 for each counter on them.</rules>
+    <flavor>â€œYou once knew where you would go upon your death, the meaning of your life. What will you do to reclaim this truth?â€ 
+â€” Gulfield</flavor>
+    <stats>
+      <power>5</power>
+      <toughness>5</toughness>
+    </stats>
+    <illustrator>Mike Burns</illustrator>
+    <number>0060</number>
+  </card>
+  <card>
+    <name>Atemsisâ€™ Witness</name>
+    <cost>1B</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Snake Cleric </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this creature enters, target player mills three cards.
+As long as you control a Desert or thereâ€™s a Desert card in your graveyard, this creature gets +2/+0.</rules>
+    <flavor>In exchange for exquisite wisdom, many offer themselves to lifelong service.</flavor>
+    <stats>
+      <power>0</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>YW Tang</illustrator>
+    <number>0061</number>
+  </card>
+  <card>
+    <name>Barren Desiccator</name>
+    <cost>2B</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Zombie Snake </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this creature enters or dies, exile up to one other target card from a graveyard. If a land card was exiled this way, each opponent loses 1 life and you gain 1 life.</rules>
+    <flavor>â€œOnce youâ€™ve locked eyes with one, itâ€™s already too late.â€</flavor>
+    <stats>
+      <power>3</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Svetlin Velinov</illustrator>
+    <number>0062</number>
+  </card>
+  <card>
+    <name>Bloodletter Battlewing</name>
+    <cost>1B</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Bird Warrior </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Flash
+Flying
+This creature canâ€™t block.
+Whenever this creature attacks, you may put a stun counter on it. When you do, target creature gets -1/-1 until end of turn.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>2</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Scott Murphy</illustrator>
+    <number>0063</number>
+  </card>
+  <card>
+    <name>Bolasâ€™ Shadow</name>
+    <cost>1B</cost>
+    <type>
+      <supertype>Enchantment</supertype>
+      <subtype>Aura Curse </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Enchant player
+When this Curse enters, enchanted player discards two cards unless they discard a nonland card.
+Whenever enchanted player discards a card, they lose 2 life and you gain 2 life.</rules>
+    <flavor>Bolas had corrupted the city over the course of millennia. Why believe that this latest victory just a few years prior was the end of it?</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Anthony Francisco</illustrator>
+    <number>0064</number>
+  </card>
+  <card>
+    <name>Bontuâ€™s Might</name>
+    <cost>2B</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Consecrate 3BB (You may cast this spell by sacrificing a creature and paying its Consecrate cost reduced by that creatureâ€™s power. If you do, put this spell onto the battlefield transformed as it resolves.)
+Target opponent sacrifices a creature of their choice with the greatest mana value among creatures they control.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>David Palumbo</illustrator>
+    <number>0065a</number>
+  </card>
+  <card>
+    <name>Cleaver of the Damned</name>
+    <cost>1BB</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Equipped creature gets +2/+2 and has menace and decayed. (It canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Whenever this Equipment enters or equipped creature dies, attach this Equipment to target creature.
+Equip 3</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Scott Murphy</illustrator>
+    <number>0066</number>
+  </card>
+  <card>
+    <name>Corpseâ€™s Glove</name>
+    <cost>1B</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Husk (When this enters, create a 2/2 black Zombie creature token with decayed, then attach this to it. A creature with decayed canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Equipped creature gets +1/+1 and has deathtouch.
+Equip 2</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Josh Hass</illustrator>
+    <number>0067</number>
+  </card>
+  <card>
+    <name>Corrupt Belief</name>
+    <cost>2B</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Target player draws two cards and loses 2 life.
+Madness BB (If you discard this card, discard it into exile. When you do, cast it for its madness cost or put it into your graveyard.)</rules>
+    <flavor>Tezzeret and Gulfield led the people of Naktamun towards a faith about a past which never existed.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Vance Kovacs</illustrator>
+    <number>0068</number>
+  </card>
+  <card>
+    <name>Curse of Wandering</name>
+    <cost>4BB</cost>
+    <type>
+      <supertype>Enchantment</supertype>
+      <subtype>Aura Curse </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Enchant player
+At the beginning of enchanted playerâ€™s upkeep, that player sacrifices a non-Zombie creature of their choice. If they do, create a 2/2 black Zombie creature token with decayed. (It canâ€™t block. When it attacks, sacrifice it at end of combat.)</rules>
+    <flavor>â€œThis planeâ€™s worldsoul described the curse as a gift. Gulfield seems to truly believe it.â€ â€” Nissa</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Winona Nelson</illustrator>
+    <number>0069</number>
+  </card>
+  <card>
+    <name>Decrepit Flesh</name>
+    <cost>1B</cost>
+    <type>
+      <supertype>Enchantment</supertype>
+      <subtype>Aura </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Enchant creature
+Enchanted creature has decayed. (It canâ€™t block. When it attacks, sacrifice it at end of combat.)
+When enchanted creature dies, draw a card.</rules>
+    <flavor>Usually, you lose yourself before you lose your arms.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Karl Kopinski</illustrator>
+    <number>0070</number>
+  </card>
+  <card>
+    <name>Gulfieldâ€™s Tyranny</name>
+    <cost>2B</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Target opponent reveals their hand. You choose a nonland card from it. That player discards that card. Create a 2/2 black Zombie creature token with decayed. (It canâ€™t block. When it attacks, sacrifice it at end of combat.)</rules>
+    <flavor>Tezzeret and Gulfieldâ€™s plan began with subterfuge against Naktamunâ€™s defense forces that had been assembled so carefully by Samut.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Christopher Moeller</illustrator>
+    <number>0071</number>
+  </card>
+  <card>
+    <name>Join the Horde</name>
+    <cost>3B</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>This spell casts 1 less to cast for each Zombie you control.
+Exile target creature. If it wasnâ€™t a Zombie, create a 2/2 black Zombie creature token with decayed. (It canâ€™t block. When it attacks, sacrifice it at end of combat.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Piotr JabÅ‚oÅ„ski</illustrator>
+    <number>0072</number>
+  </card>
+  <card>
+    <name>Lurker of the Old Guard</name>
+    <cost>B</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Zombie Warrior </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Whenever this creature becomes blocked, defending player loses 2 life.
+Whenever this creature and one or more other Zombies you control deal combat damage to an opponent, that player discards a card.</rules>
+    <flavor>Many of the Anointed continued to serve Bolasâ€™ will in the catacombs below Naktamun.</flavor>
+    <stats>
+      <power>1</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Izzy</illustrator>
+    <number>0073</number>
+  </card>
+  <card>
+    <name>Master of the Accursed</name>
+    <cost>3B</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this creature enters, create a 2/2 black Zombie creature token with decayed. If you control another Cleric, create two of those tokens instead. (A creature with decayed canâ€™t block. When it attacks, sacrifice it at end of combat.)</rules>
+    <flavor>The respected career path is managing the Anointed, but some prefer the dead-end jobs.</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>Erica Yang</illustrator>
+    <number>0074</number>
+  </card>
+  <card>
+    <name>Necroraiser Mage</name>
+    <cost>1B</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric Wizard </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Deathtouch
+When this creature enters, target Zombie creature card in your graveyard gains embalm until end of turn. The embalm cost is equal to its mana cost. (Exile the creature card and pay its mana cost: Create a token thatâ€™s a copy of it, except itâ€™s white and it has no mana cost. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>2</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Randy Vargas</illustrator>
+    <number>0075</number>
+  </card>
+  <card>
+    <name>Parasitic Cadaver</name>
+    <cost>B</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Zombie </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this creature dies, create a 2/2 black Zombie creature token with decayed. When you do, target creature gets -1/-1 until end of turn. (A creature with decayed canâ€™t block. When it attacks, sacrifice it at end of combat.)</rules>
+    <flavor>â€œWhy do the Accursed hunger in their unusual state, having no need for food? Perhaps it truly is a punishment.â€</flavor>
+    <stats>
+      <power>1</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Adam Rex</illustrator>
+    <number>0076</number>
+  </card>
+  <card>
+    <name>Remnant of Affliction</name>
+    <cost>1B</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Zombie </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Whenever this creature becomes blocked, defending player loses 2 life.</rules>
+    <flavor>â€œI saw him. Aptera, outside the city walls. I know it was him â€” he bore his crest upon his chest. They said he still lived, that they were searching...â€</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Igor Kieryluk</illustrator>
+    <number>0077</number>
+  </card>
+  <card>
+    <name>Rotting Greatwurm</name>
+    <cost>4BBB</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Zombie Wurm </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>As an additional cost to cast this spell, sacrifice a creature.
+Menace
+When this creature enters, target opponent loses 4 life and you gain 4 life.
+3B: Mill four cards, then put this card from your graveyard on top of your library.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>8</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>Alan Pollack</illustrator>
+    <number>0078</number>
+  </card>
+  <card>
+    <name>Ruthless Manticore</name>
+    <cost>2B</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Zombie Manticore </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Menace (This creature canâ€™t be blocked except by two or more creatures.)
+3B, Sacrifice another creature: This creature gains indestructible until end of turn. Tap it.</rules>
+    <flavor>They say Harsiesis was the last living manticore before the Hours, but her afterlife was not made any easier for this.</flavor>
+    <stats>
+      <power>4</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Scott Murphy</illustrator>
+    <number>0079</number>
+  </card>
+  <card>
+    <name>Speaker of the Anointed</name>
+    <cost>2B</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Lifelink
+3B, Sacrifice a creature: You draw a card and lose 1 life. This ability costs 3 less to activate if youâ€™re divine.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>1</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>Tyler Walpole</illustrator>
+    <number>0080</number>
+  </card>
+  <card>
+    <name>Thought for Thought</name>
+    <cost>1BB</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>As an additional cost to cast this spell, discard a card.
+Target player discards three cards.</rules>
+    <flavor>â€œItâ€™s not so simple as positive and negative thoughts canceling out, but... close enough.â€</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Izzy</illustrator>
+    <number>0081</number>
+  </card>
+  <card>
+    <name>Touch Death</name>
+    <cost>2B</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Return up to two target creature cards from your graveyard to your hand.
+Cycling B (B, Discard this card: Draw a card.)
+When you cycle Touch Death, create a 2/2 black Zombie creature token with decayed. (It canâ€™t block. When it attacks, sacrifice it at end of combat.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Sam Wolfe Connelly</illustrator>
+    <number>0082</number>
+  </card>
+  <card>
+    <name>Vengeance-Worn Blade</name>
+    <cost>1B</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Husk (When this enters, create a 2/2 black Zombie creature token with decayed, then attach this to it. A creature with decayed canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Equipped creature gets +1/+0 and has â€œB, T, Sacrifice this creature: Target creature gets -X/-X until end of turn, where X is this creatureâ€™s power. Activate only as a sorcery.â€
+Equip 2</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Svetlin Velinov</illustrator>
+    <number>0083</number>
+  </card>
+  <card>
+    <name>Vile Axe</name>
+    <cost>2B</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Husk (When this enters, create a 2/2 black Zombie creature token with decayed, then attach this to it. A creature with decayed canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Equipped creature gets +2/+1 and has â€œWhenever this creature attacks alone, defending player loses 1 life and you gain 1 life.â€
+Equip 3</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Steve Argyle</illustrator>
+    <number>0084</number>
+  </card>
+  <card>
+    <name>Visions of the Afterlife</name>
+    <cost>2B</cost>
+    <type>
+      <supertype>Enchantment</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>At the beginning of your end step, reveal the top card and put it into your hand. If youâ€™re divine, you gain life equal to the revealed cardâ€™s mana value. Otherwise, you lose that much life.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Igor Kieryluk</illustrator>
+    <number>0085</number>
+  </card>
+  <card>
+    <name>Abrading Emberhorn</name>
+    <cost>3RR</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Minotaur Warrior Wizard </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Reach
+When this creature enters, if youâ€™ve discarded a card this turn, choose one â€”
+â€¢ Abrading Emberhorn deals 3 damage to any target.
+â€¢ Destroy up to one target artifact.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>4</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Craig J Spearing</illustrator>
+    <number>0086</number>
+  </card>
+  <card>
+    <name>Accursed Sledge</name>
+    <cost>1R</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Husk (When this enters, create a 2/2 black Zombie creature token with decayed, then attach this to it. A creature with decayed canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Equipped creature gets +1/+0 and has â€œWhenever this creature attacks, create a Treasure token.â€
+Equip 1</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Vincent Proce</illustrator>
+    <number>0087</number>
+  </card>
+  <card>
+    <name>Assault at the Rocks</name>
+    <cost>2R</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Creatures you control get +2/+0 until end of turn. Each creature you control with a stun counter on it gets +3/+0 until end of turn instead.
+Cycling R (R, Discard this card: Draw a card.)</rules>
+    <flavor>With the head of the plagued gods barely peaking above the dunes, the soldiers of Khnum began their defensive strike.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Matthew D. Wilson</illustrator>
+    <number>0088</number>
+  </card>
+  <card>
+    <name>Badlands Madcap</name>
+    <cost>1R</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Minotaur Wizard </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>This creature gets +1/+0 for each card youâ€™ve discarded this turn.
+Whenever you attack, you may discard a card. If you do, choose a creature. Whenever that creature deals combat damage to a player this turn, you draw two cards.</rules>
+    <flavor>â€œThere is no strength in numbers in the desert. Only strength in yourself. Are you strong?â€</flavor>
+    <stats>
+      <power>0</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Matt Stewart</illustrator>
+    <number>0089</number>
+  </card>
+  <card>
+    <name>Blade of Hazoret</name>
+    <cost>2R</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Jackal Warrior </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Menace (This creature canâ€™t be blocked except by two or more creatures.)
+Whenever this creature attacks, you may put a stun counter on it. When you do, target creature canâ€™t block this turn. (If a permanent with a stun counter would become untapped, remove one from it instead.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>3</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Tomasz Jedruszek</illustrator>
+    <number>0090</number>
+  </card>
+  <card>
+    <name>Broken Foundation</name>
+    <cost>1R</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>As an additional cost to cast this spell, discard a card or pay 2.
+Broken Foundation deals 4 damage to target creature or planeswalker.</rules>
+    <flavor>The Burning-Hearts did what they needed to save the city by tearing it down.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Johann Bodin</illustrator>
+    <number>0091</number>
+  </card>
+  <card>
+    <name>Burning-Heart Assaulter</name>
+    <cost>R</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Warrior </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Haste
+As long as youâ€™ve discarded a card this turn, this creature gets +2/+0.</rules>
+    <flavor>â€œThey say you can train for years and years and remain the same, then in single day of strife be born anew.â€</flavor>
+    <stats>
+      <power>1</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Billy Christian</illustrator>
+    <number>0092</number>
+  </card>
+  <card>
+    <name>Chandra, Ember Evangel</name>
+    <cost>3RR</cost>
+    <type>
+      <supertype>Legendary Planeswalker</supertype>
+      <subtype>Chandra </subtype>
+    </type>
+    <rarity>M</rarity>
+    <rules></rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Christopher Moeller</illustrator>
+    <number>0093</number>
+  </card>
+  <card>
+    <name>Chandraâ€™s Mistake</name>
+    <cost>1R</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Chandraâ€™s Mistake deals 6 damage to target creature or planeswalker. Discard a card at random, then draw a card.</rules>
+    <flavor>Realizing she could never undo the damage caused by her mistake and witnessing the destruction at Naktamun, Chandra let her grief speak.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Dominik Mayer</illustrator>
+    <number>0094</number>
+  </card>
+  <card>
+    <name>Desanctify</name>
+    <cost>3RR</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Destroy target nonbasic land. Desanctify deals 1 damage to that landâ€™s controller for each color that land could produce.
+Cycling 1R (1R, Discard this card: Draw a card.)</rules>
+    <flavor>To say such events were righteous acts of divine punishment is unfalsifiable, but the evidence speaks for itself.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Dermot Power</illustrator>
+    <number>0095</number>
+  </card>
+  <card>
+    <name>Devout Warcaller</name>
+    <cost>3R</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Trample
+At the beginning of your second main phase, if youâ€™re divine, untap each creature you control that attacked this turn. After this main phase, there is an additional combat phase followed by an additional main phase.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>4</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Cynthia Sheppard</illustrator>
+    <number>0096</number>
+  </card>
+  <card>
+    <name>Erupt</name>
+    <cost>R</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Target creature gets +3/+1 until end of turn.
+Cycling 1R (1R, Discard this card: Draw a card.)</rules>
+    <flavor>â€œYears ago, I failed to save my family from the Devastation. I wonâ€™t fail to save my new family.â€</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Heonhwa Choe</illustrator>
+    <number>0097</number>
+  </card>
+  <card>
+    <name>Flamespeaker Khenra</name>
+    <cost>1R</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Jackal Cleric </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>When this creature enters while youâ€™re divine or you become divine for the first time, it deals 2 damage to any target.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor>Years of nonviolence were shattered when the Order of Flame was called upon in defense of the city.</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>David Palumbo</illustrator>
+    <number>0098</number>
+  </card>
+  <card>
+    <name>Glimpse a Better World</name>
+    <cost>2R</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Add five mana in any combination of colors. Spend this mana only to activate abilities or to cast planeswalker spells.
+Cycling 1R (1R, Discard this card: Draw a card.)</rules>
+    <flavor>Though merely an illusion, planting the idea of paradise is enough to convince most.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Warren Mahy</illustrator>
+    <number>0099</number>
+  </card>
+  <card>
+    <name>Glory Dominus</name>
+    <cost>2RR</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Dragon </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Flying, haste
+Whenever this creature attacks, you may put a stun counter on it. When you do, it deals 1 damage to each creature and planeswalker your opponents control. (If a permanent with a stun counter would become untapped, remove one from it instead.)</rules>
+    <flavor>â€œBehold the dragonâ€™s glory.â€
+â€” Expression meaning â€œface consequencesâ€</flavor>
+    <stats>
+      <power>4</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator> Alex Horley-Orlandelli</illustrator>
+    <number>0100</number>
+  </card>
+  <card>
+    <name>Grizzled Tomb Raider</name>
+    <cost>R</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Warrior Rogue </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>First strike
+Whenever this creature attacks, you may put a stun counter on it. If you do, whenever this creature deals combat damage to a player this turn, create a Treasure token.</rules>
+    <flavor>â€œRespect for the dead? Iâ€™ve seen their mummified bodies lurching around â€” they donâ€™t see to have much respect for me!â€</flavor>
+    <stats>
+      <power>1</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>John Coulthart</illustrator>
+    <number>0101</number>
+  </card>
+  <card>
+    <name>Hazoret, the Returned</name>
+    <cost>2RR</cost>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>God </subtype>
+    </type>
+    <rarity>M</rarity>
+    <rules>Indestructible
+As long as youâ€™re divine, Hazoret gets +5/+0 and has haste.
+Discard a card: Add one mana of any color.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>0</power>
+      <toughness>5</toughness>
+    </stats>
+    <illustrator>Yigit Koroglu</illustrator>
+    <number>0102</number>
+  </card>
+  <card>
+    <name>Hazoretâ€™s Might</name>
+    <cost>3R</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Consecrate 3RR (You may cast this spell by sacrificing a creature and paying its Consecrate cost reduced by that creatureâ€™s power. If you do, put this spell onto the battlefield transformed as it resolves.)
+Gain control of target creature until end of turn. Untap that creature. It gets +2/+0   and gains haste until end of turn. </rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Raymond Swanland</illustrator>
+    <number>0103a</number>
+  </card>
+  <card>
+    <name>Khenra Rageblood</name>
+    <cost>1RR</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Jackal Warrior </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Haste
+Madness R (If you discard this card, discard it into exile. When you do, cast it for its madness cost or put it into your graveyard.)</rules>
+    <flavor>The jackalfolk of the plane do not fear their frenzy state; if they lose control, it mustâ€™ve been for a good reason, so they say.</flavor>
+    <stats>
+      <power>4</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Jesper Ejsing</illustrator>
+    <number>0104</number>
+  </card>
+  <card>
+    <name>Launch Force</name>
+    <cost>2R</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Target creature you control deals damage equal to its power to any other target. Then sacrifice it. If the sacrificed creatureâ€™s power was 4 or greater, exile the top card of your library. Until the end of your next turn, you may play that card.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>NÃ©stor OssandÃ³n Leal</illustrator>
+    <number>0105</number>
+  </card>
+  <card>
+    <name>Lightning Chestplate</name>
+    <cost>1RR</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Husk (When this enters, create a 2/2 black Zombie creature token with decayed, then attach this to it. A creature with decayed canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Equipped creature gets +3/+0 and has trample and haste.
+Equip 5</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Min Yum</illustrator>
+    <number>0106</number>
+  </card>
+  <card>
+    <name>Mage of the Broken Lands</name>
+    <cost>1R</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Minotaur Cleric </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this creature enters, you may discard a card. If you do, draw a card.
+4, Exile a land card from your graveyard: Mage of the Broken Lands deals 1 damage to each opponent.</rules>
+    <flavor>The ones who settle in the wastes have a term for city-living folk: â€œthin-skinned.â€</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Carl Critchlow</illustrator>
+    <number>0107</number>
+  </card>
+  <card>
+    <name>Palace Gate Pilgrim</name>
+    <cost>2R</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this creature enters while youâ€™re divine or you become divine for the first time, exile the top card of your library. You may play that card until the end of your next turn.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>2</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>D. J. Cleland-Hura</illustrator>
+    <number>0108</number>
+  </card>
+  <card>
+    <name>Preacher of Abandon</name>
+    <cost>1R</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric Wizard </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Wardâ€”Pay 2 life. (Whenever this creature becomes the target of a spell or ability an opponent controls, counter it unless that player pays 2 life.)
+2, Sacrifice a permanent: This creature gets +2/+2 until end of turn.</rules>
+    <flavor>â€œIgnore the silly dreams of the sheltered priests; the only afterlife we need is now.â€</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Jaime Jones</illustrator>
+    <number>0109</number>
+  </card>
+  <card>
+    <name>Ravages of Khnum</name>
+    <cost>XR</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Ravages of Khnum deals X damage to target creature or planeswalker. Excess damage is dealt to that permanentâ€™s controller instead.
+Cycling R (R, Discard this card: Draw a card.)</rules>
+    <flavor>The degenerate images of the old gods lay waste to the city of the faithful and threatened their hope.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Johannes Voss</illustrator>
+    <number>0110</number>
+  </card>
+  <card>
+    <name>Raze Wraps</name>
+    <cost>R</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Raze Wraps deals 2 damage to target creature. If itâ€™s a Zombie, Raze Wraps also deals 2 damage to that creatureâ€™s controller.</rules>
+    <flavor>Flame carries on farther and faster than the written word can.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>James Paick</illustrator>
+    <number>0111</number>
+  </card>
+  <card>
+    <name>Torturerâ€™s Device</name>
+    <cost>1R</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Wall </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Defender
+1R, T: Torturerâ€™s Device deals 1 damage to target opponent.
+Cycling R (R, Discard this card: Draw a card.)
+When you cycle Torturerâ€™s Device, it deals 1 damage to target opponent.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>0</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>Mike Bierek</illustrator>
+    <number>0112</number>
+  </card>
+  <card>
+    <name>Unceasing Devotion</name>
+    <cost>1R</cost>
+    <type>
+      <supertype>Enchantment</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Whenever an equipped or enchanted creature you control dies, exile the top card of your library. Until the end of your next turn, you may play that card.
+Cycling 1R (1R, Discard this card: Draw a card.)</rules>
+    <flavor>While there were no trials to guide them, the young of Naktamun prepared regardless for combat.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Willian Murai</illustrator>
+    <number>0113</number>
+  </card>
+  <card>
+    <name>Alleyway Prophet</name>
+    <cost>2G</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Whenever you cast a multicolored spell, create a 1/1 green and white Human Cleric creature token with â€œT: Add two mana in any combination of colors. Spend this mana only to activate abilities.â€ If youâ€™re divine, create two of those tokens instead.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>2</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0114</number>
+  </card>
+  <card>
+    <name>Battleworn Mastodon</name>
+    <cost>2G</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Elephant </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Whenever this creature attacks, you may put a stun counter on it. When you do, target creature gets +1/+1 until end of turn.
+When this creature dies, draw a card for each creature you control with a stun counter on it.</rules>
+    <flavor>Once thought endangered, the mastodon population rebounded after being set free from the trial chambers to see sunlight for the first time.</flavor>
+    <stats>
+      <power>4</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>James Zapata</illustrator>
+    <number>0115</number>
+  </card>
+  <card>
+    <name>Bring Aground</name>
+    <cost>1G</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Bring Aground deals 5 damage to target creature with flying.
+Cycling 1G (1G, Discard this card: Draw a card.)</rules>
+    <flavor>After years of dealing with drakes, a few locusts were no issue.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Jaime Jones</illustrator>
+    <number>0116</number>
+  </card>
+  <card>
+    <name>Capturer Recluse</name>
+    <cost>3G</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Spider </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Reach
+Whenever a creature dealt damage by this creature this turn dies, reveal cards from the top of your library until you reveal a land card. Put that card into your hand and the rest on the bottom of your library in a random order.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>4</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Lorenzo Mastroianni </illustrator>
+    <number>0117</number>
+  </card>
+  <card>
+    <name>Cartouche of Triumph</name>
+    <cost>1G</cost>
+    <type>
+      <supertype>Enchantment</supertype>
+      <subtype>Aura Cartouche </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Enchant creature you control
+When this Aura enters, enchanted creature deals damage equal to its power to target creature or planeswalker you donâ€™t control.
+Enchanted creature gets +2/+2 and has trample.</rules>
+    <flavor>To some, the cartouches were symbols of oppression. For other, they remained achievements to be coveted.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Volkan BaÇµa</illustrator>
+    <number>0118</number>
+  </card>
+  <card>
+    <name>Deacon of the Dunes</name>
+    <cost>1GG</cost>
+    <type>
+      <supertype>Artifact Creature</supertype>
+      <subtype>Construct </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>This creature gets +1/+1 for each Desert you control and each Desert card in your graveyard.
+As long as you control a creature with power 4 or greater, you may play an additional land on each of your turns, and you may play land cards from your graveyard.</rules>
+    <flavor>The desert sphinxes sought to fill the desert with artificial life of great beauty.</flavor>
+    <stats>
+      <power>0</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Joseph Meehan</illustrator>
+    <number>0119</number>
+  </card>
+  <card>
+    <name>Defend Khnum</name>
+    <cost>3GG</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>You may cast Defend Khnum as though it had flash if you pay 3 more to cast it.
+Untap each creature you control. They get +3/+3 and gain vigilance until end of turn. Prevent all combat damage that would be dealt this turn by Gods or Zombies.</rules>
+    <flavor>â€œDo not fight to die; there is no glory in that. Survive to see a day where we of Amonkhet may live free!â€</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Nils Hamm</illustrator>
+    <number>0120</number>
+  </card>
+  <card>
+    <name>Deliver to the Afterlife</name>
+    <cost>1G</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Target creature you control deals damage equal to its power to target creature or planeswalker you donâ€™t control. If that creature or planeswalker would die this turn, exile it instead.</rules>
+    <flavor>â€œTrust the heart, trust the aim
+      Light the match, feed the flameâ€</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Winona Nelson</illustrator>
+    <number>0121</number>
+  </card>
+  <card>
+    <name>Devouring Sandwurm</name>
+    <cost>5GG</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Wurm </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this creature enters, you may put a trample counter on it. If you donâ€™t, you gain 4 life.
+Cycling 1G (1G, Discard this card: Draw a card.)</rules>
+    <flavor>â€œThey say a sandwurm once fell through an Omenpath, and came out in two pieces!â€              </flavor>
+    <stats>
+      <power>7</power>
+      <toughness>6</toughness>
+    </stats>
+    <illustrator>Slawomir Maniak</illustrator>
+    <number>0122</number>
+  </card>
+  <card>
+    <name>Divine Congregation</name>
+    <cost>1G</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Create two 1/1 green and white Human Cleric creature tokens with â€œT: Add two mana in any combination of colors. Spend this mana only to activate abilities.â€</rules>
+    <flavor>Once founded by a caravan of travelers, Khnum grew to be the most inhabited city of the wastes: a paradise for the faithful.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Howard Lyon</illustrator>
+    <number>0123</number>
+  </card>
+  <card>
+    <name>Faithful Terraforming</name>
+    <cost>1GG</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Search your library for a card with a basic land type, put it onto the battlefield tapped, then shuffle.
+As long as you control a Desert and this card is in your graveyard, it has Flashback 5G. (You may cast this card from your graveyard for its flashback cost. Then exile it.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Grzegorz Rutkowski</illustrator>
+    <number>0124</number>
+  </card>
+  <card>
+    <name>Glass Shard Enveloper</name>
+    <cost>4GG</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Sand Avatar Horror </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Trample, vigilance
+When this creature dies, up to one target creature you control becomes a copy of this creature.</rules>
+    <flavor>Not all experiments with hyalamancy went smoothly, but they all went sharply.     </flavor>
+    <stats>
+      <power>6</power>
+      <toughness>6</toughness>
+    </stats>
+    <illustrator>Damien Mammoliti</illustrator>
+    <number>0125</number>
+  </card>
+  <card>
+    <name>Khenra Strike Team</name>
+    <cost>G</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Jackal Warrior </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Whenever this creature attacks, you may put a stun counter on it. When you do, put a +1/+1 counter on each attacking creature you control thatâ€™s a Jackal or a Warrior.</rules>
+    <flavor>Their feverish devotion blinded them to the violence that ensued at the walls of Khnum.     </flavor>
+    <stats>
+      <power>1</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>David Palumbo</illustrator>
+    <number>0126</number>
+  </card>
+  <card>
+    <name>Naktamun Reformer</name>
+    <cost>1G</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>T: Add one mana of any color.
+T, Put a stun counter on this creature: Add CC. (If a permanent with a stun counter would become untapped, remove one from it instead.)</rules>
+    <flavor>â€œWhy go to Khnum and abandon my home? There is still work to be done here.â€</flavor>
+    <stats>
+      <power>1</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Sara Winters</illustrator>
+    <number>0127</number>
+  </card>
+  <card>
+    <name>Nature-Call Minister</name>
+    <cost>2G</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Trample
+At the beginning of combat on your turn, if youâ€™re divine, put a +1/+1 counter on this creature.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>3</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Liz Danforth & Douglas Shuler</illustrator>
+    <number>0128</number>
+  </card>
+  <card>
+    <name>Nissa of the Beating Sands</name>
+    <cost>G</cost>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elf Cleric </subtype>
+    </type>
+    <rarity>M</rarity>
+    <rules>1, T: Add one mana of any color.
+2, T: Target creature gets +2/+2 until end of turn. Activate only as a sorcery.
+3, T: Reveal the top card of your library. If itâ€™s a permanent card, put it into your hand. Otherwise, put it on the bottom of your library.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>1</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Magali Villeneuve</illustrator>
+    <number>0129</number>
+  </card>
+  <card>
+    <name>Nissaâ€™s Discovery</name>
+    <cost>1G</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Mill five cards. You may put a permanent card from among the cards milled this way into your hand.</rules>
+    <flavor>Her mind raced as she read the inscription. How could she let on the secret to Chandra and the others without attracting Tezzeretâ€™s attention? What were his terrible intentions?</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Ryan Yee</illustrator>
+    <number>0130</number>
+  </card>
+  <card>
+    <name>Oasislurker</name>
+    <cost>4G</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Plant Horror </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>As long as youâ€™re divine, this creature gets +1/+1 and has trample.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor>The healing properties of the oasis are not strictly beneficial for visiting travelers.</flavor>
+    <stats>
+      <power>5</power>
+      <toughness>5</toughness>
+    </stats>
+    <illustrator>Igor Kieryluk</illustrator>
+    <number>0131</number>
+  </card>
+  <card>
+    <name>Order of Khnum</name>
+    <cost>1GG</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Warrior Cleric </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this creature enters, create a 1/1 green and white Human Cleric creature token with â€œT: Add two mana in any combination of colors. Spend this mana only to activate abilities.â€</rules>
+    <flavor>The missionaries once hired to bring the initial settlers to Khnumâ€™s founding served as the first in a long order of devoted protectors.</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Tim Hildebrandt</illustrator>
+    <number>0132</number>
+  </card>
+  <card>
+    <name>Piercing Bellower</name>
+    <cost>2GG</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Minotaur Warrior </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Whenever this creature attacks, you may put a stun counter on it. If you do, it gets +2/+2 until end of turn. (If a permanent with a stun counter would become untapped, remove one from it instead.)</rules>
+    <flavor>â€œLine â€˜em up for me, wonâ€™t you!â€</flavor>
+    <stats>
+      <power>4</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>Yohann Schepacz</illustrator>
+    <number>0133</number>
+  </card>
+  <card>
+    <name>Protector of Khnum</name>
+    <cost>2G</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Archer Warrior </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Reach
+This creature gets +2/+2 as long as youâ€™re divine.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor>â€œMy aim is as sure as my faith.â€</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Sara Winters</illustrator>
+    <number>0134</number>
+  </card>
+  <card>
+    <name>Queen of the Swarm</name>
+    <cost>4GGG</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Insect </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>When this creature enters, exile target playerâ€™s graveyard. For each land card exiled this way, create a 1/1 green Insect creature token.
+Whenever an Insect you control dies, put two +1/+1 counters on this creature.</rules>
+    <flavor>â€œI can handle the zombies, the sandstorms, even the murderous crocodiles. But giant beetles?â€            </flavor>
+    <stats>
+      <power>4</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>Christine Choi</illustrator>
+    <number>0135</number>
+  </card>
+  <card>
+    <name>Reticent Peacekeeper</name>
+    <cost>1G</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Minotaur Cleric </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Defender
+As long as youâ€™re divine, this creature has vigilance and can attack as though it didnâ€™t have defender.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>3</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Pete Venters</illustrator>
+    <number>0136</number>
+  </card>
+  <card>
+    <name>Rhonasâ€™ Might</name>
+    <cost>3G</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Consecrate 3GG (You may cast this spell by sacrificing a creature and paying its Consecrate cost reduced by that creatureâ€™s power. If you do, put this spell onto the battlefield transformed as it resolves.)
+Target creature you control gets +2/+2 until end of turn. It fights target creature   an opponent controls. </rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Lucas Graciano</illustrator>
+    <number>0137a</number>
+  </card>
+  <card>
+    <name>Sanctifier of Dust</name>
+    <cost>1G</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Snake Cleric </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this creature dies, you gain 2 life. If you control a Desert or thereâ€™s a Desert card in your graveyard, instead you gain 4 life.</rules>
+    <flavor>While others recoil from it, the naga embrace the sand.</flavor>
+    <stats>
+      <power>3</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Christine Choi</illustrator>
+    <number>0138</number>
+  </card>
+  <card>
+    <name>Scarab Shepherd</name>
+    <cost>3GG</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>3: Create a 1/1 green Insect creature token with deathtouch and â€œThis creature canâ€™t attack or block unless youâ€™re divine.â€ Activate only as a sorcery.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>4</power>
+      <toughness>5</toughness>
+    </stats>
+    <illustrator>Tony Foti</illustrator>
+    <number>0139</number>
+  </card>
+  <card>
+    <name>Zalikiâ€™s Divine Protection</name>
+    <cost>G</cost>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Target creature gets +1/+1 and gains indestructible until end of turn.
+Cycling 1G (1G, Discard this card: Draw a card.)</rules>
+    <flavor>Many denied he ever existed, but none denied the power bestowed by belief in his infinite capacity for life and courage.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Eric Fortune</illustrator>
+    <number>0140</number>
+  </card>
+  <card>
+    <name>Alberius the Sand Caller</name>
+    <cost>2GW</cost>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Deserts you control have â€œT, Pay 1 life: Add one mana of any color.â€
+As long as youâ€™re divine, creatures you control get +1/+1 and have vigilance.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>4</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>Anthony Palumbo</illustrator>
+    <number>0141</number>
+  </card>
+  <card>
+    <name>Anep, of Tattered Bonds</name>
+    <cost>2RG</cost>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Jackal Warrior </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Trample
+Other Warriors you control have trample.
+Whenever Anep or another creature you control with power 4 or greater attacks, you may put a stun counter on it. If you do, double its power until end of turn. (If a permanent with a stun counter would become untapped, remove one from it instead.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>4</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Moopic</illustrator>
+    <number>0142</number>
+  </card>
+  <card>
+    <name>Atemsis, of Sandstone</name>
+    <cost>1WUB</cost>
+    <type>
+      <supertype>Legendary Artifact Creature</supertype>
+      <subtype>Sand Sphinx  </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Flying
+At the beginning of your end step, choose a card name, then reveal the top card of your library. If that card has the chosen name, draw a card.
+1U, Return another artifact you control to its ownerâ€™s hand: Surveil 1. (Look at the top card of your library. You may put it into your graveyard.)</rules>
+    <flavor>â€œFear not the Whisper of Sand; only the Touchâ€
+â€” Inscription</flavor>
+    <stats>
+      <power>3</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>Irina Nordsol Kuzmina</illustrator>
+    <number>0143</number>
+  </card>
+  <card>
+    <name>Djeru, Resolute Recruiter</name>
+    <cost>RW</cost>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Human Warrior </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Whenever you put a stun counter on a creature, create a 1/1 white Human Soldier creature token.</rules>
+    <flavor>â€œThe troubles we faced unseating Bolas were just the beginning. A strong Naktamun lies on the shoulders of a restless people who nevertheless go on.â€</flavor>
+    <stats>
+      <power>2</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Zoltan Boros</illustrator>
+    <number>0144</number>
+  </card>
+  <card>
+    <name>Epnokep, Vizier of Sands</name>
+    <cost>2GU</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>T: Add two mana in any combination of colors. Spend this mana only to activate abilities.
+Whenever a land enters under your control, if youâ€™re divine, draw a card.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>2</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Stephen Tappin</illustrator>
+    <number>0145</number>
+  </card>
+  <card>
+    <name>Eternal Reawakening</name>
+    <cost>1WWU</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Surveil 2, then exile a creature card from your graveyard. Create a token thatâ€™s a copy of it, except itâ€™s a 4/4 black Zombie with no mana cost in addition to its other types.
+Cycling WU (WU, Discard this card: Draw a card.)</rules>
+    <flavor>â€œBolas led us astray, but not so far off the path.â€</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Darrell Riche</illustrator>
+    <number>0146</number>
+  </card>
+  <card>
+    <name>Etha, Khnum Watchleader</name>
+    <cost>2GW</cost>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Jackal Warrior </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Flash
+Reach
+When Etha enters, each tapped creature you control gets +1/+1 until end of turn. Untap them.</rules>
+    <flavor>â€œI saw where the path of the God-Pharaoh took us. No deity shall hold power over me again.â€           </flavor>
+    <stats>
+      <power>4</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Svetlin Velinov</illustrator>
+    <number>0147</number>
+  </card>
+  <card>
+    <name>Firesky Drake</name>
+    <cost>4UR</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Drake </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>This spell costs 2 less to cast for each card youâ€™ve discarded this turn.
+Flying, ward 1, haste (Whenever this creature becomes the target of a spell or ability an opponent controls, counter it unless that player pays 1.)</rules>
+    <flavor>The ministers preached the proliferating drake roosts as a sign of their devoteesâ€™ success.</flavor>
+    <stats>
+      <power>4</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Pete Venters</illustrator>
+    <number>0148</number>
+  </card>
+  <card>
+    <name>Gulfield, Cruel Heir</name>
+    <cost>3UBR</cost>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>M</rarity>
+    <rules>Wardâ€”Discard a card, Pay 3 life.
+At the beginning of your upkeep, draw a card, then each player discards a card.
+Madness UBR (If you discard this card, discard it into exile. When you do, cast it for its madness cost or put it into your graveyard.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>5</power>
+      <toughness>5</toughness>
+    </stats>
+    <illustrator>Igor Kieryluk</illustrator>
+    <number>0149</number>
+  </card>
+  <card>
+    <name>Hero of Naktamun</name>
+    <cost>UB</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Bird Warrior </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Flying
+Whenever a creature you control deals combat damage to an opponent, that player loses 1 life and you gain 1 life.</rules>
+    <flavor>The ranks of the city were divided. Many wished for peace, but others believed in the lies espoused by Gulfield. The tide turned as former heroes from the Hours staked their allegiances.</flavor>
+    <stats>
+      <power>1</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>Sidharth Chaturvedi</illustrator>
+    <number>0150</number>
+  </card>
+  <card>
+    <name>Illicit Bargainer</name>
+    <cost>1BR</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Minotaur Cleric </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Whenever you sacrifice a permanent, up to one target creature gets -1/-1 until end of turn. If you controlled that creature and you havenâ€™t created a Treasure this turn, create a tapped Treasure token. (Itâ€™s an artifact with â€œT, Sacrifice this token: Add one mana of any color.â€)</rules>
+    <flavor>Pretty baubles are worth their price in blood in the markets at the city outskirts.</flavor>
+    <stats>
+      <power>3</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Mathias Kollros</illustrator>
+    <number>0151</number>
+  </card>
+  <card>
+    <name>Labor for the Departed</name>
+    <cost>WB</cost>
+    <type>
+      <supertype>Enchantment</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>When this enchantment enters the battlefield, create a 2/2 black Zombie creature token with decayed. (It canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Whenever a Zombie you control dies during your turn, target opponent sacrifices a creature of their choice. This ability triggers only once each turn.</rules>
+    <flavor>The pitiless dead toiled where few others would dare.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Dan Frazier</illustrator>
+    <number>0152</number>
+  </card>
+  <card>
+    <name>Nadu, Divine Strategist</name>
+    <cost>2GU</cost>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Bird Cleric Wizard </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Flying
+Ward 2 (Whenever this creature becomes the target of a spell or ability an opponent controls, counter it unless that player pays 2.)
+Whenever you cast an instant or sorcery spell that targets only a single creature you control, copy that spell. You may choose new targets for the copy.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>3</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>Gossip Goblin</illustrator>
+    <number>0153</number>
+  </card>
+  <card>
+    <name>Plague of Locusts</name>
+    <cost>1UR</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Consecrate 4UR (You may cast this spell by sacrificing a creature and paying its Consecrate cost reduced by that creatureâ€™s power. If you do, put this spell onto the battlefield transformed as it resolves.)
+Discard your hand, then draw that many cards plus one.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Ralph Horsley</illustrator>
+    <number>0154a</number>
+  </card>
+  <card>
+    <name>Plague of Scarabs</name>
+    <cost>1UB</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Consecrate 4UB (You may cast this spell by sacrificing a creature and paying its Consecrate cost reduced by that creatureâ€™s power. If you do, put this spell onto the battlefield transformed as it resolves.)
+Surveil 2, then draw two cards. (To surveil 2, look at the top two cards of your library, then put any number of them into your graveyard and the rest on top of your library in any order.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Bastien L. Deharme</illustrator>
+    <number>0155a</number>
+  </card>
+  <card>
+    <name>Plague of Scorpions</name>
+    <cost>1BR</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Consecrate 4BR (You may cast this spell by sacrificing a creature and paying its Consecrate cost reduced by that creatureâ€™s power. If you do, put this spell onto the battlefield transformed as it resolves.)
+Each creature gets -3/-3 until end of turn.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator> Jeanne D'Angelo</illustrator>
+    <number>0156a</number>
+  </card>
+  <card>
+    <name>Quicksand Vortex</name>
+    <cost>2WWU</cost>
+    <type>
+      <supertype>Enchantment</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Flash
+When this enchantment enters, exile all creatures until this enchantment leaves the battlefield.</rules>
+    <flavor>Previous attempts to receive Atemsisâ€™ wisdom were undone by conspicuously timed bouts of shifting sand that devoured entire caravans.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Sara Winters</illustrator>
+    <number>0157</number>
+  </card>
+  <card>
+    <name>Resolute Bannerwing</name>
+    <cost>RWW</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Angel Warrior </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Flying
+At the beginning of combat on your turn, put a +1/+1 counter on target Warrior you control.
+Whenever you put one or more counters on a Warrior, Resolute Bannerwing deals that much damage to target player or planeswalker.</rules>
+    <flavor>â€œWe fight as one!â€</flavor>
+    <stats>
+      <power>1</power>
+      <toughness>2</toughness>
+    </stats>
+    <illustrator>Steve Prescott</illustrator>
+    <number>0158</number>
+  </card>
+  <card>
+    <name>Samut, Troubled Vizier</name>
+    <cost>1RGW</cost>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Human Warrior Cleric </subtype>
+    </type>
+    <rarity>M</rarity>
+    <rules>First strike, vigilance, haste
+2, T: Samut gains double strike until end of turn.
+2, T: Untap another target creature. Put your choice of a +1/+1, first strike, vigilance, or haste counter on it.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>3</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>Anna Steinbauer</illustrator>
+    <number>0159</number>
+  </card>
+  <card>
+    <name>Sokar, Soul Searcher</name>
+    <cost>1BG</cost>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Deathtouch
+Whenever Sokar attacks, mill three cards, then choose a permanent card in your graveyard. Return it to your hand if itâ€™s a land card or if youâ€™re divine.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>1</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>Pete Venters</illustrator>
+    <number>0160</number>
+  </card>
+  <card>
+    <name>Suffer the Curse</name>
+    <cost>BG</cost>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Destroy target nonland permanent. You lose X life, where X is that permanentâ€™s mana value reduced by the number of Deserts you control plus the number of Desert cards in your graveyard.
+Cycling 1BG (1BG, Discard this card: Draw a card.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Thomas M. Baxa</illustrator>
+    <number>0161</number>
+  </card>
+  <card>
+    <name>Tezzeret, the Twisted Faith</name>
+    <cost>2UB</cost>
+    <type>
+      <supertype>Legendary Planeswalker</supertype>
+      <subtype>Tezzeret </subtype>
+    </type>
+    <rarity>M</rarity>
+    <rules></rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Chris Rallis</illustrator>
+    <number>0162</number>
+  </card>
+  <card>
+    <name>Vizier of Unity</name>
+    <cost>1WB</cost>
+    <type>
+      <supertype>Creature</supertype>
+      <subtype>Human Cleric </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Whenever this creature or another nontoken Cleric you control enters, create a 2/2 black Zombie creature token with decayed. (It canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Whenever you attack with three or more Zombies, target creature gains double strike until end of turn.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>2</power>
+      <toughness>3</toughness>
+    </stats>
+    <illustrator>rk post</illustrator>
+    <number>0163</number>
+  </card>
+  <card>
+    <name>Vlyrim, Who Devourers</name>
+    <cost>2RRGG</cost>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elder Wurm </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Whenever Vlyrim or another Wurm you control attacks, you may mill cards equal to that creatureâ€™s power. When you do, Vlyim deals damage to any target equal to the number of land cards milled this way.
+2G: Put any number of target land cards from your graveyard on top of your library.</rules>
+    <flavor></flavor>
+    <stats>
+      <power>7</power>
+      <toughness>7</toughness>
+    </stats>
+    <illustrator>Grzegorz Rutkowski</illustrator>
+    <number>0164</number>
+  </card>
+  <card>
+    <name>Defiled Banner</name>
+    <cost>2</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Husk (When this enters, create a 2/2 black Zombie creature token with decayed, then attach this to it. A creature with decayed canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Equipped creature gets +1/+1 and has â€œWhenever this creature attacks, each other creature that shares a creature type with it gets +1/+1 until end of turn.â€
+Equip 2</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Peter Mohrbacher</illustrator>
+    <number>0165</number>
+  </card>
+  <card>
+    <name>Glittering Trinket</name>
+    <cost>2</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this artifact enters, draw a card.
+T: Add two mana in any combination of colors. Spend this mana only to activate abilities.</rules>
+    <flavor>Unbeknownst to buyer or seller, the market outside Naktamun peddled a gym torn from the cartouche of the late Temmet.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Tyler Walpole</illustrator>
+    <number>0166</number>
+  </card>
+  <card>
+    <name>Jockey Harness</name>
+    <cost>3</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>Husk (When this enters, create a 2/2 black Zombie creature token with decayed, then attach this to it. A creature with decayed canâ€™t block. When it attacks, sacrifice it at end of combat.)
+Equipped creature gets +1/+2.
+Equip 1</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Alex Konstad</illustrator>
+    <number>0167</number>
+  </card>
+  <card>
+    <name>Oracleâ€™s Hideaway</name>
+    <cost>2</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>1, T: Scry 1. Put a brick counter on this artifact. (To scry 1, look at the top card of your library. You may put that card on the bottom.)
+When there are three or more brick counters on this artifact, transform it.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Ayan Nag</illustrator>
+    <number>0168a</number>
+  </card>
+  <card>
+    <name>Pyramid of the Living</name>
+    <cost>1</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>M</rarity>
+    <rules>At the beginning of combat on your turn, you gain 1 life. If you are divine, put a brick counter on this artifact. 
+When there are three or more brick counters on this artifact, transform it.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Titus Lunter</illustrator>
+    <number>0169a</number>
+  </card>
+  <card>
+    <name>Samutâ€™s Palace</name>
+    <cost>2</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>1, T: Create a tapped 1/1 white Human Soldier creature token. Put a brick counter on this artifact.
+When there are three or more brick counters on this artifact, transform it.</rules>
+    <flavor>A hair too humble, Samut at first rejected living at the glamorous palace.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Jung Park</illustrator>
+    <number>0170a</number>
+  </card>
+  <card>
+    <name>Sand Pillar Sentinel</name>
+    <cost>5</cost>
+    <type>
+      <supertype>Artifact Creature</supertype>
+      <subtype>Wurm Construct </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Vigilance
+If a creature is attacking you and you control a Desert or there is a Desert card in your graveyard, you may cast Sand Pillar Sentinel as though it had flash.</rules>
+    <flavor>Nissa questioned the half-dozen close calls the group experienced on their way to the wise Atsemis. Did she oppose seeking audience with her?                </flavor>
+    <stats>
+      <power>4</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>Aldo DomÃ­nguez</illustrator>
+    <number>0171</number>
+  </card>
+  <card>
+    <name>Sand Sled</name>
+    <cost>3</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype>Vehicle </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>Trample
+At the beginning of combat on your turn, if youâ€™re divine, you may have this Vehicle become an artifact creature and gain haste until end of turn.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)
+Crew 4</rules>
+    <flavor></flavor>
+    <stats>
+      <power>5</power>
+      <toughness>4</toughness>
+    </stats>
+    <illustrator>Pace Wilder</illustrator>
+    <number>0172</number>
+  </card>
+  <card>
+    <name>Sandstone Messenger</name>
+    <cost>2</cost>
+    <type>
+      <supertype>Artifact Creature</supertype>
+      <subtype>Sand Golem </subtype>
+    </type>
+    <rarity>C</rarity>
+    <rules>When this creature enters, you may discard a card. When you do, search your library for a card with a basic land type, reveal it, then shuffle and put that card into your hand.
+As long as youâ€™re divine, this creature gets +0/+2.
+Divinity (WUBRG: You become divine for the rest of the game. Activate only as a sorcery.)</rules>
+    <flavor></flavor>
+    <stats>
+      <power>2</power>
+      <toughness>1</toughness>
+    </stats>
+    <illustrator>Kev Walker</illustrator>
+    <number>0173</number>
+  </card>
+  <card>
+    <name>Shrine to Zaliki</name>
+    <cost>2</cost>
+    <type>
+      <supertype>Artifact</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>2, T: Search your library for a card with a basic land type, put it into your hand, then shuffle. Put a brick counter on this artifact.
+When there are three or more brick counters on this artifact, transform it.</rules>
+    <flavor>Buried under centuries of Bolasâ€™ occupation, the shrineâ€™s ancient bricks cracked under the flood of worshipers. </flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Jordan Grimmer</illustrator>
+    <number>0174a</number>
+  </card>
+  <card>
+    <name>Atemsisâ€™ Oasis</name>
+    <cost></cost>
+    <type>
+      <supertype>Legendary Land</supertype>
+      <subtype>Desert </subtype>
+    </type>
+    <rarity>R</rarity>
+    <rules>Atemsisâ€™ Oasis enters tapped with a stun counter on it. (If a permanent with a stun counter would become untapped, remove one from it instead.)
+T: Add one mana of any color.
+3: Return this card from your graveyard to the battlefield.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0175</number>
+  </card>
+  <card>
+    <name>Lands of Devastation</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Mountain </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>(T: Add R.)
+This land enters tapped.
+1R, T, Sacrifice this land, Discard a card: Draw a card.</rules>
+    <flavor>â€œLife here is difficult, but the people persist. What motivates them so?â€
+â€” Nissa</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0176</number>
+  </card>
+  <card>
+    <name>Lands of Eternity</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Island </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>(T: Add U.)
+This land enters tapped.
+1U, T, Sacrifice this land: Scry 3. (Look at the top three cards of your library, then put any number of them on the bottom and the rest on top in any order.)</rules>
+    <flavor>â€œThe history here could be studied for generations without making a dent. How long can life go on?â€
+â€” Nissa</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0177</number>
+  </card>
+  <card>
+    <name>Lands of Glory</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Swamp </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>(T: Add B.)
+This land enters tapped.
+1B, T, Sacrifice this land: Put target creature or planeswalker card from your graveyard on top of your library.</rules>
+    <flavor>â€œFor many here, to live and die by the sword is worth it by itself. How many more must die?â€
+â€” Nissa</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0178</number>
+  </card>
+  <card>
+    <name>Lands of Promise</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Forest </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>(T: Add G.)
+This land enters tapped.
+1G, T, Sacrifice this land: Distribute two +1/+1 counters among up to two target creatures you control. Activate only as a sorcery.</rules>
+    <flavor>â€œWhat lies at the corner of the plane must be worth the many trials of the people. How far must they travel?â€ â€” Nissa</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0179</number>
+  </card>
+  <card>
+    <name>Lands of Reckoning</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Plains </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>(T: Add W.)
+This land enters tapped.
+1W, T, Sacrifice this land: Tap target creature and put a stun counter on it. Activate only as a sorcery. (If a permanent with a stun counter would become untapped, remove one from it instead.)</rules>
+    <flavor>â€œNo people are more punished than those, even by the floodplains themselves. What have they done to deserve this?â€ â€” Nissa</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0180</number>
+  </card>
+  <card>
+    <name>Shifting Sands</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert </subtype>
+    </type>
+    <rarity>U</rarity>
+    <rules>T: Add C.
+1, T, Pay 1 life, Sacrifice this land: Search your library for a Desert land card, put it onto the battlefield tapped, then shuffle.</rules>
+    <flavor>Terraforming is a precise science and, for now, an imprecise implementation.</flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Sam Burley</illustrator>
+    <number>0181</number>
+  </card>
+  <card>
+    <name>Arboreous Delta</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Forest Island </subtype>
+    </type>
+    <rarity>B</rarity>
+    <rules>(T: Add G or U.)
+This land enters tapped.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0182</number>
+  </card>
+  <card>
+    <name>Barren Flats</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Plains Swamp </subtype>
+    </type>
+    <rarity>B</rarity>
+    <rules>(T: Add W or B.)
+This land enters tapped.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0183</number>
+  </card>
+  <card>
+    <name>Meadow Thicket</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Forest Plains </subtype>
+    </type>
+    <rarity>B</rarity>
+    <rules>(T: Add G or W.)
+This land enters tapped.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0184</number>
+  </card>
+  <card>
+    <name>Murky Glade</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Island Swamp </subtype>
+    </type>
+    <rarity>B</rarity>
+    <rules>(T: Add U or B.)
+This land enters tapped.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0185</number>
+  </card>
+  <card>
+    <name>Overgrown Morass</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Swamp Forest </subtype>
+    </type>
+    <rarity>B</rarity>
+    <rules>(T: Add B or G.)
+This land enters tapped.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0186</number>
+  </card>
+  <card>
+    <name>Pastoral Rivulet</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Plains Island </subtype>
+    </type>
+    <rarity>B</rarity>
+    <rules>(T: Add W or U.)
+This land enters tapped.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0187</number>
+  </card>
+  <card>
+    <name>Perilous Canyon</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Swamp Mountain </subtype>
+    </type>
+    <rarity>B</rarity>
+    <rules>(T: Add B or R.)
+This land enters tapped.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0188</number>
+  </card>
+  <card>
+    <name>Rocky Steppe</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Mountain Plains </subtype>
+    </type>
+    <rarity>B</rarity>
+    <rules>(T: Add R or W.)
+This land enters tapped.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0189</number>
+  </card>
+  <card>
+    <name>Steep Fissure</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Island Mountain </subtype>
+    </type>
+    <rarity>B</rarity>
+    <rules>(T: Add U or R.)
+This land enters tapped.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0190</number>
+  </card>
+  <card>
+    <name>Wooded Cliffs</name>
+    <cost></cost>
+    <type>
+      <supertype>Land</supertype>
+      <subtype>Desert Mountain Forest </subtype>
+    </type>
+    <rarity>B</rarity>
+    <rules>(T: Add R or G.)
+This land enters tapped.</rules>
+    <flavor></flavor>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+    </stats>
+    <illustrator>Aryan Nag</illustrator>
+    <number>0191</number>
+  </card>
+</spoiler>
