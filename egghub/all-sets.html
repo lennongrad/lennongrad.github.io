@@ -110,13 +110,13 @@
 		let displayStyle = "";
 
 		document.addEventListener("DOMContentLoaded", async function () {
-			await fetch('/lists/all-cards.json')
+			await fetch('./lists/all-cards.json')
 					.then(response => response.json())
 					.then(json => {
 						card_list = json;
 				}).catch(error => console.error('Error:', error));
 
-				await fetch('/resources/replacechars.txt')
+				await fetch('./resources/replacechars.txt')
 					.then(response => response.text())
 					.then(text => {
 						specialchars = text; 

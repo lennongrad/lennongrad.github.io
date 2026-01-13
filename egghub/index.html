@@ -1,4 +1,4 @@
-﻿<html>
+﻿<htm
 	<head>
 		<title>MSE Set Hub</title>
 		<link rel="icon" type="image/x-icon" href="./img/favicon.png">
@@ -212,7 +212,7 @@
 										<div class="set-group"></div>
 							<div class="preview-container">
 		<div class="set-icon-container">
-									<a href="./previews/CLF"><div class="set-icon"><img src="./sets/CLF-files/icon.png" title="Commander Legends: Fire Emblem"></img></div>
+									<a href="./previews/CLF"><div class="set-icon"><img src="sets/CLF-files/icon.png" title="Commander Legends: Fire Emblem"></img></div>
 									<div class="set-icon-name">Commander Legends: Fire Emblem</div></a>
 								</div>
 									</div>
@@ -301,11 +301,11 @@
 
 				if ("position" in card_stats)
 				{
-					img.src = './sets/' + card_stats.set + '-files/img/' + card_stats.position + (card_stats.shape.includes('double') ? '_front' : '') + '.' + card_stats.image_type;
+					img.src = './sets/' + card_stats.set + '-files./img/' + card_stats.position + (card_stats.shape.includes('double') ? '_front' : '') + '.' + card_stats.image_type;
 				}
 				else
 				{
-					img.src = './sets/' + card_stats.set + '-files/img/' + card_stats.number + '_' + card_stats.card_name + (card_stats.shape.includes('double') ? '_front' : '') + '.' + card_stats.image_type;
+					img.src = './sets/' + card_stats.set + '-files./img/' + card_stats.number + '_' + card_stats.card_name + (card_stats.shape.includes('double') ? '_front' : '') + '.' + card_stats.image_type;
 				}
 
 				a.append(img);

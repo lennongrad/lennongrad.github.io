@@ -6,16 +6,16 @@ def generateHTML():
 	output_html_file = "index.html"
 
 	# Start creating the HTML file content
-	html_content = '''<html>
+	html_content = '''<htm
 	<head>
 		<title>MSE Set Hub</title>
-		<link rel="icon" type="image/x-icon" href="/img/favicon.png">
+		<link rel="icon" type="image/x-icon" href="./img/favicon.png">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	</head>
 	<style>
 	@font-face {
 	  font-family: 'Beleren Small Caps';
-	  src: url('/resources/beleren-caps.ttf');
+	  src: url('./resources/beleren-caps.ttf');
 	}
 	body {
 		background-image: linear-gradient(to top, #ffdde1, #ee9ca7);
@@ -210,16 +210,16 @@ def generateHTML():
 			<img class="banner" src="img/banner.png"></img>
 			<input type="text" inputmode="search" placeholder="Search ..." autofocus="autofocus" name="search" id="search" spellcheck="false" autocomplete="off" autocorrext="off" spellcheck="false">
 			<div class="button-grid">
-				<button onclick="goToSets()"><img src="/img/sets.png" class="btn-img">All Sets</button>
-				<button onclick="goToDeckbuilder()"><img src="/img/deck.png" class="btn-img">Deckbuilder</button>
-				<button onclick="randomCard()"><img src="/img/random.png" class="btn-img">Random Card</button>
+				<button onclick="goToSets()"><img src="./img/sets.png" class="btn-img">All Sets</button>
+				<button onclick="goToDeckbuilder()"><img src="./img/deck.png" class="btn-img">Deckbuilder</button>
+				<button onclick="randomCard()"><img src="./img/random.png" class="btn-img">Random Card</button>
 			</div>
 			<div class="two-part-grid">
 				<div class="container" id="preview-container">
 					<p>Preview Galleries</p>
 					'''
 
-	with open(os.path.join('lists', 'set-order.json'), encoding='utf-8-sig') as j:
+	with open(os.path.join('./lists', 'set-order.json'), encoding='utf-8-sig') as j:
 		so_json = json.load(j)
 
 	for key in so_json:
@@ -233,7 +233,7 @@ def generateHTML():
 				continue
 			set_name = 'MISSING'
 			if not os.path.exists(os.path.join('sets', code + '-files', 'ignore.txt')):
-				with open(os.path.join('lists', 'all-sets.json'), encoding='utf-8-sig') as f:
+				with open(os.path.join('./lists', 'all-sets.json'), encoding='utf-8-sig') as f:
 					data = json.load(f)
 					for s in data['sets']:
 						if s['set_code'] == code:
@@ -241,7 +241,7 @@ def generateHTML():
 							break
 
 				html_content += '''<div class="set-icon-container">
-									<a href="previews/''' + code + '''"><div class="set-icon"><img src="sets/''' + code + '''-files/icon.png" title="''' + set_name + '''"></img></div>
+									<a href="./previews/''' + code + '''"><div class="set-icon"><img src="sets/''' + code + '''-files/icon.png" title="''' + set_name + '''"></img></div>
 									<div class="set-icon-name">''' + set_name + '''</div></a>
 								</div>
 				'''
@@ -326,11 +326,11 @@ def generateHTML():
 
 				if ("position" in card_stats)
 				{
-					img.src = '/sets/' + card_stats.set + '-files/img/' + card_stats.position + (card_stats.shape.includes('double') ? '_front' : '') + '.' + card_stats.image_type;
+					img.src = './sets/' + card_stats.set + '-files./img/' + card_stats.position + (card_stats.shape.includes('double') ? '_front' : '') + '.' + card_stats.image_type;
 				}
 				else
 				{
-					img.src = '/sets/' + card_stats.set + '-files/img/' + card_stats.number + '_' + card_stats.card_name + (card_stats.shape.includes('double') ? '_front' : '') + '.' + card_stats.image_type;
+					img.src = './sets/' + card_stats.set + '-files./img/' + card_stats.number + '_' + card_stats.card_name + (card_stats.shape.includes('double') ? '_front' : '') + '.' + card_stats.image_type;
 				}
 
 				a.append(img);
