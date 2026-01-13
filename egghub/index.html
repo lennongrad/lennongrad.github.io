@@ -1,14 +1,13 @@
 ﻿<html>
 	<head>
 		<title>MSE Set Hub</title>
-		<link rel="icon" type="image/x-icon" href="/img/favicon.png">
+		<link rel="icon" type="image/x-icon" href="./img/favicon.png">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		 <base href="egghub/" target="_blank">
 	</head>
 	<style>
 	@font-face {
 	  font-family: 'Beleren Small Caps';
-	  src: url('/resources/beleren-caps.ttf');
+	  src: url('./resources/beleren-caps.ttf');
 	}
 	body {
 		background-image: linear-gradient(to top, #ffdde1, #ee9ca7);
@@ -203,9 +202,9 @@
 			<img class="banner" src="img/banner.png"></img>
 			<input type="text" inputmode="search" placeholder="Search ..." autofocus="autofocus" name="search" id="search" spellcheck="false" autocomplete="off" autocorrext="off" spellcheck="false">
 			<div class="button-grid">
-				<button onclick="goToSets()"><img src="/img/sets.png" class="btn-img">All Sets</button>
-				<button onclick="goToDeckbuilder()"><img src="/img/deck.png" class="btn-img">Deckbuilder</button>
-				<button onclick="randomCard()"><img src="/img/random.png" class="btn-img">Random Card</button>
+				<button onclick="goToSets()"><img src="./img/sets.png" class="btn-img">All Sets</button>
+				<button onclick="goToDeckbuilder()"><img src="./img/deck.png" class="btn-img">Deckbuilder</button>
+				<button onclick="randomCard()"><img src="./img/random.png" class="btn-img">Random Card</button>
 			</div>
 			<div class="two-part-grid">
 				<div class="container" id="preview-container">
@@ -213,7 +212,7 @@
 										<div class="set-group"></div>
 							<div class="preview-container">
 		<div class="set-icon-container">
-									<a href="previews/CLF"><div class="set-icon"><img src="sets/CLF-files/icon.png" title="Commander Legends: Fire Emblem"></img></div>
+									<a href="./previews/CLF"><div class="set-icon"><img src="./sets/CLF-files/icon.png" title="Commander Legends: Fire Emblem"></img></div>
 									<div class="set-icon-name">Commander Legends: Fire Emblem</div></a>
 								</div>
 									</div>
@@ -243,13 +242,13 @@
 				gradients = raw_gradients.gradients;
 				prepareGradients();
 
-				await fetch('/lists/all-cards.json')
+				await fetch('./lists/all-cards.json')
 					.then(response => response.json())
 					.then(json => {
 						card_list = json;
 				}).catch(error => console.error('Error:', error));
 
-				await fetch('/resources/replacechars.txt')
+				await fetch('./resources/replacechars.txt')
 					.then(response => response.text())
 					.then(text => {
 						specialchars = text; 
@@ -302,11 +301,11 @@
 
 				if ("position" in card_stats)
 				{
-					img.src = '/sets/' + card_stats.set + '-files/img/' + card_stats.position + (card_stats.shape.includes('double') ? '_front' : '') + '.' + card_stats.image_type;
+					img.src = './sets/' + card_stats.set + '-files/img/' + card_stats.position + (card_stats.shape.includes('double') ? '_front' : '') + '.' + card_stats.image_type;
 				}
 				else
 				{
-					img.src = '/sets/' + card_stats.set + '-files/img/' + card_stats.number + '_' + card_stats.card_name + (card_stats.shape.includes('double') ? '_front' : '') + '.' + card_stats.image_type;
+					img.src = './sets/' + card_stats.set + '-files/img/' + card_stats.number + '_' + card_stats.card_name + (card_stats.shape.includes('double') ? '_front' : '') + '.' + card_stats.image_type;
 				}
 
 				a.append(img);

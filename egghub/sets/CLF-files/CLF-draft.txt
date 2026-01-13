@@ -7,7 +7,7 @@
 			"type": "",
 			"collector_number": "1",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/0.png"
+				"en": "https://egghub/sets/CLF-files/img/0.png"
 			}
 		},
 		{
@@ -17,7 +17,7 @@
 			"type": "Legendary Creature — Human Knight",
 			"collector_number": "2",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/1.png"
+				"en": "https://egghub/sets/CLF-files/img/1.png"
 			}
 		},
 		{
@@ -27,7 +27,7 @@
 			"type": "Creature — Human Warlock",
 			"collector_number": "4",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/2.png"
+				"en": "https://egghub/sets/CLF-files/img/2.png"
 			}
 		},
 		{
@@ -37,7 +37,7 @@
 			"type": "Legendary Creature",
 			"collector_number": "5",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/3.png"
+				"en": "https://egghub/sets/CLF-files/img/3.png"
 			}
 		},
 		{
@@ -47,7 +47,7 @@
 			"type": "Creature — Skeleton Warrior",
 			"collector_number": "6",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/4.png"
+				"en": "https://egghub/sets/CLF-files/img/4.png"
 			}
 		},
 		{
@@ -57,7 +57,7 @@
 			"type": "Legendary Creature — Human Pegasus Knight",
 			"collector_number": "7",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/5.png"
+				"en": "https://egghub/sets/CLF-files/img/5.png"
 			}
 		},
 		{
@@ -67,7 +67,7 @@
 			"type": "Legendary Creature — Human Knight",
 			"collector_number": "8",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/6.png"
+				"en": "https://egghub/sets/CLF-files/img/6.png"
 			}
 		},
 		{
@@ -77,7 +77,7 @@
 			"type": "Legendary Creature — Human Soldier",
 			"collector_number": "9",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/7.png"
+				"en": "https://egghub/sets/CLF-files/img/7.png"
 			}
 		},
 		{
@@ -87,7 +87,7 @@
 			"type": "Legendary Creature",
 			"collector_number": "10",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/8.png"
+				"en": "https://egghub/sets/CLF-files/img/8.png"
 			}
 		},
 		{
@@ -97,7 +97,7 @@
 			"type": "Legendary Creature",
 			"collector_number": "11",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/9.png"
+				"en": "https://egghub/sets/CLF-files/img/9.png"
 			}
 		},
 		{
@@ -107,7 +107,7 @@
 			"type": "Legendary Creature — Human Pegasus Knight",
 			"collector_number": "12",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/10.png"
+				"en": "https://egghub/sets/CLF-files/img/10.png"
 			}
 		},
 		{
@@ -117,7 +117,7 @@
 			"type": "Legendary Creature — Human Pegasus Noble",
 			"collector_number": "13",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/11.png"
+				"en": "https://egghub/sets/CLF-files/img/11.png"
 			}
 		},
 		{
@@ -127,7 +127,7 @@
 			"type": "Legendary Creature — Human Knight",
 			"collector_number": "14",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/12.png"
+				"en": "https://egghub/sets/CLF-files/img/12.png"
 			}
 		},
 		{
@@ -137,7 +137,7 @@
 			"type": "Enchantment — Aura",
 			"collector_number": "15",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/13.png"
+				"en": "https://egghub/sets/CLF-files/img/13.png"
 			}
 		},
 		{
@@ -147,7 +147,7 @@
 			"type": "Instant",
 			"collector_number": "16",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/14.png"
+				"en": "https://egghub/sets/CLF-files/img/14.png"
 			}
 		},
 		{
@@ -157,7 +157,7 @@
 			"type": "Instant",
 			"collector_number": "17",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/15.png"
+				"en": "https://egghub/sets/CLF-files/img/15.png"
 			}
 		},
 		{
@@ -167,7 +167,7 @@
 			"type": "Artifact — Weapon Equipment",
 			"collector_number": "18",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/16.png"
+				"en": "https://egghub/sets/CLF-files/img/16.png"
 			}
 		},
 		{
@@ -177,7 +177,7 @@
 			"type": "Enchantment — Aura",
 			"collector_number": "19",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/17.png"
+				"en": "https://egghub/sets/CLF-files/img/17.png"
 			}
 		},
 		{
@@ -187,7 +187,7 @@
 			"type": "Instant",
 			"collector_number": "20",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/18.png"
+				"en": "https://egghub/sets/CLF-files/img/18.png"
 			}
 		},
 		{
@@ -197,7 +197,7 @@
 			"type": "Legendary Creature — Human Pegasus Knight",
 			"collector_number": "21",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/19.png"
+				"en": "https://egghub/sets/CLF-files/img/19.png"
 			}
 		},
 		{
@@ -207,7 +207,7 @@
 			"type": "Legendary Creature — Human Noble Cleric",
 			"collector_number": "22",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/20.png"
+				"en": "https://egghub/sets/CLF-files/img/20.png"
 			}
 		},
 		{
@@ -217,7 +217,7 @@
 			"type": "Legendary Creature — Human Wizard",
 			"collector_number": "23",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/21.png"
+				"en": "https://egghub/sets/CLF-files/img/21.png"
 			}
 		},
 		{
@@ -227,7 +227,7 @@
 			"type": "Legendary Creature — Human Wizard",
 			"collector_number": "63",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/22.png"
+				"en": "https://egghub/sets/CLF-files/img/22.png"
 			}
 		},
 		{
@@ -237,7 +237,7 @@
 			"type": "Legendary Creature — Human Knight",
 			"collector_number": "25",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/23.png"
+				"en": "https://egghub/sets/CLF-files/img/23.png"
 			}
 		},
 		{
@@ -247,7 +247,7 @@
 			"type": "Legendary Creature — Human Pegasus Knight",
 			"collector_number": "26",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/24.png"
+				"en": "https://egghub/sets/CLF-files/img/24.png"
 			}
 		},
 		{
@@ -257,7 +257,7 @@
 			"type": "Legendary Creature — Human Wizard",
 			"collector_number": "27",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/25.png"
+				"en": "https://egghub/sets/CLF-files/img/25.png"
 			}
 		},
 		{
@@ -267,7 +267,7 @@
 			"type": "Legendary Creature — Human Wizard",
 			"collector_number": "28",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/26.png"
+				"en": "https://egghub/sets/CLF-files/img/26.png"
 			}
 		},
 		{
@@ -277,7 +277,7 @@
 			"type": "Legendary Creature — Human Drake Knight",
 			"collector_number": "29",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/27.png"
+				"en": "https://egghub/sets/CLF-files/img/27.png"
 			}
 		},
 		{
@@ -287,7 +287,7 @@
 			"type": "Creature — Scarecrow",
 			"collector_number": "30",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/28.png"
+				"en": "https://egghub/sets/CLF-files/img/28.png"
 			}
 		},
 		{
@@ -297,7 +297,7 @@
 			"type": "Instant",
 			"collector_number": "31",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/29.png"
+				"en": "https://egghub/sets/CLF-files/img/29.png"
 			}
 		},
 		{
@@ -307,7 +307,7 @@
 			"type": "Instant",
 			"collector_number": "32",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/30.png"
+				"en": "https://egghub/sets/CLF-files/img/30.png"
 			}
 		},
 		{
@@ -317,7 +317,7 @@
 			"type": "Enchantment — Aura",
 			"collector_number": "33",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/31.png"
+				"en": "https://egghub/sets/CLF-files/img/31.png"
 			}
 		},
 		{
@@ -327,7 +327,7 @@
 			"type": "Sorcery",
 			"collector_number": "34",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/32.png"
+				"en": "https://egghub/sets/CLF-files/img/32.png"
 			}
 		},
 		{
@@ -337,7 +337,7 @@
 			"type": "Instant",
 			"collector_number": "35",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/33.png"
+				"en": "https://egghub/sets/CLF-files/img/33.png"
 			}
 		},
 		{
@@ -347,7 +347,7 @@
 			"type": "Instant",
 			"collector_number": "36",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/34.png"
+				"en": "https://egghub/sets/CLF-files/img/34.png"
 			}
 		},
 		{
@@ -357,7 +357,7 @@
 			"type": "Artifact — Weapon Equipment",
 			"collector_number": "37",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/35.png"
+				"en": "https://egghub/sets/CLF-files/img/35.png"
 			}
 		},
 		{
@@ -367,7 +367,7 @@
 			"type": "Enchantment — Aura",
 			"collector_number": "38",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/36.png"
+				"en": "https://egghub/sets/CLF-files/img/36.png"
 			}
 		},
 		{
@@ -377,7 +377,7 @@
 			"type": "Legendary Creature — Human Wizard",
 			"collector_number": "39",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/37.png"
+				"en": "https://egghub/sets/CLF-files/img/37.png"
 			}
 		},
 		{
@@ -387,7 +387,7 @@
 			"type": "Legendary Creature — Human Ninja",
 			"collector_number": "40",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/38.png"
+				"en": "https://egghub/sets/CLF-files/img/38.png"
 			}
 		},
 		{
@@ -397,7 +397,7 @@
 			"type": "Creature — Zombie",
 			"collector_number": "41",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/39.png"
+				"en": "https://egghub/sets/CLF-files/img/39.png"
 			}
 		},
 		{
@@ -407,7 +407,7 @@
 			"type": "Legendary Creature — Human Warlock",
 			"collector_number": "42",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/40.png"
+				"en": "https://egghub/sets/CLF-files/img/40.png"
 			}
 		},
 		{
@@ -417,7 +417,7 @@
 			"type": "Legendary Creature — Human Rogue",
 			"collector_number": "43",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/41.png"
+				"en": "https://egghub/sets/CLF-files/img/41.png"
 			}
 		},
 		{
@@ -427,7 +427,7 @@
 			"type": "Legendary Creature — Human Warlock",
 			"collector_number": "44",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/42.png"
+				"en": "https://egghub/sets/CLF-files/img/42.png"
 			}
 		},
 		{
@@ -437,7 +437,7 @@
 			"type": "Creature — Eye Bat",
 			"collector_number": "45",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/43.png"
+				"en": "https://egghub/sets/CLF-files/img/43.png"
 			}
 		},
 		{
@@ -447,7 +447,7 @@
 			"type": "Legendary Creature — Human Pirate",
 			"collector_number": "47",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/44.png"
+				"en": "https://egghub/sets/CLF-files/img/44.png"
 			}
 		},
 		{
@@ -457,7 +457,7 @@
 			"type": "Legendary Creature — Human Berserker",
 			"collector_number": "48",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/45.png"
+				"en": "https://egghub/sets/CLF-files/img/45.png"
 			}
 		},
 		{
@@ -467,7 +467,7 @@
 			"type": "Legendary Creature — Human Knight",
 			"collector_number": "49",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/46.png"
+				"en": "https://egghub/sets/CLF-files/img/46.png"
 			}
 		},
 		{
@@ -477,7 +477,7 @@
 			"type": "Instant",
 			"collector_number": "50",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/47.png"
+				"en": "https://egghub/sets/CLF-files/img/47.png"
 			}
 		},
 		{
@@ -487,7 +487,7 @@
 			"type": "Legendary Creature — Human Warlock",
 			"collector_number": "51",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/48.png"
+				"en": "https://egghub/sets/CLF-files/img/48.png"
 			}
 		},
 		{
@@ -497,7 +497,7 @@
 			"type": "Instant",
 			"collector_number": "52",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/49.png"
+				"en": "https://egghub/sets/CLF-files/img/49.png"
 			}
 		},
 		{
@@ -507,7 +507,7 @@
 			"type": "Instant",
 			"collector_number": "53",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/50.png"
+				"en": "https://egghub/sets/CLF-files/img/50.png"
 			}
 		},
 		{
@@ -517,7 +517,7 @@
 			"type": "Legendary Creature — Human Warlock",
 			"collector_number": "54",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/51.png"
+				"en": "https://egghub/sets/CLF-files/img/51.png"
 			}
 		},
 		{
@@ -527,7 +527,7 @@
 			"type": "Instant",
 			"collector_number": "55",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/52.png"
+				"en": "https://egghub/sets/CLF-files/img/52.png"
 			}
 		},
 		{
@@ -537,7 +537,7 @@
 			"type": "Artifact — Weapon Equipment",
 			"collector_number": "56",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/53.png"
+				"en": "https://egghub/sets/CLF-files/img/53.png"
 			}
 		},
 		{
@@ -547,7 +547,7 @@
 			"type": "Enchantment — Aura",
 			"collector_number": "57",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/54.png"
+				"en": "https://egghub/sets/CLF-files/img/54.png"
 			}
 		},
 		{
@@ -557,7 +557,7 @@
 			"type": "Sorcery",
 			"collector_number": "58",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/55.png"
+				"en": "https://egghub/sets/CLF-files/img/55.png"
 			}
 		},
 		{
@@ -567,7 +567,7 @@
 			"type": "Creature — Human Warrior",
 			"collector_number": "59",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/56.png"
+				"en": "https://egghub/sets/CLF-files/img/56.png"
 			}
 		},
 		{
@@ -577,7 +577,7 @@
 			"type": "Legendary Creature — Human Cleric",
 			"collector_number": "60",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/57.png"
+				"en": "https://egghub/sets/CLF-files/img/57.png"
 			}
 		},
 		{
@@ -587,7 +587,7 @@
 			"type": "Legendary Creature",
 			"collector_number": "62",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/58.png"
+				"en": "https://egghub/sets/CLF-files/img/58.png"
 			}
 		},
 		{
@@ -597,7 +597,7 @@
 			"type": "Legendary Creature — Human Drake Knight",
 			"collector_number": "24",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/59.png"
+				"en": "https://egghub/sets/CLF-files/img/59.png"
 			}
 		},
 		{
@@ -607,7 +607,7 @@
 			"type": "Legendary Creature — Human Warrior",
 			"collector_number": "64",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/60.png"
+				"en": "https://egghub/sets/CLF-files/img/60.png"
 			}
 		},
 		{
@@ -617,7 +617,7 @@
 			"type": "Legendary Creature — Human Rogue",
 			"collector_number": "65",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/61.png"
+				"en": "https://egghub/sets/CLF-files/img/61.png"
 			}
 		},
 		{
@@ -627,7 +627,7 @@
 			"type": "Legendary Creature — Human Mercenary",
 			"collector_number": "66",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/62.png"
+				"en": "https://egghub/sets/CLF-files/img/62.png"
 			}
 		},
 		{
@@ -637,7 +637,7 @@
 			"type": "Creature — Human Berserker",
 			"collector_number": "67",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/63.png"
+				"en": "https://egghub/sets/CLF-files/img/63.png"
 			}
 		},
 		{
@@ -647,7 +647,7 @@
 			"type": "Legendary Creature — Human Nomad",
 			"collector_number": "68",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/64.png"
+				"en": "https://egghub/sets/CLF-files/img/64.png"
 			}
 		},
 		{
@@ -657,7 +657,7 @@
 			"type": "Sorcery",
 			"collector_number": "69",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/65.png"
+				"en": "https://egghub/sets/CLF-files/img/65.png"
 			}
 		},
 		{
@@ -667,7 +667,7 @@
 			"type": "Legendary Creature — Human Wizard",
 			"collector_number": "72",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/66.png"
+				"en": "https://egghub/sets/CLF-files/img/66.png"
 			}
 		},
 		{
@@ -677,7 +677,7 @@
 			"type": "Instant",
 			"collector_number": "71",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/67.png"
+				"en": "https://egghub/sets/CLF-files/img/67.png"
 			}
 		},
 		{
@@ -687,7 +687,7 @@
 			"type": "Sorcery",
 			"collector_number": "70",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/68.png"
+				"en": "https://egghub/sets/CLF-files/img/68.png"
 			}
 		},
 		{
@@ -697,7 +697,7 @@
 			"type": "Legendary Creature — Human Warrior",
 			"collector_number": "73",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/69.png"
+				"en": "https://egghub/sets/CLF-files/img/69.png"
 			}
 		},
 		{
@@ -707,7 +707,7 @@
 			"type": "Artifact — Weapon Equipment",
 			"collector_number": "74",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/70.png"
+				"en": "https://egghub/sets/CLF-files/img/70.png"
 			}
 		},
 		{
@@ -717,7 +717,7 @@
 			"type": "Enchantment — Aura",
 			"collector_number": "75",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/71.png"
+				"en": "https://egghub/sets/CLF-files/img/71.png"
 			}
 		},
 		{
@@ -727,7 +727,7 @@
 			"type": "Instant",
 			"collector_number": "76",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/72.png"
+				"en": "https://egghub/sets/CLF-files/img/72.png"
 			}
 		},
 		{
@@ -737,7 +737,7 @@
 			"type": "Legendary Creature — Human Coward Archer",
 			"collector_number": "77",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/73.png"
+				"en": "https://egghub/sets/CLF-files/img/73.png"
 			}
 		},
 		{
@@ -747,7 +747,7 @@
 			"type": "Legendary Creature — Human Dragon Druid",
 			"collector_number": "78",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/74.png"
+				"en": "https://egghub/sets/CLF-files/img/74.png"
 			}
 		},
 		{
@@ -757,7 +757,7 @@
 			"type": "Legendary Creature — Human Cleric",
 			"collector_number": "79",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/75.png"
+				"en": "https://egghub/sets/CLF-files/img/75.png"
 			}
 		},
 		{
@@ -767,7 +767,7 @@
 			"type": "Legendary Creature — Human Archer",
 			"collector_number": "80",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/76.png"
+				"en": "https://egghub/sets/CLF-files/img/76.png"
 			}
 		},
 		{
@@ -777,7 +777,7 @@
 			"type": "Legendary Creature — Human Warrior",
 			"collector_number": "81",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/77.png"
+				"en": "https://egghub/sets/CLF-files/img/77.png"
 			}
 		},
 		{
@@ -787,7 +787,7 @@
 			"type": "Legendary Creature — Human Warrior",
 			"collector_number": "82",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/78.png"
+				"en": "https://egghub/sets/CLF-files/img/78.png"
 			}
 		},
 		{
@@ -797,7 +797,7 @@
 			"type": "Legendary Creature — Human Soldier",
 			"collector_number": "83",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/79.png"
+				"en": "https://egghub/sets/CLF-files/img/79.png"
 			}
 		},
 		{
@@ -807,7 +807,7 @@
 			"type": "Creature — Zombie",
 			"collector_number": "84",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/80.png"
+				"en": "https://egghub/sets/CLF-files/img/80.png"
 			}
 		},
 		{
@@ -817,7 +817,7 @@
 			"type": "Legendary Creature — Human Werewolf",
 			"collector_number": "85",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/81.png"
+				"en": "https://egghub/sets/CLF-files/img/81.png"
 			}
 		},
 		{
@@ -827,7 +827,7 @@
 			"type": "Legendary Creature — Human Wizard",
 			"collector_number": "86",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/82.png"
+				"en": "https://egghub/sets/CLF-files/img/82.png"
 			}
 		},
 		{
@@ -837,7 +837,7 @@
 			"type": "Legendary Creature — Human Knight",
 			"collector_number": "87",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/83.png"
+				"en": "https://egghub/sets/CLF-files/img/83.png"
 			}
 		},
 		{
@@ -847,7 +847,7 @@
 			"type": "Legendary Creature — Human",
 			"collector_number": "88",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/84.png"
+				"en": "https://egghub/sets/CLF-files/img/84.png"
 			}
 		},
 		{
@@ -857,7 +857,7 @@
 			"type": "Instant",
 			"collector_number": "89",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/85.png"
+				"en": "https://egghub/sets/CLF-files/img/85.png"
 			}
 		},
 		{
@@ -867,7 +867,7 @@
 			"type": "Instant",
 			"collector_number": "90",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/86.png"
+				"en": "https://egghub/sets/CLF-files/img/86.png"
 			}
 		},
 		{
@@ -877,7 +877,7 @@
 			"type": "Enchantment — Aura",
 			"collector_number": "91",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/87.png"
+				"en": "https://egghub/sets/CLF-files/img/87.png"
 			}
 		},
 		{
@@ -887,7 +887,7 @@
 			"type": "Legendary Creature — Human Archer",
 			"collector_number": "92",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/88.png"
+				"en": "https://egghub/sets/CLF-files/img/88.png"
 			}
 		},
 		{
@@ -897,7 +897,7 @@
 			"type": "Artifact — Weapon Equipment",
 			"collector_number": "93",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/89.png"
+				"en": "https://egghub/sets/CLF-files/img/89.png"
 			}
 		},
 		{
@@ -907,7 +907,7 @@
 			"type": "Instant",
 			"collector_number": "94",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/90.png"
+				"en": "https://egghub/sets/CLF-files/img/90.png"
 			}
 		},
 		{
@@ -917,7 +917,7 @@
 			"type": "Sorcery",
 			"collector_number": "95",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/91.png"
+				"en": "https://egghub/sets/CLF-files/img/91.png"
 			}
 		},
 		{
@@ -927,7 +927,7 @@
 			"type": "Instant",
 			"collector_number": "96",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/92.png"
+				"en": "https://egghub/sets/CLF-files/img/92.png"
 			}
 		},
 		{
@@ -937,7 +937,7 @@
 			"type": "Legendary Creature — Human Noble",
 			"collector_number": "3",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/93.png"
+				"en": "https://egghub/sets/CLF-files/img/93.png"
 			}
 		},
 		{
@@ -947,7 +947,7 @@
 			"type": "Legendary Creature — Human Knight Archer",
 			"collector_number": "46",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/94.png"
+				"en": "https://egghub/sets/CLF-files/img/94.png"
 			}
 		},
 		{
@@ -957,7 +957,7 @@
 			"type": "Legendary Creature — Human Warrior",
 			"collector_number": "61",
 			"image_uris": {
-				"en": "https://hub/sets/CLF-files/img/95.png"
+				"en": "https://egghub/sets/CLF-files/img/95.png"
 			}
 		}
 	]
