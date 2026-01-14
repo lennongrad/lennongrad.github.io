@@ -11,15 +11,15 @@ def generateHTML(codes):
 	html_content = '''<html>
 <head>
 	<title>Search</title>
-	<link rel="icon" type="image/x-icon" href="/img/search.png">
-	<link rel="stylesheet" href="resources/mana.css">
-	<link rel="stylesheet" href="/resources/header.css">
-	<link rel="stylesheet" href="/resources/card-text.css">
+	<link rel="icon" type="image/x-icon" href="./img/search.png">
+	<link rel="stylesheet" href="./resources/mana.css">
+	<link rel="stylesheet" href="./resources/header.css">
+	<link rel="stylesheet" href="./resources/card-text.css">
 </head>
 <style>
 	@font-face {
 		font-family: Beleren;
-		src: url('/resources/beleren.ttf');
+		src: url('./resources/beleren.ttf');
 	}
 	body {
 		font-family: 'Helvetica', 'Arial', sans-serif;

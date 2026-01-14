@@ -8,15 +8,15 @@ def generateHTML(codes):
 	html_content = '''<html>
 <head>
 	<title>Deckbuilder</title>
-	<link rel="icon" type="image/x-icon" href="/img/deck.png">
-	<link rel="stylesheet" href="resources/mana.css">
-	<link rel="stylesheet" href="/resources/header.css">
-	<link rel="stylesheet" href="/resources/card-text.css">
+	<link rel="icon" type="image/x-icon" href="./img/deck.png">
+	<link rel="stylesheet" href="./resources/mana.css">
+	<link rel="stylesheet" href="./resources/header.css">
+	<link rel="stylesheet" href="./resources/card-text.css">
 </head>
 <style>
 	@font-face {
 		font-family: Beleren;
-		src: url('/resources/beleren.ttf');
+		src: url('./resources/beleren.ttf');
 	}
 	body {
 		font-family: 'Helvetica', 'Arial', sans-serif;
@@ -396,11 +396,11 @@ def generateHTML(codes):
 <body>
 	<div class="header">
 		<div class="search-grid">
-			<a href="/"><img class="sg-logo" src="/img/banner.png"></a>
-			<img class="sg-icon" src="/img/search.png" onclick="goToSearch()">
-			<a href="/all-sets"><img src="/img/sets.png" class="sg-icon">Sets</a>
-			<a href="/deckbuilder"><img src="/img/deck.png" class="sg-icon">Deckbuilder</a>
-			<a onclick="randomCard()"><img src="/img/random.png" class="sg-icon">Random</a>
+			<a href="/"><img class="sg-logo" src="./../img/banner.png"></a>
+			<img class="sg-icon" src="./../img/search.png" onclick="goToSearch()">
+			<a href="/all-sets"><img src="./../img/sets.png" class="sg-icon">Sets</a>
+			<a href="/deckbuilder"><img src="./../img/deck.png" class="sg-icon">Deckbuilder</a>
+			<a onclick="randomCard()"><img src="./../img/random.png" class="sg-icon">Random</a>
 		</div>
 	</div>
 	<div id="myContextMenu" class="rc-menu">

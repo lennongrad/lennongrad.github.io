@@ -244,7 +244,7 @@ def generateHTML(setCode):
 		'''
 
 	#F: goes to resources/snippets/header.txt and gets a header, inserting it after everything so far
-	with open(os.path.join('scripts', 'snippets', 'header.txt'), encoding='utf-8-sig') as f:
+	with open(os.path.join('scripts', 'snippets', 'header2.txt'), encoding='utf-8-sig') as f:
 		snippet = f.read()
 		html_content += snippet
 
@@ -293,7 +293,7 @@ def generateHTML(setCode):
 		if 'l->' in card:
 			html_content += f'''			</div>
 			<div class="banner">
-					<img id="{card[3:]}-logo" class="logo" src="/sets/{card[3:]}-files/logo.png">
+					<img id="{card[3:]}-logo" class="logo" src="./../sets/{card[3:]}-files/logo.png">
 			</div>
 			<div class="grid-container">
 '''

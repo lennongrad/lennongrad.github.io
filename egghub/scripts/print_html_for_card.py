@@ -11,15 +11,15 @@ def generateHTML():
 	html_content = '''<html>
 <head>
 	<title>Card</title>
-	<link rel="icon" type="image/x-icon" href="/img/favicon.png">
-	<link rel="stylesheet" href="/resources/mana.css">
-	<link rel="stylesheet" href="/resources/header.css">
-	<link rel="stylesheet" href="/resources/card-text.css">
+	<link rel="icon" type="image/x-icon" href="./img/favicon.png">
+	<link rel="stylesheet" href="./resources/mana.css">
+	<link rel="stylesheet" href="./resources/header.css">
+	<link rel="stylesheet" href="./resources/card-text.css">
 </head>
 <style>
 	@font-face {
 		font-family: Beleren;
-		src: url('/resources/beleren.ttf');
+		src: url('./resources/beleren.ttf');
 	}
 	body {
 		font-family: 'Helvetica', 'Arial', sans-serif;
@@ -117,7 +117,7 @@ def generateHTML():
 		height: auto;
 	}
 	.img-container .btn {
-		background: url('/img/flip.png') no-repeat;
+		background: url('./img/flip.png') no-repeat;
 		background-size: contain;
 		background-position: center;
 		width: 15%;
@@ -131,7 +131,7 @@ def generateHTML():
 		opacity: 0.5;
 	}
 	.img-container .btn:hover {
-		background: url('/img/flip-hover.png') no-repeat;
+		background: url('./img/flip-hover.png') no-repeat;
 		background-size: contain;
 		background-position: center;
 	}
@@ -186,7 +186,7 @@ def generateHTML():
 		html_content += snippet
 	
 	html_content += '''
-			await fetch('/lists/all-sets.json')
+			await fetch('./lists/all-sets.json')
 					.then(response => response.json())
 					.then(json => {
 						set_list = json;
@@ -208,7 +208,7 @@ def generateHTML():
 			}
 
 			var link = document.querySelector("link[rel~='icon']");
-			link.href = '/sets/' + set + '-files/icon.png';
+			link.href = './sets/' + set + '-files/icon.png';
 
 			document.title = name;
 
@@ -216,8 +216,8 @@ def generateHTML():
 			const banner_logo = document.getElementById("set-banner-logo");
 			const banner_title = document.getElementById("set-banner-title");
 
-			banner.href = '/sets/' + set;
-			banner_logo.src = '/sets/' + set + '-files/icon.png';
+			banner.href = './sets/' + set;
+			banner_logo.src = './sets/' + set + '-files/icon.png';
 
 			for (const set_stats of set_list.sets)
 			{
