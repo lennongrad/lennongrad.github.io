@@ -1,26 +1,44 @@
-<div id="container-container">
-<div id="container">
-</div>
-</div>
+<header>
+	<meta name="viewport" content="width=device-width">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+	<meta name="twitter:title" content="Get fifteen random MTG creature cards!" />
+    <meta name="twitter:site" content="Get fifteen random MTG creature cards!">
+    <meta name="twitter:description" content="by lennongrad for carleah22">
 
-<style>
-body {
-	background-color: black;
-}
-#container-container{
-	width: 100%;
-	height: 100%;
-}
-#container{
-	display: flex;
-	justify-content: center;
-    flex-wrap: wrap;
-}
-#container img {
-	width: 18vw;
-    border-radius: 10%;
-}
-</style>
+	<style>
+	body {
+		background-color: black;
+	}
+	#container-container{
+		width: 100%;
+		height: 100%;
+	}
+	#container{
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+	#container img {
+		width: 18vw;
+		border-radius: 10%;
+	}
+
+	@media (max-width: 850px) {
+		body {
+			background-color: grey !important
+		}
+		#container img {
+			width: unset;
+			height: 30vh;
+		}
+	}
+	</style>
+</header>
+
+<div id="container-container">
+	<div id="container">
+	</div>
+</div>
 
 <script>
 	var images = []
@@ -55,3 +73,5 @@ body {
 
 	addImage()
 </script>
+
+<!-- yes, i know this is extremely janky, i made it in like 30 minutes -->
