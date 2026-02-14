@@ -1,0 +1,57 @@
+<div id="container-container">
+<div id="container">
+</div>
+</div>
+
+<style>
+body {
+	background-color: black;
+}
+#container-container{
+	width: 100%;
+	height: 100%;
+}
+#container{
+	display: flex;
+	justify-content: center;
+    flex-wrap: wrap;
+}
+#container img {
+	width: 18vw;
+    border-radius: 10%;
+}
+</style>
+
+<script>
+	var images = []
+	
+	function addImage(){
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.open( "GET", "https://api.scryfall.com/cards/random?q=t%3Acreature+legal%3Acommander", false ); // false for synchronous request
+		xmlHttp.send( null );
+		var data = JSON.parse(xmlHttp.responseText)
+		var url = data["image_uris"]
+		
+		if(url != undefined && "large" in url){
+		
+			url = url["large"];
+		
+			if(url != ""){
+				images.push(url)
+				
+				var newImage = document.createElement("img")
+				newImage.src = url
+				
+				document.getElementById("container").appendChild(newImage)
+			}
+		}
+	
+		if(images.length < 15){
+			setTimeout(addImage, 0.075)
+		} else {
+			console.log(images)
+		}
+	}
+
+	addImage()
+</script>
