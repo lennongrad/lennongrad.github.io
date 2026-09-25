@@ -1,0 +1,1 @@
+:root{--dark-bg1: #151b25;--dark-bg2: #0b0f14;--dark-bg3: #090b0f}@media print{.hide-print{display:none!important}html,body{margin:0}@page{size:letter;margin:0;padding:.75in .75in 0}}body{font-family:Open Sans,sans-serif;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.sep{flex:1}
